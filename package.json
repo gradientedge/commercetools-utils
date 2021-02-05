@@ -1,0 +1,23 @@
+{
+  "name": "commercetools-sdk",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gradientedge/commercetools-sdk.git"
+  },
+  "keywords": [
+    "commercetools",
+    "sdk"
+  ],
+  "author": "GradientEdge",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/gradientedge/commercetools-sdk/issues"
+  },
+  "homepage": "https://github.com/gradientedge/commercetools-sdk#readme"
+}
