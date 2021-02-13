@@ -41,8 +41,8 @@ interface Config extends CommercetoolsAuthConfig {
 }
 
 /**
- * Provides an easy to use API for obtaining an access token for use with the commercetools HTTP API:
- * https://docs.commercetools.com/api/
+ * Provides an easy to use set of methods for communicating with the commercetools
+ * HTTP Authorization API: https://docs.commercetools.com/api/authorization
  *
  * To create an instance of the class and get an access token:
  * ```typescript
@@ -65,7 +65,7 @@ interface Config extends CommercetoolsAuthConfig {
  * ```
  *
  * An instance of this class is designed to be stored as a global, long-lived
- * object. If you are using a serverless environment such as AWS Lambda or an
+ * object. If you're using a serverless environment such as AWS Lambda or an
  * Azure Function App, you can safely instantiate this class outside of your
  * function handler and have it exist for as long the serverless environment
  * allows.
@@ -111,13 +111,11 @@ export class CommercetoolsAuth {
    * to be renewed.
    */
   public async getClientAccessToken(): Promise<AccessToken> {
-    const timeInSeconds = new Date().getTime() / 1000
-
     await this.tokenPromise
 
     if (this.clientAccessToken) {
       if (
-        timeInSeconds + this.config.refreshIfWithinSecs <
+        new Date().getTime() + this.config.refreshIfWithinSecs * 1000 <
         this.clientAccessToken.expiresAt.getTime()
       ) {
         return this.clientAccessToken
@@ -164,6 +162,7 @@ export class CommercetoolsAuth {
    * Refresh the customer access token given a refresh token
    */
   public async refreshCustomerAccessToken(refreshToken: string): Promise<RefreshedAccessToken> {
+    await this.getClientAccessToken()
     return this.refreshAccessToken(refreshToken)
   }
 
@@ -174,7 +173,7 @@ export class CommercetoolsAuth {
    * access token.
    */
   private async refreshAccessToken(refreshToken: string): Promise<RefreshedAccessToken> {
-    const data = await this.post('/oauth/token', {
+    const data = await this.post('/token', {
       grant_type: GrantType.REFRESH_TOKEN,
       refresh_token: refreshToken
     })
@@ -192,7 +191,7 @@ export class CommercetoolsAuth {
    * @returns {Promise<{expiresIn: null, accessToken: string, refreshToken: (string|null)}>}
    */
   private async getNewClientAccessToken(): Promise<AccessToken> {
-    const data = await this.post('/oauth/token', {
+    const data = await this.post('/token', {
       grant_type: GrantType.CLIENT_CREDENTIALS,
       scope: this.scopesToRequestString(this.config.clientScopes)
     })
@@ -239,7 +238,6 @@ export class CommercetoolsAuth {
    * doesn't have a cached local token.
    */
   public async login(options: LoginOptions): Promise<AccessToken> {
-    await this.getClientAccessToken()
     const scopes = options.scopes || this.config.customerScopes
 
     if (!scopes) {
@@ -250,7 +248,9 @@ export class CommercetoolsAuth {
       )
     }
 
-    const data = await this.post('/customers/token', {
+    await this.getClientAccessToken()
+
+    const data = await this.post(`/${this.config.projectKey}/customers/token`, {
       username: options.username,
       password: options.password,
       grant_type: GrantType.PASSWORD,
@@ -290,19 +290,29 @@ export class CommercetoolsAuth {
    * ```
    */
   public async getAnonymousToken(options?: AnonymousTokenOptions): Promise<AccessToken> {
-    await this.getClientAccessToken()
+    const scopes = options?.scopes || this.config.customerScopes
+    const anonymousId = options?.anonymousId
 
-    const opts = {
-      scopes: this.config.customerScopes,
-      anonymousId: undefined,
-      ...options
+    if (!scopes) {
+      throw new CommercetoolsAuthError(
+        'Customer scopes must be set on either the `options` ' +
+          'parameter of this `login` method, or on the `customerScopes` ' +
+          'property of the `CommercetoolsAuth` constructor'
+      )
     }
 
-    const data = await this.post(`/${this.config.projectKey}/anonymous/token`, {
+    await this.getClientAccessToken()
+
+    const postOptions: Record<string, any> = {
       grant_type: GrantType.CLIENT_CREDENTIALS,
-      scope: opts.scopes,
-      anonymous_id: opts.anonymousId
-    })
+      scope: this.scopesToRequestString(scopes)
+    }
+
+    if (anonymousId) {
+      postOptions.anonymous_id = anonymousId
+    }
+
+    const data = await this.post(`/${this.config.projectKey}/anonymous/token`, postOptions)
 
     return this.responseToAccessToken(data)
   }
@@ -327,8 +337,9 @@ export class CommercetoolsAuth {
       options.data = new URLSearchParams(options.data).toString()
     }
 
+    const url = `${this.endpoints.auth}/oauth${path}`
     try {
-      const response = await this.fetch(this.endpoints.auth + path, options)
+      const response = await this.fetch(url, options)
       return response.data
     } catch (e) {
       throw new CommercetoolsAuthError(e)

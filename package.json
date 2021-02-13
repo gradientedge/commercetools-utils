@@ -8,7 +8,8 @@
     "prettier": "prettier --check \"**/*.{ts,js,json,graphql}\"",
     "prettify": "prettier --write \"**/*.{ts,js,json,graphql}\"",
     "test": "jest --passWithNoTests",
-    "validate": "npm run prettier && npm run lint && npm run test"
+    "validate": "npm run prettier && npm run lint && npm run test",
+    "docs": "typedoc"
   },
   "repository": {
     "type": "git",
