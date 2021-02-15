@@ -17,6 +17,7 @@ export interface CommercetoolsAuthConfig {
     info: (...args: any) => void
     error: (...args: any) => void
   }
+  fetch?: any
 }
 
 /**

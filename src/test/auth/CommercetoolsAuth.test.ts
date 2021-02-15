@@ -1,4 +1,4 @@
-import axios from 'axios'
+import fetch from 'node-fetch'
 import { CommercetoolsAuth, CommercetoolsAccessTokenResponse, Region } from '../../lib'
 import ResolvedValue = jest.ResolvedValue
 
@@ -44,7 +44,8 @@ describe('CommercetoolsAuth', () => {
           refreshIfWithinSecs: 1800,
           region: 'us_east',
           timeout: 5,
-          clientScopes: ['defaultClientScope1']
+          clientScopes: ['defaultClientScope1'],
+          fetch
         })
       })
 
@@ -61,7 +62,8 @@ describe('CommercetoolsAuth', () => {
           refreshIfWithinSecs: 2500,
           region: 'us_east',
           timeout: 10,
-          clientScopes: ['defaultClientScope1']
+          clientScopes: ['defaultClientScope1'],
+          fetch
         })
       })
 
@@ -79,7 +81,8 @@ describe('CommercetoolsAuth', () => {
           region: 'us_east',
           timeout: 5,
           customerScopes: ['scope1', 'scope2'],
-          clientScopes: ['scope3', 'scope4']
+          clientScopes: ['scope3', 'scope4'],
+          fetch
         })
       })
     })
@@ -285,6 +288,7 @@ describe('CommercetoolsAuth', () => {
 
         expect(token).toEqual({
           accessToken: 'test-refreshed-access-token',
+          refreshToken: 'test-refresh-token',
           expiresIn: 1234567,
           expiresAt: new Date('2020-01-19T17:19:24.000Z'),
           scopes: [`test-scope1`, `test-scope2`]
@@ -784,6 +788,30 @@ describe('CommercetoolsAuth', () => {
             scopes: [`customer-test-scope1`]
           })
         })
+      })
+    })
+  })
+
+  describe('private methods', () => {
+    let auth: any
+
+    beforeEach(() => {
+      auth = new CommercetoolsAuth({ ...defaultConfig, fetch: jest.fn() })
+    })
+
+    describe('fetch', () => {
+      it('should return the JSON from the remote server response when the status code is non-error', async () => {
+        const mockJson = jest.fn().mockResolvedValueOnce({ test: 1 })
+
+        auth.config.fetch.mockResolvedValueOnce({
+          json: mockJson
+        } as ResolvedValue<any>)
+
+        const result = await auth.fetch('testurl', {})
+
+        expect(auth.config.fetch).toHaveBeenCalledTimes(1)
+        expect(auth.config.fetch).toHaveBeenCalledWith('testurl', {})
+        expect(result).toStrictEqual({ test: 1 })
       })
     })
   })

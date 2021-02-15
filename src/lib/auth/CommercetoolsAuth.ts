@@ -1,4 +1,4 @@
-import fetch, { RequestInit } from 'node-fetch'
+import fetch, { RequestInit, Response } from 'node-fetch'
 import {
   AccessToken,
   AnonymousTokenOptions,
@@ -30,7 +30,8 @@ import { INVALID_SCOPES, REGION_URLS } from './constants'
 
 const configDefaults = {
   refreshIfWithinSecs: 1800,
-  timeout: 5
+  timeout: 5,
+  fetch
 }
 
 interface Config extends CommercetoolsAuthConfig {
@@ -38,6 +39,7 @@ interface Config extends CommercetoolsAuthConfig {
   customerScopes?: string[]
   refreshIfWithinSecs: number
   timeout: number
+  fetch: any
 }
 
 /**
@@ -46,7 +48,7 @@ interface Config extends CommercetoolsAuthConfig {
  *
  * To create an instance of the class and get an access token:
  * ```typescript
- * import { Region, CommercetoolsAuth } from '@gradientedge/commercetools-sdk'
+ * import { Region, CommercetoolsAuth } from '@gradientedge/commercetools-utils'
  *
  * async function example() {
  *   const auth = new CommercetoolsAuth({
@@ -182,7 +184,7 @@ export class CommercetoolsAuth {
       refresh_token: refreshToken
     })
 
-    return this.responseToAccessToken(data)
+    return this.responseToRefreshToken(data)
   }
 
   /**
@@ -216,7 +218,7 @@ export class CommercetoolsAuth {
    *
    * Example login code:
    * ```typescript
-   * import { Region, CommercetoolsAuth } from '@gradientedge/commercetools-sdk'
+   * import { Region, CommercetoolsAuth } from '@gradientedge/commercetools-utils'
    *
    * async function example() {
    *   const auth = new CommercetoolsAuth({
@@ -275,7 +277,7 @@ export class CommercetoolsAuth {
    *
    * Example code to generate an anonymous customer token:
    * ```typescript
-   * import { Region, CommercetoolsAuth } from '@gradientedge/commercetools-sdk'
+   * import { Region, CommercetoolsAuth } from '@gradientedge/commercetools-utils'
    *
    * async function example() {
    *   const auth = new CommercetoolsAuth({
@@ -350,47 +352,47 @@ export class CommercetoolsAuth {
   }
 
   /**
-   * Make a request using Axios. This method primarily exists as a convenience
-   * for integration testing, so that we don't need to mock the axios package.
+   * Make a request using `fetch`. If `fetch` throws an error then we convert
+   * the error in to a new error with as many request/response details as possible.
+   *
+   * We also consider any status code equal to or above 400 to be an error.
    */
   private async fetch(url: string, options: RequestInit) {
     let response
+
     try {
-      response = await fetch(url, options)
+      response = await this.config.fetch(url, options)
     } catch (e) {
-      throw new CommercetoolsAuthError('Error in call to `fetch`', {
-        request: {
-          url,
-          options
-        },
-        response: {
-          error: e
-        }
-      })
+      await this.throwResponseError(url, options, response, e)
     }
-    if (response.status >= 300) {
-      let bodyJson
-      let bodyText
-      try {
-        bodyText = await response.text()
-      } catch (e) {}
-      try {
-        bodyJson = await response.json()
-      } catch (e) {}
-      throw new CommercetoolsAuthError(`Response error POSTing to ${url}`, {
-        request: {
-          url,
-          options
-        },
-        response: {
-          status: response.status,
-          headers: response.headers,
-          bodyText,
-          bodyJson
-        }
-      })
+
+    if (response.status >= 400) {
+      await this.throwResponseError(url, options, response)
     }
+
     return response.json()
+  }
+
+  async throwResponseError(url: string, options: RequestInit, response: Response, error?: Error) {
+    let bodyJson
+    let bodyText
+    try {
+      bodyText = await response.text()
+      bodyJson = await response.json()
+    } catch (e) {}
+    throw new CommercetoolsAuthError(`Response error POSTing to ${url}`, {
+      request: {
+        url,
+        options
+      },
+      response: {
+        status: response.status,
+        headers: response.headers,
+        bodyText,
+        bodyJson,
+        error
+      }
+    })
   }
 
   /**
@@ -405,10 +407,7 @@ export class CommercetoolsAuth {
    * Take an array of scope strings and form them in to a string
    * that is appropriate for the `scope` parameter in requests to commercetools.
    */
-  private scopesToRequestString(scopes?: string[]) {
-    if (!scopes) {
-      return ''
-    }
+  private scopesToRequestString(scopes: string[]) {
     return scopes.map((scope) => `${scope}:${this.config.projectKey}`).join(' ')
   }
 
