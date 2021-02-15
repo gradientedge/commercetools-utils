@@ -8,7 +8,7 @@ export interface CommercetoolsAuthConfig {
   clientId: string
   clientSecret: string
   region: Region
-  clientScopes?: string[]
+  clientScopes: string[]
   customerScopes?: string[]
   timeout?: number
   refreshIfWithinSecs?: number

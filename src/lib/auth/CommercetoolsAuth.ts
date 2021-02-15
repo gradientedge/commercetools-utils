@@ -1,4 +1,4 @@
-import axios, { AxiosRequestConfig } from 'axios'
+import fetch, { RequestInit } from 'node-fetch'
 import {
   AccessToken,
   AnonymousTokenOptions,
@@ -34,7 +34,7 @@ const configDefaults = {
 }
 
 interface Config extends CommercetoolsAuthConfig {
-  clientScopes?: string[]
+  clientScopes: string[]
   customerScopes?: string[]
   refreshIfWithinSecs: number
   timeout: number
@@ -100,6 +100,10 @@ export class CommercetoolsAuth {
   constructor(config: CommercetoolsAuthConfig) {
     this.config = { ...configDefaults, ...config }
     this.endpoints = REGION_URLS[this.config.region]
+
+    if (!this.config.clientScopes.length) {
+      throw new CommercetoolsAuthError('`config.clientScopes` must contain at least one scope')
+    }
   }
 
   /**
@@ -323,24 +327,23 @@ export class CommercetoolsAuth {
    * Note that for all calls to the commercetools auth server, we send a
    * POST request with a 'Basic' Authorization header.
    */
-  private async post(path: string, data: any): Promise<CommercetoolsAccessTokenResponse> {
-    const options: AxiosRequestConfig = {
+  private async post(path: string, body: any): Promise<CommercetoolsAccessTokenResponse> {
+    let encodedBody = body
+    if (typeof encodedBody === 'object') {
+      encodedBody = new URLSearchParams(body).toString()
+    }
+    const options: RequestInit = {
       method: 'post',
-      data,
+      body: encodedBody,
       headers: {
         Authorization: `Basic ${this.getBasicAuthToken()}`,
         'Content-Type': 'application/x-www-form-urlencoded'
       }
     }
 
-    if (typeof options.data === 'object') {
-      options.data = new URLSearchParams(options.data).toString()
-    }
-
     const url = `${this.endpoints.auth}/oauth${path}`
     try {
-      const response = await this.fetch(url, options)
-      return response.data
+      return await this.fetch(url, options)
     } catch (e) {
       throw new CommercetoolsAuthError(e)
     }
@@ -350,8 +353,44 @@ export class CommercetoolsAuth {
    * Make a request using Axios. This method primarily exists as a convenience
    * for integration testing, so that we don't need to mock the axios package.
    */
-  private fetch(url: string, options: AxiosRequestConfig) {
-    return axios(url, options)
+  private async fetch(url: string, options: RequestInit) {
+    let response
+    try {
+      response = await fetch(url, options)
+    } catch (e) {
+      throw new CommercetoolsAuthError('Error in call to `fetch`', {
+        request: {
+          url,
+          options
+        },
+        response: {
+          error: e
+        }
+      })
+    }
+    if (response.status >= 300) {
+      let bodyJson
+      let bodyText
+      try {
+        bodyText = await response.text()
+      } catch (e) {}
+      try {
+        bodyJson = await response.json()
+      } catch (e) {}
+      throw new CommercetoolsAuthError(`Response error POSTing to ${url}`, {
+        request: {
+          url,
+          options
+        },
+        response: {
+          status: response.status,
+          headers: response.headers,
+          bodyText,
+          bodyJson
+        }
+      })
+    }
+    return response.json()
   }
 
   /**
@@ -405,7 +444,7 @@ export class CommercetoolsAuth {
       accessToken: data.access_token,
       expiresIn: data.expires_in,
       expiresAt: new Date(new Date().getTime() + 1000 * data.expires_in),
-      scopes: this.scopesStringToArray(data.scope)
+      scopes: this.scopesStringToArray(data.scope || '')
     }
   }
 }
