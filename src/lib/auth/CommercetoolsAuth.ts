@@ -1,17 +1,18 @@
 import axios, { AxiosRequestConfig } from 'axios'
 import {
-  AccessToken,
   AnonymousTokenOptions,
-  CommercetoolsAuthConfig,
   CommercetoolsAccessTokenResponse,
-  RegionEndpoints,
+  CommercetoolsAuthConfig,
+  CommercetoolsRefreshTokenResponse,
   GrantType,
   LoginOptions,
-  RefreshedAccessToken,
-  CommercetoolsRefreshTokenResponse
+  RegionEndpoints
 } from './types'
 import { CommercetoolsAuthError } from './CommercetoolsAuthError'
-import { INVALID_SCOPES, REGION_URLS } from './constants'
+import { scopeArrayToRequestString } from './scopes'
+import { Grant } from './Grant'
+import { REGION_URLS } from './constants'
+import { basic } from './utils'
 
 /**
  * CommercetoolsBaseAuth
@@ -56,9 +57,9 @@ interface Config extends CommercetoolsAuthConfig {
  *     region: Region.EUROPE_WEST
  *   })
  *
- *   const accessToken = await auth.getClientAccessToken()
+ *   const grant = await auth.getClientGrant()
  *
- *   console.log('Access token:', accessToken)
+ *   console.log('Grant:', grant)
  * }
  *
  * example()
@@ -81,7 +82,7 @@ export class CommercetoolsAuth {
   /**
    * This holds the client access token, once one has been generated.
    */
-  private clientAccessToken?: AccessToken
+  private grant?: Grant
 
   /**
    * Whenever we either refresh the client access token, or request a new one,
@@ -110,29 +111,24 @@ export class CommercetoolsAuth {
    * we store it locally and then return that cached version up until it needs
    * to be renewed.
    */
-  public async getClientAccessToken(): Promise<AccessToken> {
-    const timeInSeconds = new Date().getTime() / 1000
-
+  public async getClientGrant(): Promise<Grant> {
     await this.tokenPromise
 
-    if (this.clientAccessToken) {
-      if (
-        timeInSeconds + this.config.refreshIfWithinSecs <
-        this.clientAccessToken.expiresAt.getTime()
-      ) {
-        return this.clientAccessToken
+    if (this.grant) {
+      if (!this.grant.expiresWithin(this.config.refreshIfWithinSecs)) {
+        return this.grant
       }
 
       try {
-        this.tokenPromise = this.refreshClientAccessToken()
+        this.tokenPromise = this.refreshClientGrant()
         await this.tokenPromise
-        return this.clientAccessToken
+        return this.grant
       } catch (e) {
         // Log that there was an error refreshing
       }
     }
 
-    this.tokenPromise = this.getNewClientAccessToken()
+    this.tokenPromise = this.getNewClientGrant()
     return this.tokenPromise
   }
 
@@ -141,30 +137,28 @@ export class CommercetoolsAuth {
    *
    * This method should only be called when we specifically want to force
    * the fetching of a new token using our current refresh token, in other
-   * words, when the {@link CommercetoolsAuth.getClientAccessToken} method
+   * words, when the {@link CommercetoolsAuth.getClientGrant} method
    * determines that the current token is either expired or very close to
    * expiry.
    */
-  private async refreshClientAccessToken(): Promise<RefreshedAccessToken> {
-    if (!this.clientAccessToken) {
+  private async refreshClientGrant(): Promise<Grant> {
+    if (!this.grant) {
       throw new Error('No current access token to refresh')
     }
 
-    const data = await this.refreshAccessToken(this.clientAccessToken.refreshToken)
+    const data = await this.refreshGrant(this.grant.refreshToken)
 
-    this.clientAccessToken = {
-      ...this.clientAccessToken,
-      ...data
-    }
+    this.grant.refresh(data)
 
-    return this.clientAccessToken
+    return this.grant
   }
 
   /**
    * Refresh the customer access token given a refresh token
    */
-  public async refreshCustomerAccessToken(refreshToken: string): Promise<RefreshedAccessToken> {
-    return this.refreshAccessToken(refreshToken)
+  public async refreshCustomerGrant(refreshToken: string): Promise<Grant> {
+    const data = await this.refreshGrant(refreshToken)
+    return new Grant({ ...data, refresh_token: refreshToken })
   }
 
   /**
@@ -173,13 +167,11 @@ export class CommercetoolsAuth {
    * can be used to refresh either a client access token or a customer
    * access token.
    */
-  private async refreshAccessToken(refreshToken: string): Promise<RefreshedAccessToken> {
-    const data = await this.post('/oauth/token', {
+  private async refreshGrant(refreshToken: string): Promise<CommercetoolsRefreshTokenResponse> {
+    return await this.post('/oauth/token', {
       grant_type: GrantType.REFRESH_TOKEN,
       refresh_token: refreshToken
     })
-
-    return this.responseToAccessToken(data)
   }
 
   /**
@@ -188,18 +180,16 @@ export class CommercetoolsAuth {
    * Requests a new token from the remote authorisation server.
    * Does not check on the expiry time of the existing token,
    * and does not attempt to use any existing refresh token.
-   *
-   * @returns {Promise<{expiresIn: null, accessToken: string, refreshToken: (string|null)}>}
    */
-  private async getNewClientAccessToken(): Promise<AccessToken> {
+  private async getNewClientGrant(): Promise<Grant> {
     const data = await this.post('/oauth/token', {
       grant_type: GrantType.CLIENT_CREDENTIALS,
-      scope: this.scopesToRequestString(this.config.clientScopes)
+      scope: scopeArrayToRequestString(this.config.clientScopes, this.config.projectKey)
     })
 
-    this.clientAccessToken = this.responseToAccessToken(data)
+    this.grant = new Grant(data)
 
-    return this.clientAccessToken
+    return this.grant
   }
 
   /**
@@ -234,12 +224,12 @@ export class CommercetoolsAuth {
    * example()
    * ```
    *
-   * Note that there is no need to call {@link getClientAccessToken} in order to
+   * Note that there is no need to call {@link getClientGrant} in order to
    * generate a client access token. The class internally requests one if it
    * doesn't have a cached local token.
    */
-  public async login(options: LoginOptions): Promise<AccessToken> {
-    await this.getClientAccessToken()
+  public async login(options: LoginOptions): Promise<Grant> {
+    await this.getClientGrant()
     const scopes = options.scopes || this.config.customerScopes
 
     if (!scopes) {
@@ -254,10 +244,10 @@ export class CommercetoolsAuth {
       username: options.username,
       password: options.password,
       grant_type: GrantType.PASSWORD,
-      scope: this.scopesToRequestString(scopes)
+      scope: scopeArrayToRequestString(scopes, this.config.projectKey)
     })
 
-    return this.responseToAccessToken(data)
+    return new Grant(data)
   }
 
   /**
@@ -289,8 +279,8 @@ export class CommercetoolsAuth {
    * example()
    * ```
    */
-  public async getAnonymousToken(options?: AnonymousTokenOptions): Promise<AccessToken> {
-    await this.getClientAccessToken()
+  public async getAnonymousGrant(options?: AnonymousTokenOptions): Promise<Grant> {
+    await this.getClientGrant()
 
     const opts = {
       scopes: this.config.customerScopes,
@@ -304,7 +294,7 @@ export class CommercetoolsAuth {
       anonymous_id: opts.anonymousId
     })
 
-    return this.responseToAccessToken(data)
+    return new Grant(data)
   }
 
   /**
@@ -318,7 +308,7 @@ export class CommercetoolsAuth {
       method: 'post',
       data,
       headers: {
-        Authorization: `Basic ${this.getBasicAuthToken()}`,
+        Authorization: `Basic ${basic(this.config.clientId, this.config.clientSecret)}`,
         'Content-Type': 'application/x-www-form-urlencoded'
       }
     }
@@ -341,60 +331,5 @@ export class CommercetoolsAuth {
    */
   private fetch(url: string, options: AxiosRequestConfig) {
     return axios(url, options)
-  }
-
-  /**
-   * Generate a basic auth token for use in the Authorization HTTP header:
-   * https://tools.ietf.org/html/rfc7617#section-2
-   */
-  private getBasicAuthToken(): string {
-    return Buffer.from(`${this.config.clientId}:${this.config.clientSecret}`).toString('base64')
-  }
-
-  /**
-   * Take an array of scope strings and form them in to a string
-   * that is appropriate for the `scope` parameter in requests to commercetools.
-   */
-  private scopesToRequestString(scopes?: string[]) {
-    if (!scopes) {
-      return ''
-    }
-    return scopes.map((scope) => `${scope}:${this.config.projectKey}`).join(' ')
-  }
-
-  /**
-   * Take the scopes string returned by commercetools and parse it in to an
-   * array of scope strings.
-   */
-  private scopesStringToArray(scopes: string) {
-    return scopes
-      .split(' ')
-      .map((scope) => scope.split(':')[0])
-      .filter((scope) => !INVALID_SCOPES.includes(scope))
-  }
-
-  /**
-   * Takes a commercetools response and converts it to an {@link AccessToken}
-   * This should be used to convert to an access token when the `refresh_token`
-   * property is expected to be present in the response.
-   */
-  private responseToAccessToken(data: CommercetoolsAccessTokenResponse): AccessToken {
-    return {
-      refreshToken: data.refresh_token,
-      ...this.responseToRefreshToken(data)
-    }
-  }
-
-  /**
-   * Takes a commercetools response and converts it to an {@link RefreshedAccessToken}
-   * The response is NOT expected to have a `refresh_token` property within it.
-   */
-  private responseToRefreshToken(data: CommercetoolsRefreshTokenResponse): RefreshedAccessToken {
-    return {
-      accessToken: data.access_token,
-      expiresIn: data.expires_in,
-      expiresAt: new Date(new Date().getTime() + 1000 * data.expires_in),
-      scopes: this.scopesStringToArray(data.scope)
-    }
   }
 }
