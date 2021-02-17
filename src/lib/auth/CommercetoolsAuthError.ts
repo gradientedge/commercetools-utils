@@ -1,29 +1,19 @@
-import { AxiosError } from 'axios'
-
 export class CommercetoolsAuthError extends Error {
-  // Axios related values
-  private errorCode?: any
+  private readonly data?: any
 
-  // Commercetools response data
-  private responseStatusCode?: number
-  private responseStatusText?: string
-  private responseData?: any
+  constructor(message: string, data?: any) {
+    super(message)
+    this.data = data
+  }
 
-  constructor(e: Error | AxiosError | string) {
-    if (typeof e === 'string') {
-      super(e)
-    } else {
-      super(e.message)
-      this.name = e.name
-      this.stack = e.stack
+  toJSON() {
+    return JSON.stringify({
+      message: this.message,
+      data: this.data
+    })
+  }
 
-      if (Object.prototype.hasOwnProperty.call(e, 'isAxiosError')) {
-        const error = e as AxiosError
-        this.errorCode = error.code
-        this.responseData = error.response?.data
-        this.responseStatusCode = error.response?.status
-        this.responseStatusText = error.response?.statusText
-      }
-    }
+  toString() {
+    return `${this.message}: ${this.toJSON()}`
   }
 }

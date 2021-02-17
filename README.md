@@ -1,2 +1,6 @@
-# GradientEdge commercetools SDK
+# Gradient Edge commercetools SDK
+
+
+
+
 

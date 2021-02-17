@@ -1,4 +1,4 @@
-import axios, { AxiosRequestConfig } from 'axios'
+import fetch, { RequestInit, Response } from 'node-fetch'
 import {
   AnonymousTokenOptions,
   CommercetoolsAccessTokenResponse,
@@ -31,23 +31,25 @@ import { basic } from './utils'
 
 const configDefaults = {
   refreshIfWithinSecs: 1800,
-  timeout: 5
+  timeout: 5,
+  fetch
 }
 
 interface Config extends CommercetoolsAuthConfig {
-  clientScopes?: string[]
+  clientScopes: string[]
   customerScopes?: string[]
   refreshIfWithinSecs: number
   timeout: number
+  fetch: any
 }
 
 /**
- * Provides an easy to use API for obtaining an access token for use with the commercetools HTTP API:
- * https://docs.commercetools.com/api/
+ * Provides an easy to use set of methods for communicating with the commercetools
+ * HTTP Authorization API: https://docs.commercetools.com/api/authorization
  *
  * To create an instance of the class and get an access token:
  * ```typescript
- * import { Region, CommercetoolsAuth } from '@gradientedge/commercetools-sdk'
+ * import { Region, CommercetoolsAuth } from '@gradientedge/commercetools-utils'
  *
  * async function example() {
  *   const auth = new CommercetoolsAuth({
@@ -66,7 +68,7 @@ interface Config extends CommercetoolsAuthConfig {
  * ```
  *
  * An instance of this class is designed to be stored as a global, long-lived
- * object. If you are using a serverless environment such as AWS Lambda or an
+ * object. If you're using a serverless environment such as AWS Lambda or an
  * Azure Function App, you can safely instantiate this class outside of your
  * function handler and have it exist for as long the serverless environment
  * allows.
@@ -101,6 +103,10 @@ export class CommercetoolsAuth {
   constructor(config: CommercetoolsAuthConfig) {
     this.config = { ...configDefaults, ...config }
     this.endpoints = REGION_URLS[this.config.region]
+
+    if (!this.config.clientScopes.length) {
+      throw new CommercetoolsAuthError('`config.clientScopes` must contain at least one scope')
+    }
   }
 
   /**
@@ -168,7 +174,7 @@ export class CommercetoolsAuth {
    * access token.
    */
   private async refreshGrant(refreshToken: string): Promise<CommercetoolsRefreshTokenResponse> {
-    return await this.post('/oauth/token', {
+    return await this.post('/token', {
       grant_type: GrantType.REFRESH_TOKEN,
       refresh_token: refreshToken
     })
@@ -182,7 +188,7 @@ export class CommercetoolsAuth {
    * and does not attempt to use any existing refresh token.
    */
   private async getNewClientGrant(): Promise<Grant> {
-    const data = await this.post('/oauth/token', {
+    const data = await this.post('/token', {
       grant_type: GrantType.CLIENT_CREDENTIALS,
       scope: scopeArrayToRequestString(this.config.clientScopes, this.config.projectKey)
     })
@@ -203,7 +209,7 @@ export class CommercetoolsAuth {
    *
    * Example login code:
    * ```typescript
-   * import { Region, CommercetoolsAuth } from '@gradientedge/commercetools-sdk'
+   * import { Region, CommercetoolsAuth } from '@gradientedge/commercetools-utils'
    *
    * async function example() {
    *   const auth = new CommercetoolsAuth({
@@ -240,7 +246,7 @@ export class CommercetoolsAuth {
       )
     }
 
-    const data = await this.post('/customers/token', {
+    const data = await this.post(`/${this.config.projectKey}/customers/token`, {
       username: options.username,
       password: options.password,
       grant_type: GrantType.PASSWORD,
@@ -261,7 +267,7 @@ export class CommercetoolsAuth {
    *
    * Example code to generate an anonymous customer token:
    * ```typescript
-   * import { Region, CommercetoolsAuth } from '@gradientedge/commercetools-sdk'
+   * import { Region, CommercetoolsAuth } from '@gradientedge/commercetools-utils'
    *
    * async function example() {
    *   const auth = new CommercetoolsAuth({
@@ -282,17 +288,27 @@ export class CommercetoolsAuth {
   public async getAnonymousGrant(options?: AnonymousTokenOptions): Promise<Grant> {
     await this.getClientGrant()
 
-    const opts = {
-      scopes: this.config.customerScopes,
-      anonymousId: undefined,
-      ...options
+    const scopes = options?.scopes || this.config.customerScopes
+    const anonymousId = options?.anonymousId
+
+    if (!scopes) {
+      throw new CommercetoolsAuthError(
+        'Customer scopes must be set on either the `options` ' +
+        'parameter of this `login` method, or on the `customerScopes` ' +
+        'property of the `CommercetoolsAuth` constructor'
+      )
     }
 
-    const data = await this.post(`/${this.config.projectKey}/anonymous/token`, {
+    const postOptions: Record<string, any> = {
       grant_type: GrantType.CLIENT_CREDENTIALS,
-      scope: opts.scopes,
-      anonymous_id: opts.anonymousId
-    })
+      scope: this.scopesToRequestString(scopes)
+    }
+
+    if (anonymousId) {
+      postOptions.anonymous_id = anonymousId
+    }
+
+    const data = await this.post(`/${this.config.projectKey}/anonymous/token`, postOptions)
 
     return new Grant(data)
   }
@@ -303,33 +319,69 @@ export class CommercetoolsAuth {
    * Note that for all calls to the commercetools auth server, we send a
    * POST request with a 'Basic' Authorization header.
    */
-  private async post(path: string, data: any): Promise<CommercetoolsAccessTokenResponse> {
-    const options: AxiosRequestConfig = {
+  private async post(path: string, body: any): Promise<CommercetoolsAccessTokenResponse> {
+    let encodedBody = body
+    if (typeof encodedBody === 'object') {
+      encodedBody = new URLSearchParams(body).toString()
+    }
+    const options: RequestInit = {
       method: 'post',
-      data,
+      body: encodedBody,
       headers: {
         Authorization: `Basic ${basic(this.config.clientId, this.config.clientSecret)}`,
         'Content-Type': 'application/x-www-form-urlencoded'
       }
     }
 
-    if (typeof options.data === 'object') {
-      options.data = new URLSearchParams(options.data).toString()
-    }
-
+    const url = `${this.endpoints.auth}/oauth${path}`
     try {
-      const response = await this.fetch(this.endpoints.auth + path, options)
-      return response.data
+      return await this.fetch(url, options)
     } catch (e) {
       throw new CommercetoolsAuthError(e)
     }
   }
 
   /**
-   * Make a request using Axios. This method primarily exists as a convenience
-   * for integration testing, so that we don't need to mock the axios package.
+   * Make a request using `fetch`. If `fetch` throws an error then we convert
+   * the error in to a new error with as many request/response details as possible.
+   *
+   * We also consider any status code equal to or above 400 to be an error.
    */
-  private fetch(url: string, options: AxiosRequestConfig) {
-    return axios(url, options)
+  private async fetch(url: string, options: RequestInit) {
+    let response
+
+    try {
+      response = await this.config.fetch(url, options)
+    } catch (e) {
+      await this.throwResponseError(url, options, response, e)
+    }
+
+    if (response.status >= 400) {
+      await this.throwResponseError(url, options, response)
+    }
+
+    return response.json()
+  }
+
+  async throwResponseError(url: string, options: RequestInit, response: Response, error?: Error) {
+    let bodyJson
+    let bodyText
+    try {
+      bodyText = await response.text()
+      bodyJson = await response.json()
+    } catch (e) {}
+    throw new CommercetoolsAuthError(`Response error POSTing to ${url}`, {
+      request: {
+        url,
+        options
+      },
+      response: {
+        status: response.status,
+        headers: response.headers,
+        bodyText,
+        bodyJson,
+        error
+      }
+    })
   }
 }
