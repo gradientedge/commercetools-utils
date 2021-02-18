@@ -1,7 +1,7 @@
 import { CommercetoolsAccessTokenResponse, CommercetoolsRefreshTokenResponse } from './types'
 import { scopeRequestStringToArray } from './scopes'
 
-export class Grant {
+export class CommercetoolsGrant {
   public accessToken: string
   public refreshToken: string = ''
   public expiresIn: number
@@ -20,13 +20,18 @@ export class Grant {
   }
 
   public expiresWithin(refreshIfWithinSecs: number) {
-    const cutoff = new Date().getTime() - refreshIfWithinSecs * 1000
-    return this.expiresAt.getTime() > cutoff
+    const cutoff = new Date().getTime() + refreshIfWithinSecs * 1000
+    return this.expiresAt.getTime() < cutoff
   }
 
   getRefreshToken() {
     return this.refreshToken
   }
 
-  refresh(data: CommercetoolsRefreshTokenResponse) {}
+  refresh(data: CommercetoolsRefreshTokenResponse) {
+    this.accessToken = data.access_token
+    this.expiresIn = data.expires_in
+    this.expiresAt = new Date(new Date().getTime() + 1000 * data.expires_in)
+    this.scopes = scopeRequestStringToArray(data.scope)
+  }
 }

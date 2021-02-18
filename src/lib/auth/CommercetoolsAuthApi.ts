@@ -2,6 +2,7 @@ import fetch, { RequestInit, Response } from 'node-fetch'
 import {
   AnonymousTokenOptions,
   CommercetoolsAccessTokenResponse,
+  CommercetoolsAuthApiConfig,
   CommercetoolsAuthConfig,
   CommercetoolsRefreshTokenResponse,
   GrantType,
@@ -13,7 +14,6 @@ import { CommercetoolsGrant } from './CommercetoolsGrant'
 import { scopeArrayToRequestString } from './scopes'
 import { REGION_URLS } from './constants'
 import { basic } from './utils'
-import { CommercetoolsAuthApi } from './CommercetoolsAuthApi'
 
 /**
  * CommercetoolsBaseAuth
@@ -74,18 +74,13 @@ interface Config extends CommercetoolsAuthConfig {
  * function handler and have it exist for as long the serverless environment
  * allows.
  */
-export class CommercetoolsAuth {
+export class CommercetoolsAuthApi {
   /**
    * The internal configuration. This is a combination of the `CommercetoolsAuthConfig`
    * type passed in to the constructor and the default values specified in the
    * `configDefaults` object.
    */
   private readonly config: Config
-
-  /**
-   * This holds the client access token, once one has been generated.
-   */
-  private grant?: CommercetoolsGrant
 
   /**
    * Whenever we either refresh the client access token, or request a new one,
@@ -95,11 +90,15 @@ export class CommercetoolsAuth {
    * before they can start to be processed.
    */
   private tokenPromise: Promise<any> = Promise.resolve()
-  private api: CommercetoolsAuthApi
 
-  constructor(config: CommercetoolsAuthConfig) {
+  /**
+   * The Auth and API endpoints driven by the user's setting of {@link CommercetoolsAuthConfig.region}
+   */
+  private endpoints: RegionEndpoints
+
+  constructor(config: CommercetoolsAuthApiConfig) {
     this.config = { ...configDefaults, ...config }
-    this.api = new CommercetoolsAuthApi(config)
+    this.endpoints = REGION_URLS[this.config.region]
 
     if (!this.config.clientScopes.length) {
       throw new CommercetoolsAuthError('`config.clientScopes` must contain at least one scope')
@@ -107,43 +106,30 @@ export class CommercetoolsAuth {
   }
 
   /**
-   * Get a client access token
-   *
-   * If we don't already have a client access token stored locally, then
-   * we make a call to commercetools to generate one. Once we have a token,
-   * we store it locally and then return that cached version up until it needs
-   * to be renewed.
+   * Refresh an access token given a refresh token.
+   * This method must be passed a refresh token parameter, and therefore
+   * can be used to refresh either a client access token or a customer
+   * access token.
    */
-  public async getClientGrant(): Promise<CommercetoolsGrant> {
-    await this.tokenPromise
-
-    if (this.grant) {
-      if (!this.grant.expiresWithin(this.config.refreshIfWithinSecs)) {
-        return this.grant
-      }
-
-      try {
-        const data = await this.api.refreshGrant(this.grant.refreshToken)
-        this.grant.refresh(data)
-        return this.grant
-      } catch (e) {
-        // Log that there was an error refreshing
-      }
-    }
-
-    this.tokenPromise = this.api.getClientGrant()
-    await this.tokenPromise
-    return this.grant!
+  public async refreshGrant(refreshToken: string): Promise<CommercetoolsRefreshTokenResponse> {
+    return await this.post('/token', {
+      grant_type: GrantType.REFRESH_TOKEN,
+      refresh_token: refreshToken
+    })
   }
 
   /**
-   * Refresh the customer access token given a refresh token
+   * Get a new token
+   *
+   * Requests a new token from the remote authorisation server.
+   * Does not check on the expiry time of the existing token,
+   * and does not attempt to use any existing refresh token.
    */
-  public async refreshCustomerGrant(refreshToken: string): Promise<CommercetoolsGrant> {
-    await this.getClientGrant()
-
-    const data = await this.api.refreshGrant(refreshToken)
-    return new CommercetoolsGrant({ ...data, refresh_token: refreshToken })
+  public async getClientGrant(): Promise<CommercetoolsAccessTokenResponse> {
+    return this.post('/token', {
+      grant_type: GrantType.CLIENT_CREDENTIALS,
+      scope: scopeArrayToRequestString(this.config.clientScopes, this.config.projectKey)
+    })
   }
 
   /**
@@ -182,26 +168,13 @@ export class CommercetoolsAuth {
    * generate a client access token. The class internally requests one if it
    * doesn't have a cached local token.
    */
-  public async login(options: LoginOptions): Promise<CommercetoolsGrant> {
-    await this.getClientGrant()
-
-    const scopes = options.scopes || this.config.customerScopes
-
-    if (!scopes) {
-      throw new CommercetoolsAuthError(
-        'Customer scopes must be set on either the `options` ' +
-          'parameter of this `login` method, or on the `customerScopes` ' +
-          'property of the `CommercetoolsAuth` constructor'
-      )
-    }
-
-    const data = await this.api.login({
+  public async login(options: LoginOptions): Promise<CommercetoolsAccessTokenResponse> {
+    return this.post(`/${this.config.projectKey}/customers/token`, {
       username: options.username,
       password: options.password,
-      scopes
+      grant_type: GrantType.PASSWORD,
+      scope: scopeArrayToRequestString(options.scopes, this.config.projectKey)
     })
-
-    return new CommercetoolsGrant(data)
   }
 
   /**
@@ -233,25 +206,97 @@ export class CommercetoolsAuth {
    * example()
    * ```
    */
-  public async getAnonymousGrant(options?: AnonymousTokenOptions): Promise<CommercetoolsGrant> {
-    await this.getClientGrant()
-
-    const scopes = options?.scopes || this.config.customerScopes
+  public async getAnonymousGrant(
+    options?: AnonymousTokenOptions
+  ): Promise<CommercetoolsAccessTokenResponse> {
     const anonymousId = options?.anonymousId
 
-    if (!scopes) {
-      throw new CommercetoolsAuthError(
-        'Customer scopes must be set on either the `options` ' +
-          'parameter of this `login` method, or on the `customerScopes` ' +
-          'property of the `CommercetoolsAuth` constructor'
-      )
+    const postOptions: Record<string, any> = {
+      grant_type: GrantType.CLIENT_CREDENTIALS,
+      scope: scopeArrayToRequestString(options?.scopes, this.config.projectKey)
     }
 
-    const data = await this.api.getAnonymousGrant({
-      scopes,
-      anonymousId
-    })
+    if (anonymousId) {
+      postOptions.anonymous_id = anonymousId
+    }
 
-    return new CommercetoolsGrant(data)
+    return this.post(`/${this.config.projectKey}/anonymous/token`, postOptions)
+  }
+
+  /**
+   * Construct and send a request to the commercetools auth endpoint.
+   *
+   * Note that for all calls to the commercetools auth server, we send a
+   * POST request with a 'Basic' Authorization header.
+   */
+  private async post(path: string, body: any): Promise<CommercetoolsAccessTokenResponse> {
+    let encodedBody = body
+    if (typeof encodedBody === 'object') {
+      encodedBody = new URLSearchParams(body).toString()
+    }
+    const options: RequestInit = {
+      method: 'post',
+      body: encodedBody,
+      headers: {
+        Authorization: `Basic ${basic(this.config.clientId, this.config.clientSecret)}`,
+        'Content-Type': 'application/x-www-form-urlencoded'
+      }
+    }
+
+    const url = `${this.endpoints.auth}/oauth${path}`
+    try {
+      return await this.fetch(url, options)
+    } catch (e) {
+      throw new CommercetoolsAuthError(e)
+    }
+  }
+
+  /**
+   * Make a request using `fetch`. If `fetch` throws an error then we convert
+   * the error in to a new error with as many request/response details as possible.
+   *
+   * We also consider any status code equal to or above 400 to be an error.
+   */
+  private async fetch(url: string, options: RequestInit) {
+    let response
+
+    try {
+      response = await this.config.fetch(url, options)
+    } catch (e) {
+      await this.throwResponseError(url, options, response, e)
+    }
+
+    if (response.status >= 400) {
+      await this.throwResponseError(url, options, response)
+    }
+
+    return response.json()
+  }
+
+  private async throwResponseError(
+    url: string,
+    options: RequestInit,
+    response: Response,
+    error?: Error
+  ) {
+    let bodyJson
+    let bodyText
+    try {
+      bodyText = await response.text()
+      bodyJson = await response.json()
+    } catch (e) {}
+    throw new CommercetoolsAuthError(`Response error POSTing to ${url}`, {
+      request: {
+        url,
+        options
+      },
+      response: {
+        status: response.status,
+        headers: response.headers,
+        bodyText,
+        bodyJson,
+        error
+      }
+    })
   }
 }

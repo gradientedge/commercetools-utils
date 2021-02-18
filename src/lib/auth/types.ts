@@ -3,7 +3,11 @@
  *
  *
  */
-export interface CommercetoolsAuthConfig {
+export interface CommercetoolsAuthConfig extends CommercetoolsAuthApiConfig {
+  refreshIfWithinSecs?: number
+}
+
+export interface CommercetoolsAuthApiConfig {
   projectKey: string
   clientId: string
   clientSecret: string
@@ -11,7 +15,6 @@ export interface CommercetoolsAuthConfig {
   clientScopes: string[]
   customerScopes?: string[]
   timeout?: number
-  refreshIfWithinSecs?: number
   logger?: {
     debug: (...args: any) => void
     info: (...args: any) => void
