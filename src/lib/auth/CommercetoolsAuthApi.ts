@@ -1,7 +1,6 @@
-import fetch, { RequestInit, Response } from 'node-fetch'
 import {
-  CommercetoolsGrantResponse,
   CommercetoolsAuthApiConfig,
+  CommercetoolsGrantResponse,
   CommercetoolsRefreshGrantResponse,
   GrantType
 } from './types'
@@ -9,18 +8,25 @@ import { CommercetoolsAuthError } from './CommercetoolsAuthError'
 import { scopeArrayToRequestString } from './scopes'
 import { REGION_URLS } from './constants'
 import { basic } from './utils'
-import { Region, RegionEndpoints } from '../types'
+import { RegionEndpoints } from '../types'
+import axios, { Method } from 'axios'
 
-const configDefaults = {
-  timeout: 5
+/**
+ * This interface used for holding the internal config of {@see CommercetoolsAuthApi}.
+ * It's only purpose currently is to make the {@see Config.timeout} property mandatory
+ * after extending {@see CommercetoolsAuthApiConfig} where that property is optional.
+ * A default value for {@see Config.timeout} is defined on {@see configDefaults}.
+ */
+interface Config extends CommercetoolsAuthApiConfig {
+  timeout: number
 }
 
-interface Config {
-  clientId: string
-  clientSecret: string
-  projectKey: string
-  region: Region
-  timeout: number
+/**
+ * Default values for `timeout`, required by the {@see Config}
+ * interface used in {@see CommercetoolsAuthApi.constructor}.
+ */
+const configDefaults = {
+  timeout: 5
 }
 
 /**
@@ -37,6 +43,7 @@ export class CommercetoolsAuthApi {
 
   /**
    * The Auth and API endpoints driven by the user's setting of {@link CommercetoolsAuthApiConfig.region}
+   * https://docs.commercetools.com/api/general-concepts#regions
    */
   private endpoints: RegionEndpoints
 
@@ -46,7 +53,8 @@ export class CommercetoolsAuthApi {
   }
 
   /**
-   * Get a new token
+   * Get a new client grant:
+   * https://docs.commercetools.com/api/authorization#client-credentials-flow
    */
   public async getClientGrant(scopes: string[]): Promise<CommercetoolsGrantResponse> {
     return this.post('/token', {
@@ -56,7 +64,8 @@ export class CommercetoolsAuthApi {
   }
 
   /**
-   * Refresh an access token given a refresh token.
+   * Refresh a customer or client grant given a refresh token:
+   * https://docs.commercetools.com/api/authorization#refresh-token-flow
    */
   public async refreshGrant(refreshToken: string): Promise<CommercetoolsRefreshGrantResponse> {
     return await this.post('/token', {
@@ -66,7 +75,8 @@ export class CommercetoolsAuthApi {
   }
 
   /**
-   * Login the customer using the given options.
+   * Login the customer using the given options:
+   * https://docs.commercetools.com/api/authorization#password-flow
    */
   public async login(options: any): Promise<CommercetoolsGrantResponse> {
     return this.post(`/${this.config.projectKey}/customers/token`, {
@@ -78,7 +88,8 @@ export class CommercetoolsAuthApi {
   }
 
   /**
-   * Get an access token for an anonymous customer.
+   * Get a grant an anonymous customer:
+   * https://docs.commercetools.com/api/authorization#tokens-for-anonymous-sessions
    */
   public async getAnonymousGrant(options?: {
     anonymousId?: string
@@ -87,7 +98,7 @@ export class CommercetoolsAuthApi {
     const postOptions: Record<string, any> = {
       grant_type: GrantType.CLIENT_CREDENTIALS
     }
-    if (options?.scopes && options.scopes.length) {
+    if (options?.scopes?.length) {
       postOptions.scope = scopeArrayToRequestString(options.scopes, this.config.projectKey)
     }
     if (options?.anonymousId) {
@@ -99,52 +110,33 @@ export class CommercetoolsAuthApi {
   /**
    * Construct and send a request to the commercetools auth endpoint.
    */
-  public post(path: string, body: Record<string, any>): Promise<CommercetoolsGrantResponse> {
-    const url = `${this.endpoints.auth}/oauth${path}`
-    const options: RequestInit = {
-      method: 'post',
-      body: new URLSearchParams(body).toString(),
-      headers: {
-        Authorization: `Basic ${basic(this.config.clientId, this.config.clientSecret)}`,
-        'Content-Type': 'application/x-www-form-urlencoded'
-      }
+  public async post(path: string, body: Record<string, any>): Promise<CommercetoolsGrantResponse> {
+    const options = {
+      url: `${this.endpoints.auth}/oauth${path}`,
+      method: 'POST' as Method,
+      data: new URLSearchParams(body).toString()
     }
-    return this.fetch(url, options)
-  }
-
-  /**
-   * Make a request using `fetch`. If `fetch` throws an error then we convert
-   * the error in to a new error with as many request/response details as possible.
-   *
-   * We also consider any status code equal to or above 400 to be an error.
-   */
-  public async fetch(url: string, options: RequestInit) {
-    let response: Response | undefined
-
     try {
-      response = await fetch(url, options)
+      const response = await axios({
+        ...options,
+        headers: {
+          Authorization: `Basic ${basic(this.config.clientId, this.config.clientSecret)}`,
+          'Content-Type': 'application/x-www-form-urlencoded'
+        }
+      })
+      return response.data
     } catch (e) {
-      throw new CommercetoolsAuthError(`Exception making request to: ${url}`, {
-        url,
-        options,
-        error: e
-      })
-    }
-
-    if (response.status >= 400) {
-      let text: string
-      try {
-        text = await response.text()
-      } catch (e) {
-        text = ''
+      const error: any = {
+        message: e.message,
+        request: options
       }
-      throw new CommercetoolsAuthError(`Unexpected status code: ${response.status}`, {
-        url,
-        options,
-        responseText: text
-      })
+      if (e.isAxiosError) {
+        error.response = {
+          code: e.code,
+          data: e.response?.data
+        }
+      }
+      throw new CommercetoolsAuthError(`Error in request to: ${options.url}`, error)
     }
-
-    return await response.json()
   }
 }

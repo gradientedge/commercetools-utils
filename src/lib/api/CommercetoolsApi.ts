@@ -1,9 +1,16 @@
+import _ from 'lodash'
+import axios from 'axios'
 import { CommercetoolsApiConfig } from './types'
 import { CommercetoolsAuth } from '../auth/CommercetoolsAuth'
-import fetch, { RequestInit, Response } from 'node-fetch'
-import { CommercetoolsAuthError } from '../auth/CommercetoolsAuthError'
+import { CommercetoolsApiError } from './CommercetoolsApiError'
 import { REGION_URLS } from '../auth/constants'
 import { RegionEndpoints } from '../types'
+
+interface FetchOptions {
+  path: string
+  headers?: Record<string, string>
+  method: 'GET' | 'POST'
+}
 
 export class CommercetoolsApi {
   private auth: CommercetoolsAuth
@@ -16,53 +23,48 @@ export class CommercetoolsApi {
     this.endpoints = REGION_URLS[this.config.region]
   }
 
-  getProduct(id: string) {
-    return this.request(`/${this.config.projectKey}/products/${id}`)
-  }
-
-  async request(path: string, options?: any) {
-    const grant = await this.auth.getClientGrant()
-    return this.fetch(`${this.endpoints.api}${path}`, {
-      headers: {
-        Authorization: `Bearer ${grant.accessToken}`
-      }
+  /**
+   * Get an individual product by id:
+   * https://docs.commercetools.com/api/projects/products#get-product-by-id
+   */
+  getProductById(id: string): Promise<any> {
+    return this.request({
+      path: `/products/${id}`,
+      method: 'GET'
     })
   }
 
   /**
-   * Make a request using `fetch`. If `fetch` throws an error then we convert
-   * the error in to a new error with as many request/response details as possible.
-   *
-   * We also consider any status code equal to or above 400 to be an error.
+   * Make the request to the commercetools REST API.
    */
-  public async fetch(url: string, options: RequestInit) {
-    let response: Response | undefined
+  async request<T = any>(options: FetchOptions): Promise<T> {
+    const grant = await this.auth.getClientGrant()
+    const url = `${this.endpoints.api}/${this.config.projectKey}${options.path}`
+    const opts: any = { ...options }
+    opts.path && delete opts.path
 
-    console.log('URL', url)
     try {
-      response = await fetch(url, options)
+      const response = await axios({
+        ..._.omit(opts, 'path'),
+        url,
+        headers: {
+          Authorization: `Bearer ${grant.accessToken}`,
+          ...opts.headers
+        }
+      })
+      return response.data
     } catch (e) {
-      throw new CommercetoolsAuthError(`Exception making request to: ${url}`, {
-        url,
-        options,
-        error: e
-      })
-    }
-
-    if (response.status >= 400) {
-      let text: string
-      try {
-        text = await response.text()
-      } catch (e) {
-        text = ''
+      const error: any = {
+        message: e.message,
+        request: opts
       }
-      throw new CommercetoolsAuthError(`Unexpected status code: ${response.status}`, {
-        url,
-        options,
-        responseText: text
-      })
+      if (e.isAxiosError) {
+        error.response = {
+          code: e.code,
+          data: e.response?.data
+        }
+      }
+      throw new CommercetoolsApiError(`Error in request to: ${url}`, error)
     }
-
-    return await response.json()
   }
 }

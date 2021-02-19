@@ -174,7 +174,7 @@ describe('CommercetoolsAuthApi', () => {
           age: 13.75
         })
       ).rejects.toThrow(
-        new CommercetoolsAuthError('Unexpected status code: 500', {
+        new CommercetoolsAuthError('Error in request to: https://auth.us-east-2.aws.commercetools.com/oauth/test', {
           options: {
             body: 'name=Adrian&age=13.75',
             headers: {

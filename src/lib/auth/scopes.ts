@@ -4,7 +4,7 @@ import { INVALID_SCOPES } from './constants'
  * Take an array of scope strings and form them in to a string
  * that is appropriate for the `scope` parameter in requests to commercetools.
  */
-export function scopeArrayToRequestString(scopes: string[], projectKey: string) {
+export function scopeArrayToRequestString(scopes: string[], projectKey: string): string {
   if (!scopes) {
     return ''
   }
@@ -15,7 +15,7 @@ export function scopeArrayToRequestString(scopes: string[], projectKey: string) 
  * Take the scopes string returned by commercetools and parse it in to an
  * array of scope strings.
  */
-export function scopeRequestStringToArray(scopes: string) {
+export function scopeRequestStringToArray(scopes: string): string[] {
   if (!scopes) {
     return []
   }

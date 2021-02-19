@@ -1,7 +1,7 @@
 import nock from 'nock'
 import { CommercetoolsAuth, CommercetoolsGrantResponse, CommercetoolsAuthError } from '../../lib'
 import FakeTimers from '@sinonjs/fake-timers'
-import { Region } from '../../lib/types'
+import { Region } from '../../lib'
 
 const defaultConfig = {
   projectKey: 'test-project-key',
@@ -14,8 +14,7 @@ const defaultConfig = {
 const defaultResponseToken: CommercetoolsGrantResponse = {
   access_token: 'test-access-token',
   refresh_token: 'test-refresh-token',
-  scope:
-    'scope1:test-project-key scope2:test-project-key scope3:test-project-key customer_id:123456',
+  scope: 'scope1:test-project-key scope2:test-project-key scope3:test-project-key customer_id:123456',
   expires_in: 172800
 }
 
@@ -23,10 +22,7 @@ function nockGetClientGrant(body = '') {
   return nock('https://auth.us-east-2.aws.commercetools.com', {
     encodedQueryParams: true
   })
-    .post(
-      '/oauth/token',
-      body || 'grant_type=client_credentials&scope=defaultClientScope1%3Atest-project-key'
-    )
+    .post('/oauth/token', body || 'grant_type=client_credentials&scope=defaultClientScope1%3Atest-project-key')
     .reply(200, defaultResponseToken)
 }
 
@@ -44,9 +40,7 @@ describe('CommercetoolsAuth', () => {
       it('should throw if there are no client scopes defined on the config object', () => {
         expect(() => {
           new CommercetoolsAuth({ ...defaultConfig, clientScopes: [] })
-        }).toThrow(
-          new CommercetoolsAuthError('`config.clientScopes` must contain at least one scope')
-        )
+        }).toThrow(new CommercetoolsAuthError('`config.clientScopes` must contain at least one scope'))
       })
 
       it('should use the expected defaults for optional config properties', () => {
@@ -57,7 +51,6 @@ describe('CommercetoolsAuth', () => {
           projectKey: 'test-project-key',
           refreshIfWithinSecs: 1800,
           region: 'us_east',
-          timeout: 5,
           clientScopes: ['defaultClientScope1']
         })
       })
@@ -65,8 +58,7 @@ describe('CommercetoolsAuth', () => {
       it('should override the config defaults when config options are explicitly passed in', () => {
         const auth = new CommercetoolsAuth({
           ...defaultConfig,
-          refreshIfWithinSecs: 2500,
-          timeout: 10
+          refreshIfWithinSecs: 2500
         })
         expect((auth as any).config).toMatchObject({
           clientId: 'test-client-id',
@@ -74,7 +66,6 @@ describe('CommercetoolsAuth', () => {
           projectKey: 'test-project-key',
           refreshIfWithinSecs: 2500,
           region: 'us_east',
-          timeout: 10,
           clientScopes: ['defaultClientScope1']
         })
       })
@@ -91,7 +82,6 @@ describe('CommercetoolsAuth', () => {
           projectKey: 'test-project-key',
           refreshIfWithinSecs: 1800,
           region: 'us_east',
-          timeout: 5,
           customerScopes: ['scope1', 'scope2'],
           clientScopes: ['scope3', 'scope4']
         })
@@ -99,7 +89,7 @@ describe('CommercetoolsAuth', () => {
     })
 
     describe('getClientGrant', () => {
-      it('should directly make a request to get a new access token when no access token is cached', async () => {
+      it('should directly make a request to get a new grant when no grant is cached', async () => {
         const clock = FakeTimers.install({ now: new Date('2020-01-01T09:35:23.000') })
         const auth = new CommercetoolsAuth(defaultConfig)
         const scope = nockGetClientGrant()
@@ -140,7 +130,7 @@ describe('CommercetoolsAuth', () => {
         clock.uninstall()
       })
 
-      it('should return the cached token if it has not expired', async () => {
+      it('should return the cached grant if it has not expired', async () => {
         const clock = FakeTimers.install({ now: new Date('2020-01-01T09:35:23.000') })
         const auth = new CommercetoolsAuth(defaultConfig)
         const scope = nockGetClientGrant()
@@ -177,8 +167,7 @@ describe('CommercetoolsAuth', () => {
           .post('/oauth/token', `grant_type=refresh_token&refresh_token=${refreshToken}`)
           .reply(200, {
             access_token: 'test-refreshed-access-token',
-            scope:
-              'scope1:test-project-key scope2:test-project-key scope3:test-project-key customer_id:123456',
+            scope: 'scope1:test-project-key scope2:test-project-key scope3:test-project-key customer_id:123456',
             expires_in: 172800
           })
 
@@ -214,8 +203,7 @@ describe('CommercetoolsAuth', () => {
           .post('/oauth/token', `grant_type=refresh_token&refresh_token=${refreshToken}`)
           .reply(200, {
             access_token: 'test-refreshed-access-token',
-            scope:
-              'scope1:test-project-key scope2:test-project-key scope3:test-project-key customer_id:123456',
+            scope: 'scope1:test-project-key scope2:test-project-key scope3:test-project-key customer_id:123456',
             expires_in: 172800
           })
 
@@ -235,10 +223,10 @@ describe('CommercetoolsAuth', () => {
     })
 
     describe('refreshCustomerGrant', () => {
-      it('should request a client access token before making the refresh customer access token request, if no cached client access token exists', async () => {
+      it('should request a client grant before making the refresh customer access token request, if no cached client grant exists', async () => {
         const auth = new CommercetoolsAuth({ ...defaultConfig, refreshIfWithinSecs: 3600 })
         const clock = FakeTimers.install({ now: new Date('2020-01-06T12:15:17.000Z') })
-        // Resolving the client access token request
+        // Resolving the client grant request
         const scope1 = nockGetClientGrant()
         // Resolving the customer refresh token request
         const scope2 = nock('https://auth.us-east-2.aws.commercetools.com', {
@@ -265,7 +253,7 @@ describe('CommercetoolsAuth', () => {
         clock.uninstall()
       })
 
-      it('should immediately make the refresh customer access token request if a cached client access token exists', async () => {
+      it('should immediately make the refresh customer access token request if a cached client grant exists', async () => {
         const auth = new CommercetoolsAuth({ ...defaultConfig, refreshIfWithinSecs: 3600 })
         const clock = FakeTimers.install({ now: new Date('2020-01-06T12:15:17.000Z') })
         const scope1 = nockGetClientGrant()
@@ -296,11 +284,11 @@ describe('CommercetoolsAuth', () => {
     })
 
     describe('login', () => {
-      describe('cached client access token does not exist', () => {
-        it('should request a client access token before making the login request', async () => {
+      describe('cached client grant does not exist', () => {
+        it('should request a client grant before making the login request', async () => {
           const auth = new CommercetoolsAuth({ ...defaultConfig, refreshIfWithinSecs: 3600 })
           const clock = FakeTimers.install({ now: new Date('2020-01-06T12:15:17.000Z') })
-          // Resolving the client access token request
+          // Resolving the client grant request
           const scope1 = nockGetClientGrant()
           // Resolving the customer access token request for the login request
           const scope2 = nock('https://auth.us-east-2.aws.commercetools.com', {
@@ -336,10 +324,10 @@ describe('CommercetoolsAuth', () => {
         })
       })
 
-      describe('cached client access token exists', () => {
+      describe('cached client grant exists', () => {
         it('should immediately make the login request', async () => {
           const clock = FakeTimers.install({ now: new Date('2020-01-06T12:15:17.000Z') })
-          // Resolving the client access token request
+          // Resolving the client grant request
           const scope1 = nockGetClientGrant()
           const auth = new CommercetoolsAuth(defaultConfig)
           await auth.getClientGrant()
@@ -432,11 +420,11 @@ describe('CommercetoolsAuth', () => {
     })
 
     describe('getAnonymousGrant', () => {
-      describe('cached client access token does not exist', () => {
-        it('should request a client access token before making the anonymous customer request', async () => {
+      describe('cached client grant does not exist', () => {
+        it('should request a client grant before making the anonymous customer request', async () => {
           const auth = new CommercetoolsAuth(defaultConfig)
           const clock = FakeTimers.install({ now: new Date('2020-01-06T12:15:17.000Z') })
-          // Resolving the client access token request
+          // Resolving the client grant request
           const scope1 = nockGetClientGrant()
           // Resolving the customer access token request for the login request
           const scope2 = nock('https://auth.us-east-2.aws.commercetools.com', {
@@ -470,11 +458,11 @@ describe('CommercetoolsAuth', () => {
         })
       })
 
-      describe('cached client access token exists', () => {
+      describe('cached client grant exists', () => {
         it('should immediately make the anonymous customer request', async () => {
           const clock = FakeTimers.install({ now: new Date('2020-01-06T12:15:17.000Z') })
           const auth = new CommercetoolsAuth(defaultConfig)
-          // Resolving the client access token request
+          // Resolving the client grant request
           const scope1 = nockGetClientGrant()
           await auth.getClientGrant()
           const scope2 = nock('https://auth.us-east-2.aws.commercetools.com', {
@@ -522,7 +510,7 @@ describe('CommercetoolsAuth', () => {
             ...defaultConfig,
             customerScopes: ['configuredScope1']
           })
-          // Resolving the client access token request
+          // Resolving the client grant request
           const scope1 = nockGetClientGrant()
           await auth.getClientGrant()
           // Resolving the customer access token request for the anonymous customer request
@@ -557,7 +545,7 @@ describe('CommercetoolsAuth', () => {
         it('should pass across the anonymous id if specified in the config', async () => {
           const clock = FakeTimers.install({ now: new Date('2020-01-06T12:15:17.000Z') })
           const auth = new CommercetoolsAuth({ ...defaultConfig })
-          // Resolving the client access token request
+          // Resolving the client grant request
           const scope1 = nockGetClientGrant()
           await auth.getClientGrant()
           // Resolving the customer access token request for the anonymous customer request

@@ -1,15 +1,15 @@
-import fetch from 'node-fetch'
-import { AnonymousTokenOptions, CommercetoolsAuthConfig, LoginOptions } from './types'
+import { AnonymousGrantOptions, CommercetoolsAuthConfig, LoginOptions } from './types'
 import { CommercetoolsAuthError } from './CommercetoolsAuthError'
 import { CommercetoolsGrant } from './CommercetoolsGrant'
 import { CommercetoolsAuthApi } from './CommercetoolsAuthApi'
 
-const configDefaults = {
-  refreshIfWithinSecs: 1800,
-  timeout: 5,
-  fetch
-}
-
+/**
+ * This interface used for holding the internal config of {@see CommercetoolsAuth}.
+ * It's only purpose currently is to make the {@see Config.refreshIfWithinSecs} and
+ * {@see Config.timeout} properties mandatory after extending {@see CommercetoolsAuthConfig}
+ * where those properties are optional. Default values for those propertis are
+ * defined on {@see configDefaults}.
+ */
 interface Config extends CommercetoolsAuthConfig {
   clientScopes: string[]
   customerScopes?: string[]
@@ -18,10 +18,19 @@ interface Config extends CommercetoolsAuthConfig {
 }
 
 /**
+ * Default values for a couple of the properties required by the {@see Config}
+ * interface used in {@see CommercetoolsAuth.constructor}.
+ */
+const configDefaults = {
+  refreshIfWithinSecs: 1800,
+  timeout: 5
+}
+
+/**
  * Provides an easy to use set of methods for communicating with the commercetools
  * HTTP Authorization API: https://docs.commercetools.com/api/authorization
  *
- * To create an instance of the class and get an access token:
+ * To create an instance of the class and get a client grant:
  * ```typescript
  * import { Region, CommercetoolsAuth } from '@gradientedge/commercetools-utils'
  *
@@ -56,20 +65,31 @@ export class CommercetoolsAuth {
   private readonly config: Config
 
   /**
-   * This holds the client access token, once one has been generated.
+   * This holds the client grant, once one has been generated.
    */
   private grant?: CommercetoolsGrant
 
   /**
-   * Whenever we either refresh the client access token, or request a new one,
+   * Whenever we either refresh the client grant, or request a new one,
    * we don't want to allow any other requests to be initiated until that
    * request has completed. This promise is used to determine whether incoming
-   * requests need to wait on an existing client access token request to complete
+   * requests need to wait on an existing client grant request to complete
    * before they can start to be processed.
    */
-  private tokenPromise: Promise<any> = Promise.resolve()
+  private grantPromise: Promise<any> = Promise.resolve()
+
+  /**
+   * The {@see CommercetoolsAuthApi} handles the actual sending of the request
+   * and any lower level outgoing or incoming transformation of data.
+   */
   private api: CommercetoolsAuthApi
 
+  /**
+   * Store the configuration locally and do some light validation to ensure
+   * that we have some `clientScopes` defined. We also set a `member` called
+   * {@see api} to an instance of {@see CommercetoolsAuthApi}, which handles
+   * the lower level commercetools request.
+   */
   constructor(config: CommercetoolsAuthConfig) {
     this.config = { ...configDefaults, ...config }
 
@@ -81,15 +101,14 @@ export class CommercetoolsAuth {
   }
 
   /**
-   * Get a client access token
+   * Get a client grant
    *
-   * If we don't already have a client access token stored locally, then
-   * we make a call to commercetools to generate one. Once we have a token,
-   * we store it locally and then return that cached version up until it needs
-   * to be renewed.
+   * If we don't already have a client grant stored locally, then we make a
+   * call to commercetools to generate one. Once we have a grant, we store it
+   * locally and then return that cached version up until it needs to be renewed.
    */
   public async getClientGrant(): Promise<CommercetoolsGrant> {
-    await this.tokenPromise
+    await this.grantPromise
 
     if (this.grant) {
       if (!this.grant.expiresWithin(this.config.refreshIfWithinSecs)) {
@@ -105,14 +124,14 @@ export class CommercetoolsAuth {
       }
     }
 
-    this.tokenPromise = this.api.getClientGrant(this.config.clientScopes)
-    this.grant = new CommercetoolsGrant(await this.tokenPromise)
+    this.grantPromise = this.api.getClientGrant(this.config.clientScopes)
+    this.grant = new CommercetoolsGrant(await this.grantPromise)
 
     return this.grant
   }
 
   /**
-   * Refresh the customer access token given a refresh token
+   * Refresh the customer's grant given a refresh token
    */
   public async refreshCustomerGrant(refreshToken: string): Promise<CommercetoolsGrant> {
     await this.getClientGrant()
@@ -127,8 +146,8 @@ export class CommercetoolsAuth {
    * If the {@link LoginOptions.scopes} property isn't set on the `options`
    * parameter then we'll use the scopes set on {@link CommercetoolsAuthConfig.customerScopes}.
    * If this doesn't contain any values either, then this method will throw
-   * an error due to the security risk of the customer having an access token
-   * with the same privileges as the client API key.
+   * an error due to the security risk of the customer having a grant with
+   * the same privileges as the client API key.
    *
    * Example login code:
    * ```typescript
@@ -139,23 +158,28 @@ export class CommercetoolsAuth {
    *     projectKey: 'your-project-key',
    *     clientId: 'your-client-id',
    *     clientSecret: 'your-client-secret',
-   *     region: Region.EUROPE_WEST
+   *     region: Region.EUROPE_WEST,
+   *     clientScopes: [
+   *       'view_published_products',
+   *       'view_categories',
+   *       'manage_customers'
+   *     ]
    *   })
    *
-   *   const accessToken = await auth.login({
+   *   const grant = await auth.login({
    *     username: 'test@gradientedge.com',
    *     password: 'testing123'
    *   })
    *
-   *   console.log('Customer access token:', accessToken)
+   *   console.log('Customer grant:', grant)
    * }
    *
    * example()
    * ```
    *
    * Note that there is no need to call {@link getClientGrant} in order to
-   * generate a client access token. The class internally requests one if it
-   * doesn't have a cached local token.
+   * generate a client grant. The class internally requests one if it
+   * doesn't have a non-expired grant already cached locally.
    */
   public async login(options: LoginOptions): Promise<CommercetoolsGrant> {
     const scopes = options.scopes || this.config.customerScopes
@@ -181,15 +205,15 @@ export class CommercetoolsAuth {
   }
 
   /**
-   * Get an access token for an anonymous customer.
+   * Get a grant for an anonymous customer.
    *
-   * If you pass a value to the {@link AnonymousTokenOptions.anonymousId}
+   * If you pass a value to the {@link AnonymousGrantOptions.anonymousId}
    * `options` parameter property then this must not exist within the commercetools
    * system for your project key, otherwise an error will be thrown. Typically
    * this property would be left undefined and commercetools will then create
    * a unique id for the anonymous user automatically.
    *
-   * Example code to generate an anonymous customer token:
+   * Example code to generate an anonymous customer grant:
    * ```typescript
    * import { Region, CommercetoolsAuth } from '@gradientedge/commercetools-utils'
    *
@@ -198,18 +222,23 @@ export class CommercetoolsAuth {
    *     projectKey: 'your-project-key',
    *     clientId: 'your-client-id',
    *     clientSecret: 'your-client-secret',
-   *     region: Region.EUROPE_WEST
+   *     region: Region.EUROPE_WEST,
+   *     clientScopes: [
+   *       'view_published_products',
+   *       'view_categories',
+   *       'manage_customers'
+   *     ]
    *   })
    *
-   *   const accessToken = await auth.getAnonymousToken()
+   *   const grant = await auth.getAnonymousGrant()
    *
-   *   console.log('Anonymous customer access token:', accessToken)
+   *   console.log('Anonymous customer grant:', grant)
    * }
    *
    * example()
    * ```
    */
-  public async getAnonymousGrant(options?: AnonymousTokenOptions): Promise<CommercetoolsGrant> {
+  public async getAnonymousGrant(options?: AnonymousGrantOptions): Promise<CommercetoolsGrant> {
     const scopes = options?.scopes || this.config.customerScopes
     const anonymousId = options?.anonymousId
 

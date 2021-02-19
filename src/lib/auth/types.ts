@@ -1,47 +1,35 @@
-import { Region } from '../types'
+import { CommercetoolsBaseConfig, Region } from '../types'
 
 /**
- * Configuration for constructing the CommercetoolsAuth class.
- *
- *
+ * Configuration for {@see CommercetoolsAuth}
  */
-export interface CommercetoolsAuthConfig {
-  projectKey: string
-  clientId: string
-  clientSecret: string
-  region: Region
+export interface CommercetoolsAuthConfig extends CommercetoolsBaseConfig {
   refreshIfWithinSecs?: number
-  clientScopes: string[]
   customerScopes?: string[]
-  timeout?: number
-  logger?: {
-    debug: (...args: any) => void
-    info: (...args: any) => void
-    error: (...args: any) => void
-  }
 }
 
+/**
+ * Configuration for {@see CommercetoolsAuthApi}
+ */
 export interface CommercetoolsAuthApiConfig {
   projectKey: string
   clientId: string
   clientSecret: string
   region: Region
-  timeout?: number
-  logger?: {
-    debug: (...args: any) => void
-    info: (...args: any) => void
-    error: (...args: any) => void
-  }
 }
 
 /**
  * The object structure that we receive back from commercetools
- * on a successful call to get a new token.
+ * on a successful call to get a new grant.
  */
 export interface CommercetoolsGrantResponse extends CommercetoolsRefreshGrantResponse {
   refresh_token: string
 }
 
+/**
+ * The object structure that we receive back from commercetools
+ * on a successful call to refresh an existing grant.
+ */
 export interface CommercetoolsRefreshGrantResponse {
   access_token: string
   expires_in: number
@@ -106,13 +94,13 @@ export interface LoginOptions {
   password: string
 
   /**
-   * The scopes to which you want to restrict the customer token. Note that
-   * these must be a subset of the scopes associated with the client id/secret.
+   * The scopes to which you want to restrict the customer grant. Note that
+   * these must be a subset of the scopes associated with the client grant.
    */
   scopes?: string[]
 }
 
-export interface AnonymousTokenOptions {
+export interface AnonymousGrantOptions {
   /**
    * The scopes of the anonymous customer must be less than or equal to
    * the scopes of the client API key (ideally, less). If you don't specify
@@ -137,7 +125,7 @@ export interface AnonymousTokenOptions {
  */
 export enum GrantType {
   /**
-   * Used when either requesting a client access token or an
+   * Used when either requesting a client grant or an
    * anonymous customer access token:
    * https://docs.commercetools.com/api/authorization#client-credentials-flow
    * https://docs.commercetools.com/api/authorization#tokens-for-anonymous-sessions

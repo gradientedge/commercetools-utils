@@ -23,3 +23,15 @@ export interface RegionEndpoints {
    */
   api: string
 }
+
+/**
+ * Provides a base configuration definition from which other class
+ * specific configurations can be extended.
+ */
+export interface CommercetoolsBaseConfig {
+  projectKey: string
+  clientId: string
+  clientSecret: string
+  region: Region
+  clientScopes: string[]
+}
