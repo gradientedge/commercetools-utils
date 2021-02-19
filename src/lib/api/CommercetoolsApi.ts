@@ -4,6 +4,7 @@ import { CommercetoolsAuth } from '../auth/CommercetoolsAuth'
 import { CommercetoolsApiError } from './CommercetoolsApiError'
 import { REGION_URLS } from '../auth/constants'
 import { RegionEndpoints } from '../types'
+import { DEFAULT_REQUEST_TIMEOUT } from '../constants'
 
 interface FetchOptions {
   path: string
@@ -11,6 +12,9 @@ interface FetchOptions {
   method: 'GET' | 'POST'
 }
 
+/**
+ * Doc comment
+ */
 export class CommercetoolsApi {
   private auth: CommercetoolsAuth
   private config: CommercetoolsApiConfig
@@ -34,6 +38,17 @@ export class CommercetoolsApi {
   }
 
   /**
+   * Get an individual product by id:
+   * https://docs.commercetools.com/api/projects/products#get-product-by-id
+   */
+  getProductProjection(id: string): Promise<any> {
+    return this.request({
+      path: `/products/${id}`,
+      method: 'GET'
+    })
+  }
+
+  /**
    * Make the request to the commercetools REST API.
    */
   async request<T = any>(options: FetchOptions): Promise<T> {
@@ -49,7 +64,8 @@ export class CommercetoolsApi {
         headers: {
           Authorization: `Bearer ${grant.accessToken}`,
           ...opts.headers
-        }
+        },
+        timeout: this.config.timeout || DEFAULT_REQUEST_TIMEOUT
       })
       return response.data
     } catch (e) {

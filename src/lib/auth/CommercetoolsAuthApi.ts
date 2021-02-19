@@ -10,24 +10,7 @@ import { REGION_URLS } from './constants'
 import { basic } from './utils'
 import { RegionEndpoints } from '../types'
 import axios, { Method } from 'axios'
-
-/**
- * This interface used for holding the internal config of {@see CommercetoolsAuthApi}.
- * It's only purpose currently is to make the {@see Config.timeout} property mandatory
- * after extending {@see CommercetoolsAuthApiConfig} where that property is optional.
- * A default value for {@see Config.timeout} is defined on {@see configDefaults}.
- */
-interface Config extends CommercetoolsAuthApiConfig {
-  timeout: number
-}
-
-/**
- * Default values for `timeout`, required by the {@see Config}
- * interface used in {@see CommercetoolsAuthApi.constructor}.
- */
-const configDefaults = {
-  timeout: 5
-}
+import { DEFAULT_REQUEST_TIMEOUT } from '../constants'
 
 /**
  * Provides an easy to use set of methods for communicating with the commercetools
@@ -39,7 +22,7 @@ export class CommercetoolsAuthApi {
    * type passed in to the constructor and the default values specified in the
    * `configDefaults` object.
    */
-  private readonly config: Config
+  private readonly config: CommercetoolsAuthApiConfig
 
   /**
    * The Auth and API endpoints driven by the user's setting of {@link CommercetoolsAuthApiConfig.region}
@@ -48,7 +31,7 @@ export class CommercetoolsAuthApi {
   private endpoints: RegionEndpoints
 
   constructor(config: CommercetoolsAuthApiConfig) {
-    this.config = { ...configDefaults, ...config }
+    this.config = config
     this.endpoints = REGION_URLS[this.config.region]
   }
 
@@ -122,7 +105,8 @@ export class CommercetoolsAuthApi {
         headers: {
           Authorization: `Basic ${basic(this.config.clientId, this.config.clientSecret)}`,
           'Content-Type': 'application/x-www-form-urlencoded'
-        }
+        },
+        timeout: this.config.timeout || DEFAULT_REQUEST_TIMEOUT
       })
       return response.data
     } catch (e) {

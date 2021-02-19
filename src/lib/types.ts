@@ -34,4 +34,5 @@ export interface CommercetoolsBaseConfig {
   clientSecret: string
   region: Region
   clientScopes: string[]
+  timeout?: number
 }

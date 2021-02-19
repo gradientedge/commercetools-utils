@@ -11,7 +11,8 @@ const defaultConfig = {
   projectKey: 'test-project-key',
   clientId: 'test-client-id',
   clientSecret: 'test-client-secret',
-  region: Region.US_EAST
+  region: Region.US_EAST,
+  timeout: 1000
 }
 
 const defaultResponseToken: CommercetoolsGrantResponse = {
@@ -189,6 +190,41 @@ describe('CommercetoolsAuthApi', () => {
       )
 
       scope.isDone()
+    })
+  })
+
+  describe('request timeout behaviour', () => {
+    it('should time after the default timeout period', async () => {
+      nock('https://auth.us-east-2.aws.commercetools.com', {
+        encodedQueryParams: true
+      })
+        .post('/oauth/token', 'grant_type=client_credentials&scope=scope1%3Atest-project-key')
+        .delay(2000)
+        .reply(200, defaultResponseToken)
+      const auth = new CommercetoolsAuthApi(defaultConfig)
+
+      try {
+        await auth.getClientGrant(['scope1'])
+      } catch (e) {
+        expect(e).toBeInstanceOf(CommercetoolsAuthError)
+        expect(e.toJSON()).toEqual({
+          data: {
+            message: 'timeout of 1000ms exceeded',
+            request: {
+              data: 'grant_type=client_credentials&scope=scope1%3Atest-project-key',
+              method: 'POST',
+              url: 'https://auth.us-east-2.aws.commercetools.com/oauth/token'
+            },
+            response: {
+              code: 'ECONNABORTED'
+            }
+          },
+          message: 'Error in request to: https://auth.us-east-2.aws.commercetools.com/oauth/token'
+        })
+        return
+      }
+
+      fail('auth.getClientGrant should have thrown due to timeout')
     })
   })
 })

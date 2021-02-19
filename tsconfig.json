@@ -71,7 +71,7 @@
     "./src/lib/**/*.ts",
   ],
   "typedocOptions": {
-    "entryPoints": ["src/lib/index.ts"],
+    "entryPoints": ["src/lib/index.ts",],
     "out": "docs",
     "excludePrivate": false,
     "readme": "src/lib/auth/README.md"

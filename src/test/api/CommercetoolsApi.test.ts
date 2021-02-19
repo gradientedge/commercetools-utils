@@ -1,13 +1,13 @@
 import nock from 'nock'
-import { CommercetoolsApi } from '../../lib/api/CommercetoolsApi'
-import { CommercetoolsGrantResponse, Region } from '../../lib'
+import { CommercetoolsApi, CommercetoolsApiError, CommercetoolsGrantResponse, Region } from '../../lib'
 
 const defaultConfig = {
   projectKey: 'test-project-key',
   clientId: 'test-client-id',
   clientSecret: 'test-client-secret',
   region: Region.EUROPE_WEST,
-  clientScopes: ['defaultClientScope1']
+  clientScopes: ['defaultClientScope1'],
+  timeout: 1000
 }
 
 const defaultClientGrantResponse: CommercetoolsGrantResponse = {
@@ -40,6 +40,39 @@ describe('CommercetoolsApi', () => {
       const product = await api.getProductById('cb3c563c-98dd-4b11-8694-8d17b15fa844')
 
       expect(product).toEqual({ success: true })
+    })
+  })
+
+  describe('request timeout behaviour', () => {
+    it('should time after the default timeout period', async () => {
+      nock('https://api.europe-west1.gcp.commercetools.com', {
+        encodedQueryParams: true
+      })
+        .get('/test-project-key/products/cb3c563c-98dd-4b11-8694-8d17b15fa844')
+        .delay(2000)
+        .reply(200, { success: true })
+      const api = new CommercetoolsApi(defaultConfig)
+
+      try {
+        await api.getProductById('cb3c563c-98dd-4b11-8694-8d17b15fa844')
+      } catch (e) {
+        expect(e).toBeInstanceOf(CommercetoolsApiError)
+        expect(e.toJSON()).toEqual({
+          data: {
+            message: 'timeout of 1000ms exceeded',
+            request: {
+              method: 'GET'
+            },
+            response: {
+              code: 'ECONNABORTED'
+            }
+          },
+          message:
+            'Error in request to: https://api.europe-west1.gcp.commercetools.com/test-project-key/products/cb3c563c-98dd-4b11-8694-8d17b15fa844'
+        })
+        return
+      }
+      fail('api.getProductById should have thrown due to timeout')
     })
   })
 })
