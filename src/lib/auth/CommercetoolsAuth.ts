@@ -1,34 +1,8 @@
-import fetch, { RequestInit, Response } from 'node-fetch'
-import {
-  AnonymousTokenOptions,
-  CommercetoolsAccessTokenResponse,
-  CommercetoolsAuthConfig,
-  CommercetoolsRefreshTokenResponse,
-  GrantType,
-  LoginOptions,
-  RegionEndpoints
-} from './types'
+import fetch from 'node-fetch'
+import { AnonymousTokenOptions, CommercetoolsAuthConfig, LoginOptions } from './types'
 import { CommercetoolsAuthError } from './CommercetoolsAuthError'
 import { CommercetoolsGrant } from './CommercetoolsGrant'
-import { scopeArrayToRequestString } from './scopes'
-import { REGION_URLS } from './constants'
-import { basic } from './utils'
 import { CommercetoolsAuthApi } from './CommercetoolsAuthApi'
-
-/**
- * CommercetoolsBaseAuth
- *
- * Authentication functionality required for the generating and
- * refreshing of access tokens for both client and customers.
- */
-
-/*
- * When the user requests the access token through `getAccessToken`,
- * if a token already exists, we check to see if the token expires
- * within a certain number of seconds, and if it does, we refresh the
- * token. This constant represents the aforementioned number of seconds.
- *
- */
 
 const configDefaults = {
   refreshIfWithinSecs: 1800,
@@ -99,11 +73,12 @@ export class CommercetoolsAuth {
 
   constructor(config: CommercetoolsAuthConfig) {
     this.config = { ...configDefaults, ...config }
-    this.api = new CommercetoolsAuthApi(config)
 
     if (!this.config.clientScopes.length) {
       throw new CommercetoolsAuthError('`config.clientScopes` must contain at least one scope')
     }
+
+    this.api = new CommercetoolsAuthApi(config)
   }
 
   /**
@@ -131,9 +106,10 @@ export class CommercetoolsAuth {
       }
     }
 
-    this.tokenPromise = this.api.getClientGrant()
-    await this.tokenPromise
-    return this.grant!
+    this.tokenPromise = this.api.getClientGrant(this.config.clientScopes)
+    this.grant = new CommercetoolsGrant(await this.tokenPromise)
+
+    return this.grant
   }
 
   /**
@@ -183,8 +159,6 @@ export class CommercetoolsAuth {
    * doesn't have a cached local token.
    */
   public async login(options: LoginOptions): Promise<CommercetoolsGrant> {
-    await this.getClientGrant()
-
     const scopes = options.scopes || this.config.customerScopes
 
     if (!scopes) {
@@ -195,10 +169,13 @@ export class CommercetoolsAuth {
       )
     }
 
+    await this.getClientGrant()
+
     const data = await this.api.login({
       username: options.username,
       password: options.password,
-      scopes
+      scopes,
+      projectKey: this.config.projectKey
     })
 
     return new CommercetoolsGrant(data)
@@ -234,8 +211,6 @@ export class CommercetoolsAuth {
    * ```
    */
   public async getAnonymousGrant(options?: AnonymousTokenOptions): Promise<CommercetoolsGrant> {
-    await this.getClientGrant()
-
     const scopes = options?.scopes || this.config.customerScopes
     const anonymousId = options?.anonymousId
 
@@ -246,6 +221,8 @@ export class CommercetoolsAuth {
           'property of the `CommercetoolsAuth` constructor'
       )
     }
+
+    await this.getClientGrant()
 
     const data = await this.api.getAnonymousGrant({
       scopes,

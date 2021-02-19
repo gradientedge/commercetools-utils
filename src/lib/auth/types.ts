@@ -3,15 +3,13 @@
  *
  *
  */
-export interface CommercetoolsAuthConfig extends CommercetoolsAuthApiConfig {
-  refreshIfWithinSecs?: number
-}
 
-export interface CommercetoolsAuthApiConfig {
+export interface CommercetoolsAuthConfig {
   projectKey: string
   clientId: string
   clientSecret: string
   region: Region
+  refreshIfWithinSecs?: number
   clientScopes: string[]
   customerScopes?: string[]
   timeout?: number
@@ -20,18 +18,30 @@ export interface CommercetoolsAuthApiConfig {
     info: (...args: any) => void
     error: (...args: any) => void
   }
-  fetch?: any
+}
+
+export interface CommercetoolsAuthApiConfig {
+  projectKey: string
+  clientId: string
+  clientSecret: string
+  region: Region
+  timeout?: number
+  logger?: {
+    debug: (...args: any) => void
+    info: (...args: any) => void
+    error: (...args: any) => void
+  }
 }
 
 /**
  * The object structure that we receive back from commercetools
  * on a successful call to get a new token.
  */
-export interface CommercetoolsAccessTokenResponse extends CommercetoolsRefreshTokenResponse {
+export interface CommercetoolsGrantResponse extends CommercetoolsRefreshGrantResponse {
   refresh_token: string
 }
 
-export interface CommercetoolsRefreshTokenResponse {
+export interface CommercetoolsRefreshGrantResponse {
   access_token: string
   expires_in: number
   scope: string
@@ -108,7 +118,7 @@ export interface AnonymousTokenOptions {
    * the scopes using this property, then the code will check for the scopes
    * defined on {@link CommercetoolsAuthConfig.customerScopes}. If scopes
    * aren't defined there either, than an error will be thrown when a call
-   * is made to {@link CommercetoolsAuth.getAnonymousToken}
+   * is made to {@link CommercetoolsAuth.getAnonymousGrant}
    */
   scopes?: string[]
   /**

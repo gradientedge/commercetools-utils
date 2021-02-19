@@ -1,18 +1,15 @@
-import { CommercetoolsAccessTokenResponse, CommercetoolsRefreshTokenResponse } from './types'
+import { CommercetoolsGrantResponse, CommercetoolsRefreshGrantResponse } from './types'
 import { scopeRequestStringToArray } from './scopes'
 
 export class CommercetoolsGrant {
-  public accessToken: string
-  public refreshToken: string = ''
-  public expiresIn: number
-  public expiresAt: Date
-  public scopes: string[]
+  public accessToken = ''
+  public refreshToken = ''
+  public expiresIn = 0
+  public expiresAt = new Date()
+  public scopes: string[] = []
 
-  constructor(data: CommercetoolsAccessTokenResponse | CommercetoolsRefreshTokenResponse) {
-    this.accessToken = data.access_token
-    this.expiresIn = data.expires_in
-    this.expiresAt = new Date(new Date().getTime() + 1000 * data.expires_in)
-    this.scopes = scopeRequestStringToArray(data.scope)
+  constructor(data: CommercetoolsGrantResponse | CommercetoolsRefreshGrantResponse) {
+    this.initialise(data)
 
     if ('refresh_token' in data) {
       this.refreshToken = data.refresh_token
@@ -24,11 +21,11 @@ export class CommercetoolsGrant {
     return this.expiresAt.getTime() < cutoff
   }
 
-  getRefreshToken() {
-    return this.refreshToken
+  refresh(data: CommercetoolsRefreshGrantResponse) {
+    this.initialise(data)
   }
 
-  refresh(data: CommercetoolsRefreshTokenResponse) {
+  initialise(data: CommercetoolsGrantResponse | CommercetoolsRefreshGrantResponse) {
     this.accessToken = data.access_token
     this.expiresIn = data.expires_in
     this.expiresAt = new Date(new Date().getTime() + 1000 * data.expires_in)
