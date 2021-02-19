@@ -1,11 +1,7 @@
 import nock from 'nock'
-import {
-  CommercetoolsAuth,
-  CommercetoolsGrantResponse,
-  Region,
-  CommercetoolsAuthError
-} from '../../lib'
+import { CommercetoolsAuth, CommercetoolsGrantResponse, CommercetoolsAuthError } from '../../lib'
 import FakeTimers from '@sinonjs/fake-timers'
+import { Region } from '../../lib/types'
 
 const defaultConfig = {
   projectKey: 'test-project-key',

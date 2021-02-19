@@ -3,14 +3,13 @@ import {
   CommercetoolsGrantResponse,
   CommercetoolsAuthApiConfig,
   CommercetoolsRefreshGrantResponse,
-  GrantType,
-  RegionEndpoints,
-  Region
+  GrantType
 } from './types'
 import { CommercetoolsAuthError } from './CommercetoolsAuthError'
 import { scopeArrayToRequestString } from './scopes'
 import { REGION_URLS } from './constants'
 import { basic } from './utils'
+import { Region, RegionEndpoints } from '../types'
 
 const configDefaults = {
   timeout: 5

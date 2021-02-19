@@ -1,4 +1,4 @@
-import { RegionEndpoints, Region } from './types'
+import { Region, RegionEndpoints } from '../types'
 
 export const REGION_URLS: Record<Region, RegionEndpoints> = {
   [Region.EUROPE_WEST]: {

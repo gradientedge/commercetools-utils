@@ -15,7 +15,6 @@ interface Config extends CommercetoolsAuthConfig {
   customerScopes?: string[]
   refreshIfWithinSecs: number
   timeout: number
-  fetch: any
 }
 
 /**
