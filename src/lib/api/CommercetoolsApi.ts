@@ -1,4 +1,3 @@
-import _ from 'lodash'
 import axios from 'axios'
 import { CommercetoolsApiConfig } from './types'
 import { CommercetoolsAuth } from '../auth/CommercetoolsAuth'
@@ -45,7 +44,7 @@ export class CommercetoolsApi {
 
     try {
       const response = await axios({
-        ..._.omit(opts, 'path'),
+        ...opts,
         url,
         headers: {
           Authorization: `Bearer ${grant.accessToken}`,
