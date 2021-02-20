@@ -29,7 +29,7 @@ describe('CommercetoolsApi', () => {
   })
 
   describe('getProduct', () => {
-    it('should return the correct product', async () => {
+    it('should make a GET request to the correct endpoint', async () => {
       nock('https://api.europe-west1.gcp.commercetools.com', {
         encodedQueryParams: true
       })
@@ -59,16 +59,20 @@ describe('CommercetoolsApi', () => {
         expect(e).toBeInstanceOf(CommercetoolsError)
         expect(e.toJSON()).toEqual({
           data: {
-            message: 'timeout of 1000ms exceeded',
+            code: 'ECONNABORTED',
             request: {
-              method: 'GET'
+              headers: {
+                Accept: 'application/json, text/plain, */*',
+                Authorization: 'Bearer test-access-token',
+                'User-Agent': 'axios/0.21.1'
+              },
+              method: 'get',
+              url:
+                'https://api.europe-west1.gcp.commercetools.com/test-project-key/products/cb3c563c-98dd-4b11-8694-8d17b15fa844'
             },
-            response: {
-              code: 'ECONNABORTED'
-            }
+            response: {}
           },
-          message:
-            'Error in request to: https://api.europe-west1.gcp.commercetools.com/test-project-key/products/cb3c563c-98dd-4b11-8694-8d17b15fa844'
+          message: 'timeout of 1000ms exceeded'
         })
         return
       }

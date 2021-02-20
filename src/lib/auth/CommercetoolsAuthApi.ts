@@ -109,18 +109,11 @@ export class CommercetoolsAuthApi {
         timeout: this.config.timeoutMs || DEFAULT_REQUEST_TIMEOUT_MS
       })
       return response.data
-    } catch (e) {
-      const error: any = {
-        message: e.message,
-        request: options
+    } catch (error) {
+      if (error.isAxiosError) {
+        throw CommercetoolsError.fromAxiosError(error)
       }
-      if (e.isAxiosError) {
-        error.response = {
-          code: e.code,
-          data: e.response?.data
-        }
-      }
-      throw new CommercetoolsError(`Error in request to: ${options.url}`, error)
+      throw error
     }
   }
 }

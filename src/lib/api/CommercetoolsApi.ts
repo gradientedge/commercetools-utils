@@ -57,18 +57,11 @@ export class CommercetoolsApi {
         timeout: this.config.timeoutMs || DEFAULT_REQUEST_TIMEOUT_MS
       })
       return response.data
-    } catch (e) {
-      const error: any = {
-        message: e.message,
-        request: opts
+    } catch (error) {
+      if (error.isAxiosError) {
+        throw CommercetoolsError.fromAxiosError(error)
       }
-      if (e.isAxiosError) {
-        error.response = {
-          code: e.code,
-          data: e.response?.data
-        }
-      }
-      throw new CommercetoolsError(`Error in request to: ${url}`, error)
+      throw error
     }
   }
 }

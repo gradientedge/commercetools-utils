@@ -169,27 +169,14 @@ describe('CommercetoolsAuthApi', () => {
           name: 'Adrian',
           age: 13.75
         })
-      ).rejects.toThrow(
-        new CommercetoolsError('Error in request to: https://auth.us-east-2.aws.commercetools.com/oauth/test', {
-          options: {
-            body: 'name=Adrian&age=13.75',
-            headers: {
-              Authorization: 'Basic dGVzdC1jbGllbnQtaWQ6dGVzdC1jbGllbnQtc2VjcmV0',
-              'Content-Type': 'application/x-www-form-urlencoded'
-            },
-            method: 'post'
-          },
-          responseText: '{}',
-          url: 'https://auth.us-east-2.aws.commercetools.com/oauth/test'
-        })
-      )
+      ).rejects.toThrow(new CommercetoolsError('Request failed with status code 500'))
 
       scope.isDone()
     })
   })
 
   describe('request timeout behaviour', () => {
-    it('should time after the default timeout period', async () => {
+    it('should timeout after the default timeout period', async () => {
       nock('https://auth.us-east-2.aws.commercetools.com', {
         encodedQueryParams: true
       })
@@ -202,19 +189,21 @@ describe('CommercetoolsAuthApi', () => {
         await auth.getClientGrant(['scope1'])
       } catch (e) {
         expect(e).toBeInstanceOf(CommercetoolsError)
-        expect(e.toJSON()).toEqual({
+        expect(e.toJSON()).toMatchObject({
           data: {
-            message: 'timeout of 1000ms exceeded',
+            code: 'ECONNABORTED',
             request: {
-              data: 'grant_type=client_credentials&scope=scope1%3Atest-project-key',
-              method: 'POST',
+              headers: {
+                Authorization: 'Basic dGVzdC1jbGllbnQtaWQ6dGVzdC1jbGllbnQtc2VjcmV0',
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'User-Agent': 'axios/0.21.1'
+              },
+              method: 'post',
               url: 'https://auth.us-east-2.aws.commercetools.com/oauth/token'
             },
-            response: {
-              code: 'ECONNABORTED'
-            }
+            response: {}
           },
-          message: 'Error in request to: https://auth.us-east-2.aws.commercetools.com/oauth/token'
+          message: 'timeout of 1000ms exceeded'
         })
         return
       }
