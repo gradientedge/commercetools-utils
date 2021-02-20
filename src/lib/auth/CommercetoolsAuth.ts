@@ -23,7 +23,7 @@ interface Config extends CommercetoolsAuthConfig {
  */
 const configDefaults = {
   refreshIfWithinSecs: 1800,
-  timeoutMs: 5
+  timeoutMs: 5000
 }
 
 /**
