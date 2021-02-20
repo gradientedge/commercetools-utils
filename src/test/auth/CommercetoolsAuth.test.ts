@@ -580,4 +580,31 @@ describe('CommercetoolsAuth', () => {
       })
     })
   })
+
+  describe('multiple simultaneous requests', () => {
+    it('should make all requests wait for the pending client credentials', (done) => {
+      const scope = nock('https://auth.us-east-2.aws.commercetools.com', {
+        encodedQueryParams: true
+      })
+        .post('/oauth/token', 'grant_type=client_credentials&scope=defaultClientScope1%3Atest-project-key')
+        .delay(1500)
+        .reply(200, defaultResponseToken)
+      const auth = new CommercetoolsAuth(defaultConfig)
+
+      const promises: Promise<any>[] = []
+
+      for (let i = 1; i <= 5; i++) {
+        setTimeout(() => {
+          promises.push(auth.getClientGrant())
+        }, i * 10)
+      }
+
+      setTimeout(async () => {
+        const tokens = await Promise.all(promises)
+        console.log(tokens)
+        scope.isDone()
+        done()
+      }, 1000)
+    })
+  })
 })
