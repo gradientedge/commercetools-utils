@@ -1,5 +1,5 @@
 import nock from 'nock'
-import { CommercetoolsApi, CommercetoolsApiError, CommercetoolsGrantResponse, Region } from '../../lib'
+import { CommercetoolsApi, CommercetoolsError, CommercetoolsGrantResponse, Region } from '../../lib'
 
 const defaultConfig = {
   projectKey: 'test-project-key',
@@ -7,7 +7,7 @@ const defaultConfig = {
   clientSecret: 'test-client-secret',
   region: Region.EUROPE_WEST,
   clientScopes: ['defaultClientScope1'],
-  timeout: 1000
+  timeoutMs: 1000
 }
 
 const defaultClientGrantResponse: CommercetoolsGrantResponse = {
@@ -56,7 +56,7 @@ describe('CommercetoolsApi', () => {
       try {
         await api.getProductById('cb3c563c-98dd-4b11-8694-8d17b15fa844')
       } catch (e) {
-        expect(e).toBeInstanceOf(CommercetoolsApiError)
+        expect(e).toBeInstanceOf(CommercetoolsError)
         expect(e.toJSON()).toEqual({
           data: {
             message: 'timeout of 1000ms exceeded',

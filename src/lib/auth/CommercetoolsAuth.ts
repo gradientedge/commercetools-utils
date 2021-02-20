@@ -1,12 +1,12 @@
 import { AnonymousGrantOptions, CommercetoolsAuthConfig, LoginOptions } from './types'
-import { CommercetoolsAuthError } from './CommercetoolsAuthError'
+import { CommercetoolsError } from '../'
 import { CommercetoolsGrant } from './CommercetoolsGrant'
 import { CommercetoolsAuthApi } from './CommercetoolsAuthApi'
 
 /**
  * This interface used for holding the internal config of {@see CommercetoolsAuth}.
  * It's only purpose currently is to make the {@see Config.refreshIfWithinSecs} and
- * {@see Config.timeout} properties mandatory after extending {@see CommercetoolsAuthConfig}
+ * {@see Config.timeoutMs} properties mandatory after extending {@see CommercetoolsAuthConfig}
  * where those properties are optional. Default values for those propertis are
  * defined on {@see configDefaults}.
  */
@@ -14,7 +14,7 @@ interface Config extends CommercetoolsAuthConfig {
   clientScopes: string[]
   customerScopes?: string[]
   refreshIfWithinSecs: number
-  timeout: number
+  timeoutMs: number
 }
 
 /**
@@ -23,7 +23,7 @@ interface Config extends CommercetoolsAuthConfig {
  */
 const configDefaults = {
   refreshIfWithinSecs: 1800,
-  timeout: 5
+  timeoutMs: 5
 }
 
 /**
@@ -94,7 +94,7 @@ export class CommercetoolsAuth {
     this.config = { ...configDefaults, ...config }
 
     if (!this.config.clientScopes.length) {
-      throw new CommercetoolsAuthError('`config.clientScopes` must contain at least one scope')
+      throw new CommercetoolsError('`config.clientScopes` must contain at least one scope')
     }
 
     this.api = new CommercetoolsAuthApi(config)
@@ -119,9 +119,7 @@ export class CommercetoolsAuth {
         const data = await this.api.refreshGrant(this.grant.refreshToken)
         this.grant.refresh(data)
         return this.grant
-      } catch (e) {
-        // Log that there was an error refreshing
-      }
+      } catch (e) {}
     }
 
     this.grantPromise = this.api.getClientGrant(this.config.clientScopes)
@@ -185,7 +183,7 @@ export class CommercetoolsAuth {
     const scopes = options.scopes || this.config.customerScopes
 
     if (!scopes) {
-      throw new CommercetoolsAuthError(
+      throw new CommercetoolsError(
         'Customer scopes must be set on either the `options` ' +
           'parameter of this `login` method, or on the `customerScopes` ' +
           'property of the `CommercetoolsAuth` constructor'
@@ -243,7 +241,7 @@ export class CommercetoolsAuth {
     const anonymousId = options?.anonymousId
 
     if (!scopes) {
-      throw new CommercetoolsAuthError(
+      throw new CommercetoolsError(
         'Customer scopes must be set on either the `options` ' +
           'parameter of this `login` method, or on the `customerScopes` ' +
           'property of the `CommercetoolsAuth` constructor'

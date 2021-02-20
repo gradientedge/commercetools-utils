@@ -1,6 +1,5 @@
+export * from './error/CommercetoolsError'
 export * from './auth/CommercetoolsAuth'
-export * from './auth/CommercetoolsAuthError'
 export * from './api/CommercetoolsApi'
-export * from './api/CommercetoolsApiError'
 export * from './auth/types'
 export * from './types'

@@ -1,10 +1,10 @@
 import axios from 'axios'
 import { CommercetoolsApiConfig } from './types'
 import { CommercetoolsAuth } from '../auth/CommercetoolsAuth'
-import { CommercetoolsApiError } from './CommercetoolsApiError'
+import { CommercetoolsError } from '../'
 import { REGION_URLS } from '../auth/constants'
 import { RegionEndpoints } from '../types'
-import { DEFAULT_REQUEST_TIMEOUT } from '../constants'
+import { DEFAULT_REQUEST_TIMEOUT_MS } from '../constants'
 
 interface FetchOptions {
   path: string
@@ -38,17 +38,6 @@ export class CommercetoolsApi {
   }
 
   /**
-   * Get an individual product by id:
-   * https://docs.commercetools.com/api/projects/products#get-product-by-id
-   */
-  getProductProjection(id: string): Promise<any> {
-    return this.request({
-      path: `/products/${id}`,
-      method: 'GET'
-    })
-  }
-
-  /**
    * Make the request to the commercetools REST API.
    */
   async request<T = any>(options: FetchOptions): Promise<T> {
@@ -65,7 +54,7 @@ export class CommercetoolsApi {
           Authorization: `Bearer ${grant.accessToken}`,
           ...opts.headers
         },
-        timeout: this.config.timeout || DEFAULT_REQUEST_TIMEOUT
+        timeout: this.config.timeoutMs || DEFAULT_REQUEST_TIMEOUT_MS
       })
       return response.data
     } catch (e) {
@@ -79,7 +68,7 @@ export class CommercetoolsApi {
           data: e.response?.data
         }
       }
-      throw new CommercetoolsApiError(`Error in request to: ${url}`, error)
+      throw new CommercetoolsError(`Error in request to: ${url}`, error)
     }
   }
 }

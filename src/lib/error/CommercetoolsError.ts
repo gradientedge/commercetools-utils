@@ -1,9 +1,9 @@
 import stringify from 'json-stringify-safe'
 
 /**
- * The error class thrown by {@see CommercetoolsAuth}
+ * The error class thrown by any of the utility classes.
  */
-export class CommercetoolsAuthError extends Error {
+export class CommercetoolsError extends Error {
   private readonly data?: any
 
   constructor(message: string, data?: any) {
@@ -11,7 +11,7 @@ export class CommercetoolsAuthError extends Error {
     this.data = data
 
     // https://github.com/Microsoft/TypeScript/wiki/Breaking-Changes#extending-built-ins-like-error-array-and-map-may-no-longer-work
-    Object.setPrototypeOf(this, CommercetoolsAuthError.prototype)
+    Object.setPrototypeOf(this, CommercetoolsError.prototype)
   }
 
   toJSON() {

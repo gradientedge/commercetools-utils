@@ -1,7 +1,7 @@
 {
   "name": "@gradientedge/commercetools-utils",
   "version": "0.0.1",
-  "description": "",
+  "description": "Provide utility classes and functions for interacting with the commercetools API",
   "main": "build/index.js",
   "scripts": {
     "build": "tsc",
@@ -21,7 +21,7 @@
     "utils"
   ],
   "author": "GradientEdge",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/gradientedge/commercetools-utils/issues"
   },

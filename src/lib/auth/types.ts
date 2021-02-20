@@ -16,7 +16,7 @@ export interface CommercetoolsAuthApiConfig {
   clientId: string
   clientSecret: string
   region: Region
-  timeout?: number
+  timeoutMs?: number
 }
 
 /**

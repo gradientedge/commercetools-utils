@@ -1,5 +1,5 @@
 import nock from 'nock'
-import { CommercetoolsAuth, CommercetoolsGrantResponse, CommercetoolsAuthError } from '../../lib'
+import { CommercetoolsAuth, CommercetoolsGrantResponse, CommercetoolsError } from '../../lib'
 import FakeTimers from '@sinonjs/fake-timers'
 import { Region } from '../../lib'
 
@@ -39,7 +39,7 @@ describe('CommercetoolsAuth', () => {
     it('should throw if there are no client scopes defined on the config object', () => {
       expect(() => {
         new CommercetoolsAuth({ ...defaultConfig, clientScopes: [] })
-      }).toThrow(new CommercetoolsAuthError('`config.clientScopes` must contain at least one scope'))
+      }).toThrow(new CommercetoolsError('`config.clientScopes` must contain at least one scope'))
     })
 
     it('should use the expected defaults for optional config properties', () => {
@@ -600,8 +600,8 @@ describe('CommercetoolsAuth', () => {
       }
 
       setTimeout(async () => {
-        const tokens = await Promise.all(promises)
-        console.log(tokens)
+        const token = await Promise.all(promises)
+        expect(token.length).toBe(5)
         scope.isDone()
         done()
       }, 1000)

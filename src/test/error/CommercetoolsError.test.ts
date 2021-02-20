@@ -1,10 +1,10 @@
-import { CommercetoolsAuthError } from '../../lib'
+import { CommercetoolsError } from '../../lib'
 
-describe('CommercetoolsAuthError', () => {
+describe('CommercetoolsError', () => {
   it('should return the expected string when stringified', async () => {
     expect(
       JSON.stringify(
-        new CommercetoolsAuthError('Test message', {
+        new CommercetoolsError('Test message', {
           test: 1
         })
       )
@@ -13,7 +13,7 @@ describe('CommercetoolsAuthError', () => {
 
   it('should return the expected string when converted to a string', async () => {
     expect(
-      new CommercetoolsAuthError('Test message', {
+      new CommercetoolsError('Test message', {
         test: 1
       }).toString()
     ).toBe('Test message: {"test":1}')

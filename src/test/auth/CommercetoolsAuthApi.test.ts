@@ -1,10 +1,5 @@
 import nock from 'nock'
-import {
-  CommercetoolsAuthError,
-  CommercetoolsGrantResponse,
-  CommercetoolsRefreshGrantResponse,
-  Region
-} from '../../lib'
+import { CommercetoolsError, CommercetoolsGrantResponse, CommercetoolsRefreshGrantResponse, Region } from '../../lib'
 import { CommercetoolsAuthApi } from '../../lib/auth/CommercetoolsAuthApi'
 
 const defaultConfig = {
@@ -12,7 +7,7 @@ const defaultConfig = {
   clientId: 'test-client-id',
   clientSecret: 'test-client-secret',
   region: Region.US_EAST,
-  timeout: 1000
+  timeoutMs: 1000
 }
 
 const defaultResponseToken: CommercetoolsGrantResponse = {
@@ -175,7 +170,7 @@ describe('CommercetoolsAuthApi', () => {
           age: 13.75
         })
       ).rejects.toThrow(
-        new CommercetoolsAuthError('Error in request to: https://auth.us-east-2.aws.commercetools.com/oauth/test', {
+        new CommercetoolsError('Error in request to: https://auth.us-east-2.aws.commercetools.com/oauth/test', {
           options: {
             body: 'name=Adrian&age=13.75',
             headers: {
@@ -206,7 +201,7 @@ describe('CommercetoolsAuthApi', () => {
       try {
         await auth.getClientGrant(['scope1'])
       } catch (e) {
-        expect(e).toBeInstanceOf(CommercetoolsAuthError)
+        expect(e).toBeInstanceOf(CommercetoolsError)
         expect(e.toJSON()).toEqual({
           data: {
             message: 'timeout of 1000ms exceeded',

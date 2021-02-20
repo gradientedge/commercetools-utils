@@ -4,13 +4,13 @@ import {
   CommercetoolsRefreshGrantResponse,
   GrantType
 } from './types'
-import { CommercetoolsAuthError } from './CommercetoolsAuthError'
+import { CommercetoolsError } from '../'
 import { scopeArrayToRequestString } from './scopes'
 import { REGION_URLS } from './constants'
-import { basic } from './utils'
+import { base64EncodeForBasicAuth } from './utils'
 import { RegionEndpoints } from '../types'
 import axios, { Method } from 'axios'
-import { DEFAULT_REQUEST_TIMEOUT } from '../constants'
+import { DEFAULT_REQUEST_TIMEOUT_MS } from '../constants'
 
 /**
  * Provides an easy to use set of methods for communicating with the commercetools
@@ -103,10 +103,10 @@ export class CommercetoolsAuthApi {
       const response = await axios({
         ...options,
         headers: {
-          Authorization: `Basic ${basic(this.config.clientId, this.config.clientSecret)}`,
+          Authorization: `Basic ${base64EncodeForBasicAuth(this.config.clientId, this.config.clientSecret)}`,
           'Content-Type': 'application/x-www-form-urlencoded'
         },
-        timeout: this.config.timeout || DEFAULT_REQUEST_TIMEOUT
+        timeout: this.config.timeoutMs || DEFAULT_REQUEST_TIMEOUT_MS
       })
       return response.data
     } catch (e) {
@@ -120,7 +120,7 @@ export class CommercetoolsAuthApi {
           data: e.response?.data
         }
       }
-      throw new CommercetoolsAuthError(`Error in request to: ${options.url}`, error)
+      throw new CommercetoolsError(`Error in request to: ${options.url}`, error)
     }
   }
 }
