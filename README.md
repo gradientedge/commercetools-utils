@@ -5,10 +5,24 @@ https://docs.commercetools.com/api/authorization.
 
 For more details, see our full API documentation.
 
-For clarity, we use the term **grant** to describe the object that holds the access token,
-refresh token, scope and expiry details. 
+## Installation
 
-## Creating a client grant
+With **npm**:
+```shell
+npm install --save @gradientedge/commercetools-utils
+```
+
+With **yarn**:
+```shell
+yarn add @gradientedge/commercetools-utils
+```
+
+## Code examples
+
+For clarity, we use the term **grant** to describe the object that holds the access token,
+refresh token, scope and expiry details.
+
+### Creating a client grant
 
 ```typescript
 import { Region, CommercetoolsAuth, CommercetoolsGrant } from '@gradientedge/commercetools-utils'
@@ -37,7 +51,7 @@ async function example() {
 example()
 ```
 
-## Logging in a customer
+### Logging in a customer
 
 ```typescript
 import { Region, CommercetoolsAuth, CommercetoolsGrant } from '@gradientedge/commercetools-utils'
@@ -71,7 +85,7 @@ Note that the `getClientGrant` method here could be swapped out for say `login` 
 There is no need to call `getClientGrant` before calling `login`. Ensuring that there's an active client grant
 will be taken care of by the `CommercetoolsAuth` class.
 
-## Get an anonymous customer grant
+### Get an anonymous customer grant
 
 ```typescript
 import { Region, CommercetoolsAuth, CommercetoolsGrant } from '@gradientedge/commercetools-utils'
@@ -98,7 +112,7 @@ async function example() {
 example()
 ```
 
-## Refresh an existing customer grant
+### Refresh an existing customer grant
 
 The code below demonstrates how we can call the `refreshCustomerGrant` method with the `refreshToken` of an 
 existing grant. Realistically, that grant would probably have come from something like a JWT that was passed
