@@ -32,7 +32,8 @@ async function example() {
     projectKey: 'your-project-key',
     clientId: 'your-client-id',
     clientSecret: 'your-client-secret',
-    region: Region.EUROPE_WEST
+    region: Region.EUROPE_WEST,
+    clientScopes: ['create_anonymous_token']
   })
 
   let grant: CommercetoolsGrant
@@ -61,7 +62,8 @@ async function example() {
     projectKey: 'your-project-key',
     clientId: 'your-client-id',
     clientSecret: 'your-client-secret',
-    region: Region.EUROPE_WEST
+    region: Region.EUROPE_WEST,
+    clientScopes: ['create_anonymous_token']
   })
 
   let grant: CommercetoolsGrant
@@ -95,7 +97,8 @@ async function example() {
     projectKey: 'your-project-key',
     clientId: 'your-client-id',
     clientSecret: 'your-client-secret',
-    region: Region.EUROPE_WEST
+    region: Region.EUROPE_WEST,
+    clientScopes: ['create_anonymous_token']
   })
 
   let grant: CommercetoolsGrant
@@ -126,7 +129,8 @@ async function example() {
     projectKey: 'your-project-key',
     clientId: 'your-client-id',
     clientSecret: 'your-client-secret',
-    region: Region.EUROPE_WEST
+    region: Region.EUROPE_WEST,
+    clientScopes: ['create_anonymous_token']
   })
 
   let grant: CommercetoolsGrant

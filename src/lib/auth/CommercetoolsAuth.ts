@@ -7,7 +7,7 @@ import { CommercetoolsAuthApi } from './CommercetoolsAuthApi'
  * This interface used for holding the internal config of {@see CommercetoolsAuth}.
  * It's only purpose currently is to make the {@see Config.refreshIfWithinSecs} and
  * {@see Config.timeoutMs} properties mandatory after extending {@see CommercetoolsAuthConfig}
- * where those properties are optional. Default values for those propertis are
+ * where those properties are optional. Default values for those properties are
  * defined on {@see configDefaults}.
  */
 interface Config extends CommercetoolsAuthConfig {
@@ -39,7 +39,8 @@ const configDefaults = {
  *     projectKey: 'your-project-key',
  *     clientId: 'your-client-id',
  *     clientSecret: 'your-client-secret',
- *     region: Region.EUROPE_WEST
+ *     region: Region.EUROPE_WEST,
+ *     clientScopes: ['create_anonymous_token']
  *   })
  *
  *   const grant = await auth.getClientGrant()
@@ -160,7 +161,8 @@ export class CommercetoolsAuth {
    *     clientScopes: [
    *       'view_published_products',
    *       'view_categories',
-   *       'manage_customers'
+   *       'manage_customers',
+   *       'create_anonymous_token'
    *     ]
    *   })
    *
@@ -224,7 +226,8 @@ export class CommercetoolsAuth {
    *     clientScopes: [
    *       'view_published_products',
    *       'view_categories',
-   *       'manage_customers'
+   *       'manage_customers',
+   *       'create_anonymous_token'
    *     ]
    *   })
    *
