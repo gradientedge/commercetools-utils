@@ -111,16 +111,8 @@ export class CommercetoolsAuth {
   public async getClientGrant(): Promise<CommercetoolsGrant> {
     await this.grantPromise
 
-    if (this.grant) {
-      if (!this.grant.expiresWithin(this.config.refreshIfWithinSecs)) {
-        return this.grant
-      }
-
-      try {
-        const data = await this.api.refreshGrant(this.grant.refreshToken)
-        this.grant.refresh(data)
-        return this.grant
-      } catch (e) {}
+    if (this.grant && !this.grant.expiresWithin(this.config.refreshIfWithinSecs)) {
+      return this.grant
     }
 
     this.grantPromise = this.api.getClientGrant(this.config.clientScopes)

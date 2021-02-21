@@ -1,9 +1,4 @@
-import {
-  CommercetoolsAuthApiConfig,
-  CommercetoolsGrantResponse,
-  CommercetoolsRefreshGrantResponse,
-  GrantType
-} from './types'
+import { CommercetoolsAuthApiConfig, CommercetoolsGrantResponse, GrantType } from './types'
 import { CommercetoolsError } from '../'
 import { scopeArrayToRequestString } from './scopes'
 import { REGION_URLS } from './constants'
@@ -50,7 +45,7 @@ export class CommercetoolsAuthApi {
    * Refresh a customer or client grant given a refresh token:
    * https://docs.commercetools.com/api/authorization#refresh-token-flow
    */
-  public async refreshGrant(refreshToken: string): Promise<CommercetoolsRefreshGrantResponse> {
+  public async refreshGrant(refreshToken: string): Promise<CommercetoolsGrantResponse> {
     return await this.post('/token', {
       grant_type: GrantType.REFRESH_TOKEN,
       refresh_token: refreshToken
