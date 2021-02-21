@@ -1,6 +1,6 @@
 # Gradient Edge commercetools utils
 
-An easy to use toolkit for working with the commercetools HTTP Authorization API:
+An easy-to-use toolkit for working with the commercetools HTTP Authorization API:
 https://docs.commercetools.com/api/authorization.
 
 For more details, see our full API documentation.
