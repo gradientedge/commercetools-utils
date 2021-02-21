@@ -33,7 +33,7 @@
   },
   "homepage": "https://github.com/gradientedge/commercetools-utils#readme",
   "devDependencies": {
-    "@sinonjs/fake-timers": "^7.0.2",
+    "@sinonjs/fake-timers": "^6.0.1",
     "@types/jest": "^26.0.20",
     "@types/json-stringify-safe": "^5.0.0",
     "@types/lodash": "^4.14.168",
