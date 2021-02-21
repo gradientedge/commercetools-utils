@@ -1,0 +1,11 @@
+.coverage
+.github
+docs
+src
+.editorconfig
+.eslintrc.js
+.gitignore
+.prettierignore
+.prettierrc
+jest.config.ts
+tsconfig.json
