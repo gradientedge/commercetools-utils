@@ -75,4 +75,71 @@ describe('CommercetoolsGrant', () => {
 
     expect(grant.refreshToken).toBeUndefined()
   })
+
+  describe('extractKeyFromScope', () => {
+    it('should return undefined when the key cannot be found', () => {
+      const grant = new CommercetoolsGrant({
+        access_token: '123',
+        refresh_token: '',
+        expires_in: 172800,
+        scope: 'scope1:test-project'
+      })
+
+      const result = grant.extractKeyFromScope('testKey', 'scope1:test scope2:test scope3:test')
+
+      expect(result).toBeUndefined()
+    })
+
+    it('should return the correct key when the key is present in the scope string', () => {
+      const grant = new CommercetoolsGrant({
+        access_token: '123',
+        refresh_token: '',
+        expires_in: 172800,
+        scope: 'scope1:test-project'
+      })
+
+      const result = grant.extractKeyFromScope('testKey', 'scope1:test scope2:test testKey:myValue scope3:test')
+
+      expect(result).toBe('myValue')
+    })
+
+    it('should return undefined when the key is a blank string', () => {
+      const grant = new CommercetoolsGrant({
+        access_token: '123',
+        refresh_token: '',
+        expires_in: 172800,
+        scope: 'scope1:test-project'
+      })
+
+      const result = grant.extractKeyFromScope('', 'scope1:test scope2:test testKey:myValue scope3:test')
+
+      expect(result).toBeUndefined()
+    })
+
+    it('should return undefined when the scope is a blank string', () => {
+      const grant = new CommercetoolsGrant({
+        access_token: '123',
+        refresh_token: '',
+        expires_in: 172800,
+        scope: 'scope1:test-project'
+      })
+
+      const result = grant.extractKeyFromScope('testKey', '')
+
+      expect(result).toBeUndefined()
+    })
+
+    it('should return a blank string when the value associated with the key is empty', () => {
+      const grant = new CommercetoolsGrant({
+        access_token: '123',
+        refresh_token: '',
+        expires_in: 172800,
+        scope: 'scope1:test-project'
+      })
+
+      const result = grant.extractKeyFromScope('testKey', 'scope1:test testKey: scope2:test')
+
+      expect(result).toBe('')
+    })
+  })
 })
