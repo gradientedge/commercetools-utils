@@ -28,6 +28,43 @@ export class CommercetoolsApi {
   }
 
   /**
+   * Get an individual category by id:
+   * https://docs.commercetools.com/api/projects/categories#get-category-by-id
+   */
+  getCategoryById(id: string): Promise<any> {
+    return this.request({
+      path: `/categories/${id}`,
+      method: 'GET'
+    })
+  }
+
+  /**
+   * Get a category projection by slug and locale
+   */
+  async getCategoryBySlug(slug: string, languageCode: string): Promise<any> {
+    const data = await this.request({
+      path: `/categories`,
+      method: 'GET',
+      params: {
+        where: `slug(${languageCode}="${slug}")`
+      }
+    })
+    return data.count ? data.results[0] : null
+  }
+
+  /**
+   * Query categories
+   * https://docs.commercetools.com/api/projects/categories#query-categories
+   */
+  queryCategories(params = {}): Promise<any> {
+    return this.request({
+      path: `/categories`,
+      method: 'GET',
+      params
+    })
+  }
+
+  /**
    * Get an individual product by id:
    * https://docs.commercetools.com/api/projects/products#get-product-by-id
    */
@@ -48,6 +85,20 @@ export class CommercetoolsApi {
       method: 'GET',
       params
     })
+  }
+
+  /**
+   * Get a product projection by slug and locale
+   */
+  async getProductProjectionBySlug(slug: string, languageCode: string): Promise<any> {
+    const data = await this.request({
+      path: `/product-projections`,
+      method: 'GET',
+      params: {
+        where: `slug(${languageCode}="${slug}")`
+      }
+    })
+    return data.count ? data.results[0] : null
   }
 
   /**
