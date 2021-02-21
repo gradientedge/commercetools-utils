@@ -1,5 +1,5 @@
 import nock from 'nock'
-import { CommercetoolsError, CommercetoolsGrantResponse, CommercetoolsRefreshGrantResponse, Region } from '../../lib'
+import { CommercetoolsError, CommercetoolsGrantResponse, Region } from '../../lib'
 import { CommercetoolsAuthApi } from '../../lib/auth/CommercetoolsAuthApi'
 
 const defaultConfig = {
@@ -17,7 +17,7 @@ const defaultResponseToken: CommercetoolsGrantResponse = {
   expires_in: 172800
 }
 
-const defaultRefreshGrantResponse: CommercetoolsRefreshGrantResponse = {
+const defaultRefreshGrantResponse: CommercetoolsGrantResponse = {
   access_token: 'test-access-token',
   scope: 'scope1:test-project-key customer_id:123456',
   expires_in: 172800
