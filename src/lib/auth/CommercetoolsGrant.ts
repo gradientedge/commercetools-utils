@@ -14,12 +14,28 @@ export class CommercetoolsGrant {
   public scopes: string[] = []
 
   /**
+   * When this grant came from a call to {@see CommercetoolsAuth.getAnonymousGrant}
+   * or {@see CommercetoolsApi.getAnonymousGrant} then the value will be populated
+   * with the id of the anonymous customer to which this grant relates.
+   */
+  public anonymousId?: string
+
+  /**
+   * When this grant is generated from a call to {@see CommercetoolsAuth.login}
+   * or {@see CommercetoolsApi.login} then this value will be populated with the
+   * id of the customer to which this grant relates.
+   */
+  public customerId?: string
+
+  /**
    * Create a new grant from grant data received back from commercetools.
    */
   constructor(data: CommercetoolsGrantResponse) {
     this.accessToken = data.access_token
     this.expiresIn = data.expires_in
     this.scopes = scopeRequestStringToArray(data.scope)
+    this.anonymousId = this.extractKeyFromScope('anonymous_id', data.scope)
+    this.customerId = this.extractKeyFromScope('customer_id', data.scope)
 
     // This sets the `expiresAt` property to the calculated Date when the grant is due to expire.
     this.expiresAt = new Date(new Date().getTime() + 1000 * data.expires_in)
@@ -39,5 +55,25 @@ export class CommercetoolsGrant {
   public expiresWithin(refreshIfWithinSecs: number) {
     const cutoff = new Date().getTime() + refreshIfWithinSecs * 1000
     return this.expiresAt.getTime() < cutoff
+  }
+
+  /**
+   * Given a scope string (as returned from commercetools), this method
+   * extracts the value of the associated with the given key. Used for
+   * retrieving the anonymous id and customer id from the scope string.
+   */
+  public extractKeyFromScope(key: string, scope: string): string | undefined {
+    if (!scope || !key) {
+      return undefined
+    }
+    const parts = scope?.split(' ')
+    if (!Array.isArray(parts) || parts.length === 0) {
+      return undefined
+    }
+    const item = parts.find((part) => part.slice(0, key.length + 1) === `${key}:`)
+    if (item) {
+      return item.slice(key.length + 1)
+    }
+    return undefined
   }
 }
