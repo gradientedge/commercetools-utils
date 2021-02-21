@@ -1,8 +1,0 @@
-*.iml
-.idea
-.vscode
-
-node_modules
-.coverage
-docs
-build
