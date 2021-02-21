@@ -51,6 +51,18 @@ export class CommercetoolsApi {
   }
 
   /**
+   * Query product projections
+   * https://docs.commercetools.com/api/projects/productProjections#query-productprojections
+   */
+  queryProductProjections(params = {}): Promise<any> {
+    return this.request({
+      path: `/product-projections`,
+      method: 'GET',
+      params
+    })
+  }
+
+  /**
    * Make the request to the commercetools REST API.
    */
   async request<T = any>(options: FetchOptions): Promise<T> {

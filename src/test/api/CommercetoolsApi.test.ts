@@ -71,6 +71,37 @@ describe('CommercetoolsApi', () => {
     })
   })
 
+  describe('queryProductProjections', () => {
+    it('should make a GET request to the correct endpoint when no parameters are passed', async () => {
+      nock('https://api.europe-west1.gcp.commercetools.com', {
+        encodedQueryParams: true
+      })
+        .get('/test-project-key/product-projections')
+        .reply(200, { success: true })
+      const api = new CommercetoolsApi(defaultConfig)
+
+      const product = await api.queryProductProjections()
+
+      expect(product).toEqual({ success: true })
+    })
+
+    it('should make a GET request to the correct endpoint with the passed in parameters in the querystring', async () => {
+      nock('https://api.europe-west1.gcp.commercetools.com', {
+        encodedQueryParams: true
+      })
+        .get('/test-project-key/product-projections?staged=true&where=slug(en%3D%22my-product-slug%22)')
+        .reply(200, { success: true })
+      const api = new CommercetoolsApi(defaultConfig)
+
+      const product = await api.queryProductProjections({
+        staged: true,
+        where: 'slug(en="my-product-slug")'
+      })
+
+      expect(product).toEqual({ success: true })
+    })
+  })
+
   describe('request timeout behaviour', () => {
     it('should time after the default timeout period', async () => {
       nock('https://api.europe-west1.gcp.commercetools.com', {
