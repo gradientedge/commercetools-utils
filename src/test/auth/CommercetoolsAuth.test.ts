@@ -11,6 +11,12 @@ const defaultConfig = {
   clientScopes: ['defaultClientScope1']
 }
 
+const defaultClientGrantResponse: CommercetoolsGrantResponse = {
+  access_token: 'test-access-token',
+  scope: 'scope1:test-project-key scope2:test-project-key scope3:test-project-key customer_id:123456',
+  expires_in: 172800
+}
+
 const defaultResponseToken: CommercetoolsGrantResponse = {
   access_token: 'test-access-token',
   refresh_token: 'test-refresh-token',
@@ -23,7 +29,7 @@ function nockGetClientGrant(body = '') {
     encodedQueryParams: true
   })
     .post('/oauth/token', body || 'grant_type=client_credentials&scope=defaultClientScope1%3Atest-project-key')
-    .reply(200, defaultResponseToken)
+    .reply(200, defaultClientGrantResponse)
 }
 
 describe('CommercetoolsAuth', () => {
@@ -98,7 +104,6 @@ describe('CommercetoolsAuth', () => {
       scope.isDone()
       expect(token).toEqual({
         accessToken: 'test-access-token',
-        refreshToken: 'test-refresh-token',
         scopes: ['scope1', 'scope2', 'scope3'],
         expiresIn: 172800,
         expiresAt: new Date('2020-01-03T09:35:23.000')
@@ -121,7 +126,6 @@ describe('CommercetoolsAuth', () => {
       scope.isDone()
       expect(token).toEqual({
         accessToken: 'test-access-token',
-        refreshToken: 'test-refresh-token',
         scopes: ['scope1', 'scope2', 'scope3'],
         expiresIn: 172800,
         expiresAt: new Date(1578044123000)
@@ -142,80 +146,9 @@ describe('CommercetoolsAuth', () => {
       scope.isDone()
       expect(token).toEqual({
         accessToken: 'test-access-token',
-        refreshToken: 'test-refresh-token',
         scopes: ['scope1', 'scope2', 'scope3'],
         expiresIn: 172800,
         expiresAt: new Date(1578044123000)
-      })
-      clock.uninstall()
-    })
-
-    it('should attempt to refresh the token when a cached token has expired', async () => {
-      // This will be the date/time that we use to get the expiry date of the initial token
-      const clock = FakeTimers.install({ now: new Date('2020-01-01T09:35:23.000') })
-      const auth = new CommercetoolsAuth(defaultConfig)
-      const scope1 = nockGetClientGrant()
-      const initialGrant = await auth.getClientGrant()
-      const refreshToken = initialGrant.refreshToken
-      // Set the fake timer forward by 3 days, which means the system should
-      // see the existing access token as having expired.
-      clock.setSystemTime(new Date('2020-01-04T01:25:46.000'))
-      const scope2 = nock('https://auth.us-east-2.aws.commercetools.com', {
-        encodedQueryParams: true
-      })
-        .post('/oauth/token', `grant_type=refresh_token&refresh_token=${refreshToken}`)
-        .reply(200, {
-          access_token: 'test-refreshed-access-token',
-          scope: 'scope1:test-project-key scope2:test-project-key scope3:test-project-key customer_id:123456',
-          expires_in: 172800
-        })
-
-      const grant = await auth.getClientGrant()
-
-      scope1.isDone()
-      scope2.isDone()
-      expect(grant).toEqual({
-        accessToken: 'test-refreshed-access-token',
-        refreshToken: 'test-refresh-token',
-        scopes: ['scope1', 'scope2', 'scope3'],
-        expiresIn: 172800,
-        expiresAt: new Date('2020-01-06T01:25:46.000')
-      })
-      clock.uninstall()
-    })
-
-    it('should attempt to refresh the token when the expiry time of the cached token in within the configured range', async () => {
-      // This will be the date/time that we use to get the expiry date of the initial token
-      const clock = FakeTimers.install({ now: new Date('2020-01-01T09:35:23.000') })
-
-      // Refresh if within 1 hour of expiry time
-      const auth = new CommercetoolsAuth({ ...defaultConfig, refreshIfWithinSecs: 3600 })
-      const scope1 = nockGetClientGrant()
-      const initialToken = await auth.getClientGrant()
-      const refreshToken = initialToken.refreshToken
-      // Set the fake timer forward by 3 days, which means the system should
-      // see the existing access token as having expired.
-      clock.setSystemTime(new Date('2020-01-03T09:01:12.000'))
-      const scope2 = nock('https://auth.us-east-2.aws.commercetools.com', {
-        encodedQueryParams: true
-      })
-        .post('/oauth/token', `grant_type=refresh_token&refresh_token=${refreshToken}`)
-        .reply(200, {
-          access_token: 'test-refreshed-access-token',
-          scope: 'scope1:test-project-key scope2:test-project-key scope3:test-project-key customer_id:123456',
-          expires_in: 172800
-        })
-
-      const token = await auth.getClientGrant()
-
-      scope1.isDone()
-      scope2.isDone()
-      expect(token).toEqual({
-        accessToken: 'test-refreshed-access-token',
-        refreshToken: 'test-refresh-token',
-        scopes: ['scope1', 'scope2', 'scope3'],
-        expiresIn: 172800,
-        expiresAt: new Date('2020-01-05T09:01:12.000Z')
       })
       clock.uninstall()
     })

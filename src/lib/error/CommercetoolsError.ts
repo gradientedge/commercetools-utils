@@ -37,7 +37,7 @@ export class CommercetoolsError extends Error {
    */
   public static fromAxiosError(e: AxiosError) {
     return new CommercetoolsError(
-      e.message || `Error in request to: ${e.config.url}`,
+      e.message,
       {
         code: e.code,
         request: {

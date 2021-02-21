@@ -21,18 +21,11 @@ export interface CommercetoolsAuthApiConfig {
 
 /**
  * The object structure that we receive back from commercetools
- * on a successful call to get a new grant.
+ * on a successful call to get a new grant, or refresh an existing one.
  */
-export interface CommercetoolsGrantResponse extends CommercetoolsRefreshGrantResponse {
-  refresh_token: string
-}
-
-/**
- * The object structure that we receive back from commercetools
- * on a successful call to refresh an existing grant.
- */
-export interface CommercetoolsRefreshGrantResponse {
+export interface CommercetoolsGrantResponse {
   access_token: string
+  refresh_token?: string
   expires_in: number
   scope: string
 }
