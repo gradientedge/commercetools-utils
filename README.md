@@ -83,7 +83,7 @@ async function example() {
 example()
 ```
 
-Note that the `getClientGrant` method here could be swapped out for say `login` in order to login a customer.
+Note that the `getClientGrant` method here could be swapped out for say, `login`, in order to login a customer.
 There is no need to call `getClientGrant` before calling `login`. Ensuring that there's an active client grant
 will be taken care of by the `CommercetoolsAuth` class.
 
