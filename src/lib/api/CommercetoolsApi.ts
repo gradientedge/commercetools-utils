@@ -10,6 +10,7 @@ interface FetchOptions {
   path: string
   headers?: Record<string, string>
   method: 'GET' | 'POST'
+  params?: Record<string, any>
 }
 
 /**
@@ -34,6 +35,18 @@ export class CommercetoolsApi {
     return this.request({
       path: `/products/${id}`,
       method: 'GET'
+    })
+  }
+
+  /**
+   * Get a product projection by id
+   * https://docs.commercetools.com/api/projects/productProjections#get-productprojection-by-id
+   */
+  getProductProjectionById(id: string, params = {}): Promise<any> {
+    return this.request({
+      path: `/product-projections/${id}`,
+      method: 'GET',
+      params
     })
   }
 
