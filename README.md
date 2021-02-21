@@ -1,6 +1,6 @@
 # Gradient Edge commercetools utils
 
-An easy to use toolkit for working with the commercetools HTTP Authorization API:
+An easy-to-use toolkit for working with the commercetools HTTP Authorization API:
 https://docs.commercetools.com/api/authorization.
 
 For more details, see our full API documentation.
@@ -83,7 +83,7 @@ async function example() {
 example()
 ```
 
-Note that the `getClientGrant` method here could be swapped out for say `login` in order to login a customer.
+Note that the `getClientGrant` method here could be swapped out for say, `login`, in order to login a customer.
 There is no need to call `getClientGrant` before calling `login`. Ensuring that there's an active client grant
 will be taken care of by the `CommercetoolsAuth` class.
 
