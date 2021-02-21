@@ -101,7 +101,13 @@
 						<section class="tsd-index-section ">
 							<h3>Methods</h3>
 							<ul class="tsd-index-list">
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="commercetoolsapi.html#getcategorybyid" class="tsd-kind-icon">get<wbr>Category<wbr>ById</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="commercetoolsapi.html#getcategorybyslug" class="tsd-kind-icon">get<wbr>Category<wbr>BySlug</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="commercetoolsapi.html#getproductbyid" class="tsd-kind-icon">get<wbr>Product<wbr>ById</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="commercetoolsapi.html#getproductprojectionbyid" class="tsd-kind-icon">get<wbr>Product<wbr>Projection<wbr>ById</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="commercetoolsapi.html#getproductprojectionbyslug" class="tsd-kind-icon">get<wbr>Product<wbr>Projection<wbr>BySlug</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="commercetoolsapi.html#querycategories" class="tsd-kind-icon">query<wbr>Categories</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="commercetoolsapi.html#queryproductprojections" class="tsd-kind-icon">query<wbr>Product<wbr>Projections</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter"><a href="commercetoolsapi.html#request" class="tsd-kind-icon">request</a></li>
 							</ul>
 						</section>
@@ -120,7 +126,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/gradientedge/commercetools-utils/blob/5b02fc8/src/lib/api/CommercetoolsApi.ts#L21">src/lib/api/CommercetoolsApi.ts:21</a></li>
+									<li>Defined in <a href="https://github.com/gradientedge/commercetools-utils/blob/e6363a4/src/lib/api/CommercetoolsApi.ts#L22">src/lib/api/CommercetoolsApi.ts:22</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -142,7 +148,7 @@
 					<div class="tsd-signature tsd-kind-icon">auth<span class="tsd-signature-symbol">:</span> <a href="commercetoolsauth.html" class="tsd-signature-type" data-tsd-kind="Class">CommercetoolsAuth</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/gradientedge/commercetools-utils/blob/5b02fc8/src/lib/api/CommercetoolsApi.ts#L19">src/lib/api/CommercetoolsApi.ts:19</a></li>
+							<li>Defined in <a href="https://github.com/gradientedge/commercetools-utils/blob/e6363a4/src/lib/api/CommercetoolsApi.ts#L20">src/lib/api/CommercetoolsApi.ts:20</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -152,7 +158,7 @@
 					<div class="tsd-signature tsd-kind-icon">config<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">CommercetoolsApiConfig</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/gradientedge/commercetools-utils/blob/5b02fc8/src/lib/api/CommercetoolsApi.ts#L20">src/lib/api/CommercetoolsApi.ts:20</a></li>
+							<li>Defined in <a href="https://github.com/gradientedge/commercetools-utils/blob/e6363a4/src/lib/api/CommercetoolsApi.ts#L21">src/lib/api/CommercetoolsApi.ts:21</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -162,13 +168,73 @@
 					<div class="tsd-signature tsd-kind-icon">endpoints<span class="tsd-signature-symbol">:</span> <a href="../interfaces/regionendpoints.html" class="tsd-signature-type" data-tsd-kind="Interface">RegionEndpoints</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/gradientedge/commercetools-utils/blob/5b02fc8/src/lib/api/CommercetoolsApi.ts#L21">src/lib/api/CommercetoolsApi.ts:21</a></li>
+							<li>Defined in <a href="https://github.com/gradientedge/commercetools-utils/blob/e6363a4/src/lib/api/CommercetoolsApi.ts#L22">src/lib/api/CommercetoolsApi.ts:22</a></li>
 						</ul>
 					</aside>
 				</section>
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Methods</h2>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="getcategorybyid" class="tsd-anchor"></a>
+					<h3>get<wbr>Category<wbr>ById</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">get<wbr>Category<wbr>ById<span class="tsd-signature-symbol">(</span>id<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/gradientedge/commercetools-utils/blob/e6363a4/src/lib/api/CommercetoolsApi.ts#L34">src/lib/api/CommercetoolsApi.ts:34</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Get an individual category by id:
+									<a href="https://docs.commercetools.com/api/projects/categories#get-category-by-id">https://docs.commercetools.com/api/projects/categories#get-category-by-id</a></p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>id: <span class="tsd-signature-type">string</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="getcategorybyslug" class="tsd-anchor"></a>
+					<h3>get<wbr>Category<wbr>BySlug</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">get<wbr>Category<wbr>BySlug<span class="tsd-signature-symbol">(</span>slug<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, languageCode<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/gradientedge/commercetools-utils/blob/e6363a4/src/lib/api/CommercetoolsApi.ts#L44">src/lib/api/CommercetoolsApi.ts:44</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Get a category projection by slug and locale</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>slug: <span class="tsd-signature-type">string</span></h5>
+								</li>
+								<li>
+									<h5>languageCode: <span class="tsd-signature-type">string</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
 					<a name="getproductbyid" class="tsd-anchor"></a>
 					<h3>get<wbr>Product<wbr>ById</h3>
@@ -179,7 +245,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/gradientedge/commercetools-utils/blob/5b02fc8/src/lib/api/CommercetoolsApi.ts#L33">src/lib/api/CommercetoolsApi.ts:33</a></li>
+									<li>Defined in <a href="https://github.com/gradientedge/commercetools-utils/blob/e6363a4/src/lib/api/CommercetoolsApi.ts#L71">src/lib/api/CommercetoolsApi.ts:71</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -198,6 +264,133 @@
 						</li>
 					</ul>
 				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="getproductprojectionbyid" class="tsd-anchor"></a>
+					<h3>get<wbr>Product<wbr>Projection<wbr>ById</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">get<wbr>Product<wbr>Projection<wbr>ById<span class="tsd-signature-symbol">(</span>id<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, params<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-symbol">{}</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/gradientedge/commercetools-utils/blob/e6363a4/src/lib/api/CommercetoolsApi.ts#L82">src/lib/api/CommercetoolsApi.ts:82</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Get a product projection by id
+									<a href="https://docs.commercetools.com/api/projects/productProjections#get-productprojection-by-id">https://docs.commercetools.com/api/projects/productProjections#get-productprojection-by-id</a></p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>id: <span class="tsd-signature-type">string</span></h5>
+								</li>
+								<li>
+									<h5>params: <span class="tsd-signature-symbol">{}</span><span class="tsd-signature-symbol"> = ...</span></h5>
+									<ul class="tsd-parameters">
+									</ul>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="getproductprojectionbyslug" class="tsd-anchor"></a>
+					<h3>get<wbr>Product<wbr>Projection<wbr>BySlug</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">get<wbr>Product<wbr>Projection<wbr>BySlug<span class="tsd-signature-symbol">(</span>slug<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, languageCode<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/gradientedge/commercetools-utils/blob/e6363a4/src/lib/api/CommercetoolsApi.ts#L93">src/lib/api/CommercetoolsApi.ts:93</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Get a product projection by slug and locale</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>slug: <span class="tsd-signature-type">string</span></h5>
+								</li>
+								<li>
+									<h5>languageCode: <span class="tsd-signature-type">string</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="querycategories" class="tsd-anchor"></a>
+					<h3>query<wbr>Categories</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">query<wbr>Categories<span class="tsd-signature-symbol">(</span>params<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-symbol">{}</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/gradientedge/commercetools-utils/blob/e6363a4/src/lib/api/CommercetoolsApi.ts#L59">src/lib/api/CommercetoolsApi.ts:59</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Query categories
+									<a href="https://docs.commercetools.com/api/projects/categories#query-categories">https://docs.commercetools.com/api/projects/categories#query-categories</a></p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>params: <span class="tsd-signature-symbol">{}</span><span class="tsd-signature-symbol"> = ...</span></h5>
+									<ul class="tsd-parameters">
+									</ul>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="queryproductprojections" class="tsd-anchor"></a>
+					<h3>query<wbr>Product<wbr>Projections</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">query<wbr>Product<wbr>Projections<span class="tsd-signature-symbol">(</span>params<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-symbol">{}</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/gradientedge/commercetools-utils/blob/e6363a4/src/lib/api/CommercetoolsApi.ts#L108">src/lib/api/CommercetoolsApi.ts:108</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Query product projections
+									<a href="https://docs.commercetools.com/api/projects/productProjections#query-productprojections">https://docs.commercetools.com/api/projects/productProjections#query-productprojections</a></p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>params: <span class="tsd-signature-symbol">{}</span><span class="tsd-signature-symbol"> = ...</span></h5>
+									<ul class="tsd-parameters">
+									</ul>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter">
 					<a name="request" class="tsd-anchor"></a>
 					<h3>request</h3>
@@ -208,7 +401,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/gradientedge/commercetools-utils/blob/5b02fc8/src/lib/api/CommercetoolsApi.ts#L43">src/lib/api/CommercetoolsApi.ts:43</a></li>
+									<li>Defined in <a href="https://github.com/gradientedge/commercetools-utils/blob/e6363a4/src/lib/api/CommercetoolsApi.ts#L119">src/lib/api/CommercetoolsApi.ts:119</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -268,7 +461,25 @@
 								<a href="commercetoolsapi.html#endpoints" class="tsd-kind-icon">endpoints</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="commercetoolsapi.html#getcategorybyid" class="tsd-kind-icon">get<wbr>Category<wbr>ById</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="commercetoolsapi.html#getcategorybyslug" class="tsd-kind-icon">get<wbr>Category<wbr>BySlug</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="commercetoolsapi.html#getproductbyid" class="tsd-kind-icon">get<wbr>Product<wbr>ById</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="commercetoolsapi.html#getproductprojectionbyid" class="tsd-kind-icon">get<wbr>Product<wbr>Projection<wbr>ById</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="commercetoolsapi.html#getproductprojectionbyslug" class="tsd-kind-icon">get<wbr>Product<wbr>Projection<wbr>BySlug</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="commercetoolsapi.html#querycategories" class="tsd-kind-icon">query<wbr>Categories</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="commercetoolsapi.html#queryproductprojections" class="tsd-kind-icon">query<wbr>Product<wbr>Projections</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter">
 								<a href="commercetoolsapi.html#request" class="tsd-kind-icon">request</a>
