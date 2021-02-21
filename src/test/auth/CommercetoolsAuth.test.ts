@@ -106,7 +106,8 @@ describe('CommercetoolsAuth', () => {
         accessToken: 'test-access-token',
         scopes: ['scope1', 'scope2', 'scope3'],
         expiresIn: 172800,
-        expiresAt: new Date('2020-01-03T09:35:23.000')
+        expiresAt: new Date('2020-01-03T09:35:23.000'),
+        customerId: '123456'
       })
       clock.uninstall()
     })
@@ -128,7 +129,8 @@ describe('CommercetoolsAuth', () => {
         accessToken: 'test-access-token',
         scopes: ['scope1', 'scope2', 'scope3'],
         expiresIn: 172800,
-        expiresAt: new Date(1578044123000)
+        expiresAt: new Date(1578044123000),
+        customerId: '123456'
       })
       clock.uninstall()
     })
@@ -148,7 +150,8 @@ describe('CommercetoolsAuth', () => {
         accessToken: 'test-access-token',
         scopes: ['scope1', 'scope2', 'scope3'],
         expiresIn: 172800,
-        expiresAt: new Date(1578044123000)
+        expiresAt: new Date(1578044123000),
+        customerId: '123456'
       })
       clock.uninstall()
     })

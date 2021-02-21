@@ -17,9 +17,15 @@ interface FetchOptions {
  * Doc comment
  */
 export class CommercetoolsApi {
-  private auth: CommercetoolsAuth
-  private config: CommercetoolsApiConfig
-  private endpoints: RegionEndpoints
+  /**
+   * This is the instance of the {@see CommercetoolsAuth} class that
+   * this class uses internally. It's exposed publicly so that it can
+   * be used by consumer's of this class in order to access authorization
+   * API related functionality.
+   */
+  public readonly auth: CommercetoolsAuth
+  private readonly config: CommercetoolsApiConfig
+  private readonly endpoints: RegionEndpoints
 
   constructor(config: CommercetoolsApiConfig) {
     this.config = config
