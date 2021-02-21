@@ -3,7 +3,7 @@
 An easy-to-use toolkit for working with the commercetools HTTP Authorization API:
 https://docs.commercetools.com/api/authorization.
 
-For more details, see our full API documentation.
+For more details, see our full [API documentation](https://gradientedge.github.io/commercetools-utils/).
 
 ## Installation
 
