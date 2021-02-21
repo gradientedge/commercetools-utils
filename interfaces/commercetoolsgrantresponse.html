@@ -69,7 +69,7 @@
 				<div class="tsd-comment tsd-typography">
 					<div class="lead">
 						<p>The object structure that we receive back from commercetools
-						on a successful call to get a new grant.</p>
+						on a successful call to get a new grant, or refresh an existing one.</p>
 					</div>
 				</div>
 			</section>
@@ -77,12 +77,7 @@
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<a href="commercetoolsrefreshgrantresponse.html" class="tsd-signature-type" data-tsd-kind="Interface">CommercetoolsRefreshGrantResponse</a>
-						<ul class="tsd-hierarchy">
-							<li>
-								<span class="target">CommercetoolsGrantResponse</span>
-							</li>
-						</ul>
+						<span class="target">CommercetoolsGrantResponse</span>
 					</li>
 				</ul>
 			</section>
@@ -93,10 +88,10 @@
 						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="commercetoolsgrantresponse.html#access_token" class="tsd-kind-icon">access_<wbr>token</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="commercetoolsgrantresponse.html#expires_in" class="tsd-kind-icon">expires_<wbr>in</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="commercetoolsgrantresponse.html#access_token" class="tsd-kind-icon">access_<wbr>token</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="commercetoolsgrantresponse.html#expires_in" class="tsd-kind-icon">expires_<wbr>in</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="commercetoolsgrantresponse.html#refresh_token" class="tsd-kind-icon">refresh_<wbr>token</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="commercetoolsgrantresponse.html#scope" class="tsd-kind-icon">scope</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="commercetoolsgrantresponse.html#scope" class="tsd-kind-icon">scope</a></li>
 							</ul>
 						</section>
 					</div>
@@ -104,46 +99,43 @@
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Properties</h2>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 					<a name="access_token" class="tsd-anchor"></a>
 					<h3>access_<wbr>token</h3>
 					<div class="tsd-signature tsd-kind-icon">access_<wbr>token<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
-						<p>Inherited from <a href="commercetoolsrefreshgrantresponse.html">CommercetoolsRefreshGrantResponse</a>.<a href="commercetoolsrefreshgrantresponse.html#access_token">access_token</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/gradientedge/commercetools-utils/blob/7d3b33f/src/lib/auth/types.ts#L35">src/lib/auth/types.ts:35</a></li>
+							<li>Defined in <a href="https://github.com/gradientedge/commercetools-utils/blob/5289e06/src/lib/auth/types.ts#L27">src/lib/auth/types.ts:27</a></li>
 						</ul>
 					</aside>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 					<a name="expires_in" class="tsd-anchor"></a>
 					<h3>expires_<wbr>in</h3>
 					<div class="tsd-signature tsd-kind-icon">expires_<wbr>in<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
-						<p>Inherited from <a href="commercetoolsrefreshgrantresponse.html">CommercetoolsRefreshGrantResponse</a>.<a href="commercetoolsrefreshgrantresponse.html#expires_in">expires_in</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/gradientedge/commercetools-utils/blob/7d3b33f/src/lib/auth/types.ts#L36">src/lib/auth/types.ts:36</a></li>
+							<li>Defined in <a href="https://github.com/gradientedge/commercetools-utils/blob/5289e06/src/lib/auth/types.ts#L29">src/lib/auth/types.ts:29</a></li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 					<a name="refresh_token" class="tsd-anchor"></a>
-					<h3>refresh_<wbr>token</h3>
-					<div class="tsd-signature tsd-kind-icon">refresh_<wbr>token<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> refresh_<wbr>token</h3>
+					<div class="tsd-signature tsd-kind-icon">refresh_<wbr>token<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/gradientedge/commercetools-utils/blob/7d3b33f/src/lib/auth/types.ts#L27">src/lib/auth/types.ts:27</a></li>
+							<li>Defined in <a href="https://github.com/gradientedge/commercetools-utils/blob/5289e06/src/lib/auth/types.ts#L28">src/lib/auth/types.ts:28</a></li>
 						</ul>
 					</aside>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 					<a name="scope" class="tsd-anchor"></a>
 					<h3>scope</h3>
 					<div class="tsd-signature tsd-kind-icon">scope<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
-						<p>Inherited from <a href="commercetoolsrefreshgrantresponse.html">CommercetoolsRefreshGrantResponse</a>.<a href="commercetoolsrefreshgrantresponse.html#scope">scope</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/gradientedge/commercetools-utils/blob/7d3b33f/src/lib/auth/types.ts#L37">src/lib/auth/types.ts:37</a></li>
+							<li>Defined in <a href="https://github.com/gradientedge/commercetools-utils/blob/5289e06/src/lib/auth/types.ts#L30">src/lib/auth/types.ts:30</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -194,25 +186,22 @@
 					<li class="current tsd-kind-interface">
 						<a href="commercetoolsgrantresponse.html" class="tsd-kind-icon">Commercetools<wbr>Grant<wbr>Response</a>
 						<ul>
-							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
 								<a href="commercetoolsgrantresponse.html#access_token" class="tsd-kind-icon">access_<wbr>token</a>
 							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
 								<a href="commercetoolsgrantresponse.html#expires_in" class="tsd-kind-icon">expires_<wbr>in</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
 								<a href="commercetoolsgrantresponse.html#refresh_token" class="tsd-kind-icon">refresh_<wbr>token</a>
 							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
 								<a href="commercetoolsgrantresponse.html#scope" class="tsd-kind-icon">scope</a>
 							</li>
 						</ul>
 					</li>
 				</ul>
 				<ul class="after-current">
-					<li class=" tsd-kind-interface">
-						<a href="commercetoolsrefreshgrantresponse.html" class="tsd-kind-icon">Commercetools<wbr>Refresh<wbr>Grant<wbr>Response</a>
-					</li>
 					<li class=" tsd-kind-interface">
 						<a href="loginoptions.html" class="tsd-kind-icon">Login<wbr>Options</a>
 					</li>
