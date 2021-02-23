@@ -1,6 +1,7 @@
 import nock from 'nock'
-import { CommercetoolsError, CommercetoolsGrantResponse, Region } from '../../lib'
+import { CommercetoolsError, Region } from '../../lib'
 import { CommercetoolsAuthApi } from '../../lib/auth/CommercetoolsAuthApi'
+import { CommercetoolsGrantResponse } from '../../lib/auth/types'
 
 const defaultConfig = {
   projectKey: 'test-project-key',
