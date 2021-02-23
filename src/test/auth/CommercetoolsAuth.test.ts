@@ -1,5 +1,6 @@
 import nock from 'nock'
-import { CommercetoolsAuth, CommercetoolsGrantResponse, CommercetoolsError } from '../../lib'
+import { CommercetoolsAuth, CommercetoolsError } from '../../lib'
+import { CommercetoolsGrantResponse } from '../../lib/auth/types'
 import FakeTimers from '@sinonjs/fake-timers'
 import { Region } from '../../lib'
 
