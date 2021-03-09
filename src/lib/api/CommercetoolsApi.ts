@@ -133,7 +133,7 @@ export class CommercetoolsApi {
   }
 
   /**
-   * Create a new cart
+   * Create a new cart for the customer associated with the given `accessToken` parameter.
    */
   async createCart(accessToken: string, data: any) {
     return this.request({
@@ -145,7 +145,9 @@ export class CommercetoolsApi {
   }
 
   /**
-   * Delete the active cart, if one exists.
+   * Delete the active cart, if one exists, of the customer associated with the
+   * given `accessToken` parameter. This method uses {@see getActiveCart} to first
+   * get the active cart, in order to discover the id and version of the active cart.
    */
   async deleteActiveCart(accessToken: string) {
     let cart
