@@ -9,8 +9,10 @@ import { DEFAULT_REQUEST_TIMEOUT_MS } from '../constants'
 interface FetchOptions {
   path: string
   headers?: Record<string, string>
-  method: 'GET' | 'POST'
+  method: 'GET' | 'POST' | 'DELETE'
   params?: Record<string, any>
+  data?: Record<string, any>
+  accessToken?: string
 }
 
 /**
@@ -120,20 +122,69 @@ export class CommercetoolsApi {
   }
 
   /**
+   * Get the active cart. Requires a logged in or anonymous customer access token.
+   */
+  async getActiveCart(accessToken: string) {
+    return this.request({
+      path: `/me/active-cart`,
+      method: 'GET',
+      accessToken
+    })
+  }
+
+  /**
+   * Create a new cart for the customer associated with the given `accessToken` parameter.
+   */
+  async createCart(accessToken: string, data: any) {
+    return this.request({
+      path: `/me/carts`,
+      method: 'POST',
+      accessToken,
+      data
+    })
+  }
+
+  /**
+   * Delete the active cart, if one exists, of the customer associated with the
+   * given `accessToken` parameter. This method uses {@see getActiveCart} to first
+   * get the active cart, in order to discover the id and version of the active cart.
+   */
+  async deleteActiveCart(accessToken: string) {
+    let cart
+    try {
+      cart = await this.getActiveCart(accessToken)
+    } catch (e) {}
+    if (cart) {
+      await this.request({
+        path: `/me/carts/${cart.id}`,
+        method: 'DELETE',
+        params: { version: cart.version },
+        accessToken
+      })
+    }
+  }
+
+  /**
    * Make the request to the commercetools REST API.
    */
   async request<T = any>(options: FetchOptions): Promise<T> {
-    const grant = await this.auth.getClientGrant()
+    let accessToken = options.accessToken
     const url = `${this.endpoints.api}/${this.config.projectKey}${options.path}`
     const opts: any = { ...options }
     opts.path && delete opts.path
+    opts.accessToken && delete opts.accessToken
+
+    if (!accessToken) {
+      const grant = await this.auth.getClientGrant()
+      accessToken = grant.accessToken
+    }
 
     try {
       const response = await axios({
         ...opts,
         url,
         headers: {
-          Authorization: `Bearer ${grant.accessToken}`,
+          Authorization: `Bearer ${accessToken}`,
           ...opts.headers
         },
         timeout: this.config.timeoutMs || DEFAULT_REQUEST_TIMEOUT_MS
