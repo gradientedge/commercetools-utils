@@ -5,6 +5,7 @@
   "main": "build/index.js",
   "scripts": {
     "build": "tsc",
+    "watch": "tsc --watch",
     "lint": "eslint './src/**/*.ts' --max-warnings=0",
     "prettier": "prettier --check \"**/*.{ts,js,json,graphql}\"",
     "prettify": "prettier --write \"**/*.{ts,js,json,graphql}\"",
