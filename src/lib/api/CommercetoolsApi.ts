@@ -165,6 +165,30 @@ export class CommercetoolsApi {
   }
 
   /**
+   * Update a customer's cart with the given actions.
+   */
+  updateMyCart(accessToken: string, cartId: string, cartVersion: number, actions: any[]) {
+    return this.request({
+      path: `/me/carts/${cartId}`,
+      method: 'POST',
+      data: {
+        version: cartVersion,
+        actions
+      },
+      accessToken
+    })
+  }
+
+  /**
+   * Set the shipping address on the active cart.
+   */
+  async setActiveCartShippingAddress(accessToken: string, address: any) {
+    const cart = await this.getActiveCart(accessToken)
+    const actions = [{ action: 'setShippingAddress', address }]
+    return this.updateMyCart(accessToken, cart.id, cart.version, actions)
+  }
+
+  /**
    * Make the request to the commercetools REST API.
    */
   async request<T = any>(options: FetchOptions): Promise<T> {

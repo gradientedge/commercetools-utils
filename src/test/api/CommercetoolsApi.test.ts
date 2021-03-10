@@ -1,3 +1,4 @@
+import path from 'path'
 import nock from 'nock'
 import { CommercetoolsApi, CommercetoolsError, Region } from '../../lib'
 import { CommercetoolsGrantResponse } from '../../lib/auth/types'
@@ -268,6 +269,86 @@ describe('CommercetoolsApi', () => {
         const api = new CommercetoolsApi(defaultConfig)
 
         await api.deleteActiveCart('my-access-token')
+      })
+    })
+
+    describe('updateMyCart', () => {
+      it('should call the expected endpoint with the correct parameters', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com', {
+          encodedQueryParams: true,
+          reqheaders: {
+            authorization: 'Bearer my-access-token'
+          }
+        })
+          .post('/test-project-key/me/carts/123', {
+            version: 4,
+            actions: [{ action: 'test', value: 789 }]
+          })
+          .reply(200, { test: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const result = await api.updateMyCart('my-access-token', '123', 4, [{ action: 'test', value: 789 }])
+
+        expect(result).toEqual({ test: true })
+      })
+    })
+
+    describe('setActiveCartShippingAddress', () => {
+      it('should call the expected endpoint with the expected params', async () => {
+        const cartJson = require(path.join(__dirname, './data/cart/active-1.json'))
+        nock('https://api.europe-west1.gcp.commercetools.com', {
+          encodedQueryParams: true,
+          reqheaders: {
+            authorization: 'Bearer my-access-token'
+          }
+        })
+          .get('/test-project-key/me/active-cart')
+          .reply(200, cartJson)
+        nock('https://api.europe-west1.gcp.commercetools.com', {
+          encodedQueryParams: true,
+          reqheaders: {
+            authorization: 'Bearer my-access-token'
+          }
+        })
+          .post('/test-project-key/me/carts/20a8f975-b075-4fa7-9a01-c9487154adff', {
+            version: 4,
+            actions: [
+              {
+                action: 'setShippingAddress',
+                address: {
+                  firstName: 'Jimmy',
+                  city: 'Birmingham',
+                  country: 'GB',
+                  custom: {
+                    type: {
+                      key: 'customFieldsKey'
+                    },
+                    fields: {
+                      addressLine1: 'Test address line 1'
+                    }
+                  }
+                }
+              }
+            ]
+          })
+          .reply(200, { test: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const result = await api.setActiveCartShippingAddress('my-access-token', {
+          firstName: 'Jimmy',
+          city: 'Birmingham',
+          country: 'GB',
+          custom: {
+            type: {
+              key: 'customFieldsKey'
+            },
+            fields: {
+              addressLine1: 'Test address line 1'
+            }
+          }
+        })
+
+        expect(result).toEqual({ test: true })
       })
     })
   })
