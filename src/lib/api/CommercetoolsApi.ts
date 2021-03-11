@@ -189,6 +189,21 @@ export class CommercetoolsApi {
   }
 
   /**
+   * Create an order from the given cart id
+   */
+  createMyOrderFromCart(accessToken: string, cartId: string, cartVersion: number) {
+    return this.request({
+      path: '/me/orders',
+      method: 'POST',
+      data: {
+        id: cartId,
+        version: cartVersion
+      },
+      accessToken
+    })
+  }
+
+  /**
    * Make the request to the commercetools REST API.
    */
   async request<T = any>(options: FetchOptions): Promise<T> {

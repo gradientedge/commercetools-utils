@@ -353,7 +353,30 @@ describe('CommercetoolsApi', () => {
     })
   })
 
-  describe('request timeout behaviour', () => {
+  describe('Order', () => {
+    describe('createMyOrderFromCart', () => {
+      it('should make a POST request to the correct endpoint with the given access token and cart data', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com', {
+          encodedQueryParams: true,
+          reqheaders: {
+            authorization: 'Bearer my-access-token'
+          }
+        })
+          .post('/test-project-key/me/orders', {
+            id: 'my-cart-id',
+            version: 2
+          })
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const response = await api.createMyOrderFromCart('my-access-token', 'my-cart-id', 2)
+
+        expect(response).toEqual({ success: true })
+      })
+    })
+  })
+
+  describe('Request timeout behaviour', () => {
     it('should time after the default timeout period', async () => {
       nock('https://api.europe-west1.gcp.commercetools.com', {
         encodedQueryParams: true
