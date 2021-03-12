@@ -204,6 +204,18 @@ export class CommercetoolsApi {
   }
 
   /**
+   * Create a payment object using the customer's access token
+   */
+  createMyPayment(accessToken: string, data: any) {
+    return this.request({
+      path: '/me/payments',
+      method: 'POST',
+      data,
+      accessToken
+    })
+  }
+
+  /**
    * Make the request to the commercetools REST API.
    */
   async request<T = any>(options: FetchOptions): Promise<T> {
