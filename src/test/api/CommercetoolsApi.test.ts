@@ -376,6 +376,28 @@ describe('CommercetoolsApi', () => {
     })
   })
 
+  describe('Payment', () => {
+    describe('createMyPayment', () => {
+      it('should make a POST request to the correct endpoint with the given access token and payment data', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com', {
+          encodedQueryParams: true,
+          reqheaders: {
+            authorization: 'Bearer my-access-token'
+          }
+        })
+          .post('/test-project-key/me/payments', {
+            test: 1
+          })
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const response = await api.createMyPayment('my-access-token', { test: 1 })
+
+        expect(response).toEqual({ success: true })
+      })
+    })
+  })
+
   describe('Request timeout behaviour', () => {
     it('should time after the default timeout period', async () => {
       nock('https://api.europe-west1.gcp.commercetools.com', {
