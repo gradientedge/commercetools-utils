@@ -39,21 +39,23 @@ export class CommercetoolsApi {
    * Get an individual category by id:
    * https://docs.commercetools.com/api/projects/categories#get-category-by-id
    */
-  getCategoryById(id: string): Promise<any> {
+  getCategoryById(id: string, params = {}): Promise<any> {
     return this.request({
       path: `/categories/${id}`,
-      method: 'GET'
+      method: 'GET',
+      params
     })
   }
 
   /**
    * Get a category projection by slug and locale
    */
-  async getCategoryBySlug(slug: string, languageCode: string): Promise<any> {
+  async getCategoryBySlug(slug: string, languageCode: string, params = {}): Promise<any> {
     const data = await this.request({
       path: `/categories`,
       method: 'GET',
       params: {
+        ...params,
         where: `slug(${languageCode}="${slug}")`
       }
     })
@@ -76,10 +78,11 @@ export class CommercetoolsApi {
    * Get an individual product by id:
    * https://docs.commercetools.com/api/projects/products#get-product-by-id
    */
-  getProductById(id: string): Promise<any> {
+  getProductById(id: string, params = {}): Promise<any> {
     return this.request({
       path: `/products/${id}`,
-      method: 'GET'
+      method: 'GET',
+      params
     })
   }
 
@@ -98,11 +101,12 @@ export class CommercetoolsApi {
   /**
    * Get a product projection by slug and locale
    */
-  async getProductProjectionBySlug(slug: string, languageCode: string): Promise<any> {
+  async getProductProjectionBySlug(slug: string, languageCode: string, params = {}): Promise<any> {
     const data = await this.request({
       path: `/product-projections`,
       method: 'GET',
       params: {
+        ...params,
         where: `slug(${languageCode}="${slug}")`
       }
     })
@@ -124,10 +128,11 @@ export class CommercetoolsApi {
   /**
    * Get the active cart. Requires a logged in or anonymous customer access token.
    */
-  async getActiveCart(accessToken: string) {
+  async getActiveCart(accessToken: string, params = {}) {
     return this.request({
       path: `/me/active-cart`,
       method: 'GET',
+      params,
       accessToken
     })
   }
@@ -135,12 +140,13 @@ export class CommercetoolsApi {
   /**
    * Create a new cart for the customer associated with the given `accessToken` parameter.
    */
-  async createCart(accessToken: string, data: any) {
+  async createCart(accessToken: string, data: any, params = {}) {
     return this.request({
       path: `/me/carts`,
       method: 'POST',
-      accessToken,
-      data
+      data,
+      params,
+      accessToken
     })
   }
 
@@ -167,7 +173,7 @@ export class CommercetoolsApi {
   /**
    * Update a customer's cart with the given actions.
    */
-  updateMyCart(accessToken: string, cartId: string, cartVersion: number, actions: any[]) {
+  updateMyCart(accessToken: string, cartId: string, cartVersion: number, actions: any[], params = {}) {
     return this.request({
       path: `/me/carts/${cartId}`,
       method: 'POST',
@@ -175,6 +181,7 @@ export class CommercetoolsApi {
         version: cartVersion,
         actions
       },
+      params,
       accessToken
     })
   }
@@ -182,16 +189,16 @@ export class CommercetoolsApi {
   /**
    * Set the shipping address on the active cart.
    */
-  async setActiveCartShippingAddress(accessToken: string, address: any) {
+  async setActiveCartShippingAddress(accessToken: string, address: any, params = {}) {
     const cart = await this.getActiveCart(accessToken)
     const actions = [{ action: 'setShippingAddress', address }]
-    return this.updateMyCart(accessToken, cart.id, cart.version, actions)
+    return this.updateMyCart(accessToken, cart.id, cart.version, actions, params)
   }
 
   /**
    * Create an order from the given cart id
    */
-  createMyOrderFromCart(accessToken: string, cartId: string, cartVersion: number) {
+  createMyOrderFromCart(accessToken: string, cartId: string, cartVersion: number, params = {}) {
     return this.request({
       path: '/me/orders',
       method: 'POST',
@@ -199,6 +206,7 @@ export class CommercetoolsApi {
         id: cartId,
         version: cartVersion
       },
+      params,
       accessToken
     })
   }
@@ -206,11 +214,12 @@ export class CommercetoolsApi {
   /**
    * Create a payment object using the customer's access token
    */
-  createMyPayment(accessToken: string, data: any) {
+  createMyPayment(accessToken: string, data: any, params = {}) {
     return this.request({
       path: '/me/payments',
       method: 'POST',
       data,
+      params,
       accessToken
     })
   }
