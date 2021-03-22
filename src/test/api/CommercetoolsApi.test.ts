@@ -374,6 +374,23 @@ describe('CommercetoolsApi', () => {
         expect(response).toEqual({ success: true })
       })
     })
+
+    describe('getMyOrderById', () => {
+      it('should make a GET request to the correct endpoint', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com', {
+          reqheaders: {
+            authorization: 'Bearer my-access-token'
+          }
+        })
+          .get('/test-project-key/me/orders/my-order-id')
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const order = await api.getMyOrderById('my-access-token', 'my-order-id')
+
+        expect(order).toEqual({ success: true })
+      })
+    })
   })
 
   describe('Payment', () => {
