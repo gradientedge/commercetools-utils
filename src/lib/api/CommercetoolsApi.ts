@@ -225,6 +225,18 @@ export class CommercetoolsApi {
   }
 
   /**
+   * Get an order by id using the customer's access token
+   */
+  getMyOrderById(accessToken: string, id: string, params = {}) {
+    return this.request({
+      path: `/me/orders/${id}`,
+      method: 'GET',
+      params,
+      accessToken
+    })
+  }
+
+  /**
    * Make the request to the commercetools REST API.
    */
   async request<T = any>(options: FetchOptions): Promise<T> {
