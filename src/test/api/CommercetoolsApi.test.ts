@@ -415,6 +415,25 @@ describe('CommercetoolsApi', () => {
     })
   })
 
+  describe('request', () => {
+    it('should send a `User-Agent` HTTP header when the `userAgent` config option is passed in', async () => {
+      const scope = nock('https://api.europe-west1.gcp.commercetools.com')
+        .matchHeader('User-Agent', 'Test user agent')
+        .matchHeader('Authorization', 'Bearer test-access-token')
+        .get('/test-project-key/test')
+        .reply(200, { success: true })
+      const api = new CommercetoolsApi({ ...defaultConfig, userAgent: 'Test user agent' })
+
+      const response = await api.request({
+        path: '/test',
+        method: 'GET'
+      })
+
+      scope.isDone()
+      expect(response).toEqual({ success: true })
+    })
+  })
+
   describe('Request timeout behaviour', () => {
     it('should time after the default timeout period', async () => {
       nock('https://api.europe-west1.gcp.commercetools.com', {

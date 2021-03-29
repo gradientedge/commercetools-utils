@@ -99,7 +99,8 @@ export class CommercetoolsAuthApi {
         ...options,
         headers: {
           Authorization: `Basic ${base64EncodeForBasicAuth(this.config.clientId, this.config.clientSecret)}`,
-          'Content-Type': 'application/x-www-form-urlencoded'
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'User-Agent': this.config.userAgent
         },
         timeout: this.config.timeoutMs || DEFAULT_REQUEST_TIMEOUT_MS
       })

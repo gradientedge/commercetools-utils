@@ -257,7 +257,8 @@ export class CommercetoolsApi {
         url,
         headers: {
           Authorization: `Bearer ${accessToken}`,
-          ...opts.headers
+          ...opts.headers,
+          'User-Agent': this.config.userAgent
         },
         timeout: this.config.timeoutMs || DEFAULT_REQUEST_TIMEOUT_MS
       })

@@ -157,6 +157,21 @@ describe('CommercetoolsAuthApi', () => {
       expect(grant).toEqual({ test: 1 })
     })
 
+    it('should send a `User-Agent` HTTP header when the `userAgent` config option is passed in', async () => {
+      const scope = nock('https://auth.us-east-2.aws.commercetools.com', {
+        encodedQueryParams: true
+      })
+        .matchHeader('User-Agent', 'My system identifier v1.2.3')
+        .post('/oauth/test', '')
+        .reply(200, { test: 1 })
+      const auth = new CommercetoolsAuthApi({ ...defaultConfig, userAgent: 'My system identifier v1.2.3' })
+
+      const grant = await auth.post('/test', {})
+
+      scope.isDone()
+      expect(grant).toEqual({ test: 1 })
+    })
+
     it('should throw an error when the underlying request errors', async () => {
       const scope = nock('https://auth.us-east-2.aws.commercetools.com', {
         encodedQueryParams: true
