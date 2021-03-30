@@ -41,5 +41,5 @@ export interface CommercetoolsBaseConfig {
    * 'User-Agent' HTTP header, in order to help commercetools
    * identify the source of incoming requests.
    */
-  userAgent?: string
+  systemIdentifier?: string
 }

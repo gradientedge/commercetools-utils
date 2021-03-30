@@ -416,13 +416,30 @@ describe('CommercetoolsApi', () => {
   })
 
   describe('request', () => {
-    it('should send a `User-Agent` HTTP header when the `userAgent` config option is passed in', async () => {
+    it('should send a `User-Agent` HTTP header containing only the package name/version when the `systemIdentifier` config option is missing', async () => {
       const scope = nock('https://api.europe-west1.gcp.commercetools.com')
-        .matchHeader('User-Agent', 'Test user agent')
+        .matchHeader('User-Agent', 'commercetools-utils/0.0.0-development')
         .matchHeader('Authorization', 'Bearer test-access-token')
         .get('/test-project-key/test')
         .reply(200, { success: true })
-      const api = new CommercetoolsApi({ ...defaultConfig, userAgent: 'Test user agent' })
+      const api = new CommercetoolsApi(defaultConfig)
+
+      const response = await api.request({
+        path: '/test',
+        method: 'GET'
+      })
+
+      scope.isDone()
+      expect(response).toEqual({ success: true })
+    })
+
+    it('should send a `User-Agent` HTTP header containing the `systemIdentifier` when specified in the config', async () => {
+      const scope = nock('https://api.europe-west1.gcp.commercetools.com')
+        .matchHeader('User-Agent', 'commercetools-utils/0.0.0-development (my-system)')
+        .matchHeader('Authorization', 'Bearer test-access-token')
+        .get('/test-project-key/test')
+        .reply(200, { success: true })
+      const api = new CommercetoolsApi({ ...defaultConfig, systemIdentifier: 'my-system' })
 
       const response = await api.request({
         path: '/test',
@@ -455,7 +472,7 @@ describe('CommercetoolsApi', () => {
               headers: {
                 Accept: 'application/json, text/plain, */*',
                 Authorization: 'Bearer test-access-token',
-                'User-Agent': 'axios/0.21.1'
+                'User-Agent': 'commercetools-utils/0.0.0-development'
               },
               method: 'get',
               url:
