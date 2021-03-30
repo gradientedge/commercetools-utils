@@ -6,6 +6,7 @@ import { base64EncodeForBasicAuth } from './utils'
 import { RegionEndpoints } from '../types'
 import axios, { Method } from 'axios'
 import { DEFAULT_REQUEST_TIMEOUT_MS } from '../constants'
+import { buildUserAgent } from '../utils'
 
 /**
  * Provides an easy to use set of methods for communicating with the commercetools
@@ -25,9 +26,16 @@ export class CommercetoolsAuthApi {
    */
   private endpoints: RegionEndpoints
 
+  /**
+   * The string that's sent over in the `User-Agent` header
+   * when a request is made to commercetools.
+   */
+  private readonly userAgent: string
+
   constructor(config: CommercetoolsAuthApiConfig) {
     this.config = config
     this.endpoints = REGION_URLS[this.config.region]
+    this.userAgent = buildUserAgent(this.config.systemIdentifier)
   }
 
   /**
@@ -99,7 +107,8 @@ export class CommercetoolsAuthApi {
         ...options,
         headers: {
           Authorization: `Basic ${base64EncodeForBasicAuth(this.config.clientId, this.config.clientSecret)}`,
-          'Content-Type': 'application/x-www-form-urlencoded'
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'User-Agent': this.userAgent
         },
         timeout: this.config.timeoutMs || DEFAULT_REQUEST_TIMEOUT_MS
       })

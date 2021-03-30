@@ -35,4 +35,11 @@ export interface CommercetoolsBaseConfig {
   region: Region
   clientScopes: string[]
   timeoutMs?: number
+
+  /**
+   * If provided, will be passed across to commercetools in the
+   * 'User-Agent' HTTP header, in order to help commercetools
+   * identify the source of incoming requests.
+   */
+  systemIdentifier?: string
 }
