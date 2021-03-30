@@ -157,6 +157,32 @@ describe('CommercetoolsAuthApi', () => {
       expect(grant).toEqual({ test: 1 })
     })
 
+    it('should send a `User-Agent` HTTP header containing only the package name/version when the `systemIdentifier` config option is missing', async () => {
+      const scope = nock('https://auth.us-east-2.aws.commercetools.com')
+        .matchHeader('User-Agent', 'commercetools-utils/0.0.0-development')
+        .post('/oauth/test', '')
+        .reply(200, { test: 1 })
+      const auth = new CommercetoolsAuthApi(defaultConfig)
+
+      const grant = await auth.post('/test', {})
+
+      scope.isDone()
+      expect(grant).toEqual({ test: 1 })
+    })
+
+    it('should send a `User-Agent` HTTP header containing the `systemIdentifier` when specified in the config', async () => {
+      const scope = nock('https://auth.us-east-2.aws.commercetools.com')
+        .matchHeader('User-Agent', 'commercetools-utils/0.0.0-development (my-system v1.2.3)')
+        .post('/oauth/test', '')
+        .reply(200, { test: 1 })
+      const auth = new CommercetoolsAuthApi({ ...defaultConfig, systemIdentifier: 'my-system v1.2.3' })
+
+      const grant = await auth.post('/test', {})
+
+      scope.isDone()
+      expect(grant).toEqual({ test: 1 })
+    })
+
     it('should throw an error when the underlying request errors', async () => {
       const scope = nock('https://auth.us-east-2.aws.commercetools.com', {
         encodedQueryParams: true
@@ -197,7 +223,7 @@ describe('CommercetoolsAuthApi', () => {
               headers: {
                 Authorization: 'Basic dGVzdC1jbGllbnQtaWQ6dGVzdC1jbGllbnQtc2VjcmV0',
                 'Content-Type': 'application/x-www-form-urlencoded',
-                'User-Agent': 'axios/0.21.1'
+                'User-Agent': 'commercetools-utils/0.0.0-development'
               },
               method: 'post',
               url: 'https://auth.us-east-2.aws.commercetools.com/oauth/token'

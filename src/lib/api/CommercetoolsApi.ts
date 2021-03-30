@@ -5,6 +5,7 @@ import { CommercetoolsError } from '../error'
 import { REGION_URLS } from '../auth/constants'
 import { RegionEndpoints } from '../types'
 import { DEFAULT_REQUEST_TIMEOUT_MS } from '../constants'
+import { buildUserAgent } from '../utils'
 
 interface FetchOptions {
   path: string
@@ -26,13 +27,29 @@ export class CommercetoolsApi {
    * API related functionality.
    */
   public readonly auth: CommercetoolsAuth
+
+  /**
+   * The configuration passed in to the constructor.
+   */
   private readonly config: CommercetoolsApiConfig
+
+  /**
+   * The Auth and API endpoints driven by the user's setting of {@link CommercetoolsApiConfig.region}
+   * https://docs.commercetools.com/api/general-concepts#regions
+   */
   private readonly endpoints: RegionEndpoints
+
+  /**
+   * The string that's sent over in the `User-Agent` header
+   * when a request is made to commercetools.
+   */
+  private readonly userAgent: string
 
   constructor(config: CommercetoolsApiConfig) {
     this.config = config
     this.auth = new CommercetoolsAuth(config)
     this.endpoints = REGION_URLS[this.config.region]
+    this.userAgent = buildUserAgent(this.config.systemIdentifier)
   }
 
   /**
@@ -257,7 +274,8 @@ export class CommercetoolsApi {
         url,
         headers: {
           Authorization: `Bearer ${accessToken}`,
-          ...opts.headers
+          ...opts.headers,
+          'User-Agent': this.userAgent
         },
         timeout: this.config.timeoutMs || DEFAULT_REQUEST_TIMEOUT_MS
       })
