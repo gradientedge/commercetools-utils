@@ -159,7 +159,7 @@ describe('CommercetoolsAuthApi', () => {
 
     it('should send a `User-Agent` HTTP header containing only the package name/version when the `systemIdentifier` config option is missing', async () => {
       const scope = nock('https://auth.us-east-2.aws.commercetools.com')
-        .matchHeader('User-Agent', 'commercetools-utils/0.0.0-development')
+        .matchHeader('User-Agent', '@gradientedge/commercetools-utils')
         .post('/oauth/test', '')
         .reply(200, { test: 1 })
       const auth = new CommercetoolsAuthApi(defaultConfig)
@@ -172,7 +172,7 @@ describe('CommercetoolsAuthApi', () => {
 
     it('should send a `User-Agent` HTTP header containing the `systemIdentifier` when specified in the config', async () => {
       const scope = nock('https://auth.us-east-2.aws.commercetools.com')
-        .matchHeader('User-Agent', 'commercetools-utils/0.0.0-development (my-system v1.2.3)')
+        .matchHeader('User-Agent', '@gradientedge/commercetools-utils (my-system v1.2.3)')
         .post('/oauth/test', '')
         .reply(200, { test: 1 })
       const auth = new CommercetoolsAuthApi({ ...defaultConfig, systemIdentifier: 'my-system v1.2.3' })
@@ -223,7 +223,7 @@ describe('CommercetoolsAuthApi', () => {
               headers: {
                 Authorization: 'Basic dGVzdC1jbGllbnQtaWQ6dGVzdC1jbGllbnQtc2VjcmV0',
                 'Content-Type': 'application/x-www-form-urlencoded',
-                'User-Agent': 'commercetools-utils/0.0.0-development'
+                'User-Agent': '@gradientedge/commercetools-utils'
               },
               method: 'post',
               url: 'https://auth.us-east-2.aws.commercetools.com/oauth/token'

@@ -102,14 +102,17 @@ export class CommercetoolsAuthApi {
       method: 'POST' as Method,
       data: new URLSearchParams(body).toString()
     }
+    const headers: any = {
+      Authorization: `Basic ${base64EncodeForBasicAuth(this.config.clientId, this.config.clientSecret)}`,
+      'Content-Type': 'application/x-www-form-urlencoded'
+    }
+    if (process?.release?.name) {
+      headers['User-Agent'] = this.userAgent
+    }
     try {
       const response = await axios({
         ...options,
-        headers: {
-          Authorization: `Basic ${base64EncodeForBasicAuth(this.config.clientId, this.config.clientSecret)}`,
-          'Content-Type': 'application/x-www-form-urlencoded',
-          'User-Agent': this.userAgent
-        },
+        headers,
         timeout: this.config.timeoutMs || DEFAULT_REQUEST_TIMEOUT_MS
       })
       return response.data

@@ -449,7 +449,7 @@ describe('CommercetoolsApi', () => {
   describe('request', () => {
     it('should send a `User-Agent` HTTP header containing only the package name/version when the `systemIdentifier` config option is missing', async () => {
       const scope = nock('https://api.europe-west1.gcp.commercetools.com')
-        .matchHeader('User-Agent', 'commercetools-utils/0.0.0-development')
+        .matchHeader('User-Agent', '@gradientedge/commercetools-utils')
         .matchHeader('Authorization', 'Bearer test-access-token')
         .get('/test-project-key/test')
         .reply(200, { success: true })
@@ -466,7 +466,7 @@ describe('CommercetoolsApi', () => {
 
     it('should send a `User-Agent` HTTP header containing the `systemIdentifier` when specified in the config', async () => {
       const scope = nock('https://api.europe-west1.gcp.commercetools.com')
-        .matchHeader('User-Agent', 'commercetools-utils/0.0.0-development (my-system)')
+        .matchHeader('User-Agent', '@gradientedge/commercetools-utils (my-system)')
         .matchHeader('Authorization', 'Bearer test-access-token')
         .get('/test-project-key/test')
         .reply(200, { success: true })
@@ -503,7 +503,7 @@ describe('CommercetoolsApi', () => {
               headers: {
                 Accept: 'application/json, text/plain, */*',
                 Authorization: 'Bearer test-access-token',
-                'User-Agent': 'commercetools-utils/0.0.0-development'
+                'User-Agent': '@gradientedge/commercetools-utils'
               },
               method: 'get',
               url:

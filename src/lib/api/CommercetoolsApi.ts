@@ -279,16 +279,18 @@ export class CommercetoolsApi {
       const grant = await this.auth.getClientGrant()
       accessToken = grant.accessToken
     }
-
+    const headers = {
+      Authorization: `Bearer ${accessToken}`,
+      ...opts.headers
+    }
+    if (process?.release?.name) {
+      headers['User-Agent'] = this.userAgent
+    }
     try {
       const response = await axios({
         ...opts,
         url,
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          ...opts.headers,
-          'User-Agent': this.userAgent
-        },
+        headers,
         timeout: this.config.timeoutMs || DEFAULT_REQUEST_TIMEOUT_MS
       })
       return response.data
