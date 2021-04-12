@@ -143,6 +143,18 @@ export class CommercetoolsApi {
   }
 
   /**
+   * Query product projections
+   * https://docs.commercetools.com/api/projects/products-search#search-productprojections
+   */
+  searchProductProjections(params = {}): Promise<any> {
+    return this.request({
+      path: `/product-projections/search`,
+      method: 'GET',
+      params
+    })
+  }
+
+  /**
    * Get the active cart. Requires a logged in or anonymous customer access token.
    */
   async getActiveCart(accessToken: string, params = {}) {
