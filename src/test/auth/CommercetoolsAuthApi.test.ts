@@ -7,7 +7,7 @@ const defaultConfig = {
   projectKey: 'test-project-key',
   clientId: 'test-client-id',
   clientSecret: 'test-client-secret',
-  region: Region.US_EAST,
+  region: Region.NORTH_AMERICA_AWS,
   timeoutMs: 1000
 }
 

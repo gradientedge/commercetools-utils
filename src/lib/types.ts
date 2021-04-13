@@ -3,11 +3,11 @@
  * This is used to determine the authentication endpoint.
  */
 export enum Region {
-  US_CENTRAL = 'us_central',
-  US_EAST = 'us_east',
-  EUROPE_WEST = 'europe_west',
-  EUROPE_CENTRAL = 'europe_central',
-  AUSTRALIA = 'australia'
+  NORTH_AMERICA_GCP = 'north_america_gcp',
+  NORTH_AMERICA_AWS = 'north_america_aws',
+  EUROPE_GCP = 'europe_gcp',
+  EUROPE_AWS = 'europe_aws',
+  AUSTRALIA_GCP = 'australia_gcp'
 }
 
 /**
