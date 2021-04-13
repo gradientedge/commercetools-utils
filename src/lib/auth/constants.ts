@@ -1,7 +1,7 @@
 import { Region, RegionEndpoints } from '../types'
 
 /**
- * Commercetools hosts/regions as defined here: https://docs.commercetools.com/api/general-concepts#hosts
+ * Commercetools regions and cloud providers - https://docs.commercetools.com/api/general-concepts#hosts
  */
 export const REGION_URLS: Record<Region, RegionEndpoints> = {
   [Region.EUROPE_GCP]: {
