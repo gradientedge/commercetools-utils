@@ -8,7 +8,7 @@ const defaultConfig = {
   projectKey: 'test-project-key',
   clientId: 'test-client-id',
   clientSecret: 'test-client-secret',
-  region: Region.US_EAST,
+  region: Region.NORTH_AMERICA_AWS,
   clientScopes: ['defaultClientScope1']
 }
 
@@ -56,7 +56,7 @@ describe('CommercetoolsAuth', () => {
         clientSecret: 'test-client-secret',
         projectKey: 'test-project-key',
         refreshIfWithinSecs: 1800,
-        region: 'us_east',
+        region: 'north_america_aws',
         clientScopes: ['defaultClientScope1']
       })
     })
@@ -71,7 +71,7 @@ describe('CommercetoolsAuth', () => {
         clientSecret: 'test-client-secret',
         projectKey: 'test-project-key',
         refreshIfWithinSecs: 2500,
-        region: 'us_east',
+        region: 'north_america_aws',
         clientScopes: ['defaultClientScope1']
       })
     })
@@ -87,7 +87,7 @@ describe('CommercetoolsAuth', () => {
         clientSecret: 'test-client-secret',
         projectKey: 'test-project-key',
         refreshIfWithinSecs: 1800,
-        region: 'us_east',
+        region: 'north_america_aws',
         customerScopes: ['scope1', 'scope2'],
         clientScopes: ['scope3', 'scope4']
       })
