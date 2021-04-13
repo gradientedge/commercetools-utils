@@ -7,7 +7,7 @@ const defaultConfig = {
   projectKey: 'test-project-key',
   clientId: 'test-client-id',
   clientSecret: 'test-client-secret',
-  region: Region.EUROPE_WEST,
+  region: Region.EUROPE_GCP,
   clientScopes: ['defaultClientScope1'],
   timeoutMs: 1000
 }

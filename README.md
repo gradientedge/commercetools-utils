@@ -8,11 +8,13 @@ For more details, see our full [API documentation](https://gradientedge.github.i
 ## Installation
 
 With **npm**:
+
 ```shell
 npm install --save @gradientedge/commercetools-utils
 ```
 
 With **yarn**:
+
 ```shell
 yarn add @gradientedge/commercetools-utils
 ```
@@ -32,12 +34,12 @@ async function example() {
     projectKey: 'your-project-key',
     clientId: 'your-client-id',
     clientSecret: 'your-client-secret',
-    region: Region.EUROPE_WEST,
+    region: Region.EUROPE_GCP,
     clientScopes: ['create_anonymous_token']
   })
 
   let grant: CommercetoolsGrant
-  
+
   try {
     const grant = await auth.getClientGrant()
     console.log('Grant:', grant)
@@ -62,12 +64,12 @@ async function example() {
     projectKey: 'your-project-key',
     clientId: 'your-client-id',
     clientSecret: 'your-client-secret',
-    region: Region.EUROPE_WEST,
+    region: Region.EUROPE_GCP,
     clientScopes: ['create_anonymous_token']
   })
 
   let grant: CommercetoolsGrant
-  
+
   try {
     const grant = await auth.login({
       username: 'myUsername',
@@ -97,12 +99,12 @@ async function example() {
     projectKey: 'your-project-key',
     clientId: 'your-client-id',
     clientSecret: 'your-client-secret',
-    region: Region.EUROPE_WEST,
+    region: Region.EUROPE_GCP,
     clientScopes: ['create_anonymous_token']
   })
 
   let grant: CommercetoolsGrant
-  
+
   try {
     const grant = await auth.getAnonymousGrant()
     console.log('Grant:', grant)
@@ -117,7 +119,7 @@ example()
 
 ### Refresh an existing customer grant
 
-The code below demonstrates how we can call the `refreshCustomerGrant` method with the `refreshToken` of an 
+The code below demonstrates how we can call the `refreshCustomerGrant` method with the `refreshToken` of an
 existing grant. Realistically, that grant would probably have come from something like a JWT that was passed
 to your back-end server by your UI.
 
@@ -129,7 +131,7 @@ async function example() {
     projectKey: 'your-project-key',
     clientId: 'your-client-id',
     clientSecret: 'your-client-secret',
-    region: Region.EUROPE_WEST,
+    region: Region.EUROPE_GCP,
     clientScopes: ['create_anonymous_token']
   })
 
@@ -145,9 +147,9 @@ async function example() {
     console.error(error)
     throw error
   }
-  
-  // The 'grant' would have been   
-  const refreshToken = grant.refreshToken  
+
+  // The 'grant' would have been
+  const refreshToken = grant.refreshToken
   try {
     const grant = await auth.refreshCustomerGrant(refreshToken)
     console.log('Refreshed grant:', grant)

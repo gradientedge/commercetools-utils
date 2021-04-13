@@ -39,7 +39,7 @@ const configDefaults = {
  *     projectKey: 'your-project-key',
  *     clientId: 'your-client-id',
  *     clientSecret: 'your-client-secret',
- *     region: Region.EUROPE_WEST,
+ *     region: Region.EUROPE_GCP,
  *     clientScopes: ['create_anonymous_token']
  *   })
  *
@@ -149,7 +149,7 @@ export class CommercetoolsAuth {
    *     projectKey: 'your-project-key',
    *     clientId: 'your-client-id',
    *     clientSecret: 'your-client-secret',
-   *     region: Region.EUROPE_WEST,
+   *     region: Region.EUROPE_GCP,
    *     clientScopes: [
    *       'view_published_products',
    *       'view_categories',
@@ -214,7 +214,7 @@ export class CommercetoolsAuth {
    *     projectKey: 'your-project-key',
    *     clientId: 'your-client-id',
    *     clientSecret: 'your-client-secret',
-   *     region: Region.EUROPE_WEST,
+   *     region: Region.EUROPE_GCP,
    *     clientScopes: [
    *       'view_published_products',
    *       'view_categories',
