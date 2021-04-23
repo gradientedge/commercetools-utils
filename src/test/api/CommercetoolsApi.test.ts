@@ -192,36 +192,100 @@ describe('CommercetoolsApi', () => {
         expect(product).toEqual({ success: true })
       })
     })
-  })
 
-  describe('searchProductProjections', () => {
-    it('should make a GET request to the correct endpoint when no parameters are passed', async () => {
-      nock('https://api.europe-west1.gcp.commercetools.com', {
-        encodedQueryParams: true
+    describe('createProduct', () => {
+      it('should make a POST request to the correct endpoint with all expected data and params', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com')
+          .post('/test-project-key/products')
+          .query({
+            testParam: 1
+          })
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const product = await api.createProduct('my-prod-key', { test: 1 }, { testParam: 1 })
+
+        expect(product).toEqual({ success: true })
       })
-        .get('/test-project-key/product-projections/search')
-        .reply(200, { success: true })
-      const api = new CommercetoolsApi(defaultConfig)
-
-      const product = await api.searchProductProjections({})
-
-      expect(product).toEqual({ success: true })
     })
 
-    it('should make a GET request to the correct endpoint with the passed in parameters in the querystring', async () => {
-      nock('https://api.europe-west1.gcp.commercetools.com', {
-        encodedQueryParams: true
-      })
-        .get('/test-project-key/product-projections/search?staged=true&where=slug(en%3D%22my-product-slug%22)')
-        .reply(200, { success: true })
-      const api = new CommercetoolsApi(defaultConfig)
+    describe('searchProductProjections', () => {
+      it('should make a GET request to the correct endpoint when no parameters are passed', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com', {
+          encodedQueryParams: true
+        })
+          .get('/test-project-key/product-projections/search')
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
 
-      const product = await api.searchProductProjections({
-        staged: true,
-        where: 'slug(en="my-product-slug")'
+        const product = await api.searchProductProjections({})
+
+        expect(product).toEqual({ success: true })
       })
 
-      expect(product).toEqual({ success: true })
+      it('should make a GET request to the correct endpoint with the passed in parameters in the querystring', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com', {
+          encodedQueryParams: true
+        })
+          .get('/test-project-key/product-projections/search?staged=true&where=slug(en%3D%22my-product-slug%22)')
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const product = await api.searchProductProjections({
+          staged: true,
+          where: 'slug(en="my-product-slug")'
+        })
+
+        expect(product).toEqual({ success: true })
+      })
+    })
+
+    describe('createProduct', () => {
+      it('should make a POST request to the correct endpoint with all expected data and params', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com')
+          .post('/test-project-key/products')
+          .query({
+            testParam: 1
+          })
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const product = await api.createProduct('my-prod-key', { test: 1 }, { testParam: 1 })
+
+        expect(product).toEqual({ success: true })
+      })
+    })
+
+    describe('updateProductById', () => {
+      it('should make a POST request to the correct endpoint with all expected data and params', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com')
+          .post('/test-project-key/products/my-prod-id')
+          .query({
+            testParam: 1
+          })
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const product = await api.updateProductById('my-prod-id', { test: 1 }, { testParam: 1 })
+
+        expect(product).toEqual({ success: true })
+      })
+    })
+
+    describe('updateProductByKey', () => {
+      it('should make a POST request to the correct endpoint with all expected data and params', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com')
+          .post('/test-project-key/products/key=my-prod-key')
+          .query({
+            testParam: 1
+          })
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const product = await api.updateProductByKey('my-prod-key', { test: 1 }, { testParam: 1 })
+
+        expect(product).toEqual({ success: true })
+      })
     })
   })
 
