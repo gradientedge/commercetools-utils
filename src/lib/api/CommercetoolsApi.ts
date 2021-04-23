@@ -266,6 +266,45 @@ export class CommercetoolsApi {
   }
 
   /**
+   * Update a product by key:
+   * https://docs.commercetools.com/api/projects/products#update-product-by-key
+   */
+  createProduct(key: string, data: any, params = {}) {
+    return this.request({
+      path: `/products`,
+      method: 'POST',
+      data,
+      params
+    })
+  }
+
+  /**
+   * Update a product by key:
+   * https://docs.commercetools.com/api/projects/products#update-product-by-key
+   */
+  updateProductByKey(key: string, data: any, params = {}) {
+    return this.request({
+      path: `/products/key=${key}`,
+      method: 'POST',
+      data,
+      params
+    })
+  }
+
+  /**
+   * Update a product by id:
+   * https://docs.commercetools.com/api/projects/products#update-product-by-key
+   */
+  updateProductById(id: string, data: any, params = {}) {
+    return this.request({
+      path: `/products/${id}`,
+      method: 'POST',
+      data,
+      params
+    })
+  }
+
+  /**
    * Make the request to the commercetools REST API.
    */
   async request<T = any>(options: FetchOptions): Promise<T> {
