@@ -266,8 +266,8 @@ export class CommercetoolsApi {
   }
 
   /**
-   * Update a product by key:
-   * https://docs.commercetools.com/api/projects/products#update-product-by-key
+   * Create a product:
+   * https://docs.commercetools.com/api/projects/products#create-a-product
    */
   createProduct(key: string, data: any, params = {}) {
     return this.request({
@@ -293,7 +293,7 @@ export class CommercetoolsApi {
 
   /**
    * Update a product by id:
-   * https://docs.commercetools.com/api/projects/products#update-product-by-key
+   * https://docs.commercetools.com/api/projects/products#update-product-by-id
    */
   updateProductById(id: string, data: any, params = {}) {
     return this.request({
@@ -301,6 +301,42 @@ export class CommercetoolsApi {
       method: 'POST',
       data,
       params
+    })
+  }
+
+  /**
+   * Create a category:
+   * https://docs.commercetools.com/api/projects/categories#create-a-category
+   */
+  createCategory(key: string, data: any) {
+    return this.request({
+      path: `/categories`,
+      method: 'POST',
+      data
+    })
+  }
+
+  /**
+   * Update a category by key:
+   * https://docs.commercetools.com/api/projects/categories#update-category-by-key
+   */
+  updateCategoryByKey(key: string, data: any) {
+    return this.request({
+      path: `/categories/key=${key}`,
+      method: 'POST',
+      data
+    })
+  }
+
+  /**
+   * Update a category by id:
+   * https://docs.commercetools.com/api/projects/categories#update-category-by-id
+   */
+  updateCategoryById(id: string, data: any) {
+    return this.request({
+      path: `/categories/${id}`,
+      method: 'POST',
+      data
     })
   }
 
