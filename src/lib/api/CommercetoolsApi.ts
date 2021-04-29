@@ -379,7 +379,7 @@ export class CommercetoolsApi {
     if (process?.release?.name) {
       headers['User-Agent'] = this.userAgent
     }
-    if (typeof options.correlationId === 'string') {
+    if (typeof options.correlationId === 'string' && options.correlationId !== '') {
       headers['X-Correlation-ID'] = options.correlationId
       delete options.correlationId
     }

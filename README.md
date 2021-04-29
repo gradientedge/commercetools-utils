@@ -1,7 +1,7 @@
 # Gradient Edge commercetools utils
 
 # ************************
-# DO NOT USE THIS LIBRARY #
+# BETA - Not recommended for production use #
 This library is undergoing many changes, and will not be ready for public consumption until
 at least version 2. This message will be removed when the API has been stabilised. Your 
 comments and PRs are however very welcome.
