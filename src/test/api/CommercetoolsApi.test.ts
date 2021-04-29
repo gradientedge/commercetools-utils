@@ -2,6 +2,7 @@ import path from 'path'
 import nock from 'nock'
 import { CommercetoolsApi, CommercetoolsError, Region } from '../../lib'
 import { CommercetoolsGrantResponse } from '../../lib/auth/types'
+import { ProductDraft, ProductUpdateAction } from '@commercetools/platform-sdk'
 
 const defaultConfig = {
   projectKey: 'test-project-key',
@@ -273,7 +274,10 @@ describe('CommercetoolsApi', () => {
           .reply(200, { success: true })
         const api = new CommercetoolsApi(defaultConfig)
 
-        const product = await api.createProduct('my-prod-key', { test: 1 }, { testParam: 1 })
+        const product = await api.createProduct({
+          data: ({ test: 1 } as unknown) as ProductDraft,
+          params: { testParam: 1 }
+        })
 
         expect(product).toEqual({ success: true })
       })
@@ -282,15 +286,23 @@ describe('CommercetoolsApi', () => {
     describe('updateProductById', () => {
       it('should make a POST request to the correct endpoint with all expected data and params', async () => {
         nock('https://api.europe-west1.gcp.commercetools.com')
-          .post('/test-project-key/products/my-prod-id', { test: 1 })
+          .post('/test-project-key/products/my-prod-id', { actions: [{ test: 1 }], version: 2 })
           .query({
             testParam: 1
           })
           .reply(200, { success: true })
         const api = new CommercetoolsApi(defaultConfig)
 
-        const product = await api.updateProductById('my-prod-id', { test: 1 }, { testParam: 1 })
+        const product = await api.updateProductById({
+          id: 'my-prod-id',
+          data: {
+            actions: ([{ test: 1 }] as unknown) as ProductUpdateAction[],
+            version: 2
+          },
+          params: { testParam: 1 }
+        })
 
+        nock.recorder.play()
         expect(product).toEqual({ success: true })
       })
     })
@@ -298,14 +310,18 @@ describe('CommercetoolsApi', () => {
     describe('updateProductByKey', () => {
       it('should make a POST request to the correct endpoint with all expected data and params', async () => {
         nock('https://api.europe-west1.gcp.commercetools.com')
-          .post('/test-project-key/products/key=my-prod-key', { test: 1 })
+          .post('/test-project-key/products/key=my-prod-key', { actions: [{ test: 1 }], version: 3 })
           .query({
             testParam: 1
           })
           .reply(200, { success: true })
         const api = new CommercetoolsApi(defaultConfig)
 
-        const product = await api.updateProductByKey('my-prod-key', { test: 1 }, { testParam: 1 })
+        const product = await api.updateProductByKey({
+          key: 'my-prod-key',
+          data: { actions: ([{ test: 1 }] as unknown) as ProductUpdateAction[], version: 3 },
+          params: { testParam: 1 }
+        })
 
         expect(product).toEqual({ success: true })
       })
@@ -567,9 +583,7 @@ describe('CommercetoolsApi', () => {
       scope.isDone()
       expect(response).toEqual({ success: true })
     })
-  })
 
-  describe('Request timeout behaviour', () => {
     it('should time after the default timeout period', async () => {
       nock('https://api.europe-west1.gcp.commercetools.com', {
         encodedQueryParams: true
@@ -603,6 +617,25 @@ describe('CommercetoolsApi', () => {
         return
       }
       fail('api.getProductById should have thrown due to timeout')
+    })
+
+    it('should send an `X-Correlation-ID` HTTP header when sent in the via a request option', async () => {
+      const scope = nock('https://api.europe-west1.gcp.commercetools.com')
+        .matchHeader('User-Agent', '@gradientedge/commercetools-utils')
+        .matchHeader('Authorization', 'Bearer test-access-token')
+        .matchHeader('X-Correlation-ID', 'my-correlation-id')
+        .get('/test-project-key/test')
+        .reply(200, { success: true })
+      const api = new CommercetoolsApi(defaultConfig)
+
+      const response = await api.request({
+        path: '/test',
+        method: 'GET',
+        correlationId: 'my-correlation-id'
+      })
+
+      scope.isDone()
+      expect(response).toEqual({ success: true })
     })
   })
 })

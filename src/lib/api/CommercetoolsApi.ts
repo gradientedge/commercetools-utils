@@ -6,6 +6,7 @@ import { REGION_URLS } from '../auth/constants'
 import { RegionEndpoints } from '../types'
 import { DEFAULT_REQUEST_TIMEOUT_MS } from '../constants'
 import { buildUserAgent } from '../utils'
+import { ProductDraft, ProductUpdate } from '@commercetools/platform-sdk'
 
 interface FetchOptions {
   path: string
@@ -14,10 +15,27 @@ interface FetchOptions {
   params?: Record<string, any>
   data?: Record<string, any>
   accessToken?: string
+  correlationId?: string
 }
 
 /**
- * Doc comment
+ * Options that are available to all requests.
+ */
+export interface CommonRequestOptions {
+  /**
+   * A unique id used to track the source of a request.
+   */
+  correlationId?: string
+
+  /**
+   * Query string parameters.
+   */
+  params?: Record<string, any>
+}
+
+/**
+ * A collection of convenience methods for interacting with the
+ * commercetools API.
  */
 export class CommercetoolsApi {
   /**
@@ -269,12 +287,12 @@ export class CommercetoolsApi {
    * Create a product:
    * https://docs.commercetools.com/api/projects/products#create-a-product
    */
-  createProduct(key: string, data: any, params = {}) {
+  createProduct(options: CommonRequestOptions & { data: ProductDraft }) {
     return this.request({
+      ...this.extractCommonRequestOptions(options),
       path: `/products`,
       method: 'POST',
-      data,
-      params
+      data: options.data
     })
   }
 
@@ -282,12 +300,12 @@ export class CommercetoolsApi {
    * Update a product by key:
    * https://docs.commercetools.com/api/projects/products#update-product-by-key
    */
-  updateProductByKey(key: string, data: any, params = {}) {
+  updateProductByKey(options: CommonRequestOptions & { key: string; data: ProductUpdate }) {
     return this.request({
-      path: `/products/key=${key}`,
+      ...this.extractCommonRequestOptions(options),
+      path: `/products/key=${options.key}`,
       method: 'POST',
-      data,
-      params
+      data: options.data
     })
   }
 
@@ -295,12 +313,12 @@ export class CommercetoolsApi {
    * Update a product by id:
    * https://docs.commercetools.com/api/projects/products#update-product-by-id
    */
-  updateProductById(id: string, data: any, params = {}) {
+  updateProductById(options: CommonRequestOptions & { id: string; data: ProductUpdate }) {
     return this.request({
-      path: `/products/${id}`,
+      ...this.extractCommonRequestOptions(options),
+      path: `/products/${options.id}`,
       method: 'POST',
-      data,
-      params
+      data: options.data
     })
   }
 
@@ -361,6 +379,10 @@ export class CommercetoolsApi {
     if (process?.release?.name) {
       headers['User-Agent'] = this.userAgent
     }
+    if (typeof options.correlationId === 'string') {
+      headers['X-Correlation-ID'] = options.correlationId
+      delete options.correlationId
+    }
     try {
       const response = await axios({
         ...opts,
@@ -374,6 +396,16 @@ export class CommercetoolsApi {
         throw CommercetoolsError.fromAxiosError(error)
       }
       throw error
+    }
+  }
+
+  /**
+   * Type-guard against any additional unexpected properties being passed in.
+   */
+  private extractCommonRequestOptions(options: CommonRequestOptions): CommonRequestOptions {
+    return {
+      correlationId: options.correlationId,
+      params: options.params
     }
   }
 }

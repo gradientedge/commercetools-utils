@@ -1,5 +1,12 @@
 # Gradient Edge commercetools utils
 
+# ************************
+# DO NOT USE THIS LIBRARY #
+This library is undergoing many changes, and will not be ready for public consumption until
+at least version 2. This message will be removed when the API has been stabilised. Your 
+comments and PRs are however very welcome.
+# ************************
+
 An easy-to-use toolkit for working with the commercetools HTTP Authorization API:
 https://docs.commercetools.com/api/authorization.
 
