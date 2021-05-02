@@ -103,6 +103,48 @@ describe('CommercetoolsApi', () => {
       })
     })
 
+    describe('getCategoryParents', () => {
+      it('should make a GET request to the correct endpoint when using an id as criteria', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com')
+          .get('/test-project-key/categories/my-cat-id')
+          .query({
+            expand: 'ancestors[*]'
+          })
+          .reply(200, {
+            ancestors: [
+              { id: 'ancestor-root', obj: { id: 'ancestor-root' } },
+              { id: 'grandparent-cat', obj: { id: 'grandparent-cat' } },
+              { id: 'parent-cat', obj: { id: 'parent-cat' } }
+            ]
+          })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const list = await api.getCategoryParents({ id: 'my-cat-id' })
+
+        expect(list).toEqual([{ id: 'ancestor-root' }, { id: 'grandparent-cat' }, { id: 'parent-cat' }])
+      })
+
+      it('should make a GET request to the correct endpoint when using a key as criteria', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com')
+          .get('/test-project-key/categories/key=my-cat-key')
+          .query({
+            expand: 'ancestors[*]'
+          })
+          .reply(200, {
+            ancestors: [
+              { id: 'ancestor-root', obj: { id: 'ancestor-root' } },
+              { id: 'grandparent-cat', obj: { id: 'grandparent-cat' } },
+              { id: 'parent-cat', obj: { id: 'parent-cat' } }
+            ]
+          })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const list = await api.getCategoryParents({ key: 'my-cat-key' })
+
+        expect(list).toEqual([{ id: 'ancestor-root' }, { id: 'grandparent-cat' }, { id: 'parent-cat' }])
+      })
+    })
+
     describe('createCategory', () => {
       it('should make a POST request to the correct endpoint with all expected data and params', async () => {
         nock('https://api.europe-west1.gcp.commercetools.com')
