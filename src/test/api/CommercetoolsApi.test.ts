@@ -111,6 +111,7 @@ describe('CommercetoolsApi', () => {
             expand: 'ancestors[*]'
           })
           .reply(200, {
+            id: 'my-cat-id',
             ancestors: [
               { id: 'ancestor-root', obj: { id: 'ancestor-root' } },
               { id: 'grandparent-cat', obj: { id: 'grandparent-cat' } },
@@ -121,7 +122,15 @@ describe('CommercetoolsApi', () => {
 
         const list = await api.getCategoryParents({ id: 'my-cat-id' })
 
-        expect(list).toEqual([{ id: 'ancestor-root' }, { id: 'grandparent-cat' }, { id: 'parent-cat' }])
+        expect(list).toEqual([
+          { id: 'ancestor-root' },
+          { id: 'grandparent-cat' },
+          { id: 'parent-cat' },
+          {
+            id: 'my-cat-id',
+            ancestors: [{ id: 'ancestor-root' }, { id: 'grandparent-cat' }, { id: 'parent-cat' }]
+          }
+        ])
       })
 
       it('should make a GET request to the correct endpoint when using a key as criteria', async () => {
@@ -131,6 +140,7 @@ describe('CommercetoolsApi', () => {
             expand: 'ancestors[*]'
           })
           .reply(200, {
+            key: 'my-cat-key',
             ancestors: [
               { id: 'ancestor-root', obj: { id: 'ancestor-root' } },
               { id: 'grandparent-cat', obj: { id: 'grandparent-cat' } },
@@ -141,7 +151,15 @@ describe('CommercetoolsApi', () => {
 
         const list = await api.getCategoryParents({ key: 'my-cat-key' })
 
-        expect(list).toEqual([{ id: 'ancestor-root' }, { id: 'grandparent-cat' }, { id: 'parent-cat' }])
+        expect(list).toEqual([
+          { id: 'ancestor-root' },
+          { id: 'grandparent-cat' },
+          { id: 'parent-cat' },
+          {
+            key: 'my-cat-key',
+            ancestors: [{ id: 'ancestor-root' }, { id: 'grandparent-cat' }, { id: 'parent-cat' }]
+          }
+        ])
       })
     })
 

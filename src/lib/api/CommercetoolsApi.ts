@@ -144,7 +144,12 @@ export class CommercetoolsApi {
         expand: 'ancestors[*]'
       }
     })
-    return category.ancestors.map((ref) => ref.obj as Category)
+    const ancestors = category.ancestors.map((ref) => ref.obj as Category)
+    ancestors.push({
+      ...category,
+      ancestors: category.ancestors.map((ancestor) => ({ id: ancestor.id, typeId: ancestor.typeId }))
+    })
+    return ancestors
   }
 
   /**
