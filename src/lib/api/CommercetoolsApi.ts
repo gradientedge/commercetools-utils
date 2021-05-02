@@ -6,7 +6,7 @@ import { REGION_URLS } from '../auth/constants'
 import { RegionEndpoints } from '../types'
 import { DEFAULT_REQUEST_TIMEOUT_MS } from '../constants'
 import { buildUserAgent } from '../utils'
-import { ProductDraft, ProductUpdate } from '@commercetools/platform-sdk'
+import { Category, ProductDraft, ProductUpdate } from '@commercetools/platform-sdk'
 
 interface FetchOptions {
   path: string
@@ -83,6 +83,27 @@ export class CommercetoolsApi {
   }
 
   /**
+   * Get an category by id or key. Either the id or the key must be provided.
+   */
+  getCategory(options: CommonRequestOptions & { id?: string; key?: string }): Promise<Category> {
+    if (!options.id && !options.key) {
+      throw new CommercetoolsError('Either an id, key or slug must be provided')
+    }
+    if (options.id) {
+      return this.request({
+        ...this.extractCommonRequestOptions(options),
+        path: `/categories/${options.id}`,
+        method: 'GET'
+      })
+    }
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/categories/key=${options.key}`,
+      method: 'GET'
+    })
+  }
+
+  /**
    * Get a category projection by slug and locale
    */
   async getCategoryBySlug(slug: string, languageCode: string, params = {}): Promise<any> {
@@ -107,6 +128,28 @@ export class CommercetoolsApi {
       method: 'GET',
       params
     })
+  }
+
+  /**
+   * Get the parent categories of a given category. This method returns an array
+   * of {@see Category} items representing the ancestry of categories for the given
+   * category id. The list is ordered from top down. In other words, the root
+   * category is always the first item in the list.
+   */
+  async getCategoryParents(options: CommonRequestOptions & { id?: string; key?: string }): Promise<Array<Category>> {
+    const category = await this.getCategory({
+      ...options,
+      params: {
+        ...options.params,
+        expand: 'ancestors[*]'
+      }
+    })
+    const ancestors = category.ancestors.map((ref) => ref.obj as Category)
+    ancestors.push({
+      ...category,
+      ancestors: category.ancestors.map((ancestor) => ({ id: ancestor.id, typeId: ancestor.typeId }))
+    })
+    return ancestors
   }
 
   /**
