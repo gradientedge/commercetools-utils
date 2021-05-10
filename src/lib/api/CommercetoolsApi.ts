@@ -6,7 +6,7 @@ import { REGION_URLS } from '../auth/constants'
 import { RegionEndpoints } from '../types'
 import { DEFAULT_REQUEST_TIMEOUT_MS } from '../constants'
 import { buildUserAgent } from '../utils'
-import { Category, ProductDraft, ProductUpdate } from '@commercetools/platform-sdk'
+import { Category, CategoryDraft, CategoryUpdate, ProductDraft, ProductUpdate } from '@commercetools/platform-sdk'
 
 interface FetchOptions {
   path: string
@@ -369,11 +369,11 @@ export class CommercetoolsApi {
    * Create a category:
    * https://docs.commercetools.com/api/projects/categories#create-a-category
    */
-  createCategory(key: string, data: any) {
+  createCategory(options: CommonRequestOptions & { data: CategoryDraft }) {
     return this.request({
       path: `/categories`,
       method: 'POST',
-      data
+      data: options.data
     })
   }
 
@@ -381,11 +381,11 @@ export class CommercetoolsApi {
    * Update a category by key:
    * https://docs.commercetools.com/api/projects/categories#update-category-by-key
    */
-  updateCategoryByKey(key: string, data: any) {
+  updateCategoryByKey(options: CommonRequestOptions & { key: string; data: CategoryUpdate }) {
     return this.request({
-      path: `/categories/key=${key}`,
+      path: `/categories/key=${options.key}`,
       method: 'POST',
-      data
+      data: options.data
     })
   }
 
@@ -393,11 +393,28 @@ export class CommercetoolsApi {
    * Update a category by id:
    * https://docs.commercetools.com/api/projects/categories#update-category-by-id
    */
-  updateCategoryById(id: string, data: any) {
+  updateCategoryById(options: CommonRequestOptions & { id: string; data: CategoryUpdate }) {
     return this.request({
-      path: `/categories/${id}`,
+      ...this.extractCommonRequestOptions(options),
+      path: `/categories/${options.id}`,
       method: 'POST',
-      data
+      data: options.data
+    })
+  }
+
+  /**
+   * Delete a category by id:
+   * https://docs.commercetools.com/api/projects/categories#delete-category-by-id
+   */
+  deleteCategoryById(options: CommonRequestOptions & { id: string; version: number }) {
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/categories/${options.id}`,
+      method: 'DELETE',
+      params: {
+        ...options.params,
+        version: options.version
+      }
     })
   }
 

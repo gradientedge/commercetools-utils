@@ -166,11 +166,11 @@ describe('CommercetoolsApi', () => {
     describe('createCategory', () => {
       it('should make a POST request to the correct endpoint with all expected data and params', async () => {
         nock('https://api.europe-west1.gcp.commercetools.com')
-          .post('/test-project-key/categories', { test: 1 })
+          .post('/test-project-key/categories', { name: { en: 'Test' }, slug: { en: 'test ' } })
           .reply(200, { success: true })
         const api = new CommercetoolsApi(defaultConfig)
 
-        const product = await api.createCategory('my-cat-key', { test: 1 })
+        const product = await api.createCategory({ data: { name: { en: 'Test' }, slug: { en: 'test ' } } })
 
         expect(product).toEqual({ success: true })
       })
@@ -179,26 +179,40 @@ describe('CommercetoolsApi', () => {
     describe('updateCategoryById', () => {
       it('should make a POST request to the correct endpoint with all expected data and params', async () => {
         nock('https://api.europe-west1.gcp.commercetools.com')
-          .post('/test-project-key/categories/my-cat-id', { test: 1 })
+          .post('/test-project-key/categories/my-cat-id', { version: 1, actions: [] })
           .reply(200, { success: true })
         const api = new CommercetoolsApi(defaultConfig)
 
-        const product = await api.updateCategoryById('my-cat-id', { test: 1 })
+        const category = await api.updateCategoryById({ id: 'my-cat-id', data: { version: 1, actions: [] } })
 
-        expect(product).toEqual({ success: true })
+        expect(category).toEqual({ success: true })
       })
     })
 
     describe('updateCategoryByKey', () => {
-      it('should make a POST request to the correct endpoint with all expected data and params', async () => {
+      it('should make a DELETE request to the correct endpoint with all expected data and params', async () => {
         nock('https://api.europe-west1.gcp.commercetools.com')
-          .post('/test-project-key/categories/key=my-cat-key', { test: 1 })
+          .delete('/test-project-key/categories/my-cat-id')
+          .query({ version: 3 })
           .reply(200, { success: true })
         const api = new CommercetoolsApi(defaultConfig)
 
-        const product = await api.updateCategoryByKey('my-cat-key', { test: 1 })
+        const category = await api.deleteCategoryById({ id: 'my-cat-id', version: 3 })
 
-        expect(product).toEqual({ success: true })
+        expect(category).toEqual({ success: true })
+      })
+    })
+
+    describe('deleteCategoryById', () => {
+      it('should make a POST request to the correct endpoint with all expected data and params', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com')
+          .post('/test-project-key/categories/my-cat-id', { version: 1, actions: [] })
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const category = await api.updateCategoryById({ id: 'my-cat-id', data: { version: 1, actions: [] } })
+
+        expect(category).toEqual({ success: true })
       })
     })
   })
@@ -362,7 +376,6 @@ describe('CommercetoolsApi', () => {
           params: { testParam: 1 }
         })
 
-        nock.recorder.play()
         expect(product).toEqual({ success: true })
       })
     })
