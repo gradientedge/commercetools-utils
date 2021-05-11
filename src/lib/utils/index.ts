@@ -6,6 +6,8 @@
  * that uniquely identifies the application where this package is being
  * used.
  */
+import { CommercetoolsError } from '../error'
+
 export function buildUserAgent(systemIdentifier?: string) {
   let userAgent = `@gradientedge/commercetools-utils`
   if (systemIdentifier) {
@@ -20,30 +22,42 @@ export function buildUserAgent(systemIdentifier?: string) {
  * Keys may only contain alphanumeric characters, underscores and hyphens
  * and must have a minimum length of 2 characters and maximum length of
  * 256 characters.
+ *
+ * @param {string} input The string that you want to format as a key
  */
-export function formatAsKey(input: any, options: { spaceIsHyphen: true }) {
+export function formatAsKey(input: string) {
   let output = ''
 
   if (typeof input !== 'string') {
-    throw new Error(`Input is not a string`)
+    throw new CommercetoolsError(`The [input] parameter must be a string`)
   }
 
   // Trim and make lowercase
   output = input.trim().toLowerCase()
   // Replace any instance of more than one space, with a single space
-  output = output.replace(/ +(?= )/g, '')
+  output = output.replace(/ {2,}/g, '')
   // Replacing '&' for 'and'
   output = output.replace(/&/g, 'and')
   // Replace spaces for hyphen or underscore
-  output = output.replace(/ /g, options.spaceIsHyphen ? '-' : '_')
-  // Remove any non-alphanumeric characters (except for underscores)
-  output = output.replace(/[^0-9a-z_]/g, '')
+  output = output.replace(/[ _]/g, '-')
+  // Remove any non-alphanumeric characters (except for hyphens)
+  output = output.replace(/[^0-9a-z-]+/g, '')
+  // Replace any instance of more than one hyphen, with a single hyphen
+  output = output.replace(/-{2,}/g, '-')
+  // Remove any leading hyphen
+  if (output.length && output[0] === '-') {
+    output = output.slice(1)
+  }
+  // Remove any trailing hyphen
+  if (output.length && output[output.length - 1] === '-') {
+    output = output.slice(0, -1)
+  }
 
   if (output.length < 2) {
-    throw new Error(`Formatted key did not meet minimum length of 2 characters: ${output}`)
+    throw new CommercetoolsError(`Formatted key did not meet minimum length of 2 characters: ${output}`)
   }
   if (output.length > 256) {
-    throw new Error(`Formatted key exceeds the maximum length of 256 characters: ${output}`)
+    throw new CommercetoolsError(`Formatted key exceeds the maximum length of 256 characters: ${output}`)
   }
 
   return output
