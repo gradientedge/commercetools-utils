@@ -203,14 +203,113 @@ describe('CommercetoolsApi', () => {
       })
     })
 
-    describe('deleteCategoryById', () => {
-      it('should make a POST request to the correct endpoint with all expected data and params', async () => {
+    describe('deleteProductById', () => {
+      it('should make a DELETE request to the correct endpoint with all expected data and params', async () => {
         nock('https://api.europe-west1.gcp.commercetools.com')
-          .post('/test-project-key/categories/my-cat-id', { version: 1, actions: [] })
+          .delete('/test-project-key/products/my-prod-id')
+          .query({ version: 2 })
           .reply(200, { success: true })
         const api = new CommercetoolsApi(defaultConfig)
 
-        const category = await api.updateCategoryById({ id: 'my-cat-id', data: { version: 1, actions: [] } })
+        const category = await api.deleteProductById({ id: 'my-prod-id', version: 2 })
+
+        expect(category).toEqual({ success: true })
+      })
+    })
+
+    describe('deleteProductByKey', () => {
+      it('should make a DELETE request to the correct endpoint with all expected data and params', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com')
+          .delete('/test-project-key/products/key=my-prod-key')
+          .query({ version: 3 })
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const category = await api.deleteProductByKey({ key: 'my-prod-key', version: 3 })
+
+        expect(category).toEqual({ success: true })
+      })
+
+      it('should unpublish the product first before attempting to delete it when the `unpublish` option is true', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com')
+          .delete('/test-project-key/products/key=my-prod-key')
+          .query({ version: 4 })
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+        api.unpublishProductByKey = jest.fn().mockResolvedValue({
+          version: 4
+        })
+
+        const category = await api.deleteProductByKey({ key: 'my-prod-key', version: 3, unpublish: true })
+
+        expect(category).toEqual({ success: true })
+      })
+    })
+
+    describe('unpublishProductById', () => {
+      it('should make a POST request to the correct endpoint with all expected data and params', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com')
+          .post('/test-project-key/products/my-prod-id', { version: 2, actions: [{ action: 'unpublish' }] })
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const category = await api.unpublishProductById({ id: 'my-prod-id', version: 2 })
+
+        expect(category).toEqual({ success: true })
+      })
+
+      it('should unpublish the product first before attempting to delete it when the `unpublish` option is true', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com')
+          .delete('/test-project-key/products/my-prod-id')
+          .query({ version: 4 })
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+        api.unpublishProductById = jest.fn().mockResolvedValue({
+          version: 4
+        })
+
+        const category = await api.deleteProductById({ id: 'my-prod-id', version: 3, unpublish: true })
+
+        expect(category).toEqual({ success: true })
+      })
+    })
+
+    describe('unpublishProductByKey', () => {
+      it('should make a POST request to the correct endpoint with all expected data and params', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com')
+          .post('/test-project-key/products/key=my-prod-key', { version: 3, actions: [{ action: 'unpublish' }] })
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const category = await api.unpublishProductByKey({ key: 'my-prod-key', version: 3 })
+
+        expect(category).toEqual({ success: true })
+      })
+    })
+
+    describe('deleteCategoryById', () => {
+      it('should make a DELETE request to the correct endpoint with all expected data and params', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com')
+          .delete('/test-project-key/categories/my-cat-id')
+          .query({ version: 1 })
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const category = await api.deleteCategoryById({ id: 'my-cat-id', version: 1 })
+
+        expect(category).toEqual({ success: true })
+      })
+    })
+
+    describe('deleteCategoryByKey', () => {
+      it('should make a DELETE request to the correct endpoint with all expected data and params', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com')
+          .delete('/test-project-key/categories/key=my-cat-key')
+          .query({ version: 4 })
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const category = await api.deleteCategoryByKey({ key: 'my-cat-key', version: 4 })
 
         expect(category).toEqual({ success: true })
       })
