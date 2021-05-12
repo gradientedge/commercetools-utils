@@ -366,6 +366,98 @@ export class CommercetoolsApi {
   }
 
   /**
+   * Delete a product by id:
+   * https://docs.commercetools.com/api/projects/products#delete-product-by-id
+   *
+   * @param {object} options Request options
+   * @param {boolean} options.unpublish If true, the product will be unpublished before being deleted
+   */
+  async deleteProductById(options: CommonRequestOptions & { id: string; version: number; unpublish?: boolean }) {
+    let version = options.version
+    if (options.unpublish) {
+      const product = await this.unpublishProductById({
+        id: options.id,
+        version: options.version
+      })
+      version = product.version
+    }
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/products/${options.id}`,
+      method: 'DELETE',
+      params: {
+        ...options.params,
+        version
+      }
+    })
+  }
+
+  /**
+   * Delete a product by key:
+   * https://docs.commercetools.com/api/projects/products#delete-product-by-key
+   *
+   * @param {object} options Request options
+   * @param {boolean} options.unpublish If true, the product will be unpublished before being deleted
+   */
+  async deleteProductByKey(options: CommonRequestOptions & { key: string; version: number; unpublish?: boolean }) {
+    let version = options.version
+    if (options.unpublish) {
+      const product = await this.unpublishProductByKey({
+        key: options.key,
+        version: options.version
+      })
+      version = product.version
+    }
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/products/key=${options.key}`,
+      method: 'DELETE',
+      params: {
+        ...options.params,
+        version
+      }
+    })
+  }
+
+  /**
+   * Unpublish a product by key
+   *
+   * Issues an 'unpublish' action for the given product:
+   * https://docs.commercetools.com/api/projects/products#unpublish
+   */
+  unpublishProductByKey(options: CommonRequestOptions & { key: string; version: number }) {
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/products/key=${options.key}`,
+      method: 'POST',
+      params: options.params,
+      data: {
+        version: options.version,
+        actions: [{ action: 'unpublish' }]
+      }
+    })
+  }
+
+  /**
+   * Unpublish a product by id
+   *
+   * Issues an 'unpublish' action for the given product:
+   * https://docs.commercetools.com/api/projects/products#unpublish
+   */
+  unpublishProductById(options: CommonRequestOptions & { id: string; version: number }) {
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/products/${options.id}`,
+      method: 'POST',
+      params: options.params,
+      data: {
+        version: options.version,
+        actions: [{ action: 'unpublish' }]
+      }
+    })
+  }
+
+  /**
    * Create a category:
    * https://docs.commercetools.com/api/projects/categories#create-a-category
    */
@@ -410,6 +502,22 @@ export class CommercetoolsApi {
     return this.request({
       ...this.extractCommonRequestOptions(options),
       path: `/categories/${options.id}`,
+      method: 'DELETE',
+      params: {
+        ...options.params,
+        version: options.version
+      }
+    })
+  }
+
+  /**
+   * Delete a category by key:
+   * https://docs.commercetools.com/api/projects/categories#delete-category-by-key
+   */
+  deleteCategoryByKey(options: CommonRequestOptions & { key: string; version: number }) {
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/categories/key=${options.key}`,
       method: 'DELETE',
       params: {
         ...options.params,
