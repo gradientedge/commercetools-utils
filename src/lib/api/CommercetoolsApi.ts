@@ -6,7 +6,15 @@ import { REGION_URLS } from '../auth/constants'
 import { RegionEndpoints } from '../types'
 import { DEFAULT_REQUEST_TIMEOUT_MS } from '../constants'
 import { buildUserAgent } from '../utils'
-import { Category, CategoryDraft, CategoryUpdate, ProductDraft, ProductUpdate } from '@commercetools/platform-sdk'
+import {
+  Category,
+  CategoryDraft,
+  CategoryUpdate,
+  Product,
+  ProductDraft,
+  ProductProjection,
+  ProductUpdate
+} from '@commercetools/platform-sdk'
 
 interface FetchOptions {
   path: string
@@ -165,10 +173,22 @@ export class CommercetoolsApi {
   }
 
   /**
+   * Get an individual product by key:
+   * https://docs.commercetools.com/api/projects/products#get-product-by-key
+   */
+  getProductByKey(options: CommonRequestOptions & { key: string }): Promise<Product> {
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/products/key=${options.key}`,
+      method: 'GET'
+    })
+  }
+
+  /**
    * Get a product projection by id
    * https://docs.commercetools.com/api/projects/productProjections#get-productprojection-by-id
    */
-  getProductProjectionById(id: string, params = {}): Promise<any> {
+  getProductProjectionById(id: string, params = {}): Promise<ProductProjection> {
     return this.request({
       path: `/product-projections/${id}`,
       method: 'GET',
@@ -177,9 +197,21 @@ export class CommercetoolsApi {
   }
 
   /**
+   * Get a product projection by key
+   * https://docs.commercetools.com/api/projects/productProjections#get-productprojection-by-key
+   */
+  getProductProjectionByKey(options: CommonRequestOptions & { key: string }): Promise<ProductProjection> {
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/product-projections/key=${options.key}`,
+      method: 'GET'
+    })
+  }
+
+  /**
    * Get a product projection by slug and locale
    */
-  async getProductProjectionBySlug(slug: string, languageCode: string, params = {}): Promise<any> {
+  async getProductProjectionBySlug(slug: string, languageCode: string, params = {}): Promise<ProductProjection> {
     const data = await this.request({
       path: `/product-projections`,
       method: 'GET',
