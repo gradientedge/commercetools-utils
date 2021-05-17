@@ -332,6 +332,19 @@ describe('CommercetoolsApi', () => {
       })
     })
 
+    describe('getProductByKey', () => {
+      it('should make a GET request to the correct endpoint', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com')
+          .get('/test-project-key/products/key=my-product-key')
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const product = await api.getProductByKey({ key: 'my-product-key' })
+
+        expect(product).toEqual({ success: true })
+      })
+    })
+
     describe('getProductProjectionById', () => {
       it('should make a GET request to the correct endpoint', async () => {
         nock('https://api.europe-west1.gcp.commercetools.com', {
@@ -355,6 +368,34 @@ describe('CommercetoolsApi', () => {
         const api = new CommercetoolsApi(defaultConfig)
 
         const product = await api.getProductProjectionById('my-prod-guid', { staged: true })
+
+        expect(product).toEqual({ success: true })
+      })
+    })
+
+    describe('getProductProjectionByKey', () => {
+      it('should make a GET request to the correct endpoint', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com', {
+          encodedQueryParams: true
+        })
+          .get('/test-project-key/product-projections/key=my-prod-key')
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const product = await api.getProductProjectionByKey({ key: 'my-prod-key' })
+
+        expect(product).toEqual({ success: true })
+      })
+
+      it('should use the `params` parameter to form the querystring', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com', {
+          encodedQueryParams: true
+        })
+          .get('/test-project-key/product-projections/key=my-prod-key?staged=true')
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const product = await api.getProductProjectionByKey({ key: 'my-prod-key', params: { staged: true } })
 
         expect(product).toEqual({ success: true })
       })
