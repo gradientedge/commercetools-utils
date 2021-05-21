@@ -738,6 +738,23 @@ describe('CommercetoolsApi', () => {
         expect(order).toEqual({ success: true })
       })
     })
+
+    describe('getOrderById', () => {
+      it('should make a GET request to the correct endpoint', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com', {
+          reqheaders: {
+            authorization: 'Bearer test-access-token'
+          }
+        })
+          .get('/test-project-key/orders/test-order-id')
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const order = await api.getOrderById({ id: 'test-order-id' })
+
+        expect(order).toEqual({ success: true })
+      })
+    })
   })
 
   describe('Payment', () => {
@@ -756,6 +773,58 @@ describe('CommercetoolsApi', () => {
         const api = new CommercetoolsApi(defaultConfig)
 
         const response = await api.createMyPayment('my-access-token', { test: 1 })
+
+        expect(response).toEqual({ success: true })
+      })
+    })
+  })
+
+  describe('Customer Account', () => {
+    describe('createMyAccount', () => {
+      it('should make a POST request to the correct endpoint with the expected data', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com', {
+          reqheaders: {
+            authorization: 'Bearer test-access-token'
+          }
+        })
+          .post('/test-project-key/customers', {
+            email: 'test@test.com',
+            password: 'testing'
+          })
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const response = await api.createAccount({
+          data: {
+            email: 'test@test.com',
+            password: 'testing'
+          }
+        })
+
+        expect(response).toEqual({ success: true })
+      })
+    })
+
+    describe('login', () => {
+      it('should make a POST request to the correct endpoint with the expected data', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com', {
+          reqheaders: {
+            authorization: 'Bearer test-access-token'
+          }
+        })
+          .post('/test-project-key/login', {
+            email: 'test@test.com',
+            password: 'testing'
+          })
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const response = await api.login({
+          data: {
+            email: 'test@test.com',
+            password: 'testing'
+          }
+        })
 
         expect(response).toEqual({ success: true })
       })
