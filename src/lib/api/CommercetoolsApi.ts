@@ -13,6 +13,8 @@ import {
   CustomerDraft,
   CustomerSignin,
   CustomerSignInResult,
+  GraphQLRequest,
+  GraphQLResponse,
   Order,
   Product,
   ProductDraft,
@@ -598,6 +600,20 @@ export class CommercetoolsApi {
       path: `/login`,
       method: 'POST',
       data: options.data
+    })
+  }
+
+  /**
+   * Execute a GraphQL statement:
+   * https://docs.commercetools.com/api/graphql
+   */
+  graphql(options: CommonRequestOptions & { accessToken?: string; data: GraphQLRequest }): Promise<GraphQLResponse> {
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/graphql`,
+      method: 'POST',
+      data: options.data,
+      accessToken: options.accessToken
     })
   }
 
