@@ -10,6 +10,10 @@ import {
   Category,
   CategoryDraft,
   CategoryUpdate,
+  CustomerDraft,
+  CustomerSignin,
+  CustomerSignInResult,
+  Order,
   Product,
   ProductDraft,
   ProductProjection,
@@ -347,7 +351,8 @@ export class CommercetoolsApi {
   }
 
   /**
-   * Get an order by id using the customer's access token
+   * Get an order by id using the customer's access token:
+   * https://docs.commercetools.com/api/projects/me-orders#get-order-by-id
    */
   getMyOrderById(accessToken: string, id: string, params = {}) {
     return this.request({
@@ -355,6 +360,18 @@ export class CommercetoolsApi {
       method: 'GET',
       params,
       accessToken
+    })
+  }
+
+  /**
+   * Get an order by id:
+   * https://docs.commercetools.com/api/projects/orders#get-order-by-id
+   */
+  getOrderById(options: CommonRequestOptions & { id: string }): Promise<Order> {
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/orders/${options.id}`,
+      method: 'GET'
     })
   }
 
@@ -555,6 +572,32 @@ export class CommercetoolsApi {
         ...options.params,
         version: options.version
       }
+    })
+  }
+
+  /**
+   * Create a customer account:
+   * https://docs.commercetools.com/api/projects/customers#create-customer-sign-up
+   */
+  createAccount(options: CommonRequestOptions & { data: CustomerDraft }): Promise<CustomerSignInResult> {
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/customers`,
+      method: 'POST',
+      data: options.data
+    })
+  }
+
+  /**
+   * Login to customer's account:
+   * https://docs.commercetools.com/api/projects/customers#authenticate-customer-sign-in
+   */
+  login(options: CommonRequestOptions & { data: CustomerSignin }): Promise<CustomerSignInResult> {
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/login`,
+      method: 'POST',
+      data: options.data
     })
   }
 
