@@ -831,6 +831,51 @@ describe('CommercetoolsApi', () => {
     })
   })
 
+  describe('graphql', () => {
+    it('should call the /graphql endpoint with the data passed in, using the client access token', async () => {
+      nock('https://api.europe-west1.gcp.commercetools.com', {
+        reqheaders: {
+          authorization: 'Bearer test-access-token'
+        }
+      })
+        .post('/test-project-key/graphql', {
+          query: 'products { results { id } }'
+        })
+        .reply(200, { success: true })
+      const api = new CommercetoolsApi(defaultConfig)
+
+      const response = await api.graphql({
+        data: {
+          query: 'products { results { id } }'
+        }
+      })
+
+      expect(response).toEqual({ success: true })
+    })
+
+    it('should call the /graphql endpoint with the data passed in, using the passed in access token', async () => {
+      nock('https://api.europe-west1.gcp.commercetools.com', {
+        reqheaders: {
+          authorization: 'Bearer customer-access-token'
+        }
+      })
+        .post('/test-project-key/graphql', {
+          query: 'products { results { id } }'
+        })
+        .reply(200, { success: true })
+      const api = new CommercetoolsApi(defaultConfig)
+
+      const response = await api.graphql({
+        data: {
+          query: 'products { results { id } }'
+        },
+        accessToken: 'customer-access-token'
+      })
+
+      expect(response).toEqual({ success: true })
+    })
+  })
+
   describe('request', () => {
     it('should send a `User-Agent` HTTP header containing only the package name/version when the `systemIdentifier` config option is missing', async () => {
       const scope = nock('https://api.europe-west1.gcp.commercetools.com')
