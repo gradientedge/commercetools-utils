@@ -10,6 +10,7 @@ import {
   Category,
   CategoryDraft,
   CategoryUpdate,
+  Customer,
   CustomerDraft,
   CustomerSignin,
   CustomerSignInResult,
@@ -600,6 +601,19 @@ export class CommercetoolsApi {
       path: `/login`,
       method: 'POST',
       data: options.data
+    })
+  }
+
+  /**
+   * Get a customer's account/profile:
+   * https://docs.commercetools.com/api/projects/me-profile#get-customer
+   */
+  getMyAccount(options: CommonRequestOptions & { accessToken: string }): Promise<Customer> {
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/me`,
+      method: 'GET',
+      accessToken: options.accessToken
     })
   }
 
