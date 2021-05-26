@@ -846,6 +846,32 @@ describe('CommercetoolsApi', () => {
         expect(product).toEqual({ success: true })
       })
     })
+
+    describe('updateMyAccount', () => {
+      it('should make a POST request to the correct endpoint using the customer token', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com', {
+          reqheaders: {
+            authorization: 'Bearer customer-access-token'
+          }
+        })
+          .post('/test-project-key/me', {
+            version: 4,
+            actions: []
+          })
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const product = await api.updateMyAccount({
+          accessToken: 'customer-access-token',
+          data: {
+            version: 4,
+            actions: []
+          }
+        })
+
+        expect(product).toEqual({ success: true })
+      })
+    })
   })
 
   describe('graphql', () => {
