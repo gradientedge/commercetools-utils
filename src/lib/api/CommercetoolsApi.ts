@@ -14,6 +14,7 @@ import {
   CustomerDraft,
   CustomerSignin,
   CustomerSignInResult,
+  CustomerUpdate,
   GraphQLRequest,
   GraphQLResponse,
   Order,
@@ -614,6 +615,20 @@ export class CommercetoolsApi {
       path: `/me`,
       method: 'GET',
       accessToken: options.accessToken
+    })
+  }
+
+  /**
+   * Update a customer's account/profile:
+   * https://docs.commercetools.com/api/projects/me-profile#update-customer
+   */
+  updateMyAccount(options: CommonRequestOptions & { accessToken: string; data: CustomerUpdate }): Promise<Customer> {
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/me`,
+      method: 'POST',
+      accessToken: options.accessToken,
+      data: options.data
     })
   }
 
