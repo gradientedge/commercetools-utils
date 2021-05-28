@@ -1,4 +1,3 @@
-import path from 'path'
 import nock from 'nock'
 import { CommercetoolsApi, CommercetoolsError, Region } from '../../lib'
 import { CommercetoolsGrantResponse } from '../../lib/auth/types'
@@ -489,7 +488,7 @@ describe('CommercetoolsApi', () => {
         const api = new CommercetoolsApi(defaultConfig)
 
         const product = await api.createProduct({
-          data: ({ test: 1 } as unknown) as ProductDraft,
+          data: { test: 1 } as unknown as ProductDraft,
           params: { testParam: 1 }
         })
 
@@ -510,7 +509,7 @@ describe('CommercetoolsApi', () => {
         const product = await api.updateProductById({
           id: 'my-prod-id',
           data: {
-            actions: ([{ test: 1 }] as unknown) as ProductUpdateAction[],
+            actions: [{ test: 1 }] as unknown as ProductUpdateAction[],
             version: 2
           },
           params: { testParam: 1 }
@@ -532,7 +531,7 @@ describe('CommercetoolsApi', () => {
 
         const product = await api.updateProductByKey({
           key: 'my-prod-key',
-          data: { actions: ([{ test: 1 }] as unknown) as ProductUpdateAction[], version: 3 },
+          data: { actions: [{ test: 1 }] as unknown as ProductUpdateAction[], version: 3 },
           params: { testParam: 1 }
         })
 
@@ -542,46 +541,124 @@ describe('CommercetoolsApi', () => {
   })
 
   describe('Cart', () => {
-    describe('getActiveCart', () => {
-      it('should make a GET request to the correct endpoint with the given access token', async () => {
-        nock('https://api.europe-west1.gcp.commercetools.com', {
-          encodedQueryParams: true,
-          reqheaders: {
-            authorization: 'Bearer my-access-token'
-          }
+    describe('with customer access token', () => {
+      describe('getMyActiveCart', () => {
+        it('should make a GET request to the correct endpoint with the given access token', async () => {
+          nock('https://api.europe-west1.gcp.commercetools.com', {
+            encodedQueryParams: true,
+            reqheaders: {
+              authorization: 'Bearer customer-access-token'
+            }
+          })
+            .get('/test-project-key/me/active-cart')
+            .reply(200, { success: true })
+          const api = new CommercetoolsApi(defaultConfig)
+
+          const response = await api.getMyActiveCart({ accessToken: 'customer-access-token' })
+
+          expect(response).toEqual({ success: true })
         })
-          .get('/test-project-key/me/active-cart')
-          .reply(200, { success: true })
-        const api = new CommercetoolsApi(defaultConfig)
+      })
 
-        const response = await api.getActiveCart('my-access-token')
+      describe('createMyCart', () => {
+        it('should make a POST request to the correct endpoint, passing the provided data', async () => {
+          nock('https://api.europe-west1.gcp.commercetools.com', {
+            reqheaders: {
+              authorization: 'Bearer customer-access-token'
+            }
+          })
+            .post('/test-project-key/me/carts', { currency: 'GBP' })
+            .reply(200, { success: true })
+          const api = new CommercetoolsApi(defaultConfig)
 
-        expect(response).toEqual({ success: true })
+          const response = await api.createMyCart({
+            accessToken: 'customer-access-token',
+            data: {
+              currency: 'GBP'
+            }
+          })
+
+          expect(response).toEqual({ success: true })
+        })
+      })
+
+      describe('deleteMyActiveCart', () => {
+        it('should get the active cart and delete that cart when it exists', async () => {
+          nock('https://api.europe-west1.gcp.commercetools.com', {
+            encodedQueryParams: true,
+            reqheaders: {
+              authorization: 'Bearer my-access-token'
+            }
+          })
+            .get('/test-project-key/me/active-cart')
+            .reply(200, { id: '123', version: 2 })
+          nock('https://api.europe-west1.gcp.commercetools.com', {
+            encodedQueryParams: true,
+            reqheaders: {
+              authorization: 'Bearer my-access-token'
+            }
+          })
+            .delete('/test-project-key/me/carts/123')
+            .query({ version: 2 })
+            .reply(200, { success: true })
+          const api = new CommercetoolsApi(defaultConfig)
+
+          await api.deleteMyActiveCart({ accessToken: 'my-access-token' })
+        })
+
+        it('should throw an error if there is not an active cart', async () => {
+          nock('https://api.europe-west1.gcp.commercetools.com', {
+            reqheaders: {
+              authorization: 'Bearer my-access-token'
+            }
+          })
+            .get('/test-project-key/me/active-cart')
+            .reply(404, {})
+          const api = new CommercetoolsApi(defaultConfig)
+
+          await expect(api.deleteMyActiveCart({ accessToken: 'my-access-token' })).rejects.toThrow(
+            'Request failed with status code 404'
+          )
+        })
+      })
+
+      describe('updateMyActiveCart', () => {
+        it('should call the expected endpoint with the correct parameters', async () => {
+          nock('https://api.europe-west1.gcp.commercetools.com', {
+            encodedQueryParams: true,
+            reqheaders: {
+              authorization: 'Bearer my-access-token'
+            }
+          })
+            .get('/test-project-key/me/active-cart')
+            .reply(200, { id: '123', version: 2 })
+          nock('https://api.europe-west1.gcp.commercetools.com', {
+            encodedQueryParams: true,
+            reqheaders: {
+              authorization: 'Bearer my-access-token'
+            }
+          })
+            .post('/test-project-key/me/carts/123', {
+              version: 2,
+              actions: [{ action: 'setCountry', country: 'GB' }]
+            })
+            .reply(200, { test: true })
+          const api = new CommercetoolsApi(defaultConfig)
+
+          const result = await api.updateMyActiveCart({
+            accessToken: 'my-access-token',
+            actions: [{ action: 'setCountry', country: 'GB' }]
+          })
+
+          expect(result).toEqual({ test: true })
+        })
       })
     })
+  })
 
-    describe('createCart', () => {
-      it('should make a POST request to the correct endpoint, passing the provided data', async () => {
-        nock('https://api.europe-west1.gcp.commercetools.com', {
-          encodedQueryParams: true,
-          reqheaders: {
-            authorization: 'Bearer my-access-token'
-          }
-        })
-          .post('/test-project-key/me/carts', { test: 1 })
-          .reply(200, { success: true })
-        const api = new CommercetoolsApi(defaultConfig)
-
-        const response = await api.createCart('my-access-token', {
-          test: 1
-        })
-
-        expect(response).toEqual({ success: true })
-      })
-    })
-
-    describe('deleteActiveCart', () => {
-      it('should get the active cart and delete that cart when it exists', async () => {
+  describe('Order', () => {
+    describe('createMyOrderFromActiveCart', () => {
+      it('should make a POST request to the correct endpoint with the given access token and cart data', async () => {
         nock('https://api.europe-west1.gcp.commercetools.com', {
           encodedQueryParams: true,
           reqheaders: {
@@ -596,127 +673,14 @@ describe('CommercetoolsApi', () => {
             authorization: 'Bearer my-access-token'
           }
         })
-          .delete('/test-project-key/me/carts/123')
-          .query({ version: 2 })
-          .reply(200, { success: true })
-        const api = new CommercetoolsApi(defaultConfig)
-
-        await api.deleteActiveCart('my-access-token')
-      })
-
-      it('should not try to delete a cart if there is not an active cart', async () => {
-        nock('https://api.europe-west1.gcp.commercetools.com', {
-          encodedQueryParams: true,
-          reqheaders: {
-            authorization: 'Bearer my-access-token'
-          }
-        })
-          .get('/test-project-key/me/active-cart')
-          .reply(404, {})
-        const api = new CommercetoolsApi(defaultConfig)
-
-        await api.deleteActiveCart('my-access-token')
-      })
-    })
-
-    describe('updateMyCart', () => {
-      it('should call the expected endpoint with the correct parameters', async () => {
-        nock('https://api.europe-west1.gcp.commercetools.com', {
-          encodedQueryParams: true,
-          reqheaders: {
-            authorization: 'Bearer my-access-token'
-          }
-        })
-          .post('/test-project-key/me/carts/123', {
-            version: 4,
-            actions: [{ action: 'test', value: 789 }]
-          })
-          .reply(200, { test: true })
-        const api = new CommercetoolsApi(defaultConfig)
-
-        const result = await api.updateMyCart('my-access-token', '123', 4, [{ action: 'test', value: 789 }])
-
-        expect(result).toEqual({ test: true })
-      })
-    })
-
-    describe('setActiveCartShippingAddress', () => {
-      it('should call the expected endpoint with the expected params', async () => {
-        const cartJson = require(path.join(__dirname, './data/cart/active-1.json'))
-        nock('https://api.europe-west1.gcp.commercetools.com', {
-          encodedQueryParams: true,
-          reqheaders: {
-            authorization: 'Bearer my-access-token'
-          }
-        })
-          .get('/test-project-key/me/active-cart')
-          .reply(200, cartJson)
-        nock('https://api.europe-west1.gcp.commercetools.com', {
-          encodedQueryParams: true,
-          reqheaders: {
-            authorization: 'Bearer my-access-token'
-          }
-        })
-          .post('/test-project-key/me/carts/20a8f975-b075-4fa7-9a01-c9487154adff', {
-            version: 4,
-            actions: [
-              {
-                action: 'setShippingAddress',
-                address: {
-                  firstName: 'Jimmy',
-                  city: 'Birmingham',
-                  country: 'GB',
-                  custom: {
-                    type: {
-                      key: 'customFieldsKey'
-                    },
-                    fields: {
-                      addressLine1: 'Test address line 1'
-                    }
-                  }
-                }
-              }
-            ]
-          })
-          .reply(200, { test: true })
-        const api = new CommercetoolsApi(defaultConfig)
-
-        const result = await api.setActiveCartShippingAddress('my-access-token', {
-          firstName: 'Jimmy',
-          city: 'Birmingham',
-          country: 'GB',
-          custom: {
-            type: {
-              key: 'customFieldsKey'
-            },
-            fields: {
-              addressLine1: 'Test address line 1'
-            }
-          }
-        })
-
-        expect(result).toEqual({ test: true })
-      })
-    })
-  })
-
-  describe('Order', () => {
-    describe('createMyOrderFromCart', () => {
-      it('should make a POST request to the correct endpoint with the given access token and cart data', async () => {
-        nock('https://api.europe-west1.gcp.commercetools.com', {
-          encodedQueryParams: true,
-          reqheaders: {
-            authorization: 'Bearer my-access-token'
-          }
-        })
           .post('/test-project-key/me/orders', {
-            id: 'my-cart-id',
+            id: '123',
             version: 2
           })
           .reply(200, { success: true })
         const api = new CommercetoolsApi(defaultConfig)
 
-        const response = await api.createMyOrderFromCart('my-access-token', 'my-cart-id', 2)
+        const response = await api.createMyOrderFromActiveCart({ accessToken: 'my-access-token' })
 
         expect(response).toEqual({ success: true })
       })
@@ -977,8 +941,7 @@ describe('CommercetoolsApi', () => {
                 'User-Agent': '@gradientedge/commercetools-utils'
               },
               method: 'get',
-              url:
-                'https://api.europe-west1.gcp.commercetools.com/test-project-key/products/cb3c563c-98dd-4b11-8694-8d17b15fa844'
+              url: 'https://api.europe-west1.gcp.commercetools.com/test-project-key/products/cb3c563c-98dd-4b11-8694-8d17b15fa844'
             },
             response: {}
           },

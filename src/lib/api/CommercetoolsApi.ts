@@ -7,6 +7,9 @@ import { RegionEndpoints } from '../types'
 import { DEFAULT_REQUEST_TIMEOUT_MS } from '../constants'
 import { buildUserAgent } from '../utils'
 import {
+  Cart,
+  CartDraft,
+  CartUpdateAction,
   Category,
   CategoryDraft,
   CategoryUpdate,
@@ -17,6 +20,7 @@ import {
   CustomerUpdate,
   GraphQLRequest,
   GraphQLResponse,
+  MyOrderFromCartDraft,
   Order,
   Product,
   ProductDraft,
@@ -24,12 +28,12 @@ import {
   ProductUpdate
 } from '@commercetools/platform-sdk'
 
-interface FetchOptions {
+interface FetchOptions<T = Record<string, any>> {
   path: string
   headers?: Record<string, string>
   method: 'GET' | 'POST' | 'DELETE'
   params?: Record<string, any>
-  data?: Record<string, any>
+  data?: T
   accessToken?: string
   correlationId?: string
 }
@@ -256,93 +260,90 @@ export class CommercetoolsApi {
   }
 
   /**
-   * Get the active cart. Requires a logged in or anonymous customer access token.
+   * Get the active cart. Requires a logged in or anonymous customer access token:
+   * https://docs.commercetools.com/api/projects/me-carts#get-active-cart
    */
-  async getActiveCart(accessToken: string, params = {}) {
+  async getMyActiveCart(options: CommonRequestOptions & { accessToken: string }): Promise<Cart> {
     return this.request({
+      ...this.extractCommonRequestOptions(options),
       path: `/me/active-cart`,
       method: 'GET',
-      params,
-      accessToken
+      accessToken: options.accessToken
     })
   }
 
   /**
    * Create a new cart for the customer associated with the given `accessToken` parameter.
    */
-  async createCart(accessToken: string, data: any, params = {}) {
-    return this.request({
+  async createMyCart(options: CommonRequestOptions & { accessToken: string; data: CartDraft }): Promise<Cart> {
+    return this.request<CartDraft, Cart>({
+      ...this.extractCommonRequestOptions(options),
       path: `/me/carts`,
       method: 'POST',
-      data,
-      params,
-      accessToken
+      data: options.data,
+      accessToken: options.accessToken
     })
   }
 
   /**
-   * Delete the active cart, if one exists, of the customer associated with the
-   * given `accessToken` parameter. This method uses {@see getActiveCart} to first
-   * get the active cart, in order to discover the id and version of the active cart.
+   * Delete the active cart This method uses {@see getActiveCart} to first
+   * get the active cart, in order to find the cart id and version:
+   * https://docs.commercetools.com/api/projects/me-carts#delete-a-cart
    */
-  async deleteActiveCart(accessToken: string) {
-    let cart
-    try {
-      cart = await this.getActiveCart(accessToken)
-    } catch (e) {}
-    if (cart) {
-      await this.request({
-        path: `/me/carts/${cart.id}`,
-        method: 'DELETE',
-        params: { version: cart.version },
-        accessToken
-      })
-    }
+  async deleteMyActiveCart(options: CommonRequestOptions & { accessToken: string }): Promise<Cart> {
+    const cart = await this.getMyActiveCart(options)
+    return await this.request({
+      path: `/me/carts/${cart.id}`,
+      method: 'DELETE',
+      params: { version: cart.version },
+      accessToken: options.accessToken
+    })
   }
 
   /**
-   * Update a customer's cart with the given actions.
+   * Update a customer's cart with the given actions. Note that we automatically
+   * retrieve the customer's active cart using the given access token:
+   * https://docs.commercetools.com/api/projects/me-carts#update-cart
+   * https://docs.commercetools.com/api/projects/me-carts#update-actions
    */
-  updateMyCart(accessToken: string, cartId: string, cartVersion: number, actions: any[], params = {}) {
+  async updateMyActiveCart(
+    options: CommonRequestOptions & { accessToken: string; actions: CartUpdateAction[] }
+  ): Promise<Cart> {
+    const cart = await this.getMyActiveCart(options)
     return this.request({
-      path: `/me/carts/${cartId}`,
+      ...this.extractCommonRequestOptions(options),
+      path: `/me/carts/${cart.id}`,
       method: 'POST',
       data: {
-        version: cartVersion,
-        actions
+        version: cart.version,
+        actions: options.actions
       },
-      params,
-      accessToken
+      accessToken: options.accessToken
     })
   }
 
   /**
-   * Set the shipping address on the active cart.
+   * Create an order from the given cart id. The cart id and version are automatically
+   * retrieved by looking up the customers active cart:
+   * https://docs.commercetools.com/api/projects/me-orders#create-order-from-a-cart
    */
-  async setActiveCartShippingAddress(accessToken: string, address: any, params = {}) {
-    const cart = await this.getActiveCart(accessToken)
-    const actions = [{ action: 'setShippingAddress', address }]
-    return this.updateMyCart(accessToken, cart.id, cart.version, actions, params)
-  }
-
-  /**
-   * Create an order from the given cart id
-   */
-  createMyOrderFromCart(accessToken: string, cartId: string, cartVersion: number, params = {}) {
-    return this.request({
+  async createMyOrderFromActiveCart(options: CommonRequestOptions & { accessToken: string }): Promise<Order> {
+    const cart = await this.getMyActiveCart(options)
+    return this.request<MyOrderFromCartDraft, Order>({
+      ...this.extractCommonRequestOptions(options),
       path: '/me/orders',
       method: 'POST',
       data: {
-        id: cartId,
-        version: cartVersion
+        version: cart.version,
+        id: cart.id
       },
-      params,
-      accessToken
+      accessToken: options.accessToken
     })
   }
 
   /**
-   * Create a payment object using the customer's access token
+   * Create a payment object using the customer's access token:
+   * https://docs.commercetools.com/api/projects/me-payments#create-mypayment
    */
   createMyPayment(accessToken: string, data: any, params = {}) {
     return this.request({
@@ -649,7 +650,7 @@ export class CommercetoolsApi {
   /**
    * Make the request to the commercetools REST API.
    */
-  async request<T = any>(options: FetchOptions): Promise<T> {
+  async request<T = any, R = any>(options: FetchOptions<T>): Promise<R> {
     let accessToken = options.accessToken
     const url = `${this.endpoints.api}/${this.config.projectKey}${options.path}`
     const opts: any = { ...options }

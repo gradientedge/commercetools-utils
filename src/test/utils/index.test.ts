@@ -10,21 +10,21 @@ describe('buildUserAgent', () => {
   })
 
   it('should ignore a null value for the system identifier', () => {
-    expect(buildUserAgent((null as unknown) as string)).toBe('@gradientedge/commercetools-utils')
+    expect(buildUserAgent(null as unknown as string)).toBe('@gradientedge/commercetools-utils')
   })
 })
 
 describe('formatAsKey', () => {
   it('should throw an error if the parameter is undefined', () => {
-    expect(() => formatAsKey((undefined as unknown) as string)).toThrow('The [input] parameter must be a string')
+    expect(() => formatAsKey(undefined as unknown as string)).toThrow('The [input] parameter must be a string')
   })
 
   it('should throw an error if the parameter is null', () => {
-    expect(() => formatAsKey((null as unknown) as string)).toThrow('The [input] parameter must be a string')
+    expect(() => formatAsKey(null as unknown as string)).toThrow('The [input] parameter must be a string')
   })
 
   it('should throw an error if the parameter is numeric', () => {
-    expect(() => formatAsKey((123 as unknown) as string)).toThrow('The [input] parameter must be a string')
+    expect(() => formatAsKey(123 as unknown as string)).toThrow('The [input] parameter must be a string')
   })
 
   it('should throw an error if the formatted string is less than 2 chars', () => {
