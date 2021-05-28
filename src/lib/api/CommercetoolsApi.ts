@@ -286,7 +286,7 @@ export class CommercetoolsApi {
   }
 
   /**
-   * Delete the active cart This method uses {@see getActiveCart} to first
+   * Delete the active cart This method uses {@see getMyActiveCart} to first
    * get the active cart, in order to find the cart id and version:
    * https://docs.commercetools.com/api/projects/me-carts#delete-a-cart
    */
