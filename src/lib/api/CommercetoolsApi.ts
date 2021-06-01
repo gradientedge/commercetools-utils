@@ -1,4 +1,5 @@
 import axios from 'axios'
+import qs from 'qs'
 import { CommercetoolsApiConfig } from './types'
 import { CommercetoolsAuth } from '../'
 import { CommercetoolsError } from '../error'
@@ -25,6 +26,7 @@ import {
   Product,
   ProductDraft,
   ProductProjection,
+  ProductType,
   ProductUpdate
 } from '@commercetools/platform-sdk'
 
@@ -200,11 +202,11 @@ export class CommercetoolsApi {
    * Get a product projection by id
    * https://docs.commercetools.com/api/projects/productProjections#get-productprojection-by-id
    */
-  getProductProjectionById(id: string, params = {}): Promise<ProductProjection> {
+  getProductProjectionById(options: CommonRequestOptions & { id: string }): Promise<ProductProjection> {
     return this.request({
-      path: `/product-projections/${id}`,
-      method: 'GET',
-      params
+      ...this.extractCommonRequestOptions(options),
+      path: `/product-projections/${options.id}`,
+      method: 'GET'
     })
   }
 
@@ -634,6 +636,30 @@ export class CommercetoolsApi {
   }
 
   /**
+   * Get a product type by id:
+   * https://docs.commercetools.com/api/projects/productTypes#get-a-producttype-by-id
+   */
+  getProductTypeById(options: CommonRequestOptions & { id: string }): Promise<ProductType> {
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/product-types/${options.id}`,
+      method: 'GET'
+    })
+  }
+
+  /**
+   * Get a product type by key:
+   * https://docs.commercetools.com/api/projects/productTypes#get-a-producttype-by-key
+   */
+  getProductTypeByKey(options: CommonRequestOptions & { key: string }): Promise<ProductType> {
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/product-types/key=${options.key}`,
+      method: 'GET'
+    })
+  }
+
+  /**
    * Execute a GraphQL statement:
    * https://docs.commercetools.com/api/graphql
    */
@@ -677,7 +703,10 @@ export class CommercetoolsApi {
         ...opts,
         url,
         headers,
-        timeout: this.config.timeoutMs || DEFAULT_REQUEST_TIMEOUT_MS
+        timeout: this.config.timeoutMs || DEFAULT_REQUEST_TIMEOUT_MS,
+        paramsSerializer: function (params) {
+          return qs.stringify(params, { arrayFormat: 'repeat' })
+        }
       })
       return response.data
     } catch (error) {

@@ -353,7 +353,7 @@ describe('CommercetoolsApi', () => {
           .reply(200, { success: true })
         const api = new CommercetoolsApi(defaultConfig)
 
-        const product = await api.getProductProjectionById('my-prod-guid')
+        const product = await api.getProductProjectionById({ id: 'my-prod-guid' })
 
         expect(product).toEqual({ success: true })
       })
@@ -366,7 +366,7 @@ describe('CommercetoolsApi', () => {
           .reply(200, { success: true })
         const api = new CommercetoolsApi(defaultConfig)
 
-        const product = await api.getProductProjectionById('my-prod-guid', { staged: true })
+        const product = await api.getProductProjectionById({ id: 'my-prod-guid', params: { staged: true } })
 
         expect(product).toEqual({ success: true })
       })
@@ -834,6 +834,42 @@ describe('CommercetoolsApi', () => {
         })
 
         expect(product).toEqual({ success: true })
+      })
+    })
+  })
+
+  describe('Product Types', () => {
+    describe('getProductTypeById', () => {
+      it('should make a GET request to the correct endpoint', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com', {
+          reqheaders: {
+            authorization: 'Bearer test-access-token'
+          }
+        })
+          .get('/test-project-key/product-types/my-product-type-id')
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const order = await api.getProductTypeById({ id: 'my-product-type-id ' })
+
+        expect(order).toEqual({ success: true })
+      })
+    })
+
+    describe('getProductTypeByKey', () => {
+      it('should make a GET request to the correct endpoint', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com', {
+          reqheaders: {
+            authorization: 'Bearer test-access-token'
+          }
+        })
+          .get('/test-project-key/product-types/key=my-product-type-key')
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const order = await api.getProductTypeByKey({ key: 'my-product-type-key ' })
+
+        expect(order).toEqual({ success: true })
       })
     })
   })
