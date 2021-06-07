@@ -636,6 +636,30 @@ export class CommercetoolsApi {
   }
 
   /**
+   * Get a customer by id:
+   * https://docs.commercetools.com/api/projects/customers#get-customer-by-id
+   */
+  getCustomerById(options: CommonRequestOptions & { id: string }): Promise<Customer> {
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/customers/${options.id}`,
+      method: 'GET'
+    })
+  }
+
+  /**
+   * Get a customer by key:
+   * https://docs.commercetools.com/api/projects/customers#get-customer-by-key
+   */
+  getCustomerByKey(options: CommonRequestOptions & { key: string }): Promise<Customer> {
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/customers/key=${options.key}`,
+      method: 'GET'
+    })
+  }
+
+  /**
    * Get a product type by id:
    * https://docs.commercetools.com/api/projects/productTypes#get-a-producttype-by-id
    */
