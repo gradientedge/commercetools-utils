@@ -778,6 +778,23 @@ describe('CommercetoolsApi', () => {
       })
     })
 
+    describe('getCustomerByPasswordToken', () => {
+      it('should make a GET request to the correct endpoint', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com', {
+          reqheaders: {
+            authorization: 'Bearer test-access-token'
+          }
+        })
+          .get('/test-project-key/customers/password-token=test-password-token')
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const order = await api.getCustomerByPasswordToken({ token: 'test-password-token' })
+
+        expect(order).toEqual({ success: true })
+      })
+    })
+
     describe('Account', () => {
       describe('createMyAccount', () => {
         it('should make a POST request to the correct endpoint with the expected data', async () => {
@@ -865,6 +882,85 @@ describe('CommercetoolsApi', () => {
             data: {
               version: 4,
               actions: []
+            }
+          })
+
+          expect(product).toEqual({ success: true })
+        })
+      })
+
+      describe('getPasswordResetToken', () => {
+        it('should make a POST request to the correct endpoint using the customer token', async () => {
+          nock('https://api.europe-west1.gcp.commercetools.com', {
+            reqheaders: {
+              authorization: 'Bearer test-access-token'
+            }
+          })
+            .post('/test-project-key/customers/password-token', {
+              email: 'jimmy@gradientedge.com',
+              ttlMinutes: 60
+            })
+            .reply(200, { success: true })
+          const api = new CommercetoolsApi(defaultConfig)
+
+          const product = await api.getPasswordResetToken({
+            data: {
+              email: 'jimmy@gradientedge.com',
+              ttlMinutes: 60
+            }
+          })
+
+          expect(product).toEqual({ success: true })
+        })
+      })
+
+      describe('resetMyPassword', () => {
+        it('should make a POST request to the correct endpoint using the customer token', async () => {
+          nock('https://api.europe-west1.gcp.commercetools.com', {
+            reqheaders: {
+              authorization: 'Bearer my-access-token'
+            }
+          })
+            .post('/test-project-key/me/password/reset', {
+              tokenValue: 'test-token',
+              newPassword: 'test123'
+            })
+            .reply(200, { success: true })
+          const api = new CommercetoolsApi(defaultConfig)
+
+          const product = await api.resetMyPassword({
+            accessToken: 'my-access-token',
+            data: {
+              tokenValue: 'test-token',
+              newPassword: 'test123'
+            }
+          })
+
+          expect(product).toEqual({ success: true })
+        })
+      })
+
+      describe('changeMyPassword', () => {
+        it('should make a POST request to the correct endpoint using the customer token', async () => {
+          nock('https://api.europe-west1.gcp.commercetools.com', {
+            reqheaders: {
+              authorization: 'Bearer my-access-token'
+            }
+          })
+            .post('/test-project-key/me/password', {
+              version: 1,
+              currentPassword: 'myOldPassword',
+              newPassword: 'myNewPassword'
+            })
+            .reply(200, { success: true })
+          const api = new CommercetoolsApi(defaultConfig)
+
+          const product = await api.changeMyPassword({
+            accessToken: 'my-access-token',
+            data: {
+              version: 1,
+              currentPassword: 'myOldPassword',
+              newPassword: 'myNewPassword'
             }
           })
 

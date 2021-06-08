@@ -15,9 +15,12 @@ import {
   CategoryDraft,
   CategoryUpdate,
   Customer,
+  CustomerCreatePasswordResetToken,
   CustomerDraft,
+  CustomerResetPassword,
   CustomerSignin,
   CustomerSignInResult,
+  CustomerToken,
   CustomerUpdate,
   GraphQLRequest,
   GraphQLResponse,
@@ -636,6 +639,56 @@ export class CommercetoolsApi {
   }
 
   /**
+   * Change the customer's password:
+   * https://docs.commercetools.com/api/projects/me-profile#change-customers-password
+   */
+  changeMyPassword(
+    options: CommonRequestOptions & {
+      accessToken: string
+      data: { version: number; currentPassword: string; newPassword: string }
+    }
+  ): Promise<Customer> {
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/me/password`,
+      method: 'POST',
+      accessToken: options.accessToken,
+      data: options.data
+    })
+  }
+
+  /**
+   * Reset the customer's password:
+   * https://docs.commercetools.com/api/projects/me-profile#reset-customers-password
+   */
+  resetMyPassword(
+    options: CommonRequestOptions & { accessToken: string; data: CustomerResetPassword }
+  ): Promise<Customer> {
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/me/password/reset`,
+      method: 'POST',
+      accessToken: options.accessToken,
+      data: options.data
+    })
+  }
+
+  /**
+   * Get a password reset token
+   * https://docs.commercetools.com/api/projects/customers#create-a-token-for-resetting-the-customers-password
+   */
+  getPasswordResetToken(
+    options: CommonRequestOptions & { data: CustomerCreatePasswordResetToken }
+  ): Promise<CustomerToken> {
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/customers/password-token`,
+      method: 'POST',
+      data: options.data
+    })
+  }
+
+  /**
    * Get a customer by id:
    * https://docs.commercetools.com/api/projects/customers#get-customer-by-id
    */
@@ -655,6 +708,18 @@ export class CommercetoolsApi {
     return this.request({
       ...this.extractCommonRequestOptions(options),
       path: `/customers/key=${options.key}`,
+      method: 'GET'
+    })
+  }
+
+  /**
+   * Get a customer by password token:
+   * https://docs.commercetools.com/api/projects/customers#get-customer-by-password-token
+   */
+  getCustomerByPasswordToken(options: CommonRequestOptions & { token: string }): Promise<Customer> {
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/customers/password-token=${options.token}`,
       method: 'GET'
     })
   }
