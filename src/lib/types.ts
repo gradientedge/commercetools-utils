@@ -30,6 +30,7 @@ export interface RegionEndpoints {
  */
 export interface CommercetoolsBaseConfig {
   projectKey: string
+  storeKey?: string
   clientId: string
   clientSecret: string
   region: Region

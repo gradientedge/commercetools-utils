@@ -15,6 +15,7 @@ interface Config extends CommercetoolsAuthConfig {
   customerScopes?: string[]
   refreshIfWithinSecs: number
   timeoutMs: number
+  storeKey?: string
 }
 
 /**
@@ -187,8 +188,7 @@ export class CommercetoolsAuth {
     await this.getClientGrant()
 
     const data = await this.api.login({
-      username: options.username,
-      password: options.password,
+      ...options,
       scopes,
       projectKey: this.config.projectKey
     })

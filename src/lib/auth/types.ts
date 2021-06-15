@@ -18,6 +18,7 @@ export interface CommercetoolsAuthApiConfig {
   region: Region
   timeoutMs?: number
   systemIdentifier?: string
+  storeKey?: string
 }
 
 /**
@@ -50,6 +51,11 @@ export interface LoginOptions {
    * these must be a subset of the scopes associated with the client grant.
    */
   scopes?: string[]
+
+  /**
+   * The specific store to login to
+   */
+  storeKey?: string
 }
 
 export interface AnonymousGrantOptions {
