@@ -667,6 +667,29 @@ describe('CommercetoolsApi', () => {
         })
       })
     })
+
+    describe('without customer token', () => {
+      describe('createCart', () => {
+        it('should make a POST request to the correct endpoint, passing the provided data', async () => {
+          nock('https://api.europe-west1.gcp.commercetools.com', {
+            reqheaders: {
+              authorization: 'Bearer test-access-token'
+            }
+          })
+            .post('/test-project-key/carts', { currency: 'GBP' })
+            .reply(200, { success: true })
+          const api = new CommercetoolsApi(defaultConfig)
+
+          const response = await api.createCart({
+            data: {
+              currency: 'GBP'
+            }
+          })
+
+          expect(response).toEqual({ success: true })
+        })
+      })
+    })
   })
 
   describe('Order', () => {
@@ -809,7 +832,7 @@ describe('CommercetoolsApi', () => {
     })
 
     describe('Account', () => {
-      describe('createMyAccount', () => {
+      describe('createAccount', () => {
         it('should make a POST request to the correct endpoint with the expected data', async () => {
           nock('https://api.europe-west1.gcp.commercetools.com', {
             reqheaders: {
@@ -824,6 +847,32 @@ describe('CommercetoolsApi', () => {
           const api = new CommercetoolsApi(defaultConfig)
 
           const response = await api.createAccount({
+            data: {
+              email: 'test@test.com',
+              password: 'testing'
+            }
+          })
+
+          expect(response).toEqual({ success: true })
+        })
+      })
+
+      describe('createMyAccount', () => {
+        it('should make a POST request to the correct endpoint with the expected data', async () => {
+          nock('https://api.europe-west1.gcp.commercetools.com', {
+            reqheaders: {
+              authorization: 'Bearer customer-access-token'
+            }
+          })
+            .post('/test-project-key/me/signup', {
+              email: 'test@test.com',
+              password: 'testing'
+            })
+            .reply(200, { success: true })
+          const api = new CommercetoolsApi(defaultConfig)
+
+          const response = await api.createMyAccount({
+            accessToken: 'customer-access-token',
             data: {
               email: 'test@test.com',
               password: 'testing'
