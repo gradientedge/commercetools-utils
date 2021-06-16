@@ -689,6 +689,22 @@ describe('CommercetoolsApi', () => {
           expect(response).toEqual({ success: true })
         })
       })
+
+      describe('deleteCartById', () => {
+        it('should get the active cart and delete that cart when it exists', async () => {
+          nock('https://api.europe-west1.gcp.commercetools.com', {
+            reqheaders: {
+              authorization: 'Bearer test-access-token'
+            }
+          })
+            .delete('/test-project-key/carts/test-cart-id')
+            .query({ version: 1 })
+            .reply(200, { success: true })
+          const api = new CommercetoolsApi(defaultConfig)
+
+          await api.deleteCartById({ id: 'test-cart-id', version: 1 })
+        })
+      })
     })
   })
 

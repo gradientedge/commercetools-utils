@@ -279,7 +279,8 @@ export class CommercetoolsApi {
   }
 
   /**
-   * Create a new cart.
+   * Create a new cart:
+   * https://docs.commercetools.com/api/projects/carts#create-a-cart-1
    */
   async createCart(options: CommonStoreEnabledRequestOptions & { data: CartDraft }): Promise<Cart> {
     return this.request<CartDraft, Cart>({
@@ -304,7 +305,8 @@ export class CommercetoolsApi {
   }
 
   /**
-   * Create a new cart for the customer associated with the given `accessToken` parameter.
+   * Create a new cart for the customer associated with the given `accessToken` parameter:
+   * https://docs.commercetools.com/api/projects/me-carts#create-a-cart-1
    */
   async createMyCart(
     options: CommonStoreEnabledRequestOptions & { accessToken: string; data: MyCartDraft }
@@ -373,6 +375,18 @@ export class CommercetoolsApi {
         id: cart.id
       },
       accessToken: options.accessToken
+    })
+  }
+
+  /**
+   * Delete a cart by the given id:
+   * https://docs.commercetools.com/api/projects/carts#delete-a-cart-by-id
+   */
+  async deleteCartById(options: CommonStoreEnabledRequestOptions & { id: string; version: number }): Promise<Cart> {
+    return await this.request({
+      path: this.applyStore(`/carts/${options.id}`, options.storeKey),
+      method: 'DELETE',
+      params: { version: options.version }
     })
   }
 
