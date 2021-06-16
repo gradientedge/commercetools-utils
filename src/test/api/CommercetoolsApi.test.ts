@@ -771,6 +771,24 @@ describe('CommercetoolsApi', () => {
         expect(order).toEqual({ success: true })
       })
     })
+
+    describe('deleteOrderById', () => {
+      it('should make a DELETE request to the correct endpoint', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com', {
+          reqheaders: {
+            authorization: 'Bearer test-access-token'
+          }
+        })
+          .delete('/test-project-key/orders/test-order-id')
+          .query({ version: 2 })
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const order = await api.deleteOrderById({ id: 'test-order-id', version: 2 })
+
+        expect(order).toEqual({ success: true })
+      })
+    })
   })
 
   describe('Payment', () => {
