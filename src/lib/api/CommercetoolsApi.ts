@@ -24,6 +24,8 @@ import {
   CustomerUpdate,
   GraphQLRequest,
   GraphQLResponse,
+  MyCartDraft,
+  MyCustomerDraft,
   MyOrderFromCartDraft,
   MyPayment,
   MyPaymentDraft,
@@ -277,6 +279,18 @@ export class CommercetoolsApi {
   }
 
   /**
+   * Create a new cart.
+   */
+  async createCart(options: CommonStoreEnabledRequestOptions & { data: CartDraft }): Promise<Cart> {
+    return this.request<CartDraft, Cart>({
+      ...this.extractCommonRequestOptions(options),
+      path: this.applyStore(`/carts`, options.storeKey),
+      method: 'POST',
+      data: options.data
+    })
+  }
+
+  /**
    * Get the active cart. Requires a logged in or anonymous customer access token:
    * https://docs.commercetools.com/api/projects/me-carts#get-active-cart
    */
@@ -293,9 +307,9 @@ export class CommercetoolsApi {
    * Create a new cart for the customer associated with the given `accessToken` parameter.
    */
   async createMyCart(
-    options: CommonStoreEnabledRequestOptions & { accessToken: string; data: CartDraft }
+    options: CommonStoreEnabledRequestOptions & { accessToken: string; data: MyCartDraft }
   ): Promise<Cart> {
-    return this.request<CartDraft, Cart>({
+    return this.request<MyCartDraft, Cart>({
       ...this.extractCommonRequestOptions(options),
       path: this.applyStore(`/me/carts`, options.storeKey),
       method: 'POST',
@@ -611,6 +625,22 @@ export class CommercetoolsApi {
       path: this.applyStore(`/customers`, options.storeKey),
       method: 'POST',
       data: options.data
+    })
+  }
+
+  /**
+   * Create a customer account given an anonymous access token:
+   * https://docs.commercetools.com/api/projects/me-profile#create-customer-sign-up
+   */
+  createMyAccount(
+    options: CommonStoreEnabledRequestOptions & { accessToken: string; data: MyCustomerDraft }
+  ): Promise<CustomerSignInResult> {
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: this.applyStore(`/me/signup`, options.storeKey),
+      method: 'POST',
+      data: options.data,
+      accessToken: options.accessToken
     })
   }
 
