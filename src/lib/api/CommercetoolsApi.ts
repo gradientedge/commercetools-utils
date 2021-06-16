@@ -328,9 +328,13 @@ export class CommercetoolsApi {
   async deleteMyActiveCart(options: CommonStoreEnabledRequestOptions & { accessToken: string }): Promise<Cart> {
     const cart = await this.getMyActiveCart(options)
     return await this.request({
+      ...this.extractCommonRequestOptions(options),
       path: this.applyStore(`/me/carts/${cart.id}`, options.storeKey),
       method: 'DELETE',
-      params: { version: cart.version },
+      params: {
+        ...options.params,
+        version: cart.version
+      },
       accessToken: options.accessToken
     })
   }
@@ -384,9 +388,13 @@ export class CommercetoolsApi {
    */
   async deleteCartById(options: CommonStoreEnabledRequestOptions & { id: string; version: number }): Promise<Cart> {
     return await this.request({
+      ...this.extractCommonRequestOptions(options),
       path: this.applyStore(`/carts/${options.id}`, options.storeKey),
       method: 'DELETE',
-      params: { version: options.version }
+      params: {
+        ...options.params,
+        version: options.version
+      }
     })
   }
 
@@ -426,6 +434,22 @@ export class CommercetoolsApi {
       ...this.extractCommonRequestOptions(options),
       path: this.applyStore(`/orders/${options.id}`, options.storeKey),
       method: 'GET'
+    })
+  }
+
+  /**
+   * Delete an order by id:
+   * https://docs.commercetools.com/api/projects/orders#delete-order-by-id
+   */
+  deleteOrderById(options: CommonStoreEnabledRequestOptions & { id: string; version: number }): Promise<Order> {
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: this.applyStore(`/orders/${options.id}`, options.storeKey),
+      method: 'DELETE',
+      params: {
+        ...options.params,
+        version: options.version
+      }
     })
   }
 
