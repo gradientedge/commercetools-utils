@@ -82,6 +82,34 @@ describe('CommercetoolsAuthApi', () => {
       scope.isDone()
       expect(grant).toEqual(defaultResponseToken)
     })
+
+    it('should apply the given store key when provided', async () => {
+      const scope = nock('https://auth.us-east-2.aws.commercetools.com', {
+        encodedQueryParams: true
+      })
+        .post(
+          '/oauth/test-project-key/in-store/key=my-store-a/customers/token',
+          //'username=jimmy%40gradientedge.com&password=testing&grant_type=password&scope=scope1%3Atest-project-key+scope2%3Atest-project-key'
+          {
+            username: 'jimmy@gradientedge.com',
+            password: 'testing',
+            grant_type: 'password',
+            scope: 'scope1:test-project-key scope2:test-project-key'
+          }
+        )
+        .reply(200, defaultResponseToken)
+      const auth = new CommercetoolsAuthApi(defaultConfig)
+
+      const grant = await auth.login({
+        username: 'jimmy@gradientedge.com',
+        password: 'testing',
+        scopes: ['scope1', 'scope2'],
+        storeKey: 'my-store-a'
+      })
+
+      scope.isDone()
+      expect(grant).toEqual(defaultResponseToken)
+    })
   })
 
   describe('getAnonymousGrant', () => {
@@ -236,6 +264,36 @@ describe('CommercetoolsAuthApi', () => {
       }
 
       fail('auth.getClientGrant should have thrown due to timeout')
+    })
+  })
+
+  describe('applyStore', () => {
+    it('should return an unchanged path when a store is neither passed in or available on the config object', async () => {
+      const auth = new CommercetoolsAuthApi(defaultConfig)
+
+      expect(auth.applyStore('/test', null)).toBe('/test')
+      expect(auth.applyStore('/test', undefined)).toBe('/test')
+      expect(auth.applyStore('/test', '')).toBe('/test')
+    })
+
+    it('should apply the store key to the path when passed in to the method', async () => {
+      const auth = new CommercetoolsAuthApi(defaultConfig)
+
+      expect(auth.applyStore('/test', 'my-store')).toBe('/in-store/key=my-store/test')
+    })
+
+    it('should apply the store key to the path when passed in to the method, overriding the store on the config', async () => {
+      const auth = new CommercetoolsAuthApi(defaultConfig)
+
+      expect(auth.applyStore('/test', 'my-store-b')).toBe('/in-store/key=my-store-b/test')
+    })
+
+    it('should apply the store key set on the config when no store key is directly passed in to the method', async () => {
+      const auth = new CommercetoolsAuthApi({ ...defaultConfig, storeKey: 'my-store-a' })
+
+      expect(auth.applyStore('/test', undefined)).toBe('/in-store/key=my-store-a/test')
+      expect(auth.applyStore('/test', null)).toBe('/in-store/key=my-store-a/test')
+      expect(auth.applyStore('/test', '')).toBe('/in-store/key=my-store-a/test')
     })
   })
 })

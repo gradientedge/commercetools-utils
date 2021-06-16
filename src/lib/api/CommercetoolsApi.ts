@@ -25,6 +25,8 @@ import {
   GraphQLRequest,
   GraphQLResponse,
   MyOrderFromCartDraft,
+  MyPayment,
+  MyPaymentDraft,
   Order,
   Product,
   ProductDraft,
@@ -56,6 +58,16 @@ export interface CommonRequestOptions {
    * Query string parameters.
    */
   params?: Record<string, any>
+}
+
+/**
+ * Options that are available to all requests that support specifying a store
+ */
+export interface CommonStoreEnabledRequestOptions extends CommonRequestOptions {
+  /**
+   * The key of the store that you want this call to apply to
+   */
+  storeKey?: string
 }
 
 /**
@@ -268,10 +280,10 @@ export class CommercetoolsApi {
    * Get the active cart. Requires a logged in or anonymous customer access token:
    * https://docs.commercetools.com/api/projects/me-carts#get-active-cart
    */
-  async getMyActiveCart(options: CommonRequestOptions & { accessToken: string }): Promise<Cart> {
+  async getMyActiveCart(options: CommonStoreEnabledRequestOptions & { accessToken: string }): Promise<Cart> {
     return this.request({
       ...this.extractCommonRequestOptions(options),
-      path: `/me/active-cart`,
+      path: this.applyStore(`/me/active-cart`, options.storeKey),
       method: 'GET',
       accessToken: options.accessToken
     })
@@ -280,10 +292,12 @@ export class CommercetoolsApi {
   /**
    * Create a new cart for the customer associated with the given `accessToken` parameter.
    */
-  async createMyCart(options: CommonRequestOptions & { accessToken: string; data: CartDraft }): Promise<Cart> {
+  async createMyCart(
+    options: CommonStoreEnabledRequestOptions & { accessToken: string; data: CartDraft }
+  ): Promise<Cart> {
     return this.request<CartDraft, Cart>({
       ...this.extractCommonRequestOptions(options),
-      path: `/me/carts`,
+      path: this.applyStore(`/me/carts`, options.storeKey),
       method: 'POST',
       data: options.data,
       accessToken: options.accessToken
@@ -295,10 +309,10 @@ export class CommercetoolsApi {
    * get the active cart, in order to find the cart id and version:
    * https://docs.commercetools.com/api/projects/me-carts#delete-a-cart
    */
-  async deleteMyActiveCart(options: CommonRequestOptions & { accessToken: string }): Promise<Cart> {
+  async deleteMyActiveCart(options: CommonStoreEnabledRequestOptions & { accessToken: string }): Promise<Cart> {
     const cart = await this.getMyActiveCart(options)
     return await this.request({
-      path: `/me/carts/${cart.id}`,
+      path: this.applyStore(`/me/carts/${cart.id}`, options.storeKey),
       method: 'DELETE',
       params: { version: cart.version },
       accessToken: options.accessToken
@@ -312,12 +326,12 @@ export class CommercetoolsApi {
    * https://docs.commercetools.com/api/projects/me-carts#update-actions
    */
   async updateMyActiveCart(
-    options: CommonRequestOptions & { accessToken: string; actions: CartUpdateAction[] }
+    options: CommonStoreEnabledRequestOptions & { accessToken: string; actions: CartUpdateAction[] }
   ): Promise<Cart> {
     const cart = await this.getMyActiveCart(options)
     return this.request({
       ...this.extractCommonRequestOptions(options),
-      path: `/me/carts/${cart.id}`,
+      path: this.applyStore(`/me/carts/${cart.id}`, options.storeKey),
       method: 'POST',
       data: {
         version: cart.version,
@@ -332,11 +346,13 @@ export class CommercetoolsApi {
    * retrieved by looking up the customers active cart:
    * https://docs.commercetools.com/api/projects/me-orders#create-order-from-a-cart
    */
-  async createMyOrderFromActiveCart(options: CommonRequestOptions & { accessToken: string }): Promise<Order> {
+  async createMyOrderFromActiveCart(
+    options: CommonStoreEnabledRequestOptions & { accessToken: string }
+  ): Promise<Order> {
     const cart = await this.getMyActiveCart(options)
     return this.request<MyOrderFromCartDraft, Order>({
       ...this.extractCommonRequestOptions(options),
-      path: '/me/orders',
+      path: this.applyStore('/me/orders', options.storeKey),
       method: 'POST',
       data: {
         version: cart.version,
@@ -350,13 +366,13 @@ export class CommercetoolsApi {
    * Create a payment object using the customer's access token:
    * https://docs.commercetools.com/api/projects/me-payments#create-mypayment
    */
-  createMyPayment(accessToken: string, data: any, params = {}) {
+  createMyPayment(options: CommonRequestOptions & { data: MyPaymentDraft; accessToken: string }): Promise<MyPayment> {
     return this.request({
+      ...this.extractCommonRequestOptions(options),
       path: '/me/payments',
       method: 'POST',
-      data,
-      params,
-      accessToken
+      data: options.data,
+      accessToken: options.accessToken
     })
   }
 
@@ -364,12 +380,12 @@ export class CommercetoolsApi {
    * Get an order by id using the customer's access token:
    * https://docs.commercetools.com/api/projects/me-orders#get-order-by-id
    */
-  getMyOrderById(accessToken: string, id: string, params = {}) {
+  getMyOrderById(options: CommonStoreEnabledRequestOptions & { id: string; accessToken: string }): Promise<Order> {
     return this.request({
-      path: `/me/orders/${id}`,
+      ...this.extractCommonRequestOptions(options),
+      path: this.applyStore(`/me/orders/${options.id}`, options.storeKey),
       method: 'GET',
-      params,
-      accessToken
+      accessToken: options.accessToken
     })
   }
 
@@ -377,10 +393,10 @@ export class CommercetoolsApi {
    * Get an order by id:
    * https://docs.commercetools.com/api/projects/orders#get-order-by-id
    */
-  getOrderById(options: CommonRequestOptions & { id: string }): Promise<Order> {
+  getOrderById(options: CommonStoreEnabledRequestOptions & { id: string }): Promise<Order> {
     return this.request({
       ...this.extractCommonRequestOptions(options),
-      path: `/orders/${options.id}`,
+      path: this.applyStore(`/orders/${options.id}`, options.storeKey),
       method: 'GET'
     })
   }
@@ -589,10 +605,10 @@ export class CommercetoolsApi {
    * Create a customer account:
    * https://docs.commercetools.com/api/projects/customers#create-customer-sign-up
    */
-  createAccount(options: CommonRequestOptions & { data: CustomerDraft }): Promise<CustomerSignInResult> {
+  createAccount(options: CommonStoreEnabledRequestOptions & { data: CustomerDraft }): Promise<CustomerSignInResult> {
     return this.request({
       ...this.extractCommonRequestOptions(options),
-      path: `/customers`,
+      path: this.applyStore(`/customers`, options.storeKey),
       method: 'POST',
       data: options.data
     })
@@ -602,10 +618,10 @@ export class CommercetoolsApi {
    * Login to customer's account:
    * https://docs.commercetools.com/api/projects/customers#authenticate-customer-sign-in
    */
-  login(options: CommonRequestOptions & { data: CustomerSignin }): Promise<CustomerSignInResult> {
+  login(options: CommonStoreEnabledRequestOptions & { data: CustomerSignin }): Promise<CustomerSignInResult> {
     return this.request({
       ...this.extractCommonRequestOptions(options),
-      path: `/login`,
+      path: this.applyStore(`/login`, options.storeKey),
       method: 'POST',
       data: options.data
     })
@@ -615,10 +631,10 @@ export class CommercetoolsApi {
    * Get a customer's account/profile:
    * https://docs.commercetools.com/api/projects/me-profile#get-customer
    */
-  getMyAccount(options: CommonRequestOptions & { accessToken: string }): Promise<Customer> {
+  getMyAccount(options: CommonStoreEnabledRequestOptions & { accessToken: string }): Promise<Customer> {
     return this.request({
       ...this.extractCommonRequestOptions(options),
-      path: `/me`,
+      path: this.applyStore(`/me`, options.storeKey),
       method: 'GET',
       accessToken: options.accessToken
     })
@@ -628,10 +644,12 @@ export class CommercetoolsApi {
    * Update a customer's account/profile:
    * https://docs.commercetools.com/api/projects/me-profile#update-customer
    */
-  updateMyAccount(options: CommonRequestOptions & { accessToken: string; data: CustomerUpdate }): Promise<Customer> {
+  updateMyAccount(
+    options: CommonStoreEnabledRequestOptions & { accessToken: string; data: CustomerUpdate }
+  ): Promise<Customer> {
     return this.request({
       ...this.extractCommonRequestOptions(options),
-      path: `/me`,
+      path: this.applyStore(`/me`, options.storeKey),
       method: 'POST',
       accessToken: options.accessToken,
       data: options.data
@@ -643,14 +661,14 @@ export class CommercetoolsApi {
    * https://docs.commercetools.com/api/projects/me-profile#change-customers-password
    */
   changeMyPassword(
-    options: CommonRequestOptions & {
+    options: CommonStoreEnabledRequestOptions & {
       accessToken: string
       data: { version: number; currentPassword: string; newPassword: string }
     }
   ): Promise<Customer> {
     return this.request({
       ...this.extractCommonRequestOptions(options),
-      path: `/me/password`,
+      path: this.applyStore(`/me/password`, options.storeKey),
       method: 'POST',
       accessToken: options.accessToken,
       data: options.data
@@ -662,11 +680,11 @@ export class CommercetoolsApi {
    * https://docs.commercetools.com/api/projects/me-profile#reset-customers-password
    */
   resetMyPassword(
-    options: CommonRequestOptions & { accessToken: string; data: CustomerResetPassword }
+    options: CommonStoreEnabledRequestOptions & { accessToken: string; data: CustomerResetPassword }
   ): Promise<Customer> {
     return this.request({
       ...this.extractCommonRequestOptions(options),
-      path: `/me/password/reset`,
+      path: this.applyStore(`/me/password/reset`, options.storeKey),
       method: 'POST',
       accessToken: options.accessToken,
       data: options.data
@@ -678,11 +696,11 @@ export class CommercetoolsApi {
    * https://docs.commercetools.com/api/projects/customers#create-a-token-for-resetting-the-customers-password
    */
   getPasswordResetToken(
-    options: CommonRequestOptions & { data: CustomerCreatePasswordResetToken }
+    options: CommonStoreEnabledRequestOptions & { data: CustomerCreatePasswordResetToken }
   ): Promise<CustomerToken> {
     return this.request({
       ...this.extractCommonRequestOptions(options),
-      path: `/customers/password-token`,
+      path: this.applyStore(`/customers/password-token`, options.storeKey),
       method: 'POST',
       data: options.data
     })
@@ -692,10 +710,10 @@ export class CommercetoolsApi {
    * Get a customer by id:
    * https://docs.commercetools.com/api/projects/customers#get-customer-by-id
    */
-  getCustomerById(options: CommonRequestOptions & { id: string }): Promise<Customer> {
+  getCustomerById(options: CommonStoreEnabledRequestOptions & { id: string }): Promise<Customer> {
     return this.request({
       ...this.extractCommonRequestOptions(options),
-      path: `/customers/${options.id}`,
+      path: this.applyStore(`/customers/${options.id}`, options.storeKey),
       method: 'GET'
     })
   }
@@ -704,10 +722,10 @@ export class CommercetoolsApi {
    * Get a customer by key:
    * https://docs.commercetools.com/api/projects/customers#get-customer-by-key
    */
-  getCustomerByKey(options: CommonRequestOptions & { key: string }): Promise<Customer> {
+  getCustomerByKey(options: CommonStoreEnabledRequestOptions & { key: string }): Promise<Customer> {
     return this.request({
       ...this.extractCommonRequestOptions(options),
-      path: `/customers/key=${options.key}`,
+      path: this.applyStore(`/customers/key=${options.key}`, options.storeKey),
       method: 'GET'
     })
   }
@@ -716,10 +734,10 @@ export class CommercetoolsApi {
    * Get a customer by password token:
    * https://docs.commercetools.com/api/projects/customers#get-customer-by-password-token
    */
-  getCustomerByPasswordToken(options: CommonRequestOptions & { token: string }): Promise<Customer> {
+  getCustomerByPasswordToken(options: CommonStoreEnabledRequestOptions & { token: string }): Promise<Customer> {
     return this.request({
       ...this.extractCommonRequestOptions(options),
-      path: `/customers/password-token=${options.token}`,
+      path: this.applyStore(`/customers/password-token=${options.token}`, options.storeKey),
       method: 'GET'
     })
   }
@@ -814,5 +832,17 @@ export class CommercetoolsApi {
       correlationId: options.correlationId,
       params: options.params
     }
+  }
+
+  /**
+   * Applies the store key to a given path
+   */
+  applyStore(path: string, storeKey: string | undefined | null) {
+    if (typeof storeKey === 'string' && storeKey !== '') {
+      return `/in-store/key=${storeKey}${path}`
+    } else if (this.config.storeKey) {
+      return `/in-store/key=${this.config.storeKey}${path}`
+    }
+    return path
   }
 }

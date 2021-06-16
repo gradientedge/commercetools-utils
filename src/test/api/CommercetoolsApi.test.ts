@@ -189,6 +189,19 @@ describe('CommercetoolsApi', () => {
     })
 
     describe('updateCategoryByKey', () => {
+      it('should make a POST request to the correct endpoint with all expected data and params', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com')
+          .post('/test-project-key/categories/key=my-cat-key', { version: 1, actions: [] })
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const category = await api.updateCategoryByKey({ key: 'my-cat-key', data: { version: 1, actions: [] } })
+
+        expect(category).toEqual({ success: true })
+      })
+    })
+
+    describe('deleteCategoryByKey', () => {
       it('should make a DELETE request to the correct endpoint with all expected data and params', async () => {
         nock('https://api.europe-west1.gcp.commercetools.com')
           .delete('/test-project-key/categories/my-cat-id')
@@ -697,7 +710,7 @@ describe('CommercetoolsApi', () => {
           .reply(200, { success: true })
         const api = new CommercetoolsApi(defaultConfig)
 
-        const order = await api.getMyOrderById('my-access-token', 'my-order-id')
+        const order = await api.getMyOrderById({ id: 'my-order-id', accessToken: 'my-access-token' })
 
         expect(order).toEqual({ success: true })
       })
@@ -725,18 +738,18 @@ describe('CommercetoolsApi', () => {
     describe('createMyPayment', () => {
       it('should make a POST request to the correct endpoint with the given access token and payment data', async () => {
         nock('https://api.europe-west1.gcp.commercetools.com', {
-          encodedQueryParams: true,
           reqheaders: {
             authorization: 'Bearer my-access-token'
           }
         })
-          .post('/test-project-key/me/payments', {
-            test: 1
-          })
+          .post('/test-project-key/me/payments', { amountPlanned: { centAmount: 2000, currencyCode: 'GBP' } })
           .reply(200, { success: true })
         const api = new CommercetoolsApi(defaultConfig)
 
-        const response = await api.createMyPayment('my-access-token', { test: 1 })
+        const response = await api.createMyPayment({
+          accessToken: 'my-access-token',
+          data: { amountPlanned: { centAmount: 2000, currencyCode: 'GBP' } }
+        })
 
         expect(response).toEqual({ success: true })
       })
@@ -1048,6 +1061,36 @@ describe('CommercetoolsApi', () => {
       })
 
       expect(response).toEqual({ success: true })
+    })
+  })
+
+  describe('applyStore', () => {
+    it('should return an unchanged path when a store is neither passed in or available on the config object', async () => {
+      const api = new CommercetoolsApi(defaultConfig)
+
+      expect(api.applyStore('/test', null)).toBe('/test')
+      expect(api.applyStore('/test', undefined)).toBe('/test')
+      expect(api.applyStore('/test', '')).toBe('/test')
+    })
+
+    it('should apply the store key to the path when passed in to the method', async () => {
+      const api = new CommercetoolsApi(defaultConfig)
+
+      expect(api.applyStore('/test', 'my-store')).toBe('/in-store/key=my-store/test')
+    })
+
+    it('should apply the store key to the path when passed in to the method, overriding the store on the config', async () => {
+      const api = new CommercetoolsApi({ ...defaultConfig, storeKey: 'my-store-a' })
+
+      expect(api.applyStore('/test', 'my-store-b')).toBe('/in-store/key=my-store-b/test')
+    })
+
+    it('should apply the store key set on the config when no store key is directly passed in to the method', async () => {
+      const api = new CommercetoolsApi({ ...defaultConfig, storeKey: 'my-store-a' })
+
+      expect(api.applyStore('/test', undefined)).toBe('/in-store/key=my-store-a/test')
+      expect(api.applyStore('/test', null)).toBe('/in-store/key=my-store-a/test')
+      expect(api.applyStore('/test', '')).toBe('/in-store/key=my-store-a/test')
     })
   })
 

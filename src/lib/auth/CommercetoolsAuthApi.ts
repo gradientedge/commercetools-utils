@@ -65,7 +65,7 @@ export class CommercetoolsAuthApi {
    * https://docs.commercetools.com/api/authorization#password-flow
    */
   public async login(options: any): Promise<CommercetoolsGrantResponse> {
-    return this.post(`/${this.config.projectKey}/customers/token`, {
+    return this.post(`/${this.config.projectKey}${this.applyStore('/customers/token', options.storeKey)}`, {
       username: options.username,
       password: options.password,
       grant_type: GrantType.PASSWORD,
@@ -122,5 +122,17 @@ export class CommercetoolsAuthApi {
       }
       throw error
     }
+  }
+
+  /**
+   * Applies the store key to a given path
+   */
+  applyStore(path: string, storeKey: string | undefined | null) {
+    if (typeof storeKey === 'string' && storeKey !== '') {
+      return `/in-store/key=${storeKey}${path}`
+    } else if (this.config.storeKey) {
+      return `/in-store/key=${this.config.storeKey}${path}`
+    }
+    return path
   }
 }
