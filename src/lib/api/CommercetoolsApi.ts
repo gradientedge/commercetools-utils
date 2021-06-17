@@ -30,6 +30,7 @@ import {
   MyPayment,
   MyPaymentDraft,
   Order,
+  OrderUpdate,
   Product,
   ProductDraft,
   ProductProjection,
@@ -422,6 +423,19 @@ export class CommercetoolsApi {
       path: this.applyStore(`/me/orders/${options.id}`, options.storeKey),
       method: 'GET',
       accessToken: options.accessToken
+    })
+  }
+
+  /**
+   * Update an order by id:
+   * https://docs.commercetools.com/api/projects/orders#update-order-by-id
+   */
+  updateOrderById(options: CommonStoreEnabledRequestOptions & { id: string; data: OrderUpdate }): Promise<Order> {
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: this.applyStore(`/orders/${options.id}`, options.storeKey),
+      method: 'POST',
+      data: options.data
     })
   }
 
