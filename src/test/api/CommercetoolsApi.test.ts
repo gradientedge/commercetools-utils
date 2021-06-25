@@ -1122,6 +1122,42 @@ describe('CommercetoolsApi', () => {
     })
   })
 
+  describe('Types', () => {
+    describe('getTypeById', () => {
+      it('should make a GET request to the correct endpoint', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com', {
+          reqheaders: {
+            authorization: 'Bearer test-access-token'
+          }
+        })
+          .get('/test-project-key/types/my-type-id')
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const order = await api.getTypeById({ id: 'my-type-id ' })
+
+        expect(order).toEqual({ success: true })
+      })
+    })
+
+    describe('getTypeByKey', () => {
+      it('should make a GET request to the correct endpoint', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com', {
+          reqheaders: {
+            authorization: 'Bearer test-access-token'
+          }
+        })
+          .get('/test-project-key/types/key=my-product-type-key')
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const order = await api.getTypeByKey({ key: 'my-type-key ' })
+
+        expect(order).toEqual({ success: true })
+      })
+    })
+  })
+
   describe('graphql', () => {
     it('should call the /graphql endpoint with the data passed in, using the client access token', async () => {
       nock('https://api.europe-west1.gcp.commercetools.com', {

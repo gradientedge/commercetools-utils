@@ -35,7 +35,8 @@ import {
   ProductDraft,
   ProductProjection,
   ProductType,
-  ProductUpdate
+  ProductUpdate,
+  Type
 } from '@commercetools/platform-sdk'
 
 interface FetchOptions<T = Record<string, any>> {
@@ -844,6 +845,30 @@ export class CommercetoolsApi {
     return this.request({
       ...this.extractCommonRequestOptions(options),
       path: `/product-types/key=${options.key}`,
+      method: 'GET'
+    })
+  }
+
+  /**
+   * Get a type by id:
+   * https://docs.commercetools.com/api/projects/types#get-type-by-id
+   */
+  getTypeById(options: CommonRequestOptions & { id: string }): Promise<Type> {
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/types/${options.id}`,
+      method: 'GET'
+    })
+  }
+
+  /**
+   * Get a type by key:
+   * https://docs.commercetools.com/api/projects/types#get-type-by-key
+   */
+  getTypeByKey(options: CommonRequestOptions & { key: string }): Promise<Type> {
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/types/key=${options.key}`,
       method: 'GET'
     })
   }
