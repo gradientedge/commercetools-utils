@@ -22,6 +22,8 @@ import {
   CustomerSignInResult,
   CustomerToken,
   CustomerUpdate,
+  CustomObject,
+  CustomObjectDraft,
   GraphQLRequest,
   GraphQLResponse,
   MyCartDraft,
@@ -36,6 +38,7 @@ import {
   ProductProjection,
   ProductType,
   ProductUpdate,
+  Store,
   Type
 } from '@commercetools/platform-sdk'
 
@@ -109,6 +112,30 @@ export class CommercetoolsApi {
     this.auth = new CommercetoolsAuth(config)
     this.endpoints = REGION_URLS[this.config.region]
     this.userAgent = buildUserAgent(this.config.systemIdentifier)
+  }
+
+  /**
+   * Get a store given it's id
+   * https://docs.commercetools.com/api/projects/stores#get-a-store-by-id
+   */
+  getStoreById(options: CommonRequestOptions & { id: string }): Promise<Store> {
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/stores/${options.id}`,
+      method: 'GET'
+    })
+  }
+
+  /**
+   * Get a store given it's key
+   * https://docs.commercetools.com/api/projects/stores#get-a-store-by-key
+   */
+  getStoreByKey(options: CommonRequestOptions & { key: string }): Promise<Store> {
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/stores/key=${options.key}`,
+      method: 'GET'
+    })
   }
 
   /**
@@ -281,6 +308,18 @@ export class CommercetoolsApi {
   }
 
   /**
+   * Get a cart by id
+   * https://docs.commercetools.com/api/projects/carts#update-a-cart-by-id
+   */
+  async getCartById(options: CommonStoreEnabledRequestOptions & { id: string }): Promise<Cart> {
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: this.applyStore(`/carts/${options.id}`, options.storeKey),
+      method: 'GET'
+    })
+  }
+
+  /**
    * Create a new cart:
    * https://docs.commercetools.com/api/projects/carts#create-a-cart-1
    */
@@ -290,6 +329,24 @@ export class CommercetoolsApi {
       path: this.applyStore(`/carts`, options.storeKey),
       method: 'POST',
       data: options.data
+    })
+  }
+
+  /**
+   * Update a cart by id
+   * https://docs.commercetools.com/api/projects/carts#update-a-cart-by-id
+   */
+  async updateCartById(
+    options: CommonStoreEnabledRequestOptions & { id: string; version: number; actions: CartUpdateAction[] }
+  ): Promise<Cart> {
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: this.applyStore(`/carts/${options.id}`, options.storeKey),
+      method: 'POST',
+      data: {
+        version: options.version,
+        actions: options.actions
+      }
     })
   }
 
@@ -870,6 +927,43 @@ export class CommercetoolsApi {
       ...this.extractCommonRequestOptions(options),
       path: `/types/key=${options.key}`,
       method: 'GET'
+    })
+  }
+
+  /**
+   * Get a custom object
+   * https://docs.commercetools.com/api/projects/custom-objects#get-customobject-by-container-and-key
+   */
+  getCustomObject(options: CommonRequestOptions & { container: string; key: string }): Promise<CustomObject> {
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/custom-objects/${options.container}/${options.key}`,
+      method: 'GET'
+    })
+  }
+
+  /**
+   * Save a custom object
+   * https://docs.commercetools.com/api/projects/custom-objects#create-or-update-a-customobject
+   */
+  saveCustomObject(options: CommonRequestOptions & { data: CustomObjectDraft }): Promise<CustomObject> {
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/custom-objects`,
+      method: 'POST',
+      data: options.data
+    })
+  }
+
+  /**
+   * Delete a custom object
+   * https://docs.commercetools.com/api/projects/custom-objects#delete-customobject-by-container-and-key
+   */
+  deleteCustomObject(options: CommonRequestOptions & { container: string; key: string }): Promise<CustomObject> {
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/custom-objects/${options.container}/${options.key}`,
+      method: 'DELETE'
     })
   }
 
