@@ -1205,7 +1205,7 @@ describe('CommercetoolsApi', () => {
             authorization: 'Bearer test-access-token'
           }
         })
-          .get('/test-project-key/types/key=my-product-type-key')
+          .get('/test-project-key/types/key=my-type-key')
           .reply(200, { success: true })
         const api = new CommercetoolsApi(defaultConfig)
 
