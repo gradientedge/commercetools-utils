@@ -943,6 +943,30 @@ describe('CommercetoolsApi', () => {
       })
     })
 
+    describe('queryCustomers', () => {
+      it('should make a GET request to the correct endpoint', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com', {
+          reqheaders: {
+            authorization: 'Bearer test-access-token'
+          }
+        })
+          .get('/test-project-key/customers')
+          .query({
+            where: 'email="jimmy@gradientedge.com"'
+          })
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const order = await api.queryCustomers({
+          params: {
+            where: 'email="jimmy@gradientedge.com"'
+          }
+        })
+
+        expect(order).toEqual({ success: true })
+      })
+    })
+
     describe('Account', () => {
       describe('createAccount', () => {
         it('should make a POST request to the correct endpoint with the expected data', async () => {
