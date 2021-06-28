@@ -17,6 +17,7 @@ import {
   Customer,
   CustomerCreatePasswordResetToken,
   CustomerDraft,
+  CustomerPagedQueryResponse,
   CustomerResetPassword,
   CustomerSignin,
   CustomerSignInResult,
@@ -878,6 +879,18 @@ export class CommercetoolsApi {
     return this.request({
       ...this.extractCommonRequestOptions(options),
       path: this.applyStore(`/customers/password-token=${options.token}`, options.storeKey),
+      method: 'GET'
+    })
+  }
+
+  /**
+   * Query customers:
+   * https://docs.commercetools.com/api/projects/customers#query-customers
+   */
+  queryCustomers(options: CommonStoreEnabledRequestOptions): Promise<CustomerPagedQueryResponse> {
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: this.applyStore(`/customers`, options.storeKey),
       method: 'GET'
     })
   }
