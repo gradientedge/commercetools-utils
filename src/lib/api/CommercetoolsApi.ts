@@ -514,14 +514,36 @@ export class CommercetoolsApi {
    * Delete an order by id:
    * https://docs.commercetools.com/api/projects/orders#delete-order-by-id
    */
-  deleteOrderById(options: CommonStoreEnabledRequestOptions & { id: string; version: number }): Promise<Order> {
+  deleteOrderById(
+    options: CommonStoreEnabledRequestOptions & { id: string; version: number; dataErasure?: boolean }
+  ): Promise<Order> {
     return this.request({
       ...this.extractCommonRequestOptions(options),
       path: this.applyStore(`/orders/${options.id}`, options.storeKey),
       method: 'DELETE',
       params: {
         ...options.params,
-        version: options.version
+        version: options.version,
+        dataErasure: options.dataErasure
+      }
+    })
+  }
+
+  /**
+   * Delete an order by order number:
+   * https://docs.commercetools.com/api/projects/orders#delete-order-by-ordernumber
+   */
+  deleteOrderByOrderNumber(
+    options: CommonStoreEnabledRequestOptions & { orderNo: string; version: number; dataErasure?: boolean }
+  ): Promise<Order> {
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: this.applyStore(`/orders/order-number=${options.orderNo}`, options.storeKey),
+      method: 'DELETE',
+      params: {
+        ...options.params,
+        version: options.version,
+        dataErasure: options.dataErasure
       }
     })
   }
@@ -736,6 +758,44 @@ export class CommercetoolsApi {
       path: this.applyStore(`/customers`, options.storeKey),
       method: 'POST',
       data: options.data
+    })
+  }
+
+  /**
+   * Delete a customer account by id
+   * https://docs.commercetools.com/api/projects/customers#delete-customer-by-id
+   */
+  deleteCustomerById(
+    options: CommonStoreEnabledRequestOptions & { id: string; version: number; dataErasure?: boolean }
+  ): Promise<Customer> {
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: this.applyStore(`/customers/${options.id}`, options.storeKey),
+      method: 'DELETE',
+      params: {
+        ...options.params,
+        version: options.version,
+        dataErasure: options.dataErasure
+      }
+    })
+  }
+
+  /**
+   * Delete a customer account by key
+   * https://docs.commercetools.com/api/projects/customers#delete-customer-by-key
+   */
+  deleteCustomerByKey(
+    options: CommonStoreEnabledRequestOptions & { key: string; version: number; dataErasure?: boolean }
+  ): Promise<Customer> {
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: this.applyStore(`/customers/key=${options.key}`, options.storeKey),
+      method: 'DELETE',
+      params: {
+        ...options.params,
+        version: options.version,
+        dataErasure: options.dataErasure
+      }
     })
   }
 
