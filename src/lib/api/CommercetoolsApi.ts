@@ -33,6 +33,7 @@ import {
   MyPayment,
   MyPaymentDraft,
   Order,
+  OrderPagedQueryResponse,
   OrderUpdate,
   Product,
   ProductDraft,
@@ -545,6 +546,18 @@ export class CommercetoolsApi {
         version: options.version,
         dataErasure: options.dataErasure
       }
+    })
+  }
+
+  /**
+   * Query orders:
+   * https://docs.commercetools.com/api/projects/orders#query-orders-1
+   */
+  queryOrders(options: CommonStoreEnabledRequestOptions): Promise<OrderPagedQueryResponse> {
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: this.applyStore(`/orders`, options.storeKey),
+      method: 'GET'
     })
   }
 
