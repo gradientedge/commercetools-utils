@@ -1029,6 +1029,18 @@ export class CommercetoolsApi {
   }
 
   /**
+   * Get a custom object by id
+   * https://docs.commercetools.com/api/projects/custom-objects#get-customobject
+   */
+  getCustomObjectById(options: CommonRequestOptions & { id: string }): Promise<CustomObject> {
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/custom-objects/${options.id}`,
+      method: 'GET'
+    })
+  }
+
+  /**
    * Save a custom object
    * https://docs.commercetools.com/api/projects/custom-objects#create-or-update-a-customobject
    */
