@@ -1342,6 +1342,23 @@ describe('CommercetoolsApi', () => {
       })
     })
 
+    describe('getCustomObjectById', () => {
+      it('should make a GET request to the correct endpoint', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com', {
+          reqheaders: {
+            authorization: 'Bearer test-access-token'
+          }
+        })
+          .get('/test-project-key/custom-objects/my-custom-object-id')
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const order = await api.getCustomObjectById({ id: 'my-custom-object-id' })
+
+        expect(order).toEqual({ success: true })
+      })
+    })
+
     describe('saveCustomObject', () => {
       it('should make a POST request to the correct endpoint', async () => {
         nock('https://api.europe-west1.gcp.commercetools.com', {
