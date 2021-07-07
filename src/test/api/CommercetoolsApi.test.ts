@@ -865,6 +865,39 @@ describe('CommercetoolsApi', () => {
       })
     })
 
+    describe('queryMyOrders', () => {
+      it('should make a GET request to the correct endpoint when no params are passed in', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com', {
+          reqheaders: {
+            authorization: 'Bearer my-access-token'
+          }
+        })
+          .get('/test-project-key/me/orders')
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const order = await api.queryMyOrders({ accessToken: 'my-access-token' })
+
+        expect(order).toEqual({ success: true })
+      })
+
+      it('should make a GET request to the correct endpoint when with the given params', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com', {
+          reqheaders: {
+            authorization: 'Bearer my-access-token'
+          }
+        })
+          .get('/test-project-key/me/orders')
+          .query({ limit: 20 })
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const order = await api.queryMyOrders({ accessToken: 'my-access-token', params: { limit: 20 } })
+
+        expect(order).toEqual({ success: true })
+      })
+    })
+
     describe('getOrderById', () => {
       it('should make a GET request to the correct endpoint', async () => {
         nock('https://api.europe-west1.gcp.commercetools.com', {
@@ -914,6 +947,29 @@ describe('CommercetoolsApi', () => {
         const api = new CommercetoolsApi(defaultConfig)
 
         const order = await api.updateOrderById({ id: 'test-order-id', data: { version: 2, actions: [] } })
+
+        expect(order).toEqual({ success: true })
+      })
+    })
+
+    describe('updateOrderByOrderNumber', () => {
+      it('should make a POST request to the correct endpoint', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com', {
+          reqheaders: {
+            authorization: 'Bearer test-access-token'
+          }
+        })
+          .post('/test-project-key/orders/order-number=test-order-num', {
+            version: 2,
+            actions: []
+          })
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const order = await api.updateOrderByOrderNumber({
+          orderNumber: 'test-order-num',
+          data: { version: 2, actions: [] }
+        })
 
         expect(order).toEqual({ success: true })
       })
