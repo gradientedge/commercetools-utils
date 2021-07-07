@@ -513,6 +513,18 @@ export class CommercetoolsApi {
   }
 
   /**
+   * Get an order by order number:
+   * https://docs.commercetools.com/api/projects/orders#get-order-by-ordernumber
+   */
+  getOrderByOrderNumber(options: CommonRequestOptions & { orderNumber: string }): Promise<Order> {
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/orders/order-number=${options.orderNumber}`,
+      method: 'GET'
+    })
+  }
+
+  /**
    * Delete an order by id:
    * https://docs.commercetools.com/api/projects/orders#delete-order-by-id
    */
