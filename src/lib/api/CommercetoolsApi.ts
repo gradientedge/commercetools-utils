@@ -516,10 +516,10 @@ export class CommercetoolsApi {
    * Get an order by order number:
    * https://docs.commercetools.com/api/projects/orders#get-order-by-ordernumber
    */
-  getOrderByOrderNumber(options: CommonRequestOptions & { orderNumber: string }): Promise<Order> {
+  getOrderByOrderNumber(options: CommonStoreEnabledRequestOptions & { orderNumber: string }): Promise<Order> {
     return this.request({
       ...this.extractCommonRequestOptions(options),
-      path: `/orders/order-number=${options.orderNumber}`,
+      path: this.applyStore(`/orders/order-number=${options.orderNumber}`, options.storeKey),
       method: 'GET'
     })
   }
