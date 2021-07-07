@@ -14,6 +14,8 @@ import {
   Category,
   CategoryDraft,
   CategoryUpdate,
+  Channel,
+  ChannelPagedQueryResponse,
   Customer,
   CustomerCreatePasswordResetToken,
   CustomerDraft,
@@ -150,6 +152,30 @@ export class CommercetoolsApi {
       path: `/categories/${id}`,
       method: 'GET',
       params
+    })
+  }
+
+  /**
+   * Query channels:
+   * https://docs.commercetools.com/api/projects/orders#query-orders-1
+   */
+  queryChannels(options?: CommonRequestOptions): Promise<ChannelPagedQueryResponse> {
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/channels`,
+      method: 'GET'
+    })
+  }
+
+  /**
+   * Get channel by id:
+   * https://docs.commercetools.com/api/projects/orders#query-orders-1
+   */
+  getChannelById(options: CommonRequestOptions & { id: string }): Promise<Channel> {
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/channels/${options.id}`,
+      method: 'GET'
     })
   }
 
@@ -1139,7 +1165,10 @@ export class CommercetoolsApi {
   /**
    * Type-guard against any additional unexpected properties being passed in.
    */
-  private extractCommonRequestOptions(options: CommonRequestOptions): CommonRequestOptions {
+  private extractCommonRequestOptions(options?: CommonRequestOptions): CommonRequestOptions {
+    if (!options) {
+      return {}
+    }
     return {
       correlationId: options.correlationId,
       params: options.params
