@@ -157,7 +157,7 @@ export class CommercetoolsApi {
 
   /**
    * Query channels:
-   * https://docs.commercetools.com/api/projects/orders#query-orders-1
+   * https://docs.commercetools.com/api/projects/channels#query-channels
    */
   queryChannels(options?: CommonRequestOptions): Promise<ChannelPagedQueryResponse> {
     return this.request({
@@ -169,7 +169,7 @@ export class CommercetoolsApi {
 
   /**
    * Get channel by id:
-   * https://docs.commercetools.com/api/projects/orders#query-orders-1
+   * https://docs.commercetools.com/api/projects/channels#get-channel-by-id
    */
   getChannelById(options: CommonRequestOptions & { id: string }): Promise<Channel> {
     return this.request({
