@@ -510,8 +510,10 @@ describe('CommercetoolsApi', () => {
         const api = new CommercetoolsApi(defaultConfig)
 
         const product = await api.searchProductProjections({
-          staged: true,
-          where: 'slug(en="my-product-slug")'
+          params: {
+            staged: true,
+            where: 'slug(en="my-product-slug")'
+          }
         })
 
         expect(product).toEqual({ success: true })
@@ -825,6 +827,23 @@ describe('CommercetoolsApi', () => {
         const api = new CommercetoolsApi(defaultConfig)
 
         const order = await api.getOrderById({ id: 'test-order-id' })
+
+        expect(order).toEqual({ success: true })
+      })
+    })
+
+    describe('getOrderByOrderNumber', () => {
+      it('should make a GET request to the correct endpoint', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com', {
+          reqheaders: {
+            authorization: 'Bearer test-access-token'
+          }
+        })
+          .get('/test-project-key/orders/order-number=my-order-number')
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const order = await api.getOrderByOrderNumber({ orderNumber: 'my-order-number' })
 
         expect(order).toEqual({ success: true })
       })

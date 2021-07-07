@@ -38,6 +38,7 @@ import {
   Product,
   ProductDraft,
   ProductProjection,
+  ProductProjectionPagedQueryResponse,
   ProductType,
   ProductUpdate,
   Store,
@@ -298,14 +299,14 @@ export class CommercetoolsApi {
   }
 
   /**
-   * Query product projections
+   * Search product projections
    * https://docs.commercetools.com/api/projects/products-search#search-productprojections
    */
-  searchProductProjections(params = {}): Promise<any> {
+  searchProductProjections(options: CommonStoreEnabledRequestOptions): Promise<ProductProjectionPagedQueryResponse> {
     return this.request({
+      ...this.extractCommonRequestOptions(options),
       path: `/product-projections/search`,
-      method: 'GET',
-      params
+      method: 'GET'
     })
   }
 
@@ -507,6 +508,18 @@ export class CommercetoolsApi {
     return this.request({
       ...this.extractCommonRequestOptions(options),
       path: this.applyStore(`/orders/${options.id}`, options.storeKey),
+      method: 'GET'
+    })
+  }
+
+  /**
+   * Get an order by order number:
+   * https://docs.commercetools.com/api/projects/orders#get-order-by-ordernumber
+   */
+  getOrderByOrderNumber(options: CommonRequestOptions & { orderNumber: string }): Promise<Order> {
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/orders/order-number=${options.orderNumber}`,
       method: 'GET'
     })
   }
