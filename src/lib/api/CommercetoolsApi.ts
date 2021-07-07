@@ -514,6 +514,19 @@ export class CommercetoolsApi {
   }
 
   /**
+   * Query my orders:
+   * https://docs.commercetools.com/api/projects/me-orders#query-orders-1
+   */
+  queryMyOrders(options: CommonStoreEnabledRequestOptions & { accessToken: string }): Promise<OrderPagedQueryResponse> {
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: this.applyStore(`/me/orders`, options.storeKey),
+      method: 'GET',
+      accessToken: options.accessToken
+    })
+  }
+
+  /**
    * Update an order by id:
    * https://docs.commercetools.com/api/projects/orders#update-order-by-id
    */
@@ -521,6 +534,21 @@ export class CommercetoolsApi {
     return this.request({
       ...this.extractCommonRequestOptions(options),
       path: this.applyStore(`/orders/${options.id}`, options.storeKey),
+      method: 'POST',
+      data: options.data
+    })
+  }
+
+  /**
+   * Update an order by order number:
+   * https://docs.commercetools.com/api/projects/orders#update-order-by-ordernumber
+   */
+  updateOrderByOrderNumber(
+    options: CommonStoreEnabledRequestOptions & { orderNumber: string; data: OrderUpdate }
+  ): Promise<Order> {
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: this.applyStore(`/orders/order-number=${options.orderNumber}`, options.storeKey),
       method: 'POST',
       data: options.data
     })
