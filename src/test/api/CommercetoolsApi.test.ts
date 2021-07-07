@@ -510,8 +510,10 @@ describe('CommercetoolsApi', () => {
         const api = new CommercetoolsApi(defaultConfig)
 
         const product = await api.searchProductProjections({
-          staged: true,
-          where: 'slug(en="my-product-slug")'
+          params: {
+            staged: true,
+            where: 'slug(en="my-product-slug")'
+          }
         })
 
         expect(product).toEqual({ success: true })
