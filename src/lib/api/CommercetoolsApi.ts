@@ -10,6 +10,7 @@ import { buildUserAgent } from '../utils'
 import {
   Cart,
   CartDraft,
+  CartPagedQueryResponse,
   CartUpdateAction,
   Category,
   CategoryDraft,
@@ -345,6 +346,33 @@ export class CommercetoolsApi {
       ...this.extractCommonRequestOptions(options),
       path: this.applyStore(`/carts/${options.id}`, options.storeKey),
       method: 'GET'
+    })
+  }
+
+  /**
+   * Query carts
+   * https://docs.commercetools.com/api/projects/carts#query-carts-1
+   */
+  async queryCarts(options?: CommonStoreEnabledRequestOptions): Promise<CartPagedQueryResponse> {
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: this.applyStore(`/carts`, options?.storeKey),
+      method: 'GET'
+    })
+  }
+
+  /**
+   * Query my carts
+   * https://docs.commercetools.com/api/projects/me-carts#query-carts-1
+   */
+  async queryMyCarts(
+    options: CommonStoreEnabledRequestOptions & { accessToken: string }
+  ): Promise<CartPagedQueryResponse> {
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: this.applyStore(`/me/carts`, options.storeKey),
+      method: 'GET',
+      accessToken: options.accessToken
     })
   }
 
