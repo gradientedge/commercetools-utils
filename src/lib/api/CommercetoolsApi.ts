@@ -164,7 +164,7 @@ export class CommercetoolsApi {
     return this.request({
       ...this.extractCommonRequestOptions(options),
       path: `/categories/key=${options.key}`,
-      method: 'GET',
+      method: 'GET'
     })
   }
 

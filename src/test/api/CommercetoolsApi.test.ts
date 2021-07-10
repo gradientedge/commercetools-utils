@@ -156,7 +156,7 @@ describe('CommercetoolsApi', () => {
           .reply(200, { success: true })
         const api = new CommercetoolsApi(defaultConfig)
 
-        const product = await api.getCategoryByKey({ key: 'my-category-key'})
+        const product = await api.getCategoryByKey({ key: 'my-category-key' })
 
         expect(product).toEqual({ success: true })
       })
