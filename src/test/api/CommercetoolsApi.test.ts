@@ -128,7 +128,7 @@ describe('CommercetoolsApi', () => {
           .reply(200, { success: true })
         const api = new CommercetoolsApi(defaultConfig)
 
-        const product = await api.getCategoryById('my-category-id')
+        const product = await api.getCategoryById({ id: 'my-category-id' })
 
         expect(product).toEqual({ success: true })
       })
