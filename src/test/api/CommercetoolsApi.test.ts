@@ -128,7 +128,7 @@ describe('CommercetoolsApi', () => {
           .reply(200, { success: true })
         const api = new CommercetoolsApi(defaultConfig)
 
-        const product = await api.getCategoryById('my-category-id')
+        const product = await api.getCategoryById({ id: 'my-category-id' })
 
         expect(product).toEqual({ success: true })
       })
@@ -146,6 +146,19 @@ describe('CommercetoolsApi', () => {
         const product = await api.getCategoryBySlug('my-slug', 'en')
 
         expect(product).toEqual(singleResultItem)
+      })
+    })
+
+    describe('getCategoryByKey', () => {
+      it('should make a GET request to the correct endpoint', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com')
+          .get('/test-project-key/categories/key=my-category-key')
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const product = await api.getCategoryByKey({ key: 'my-category-key' })
+
+        expect(product).toEqual({ success: true })
       })
     })
 

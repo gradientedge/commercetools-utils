@@ -148,11 +148,23 @@ export class CommercetoolsApi {
    * Get an individual category by id:
    * https://docs.commercetools.com/api/projects/categories#get-category-by-id
    */
-  getCategoryById(id: string, params = {}): Promise<any> {
+  getCategoryById(options: CommonRequestOptions & { id: string }): Promise<Category> {
     return this.request({
-      path: `/categories/${id}`,
-      method: 'GET',
-      params
+      ...this.extractCommonRequestOptions(options),
+      path: `/categories/${options.id}`,
+      method: 'GET'
+    })
+  }
+
+  /**
+   * Get an individual category by key:
+   * https://docs.commercetools.com/api/projects/categories#get-category-by-key
+   */
+  getCategoryByKey(options: CommonRequestOptions & { key: string }): Promise<Category> {
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/categories/key=${options.key}`,
+      method: 'GET'
     })
   }
 
