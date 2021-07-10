@@ -157,6 +157,18 @@ export class CommercetoolsApi {
   }
 
   /**
+   * Get an individual category by key:
+   * https://docs.commercetools.com/api/projects/categories#get-category-by-key
+   */
+  getCategoryByKey(options: CommonRequestOptions & { key: string }): Promise<Category> {
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/categories/key=${options.key}`,
+      method: 'GET',
+    })
+  }
+
+  /**
    * Query channels:
    * https://docs.commercetools.com/api/projects/channels#query-channels
    */
