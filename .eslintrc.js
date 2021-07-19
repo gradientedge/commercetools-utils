@@ -1,13 +1,13 @@
 module.exports = {
   env: {
     es2021: true,
-    node: true
+    node: true,
   },
   extends: ['eslint:recommended', 'plugin:@typescript-eslint/recommended', 'prettier'],
   parser: '@typescript-eslint/parser',
   parserOptions: {
     ecmaVersion: 12,
-    sourceType: 'module'
+    sourceType: 'module',
   },
   plugins: ['@typescript-eslint'],
   rules: {
@@ -16,6 +16,6 @@ module.exports = {
     '@typescript-eslint/no-empty-function': 'off',
     '@typescript-eslint/no-empty-interface': 'off',
     '@typescript-eslint/no-var-requires': 'off',
-    'no-empty': 'off'
-  }
+    'no-empty': 'off',
+  },
 }

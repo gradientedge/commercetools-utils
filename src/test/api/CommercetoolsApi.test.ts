@@ -9,14 +9,14 @@ const defaultConfig = {
   clientSecret: 'test-client-secret',
   region: Region.EUROPE_GCP,
   clientScopes: ['defaultClientScope1'],
-  timeoutMs: 1000
+  timeoutMs: 1000,
 }
 
 const defaultClientGrantResponse: CommercetoolsGrantResponse = {
   access_token: 'test-access-token',
   refresh_token: 'test-refresh-token',
   scope: 'scope1:test-project-key scope2:test-project-key scope3:test-project-key customer_id:123456',
-  expires_in: 172800
+  expires_in: 172800,
 }
 
 const singleResultItem = { success: true }
@@ -26,14 +26,14 @@ const singleItemResponse = {
   offset: 0,
   count: 1,
   total: 1,
-  results: [singleResultItem]
+  results: [singleResultItem],
 }
 
 describe('CommercetoolsApi', () => {
   beforeAll(() => {
     nock.disableNetConnect()
     nock('https://auth.europe-west1.gcp.commercetools.com', {
-      encodedQueryParams: true
+      encodedQueryParams: true,
     })
       .persist()
       .post('/oauth/token', 'grant_type=client_credentials&scope=defaultClientScope1%3Atest-project-key')
@@ -72,7 +72,7 @@ describe('CommercetoolsApi', () => {
     describe('getChannelById', () => {
       it('should make a GET request to the correct endpoint', async () => {
         nock('https://api.europe-west1.gcp.commercetools.com', {
-          encodedQueryParams: true
+          encodedQueryParams: true,
         })
           .get('/test-project-key/channels/my-channel-id')
           .reply(200, { success: true })
@@ -101,7 +101,7 @@ describe('CommercetoolsApi', () => {
           .get('/test-project-key/channels')
           .query({
             staged: true,
-            where: 'key=123'
+            where: 'key=123',
           })
           .reply(200, singleItemResponse)
         const api = new CommercetoolsApi(defaultConfig)
@@ -109,8 +109,8 @@ describe('CommercetoolsApi', () => {
         const product = await api.queryChannels({
           params: {
             staged: true,
-            where: 'key=123'
-          }
+            where: 'key=123',
+          },
         })
 
         expect(product).toEqual(singleItemResponse)
@@ -122,7 +122,7 @@ describe('CommercetoolsApi', () => {
     describe('getCategoryById', () => {
       it('should make a GET request to the correct endpoint', async () => {
         nock('https://api.europe-west1.gcp.commercetools.com', {
-          encodedQueryParams: true
+          encodedQueryParams: true,
         })
           .get('/test-project-key/categories/my-category-id')
           .reply(200, { success: true })
@@ -137,7 +137,7 @@ describe('CommercetoolsApi', () => {
     describe('getCategoryBySlug', () => {
       it('should make a GET request to the correct endpoint', async () => {
         nock('https://api.europe-west1.gcp.commercetools.com', {
-          encodedQueryParams: true
+          encodedQueryParams: true,
         })
           .get('/test-project-key/categories?where=slug(en%3D%22my-slug%22)')
           .reply(200, singleItemResponse)
@@ -152,7 +152,7 @@ describe('CommercetoolsApi', () => {
     describe('queryCategories', () => {
       it('should make a GET request to the correct endpoint when no parameters are passed', async () => {
         nock('https://api.europe-west1.gcp.commercetools.com', {
-          encodedQueryParams: true
+          encodedQueryParams: true,
         })
           .get('/test-project-key/categories')
           .reply(200, { success: true })
@@ -165,7 +165,7 @@ describe('CommercetoolsApi', () => {
 
       it('should make a GET request to the correct endpoint with the passed in parameters in the querystring', async () => {
         nock('https://api.europe-west1.gcp.commercetools.com', {
-          encodedQueryParams: true
+          encodedQueryParams: true,
         })
           .get('/test-project-key/categories?staged=true&where=slug(en%3D%22my-slug%22)')
           .reply(200, singleItemResponse)
@@ -173,7 +173,7 @@ describe('CommercetoolsApi', () => {
 
         const product = await api.queryCategories({
           staged: true,
-          where: 'slug(en="my-slug")'
+          where: 'slug(en="my-slug")',
         })
 
         expect(product).toEqual(singleItemResponse)
@@ -185,15 +185,15 @@ describe('CommercetoolsApi', () => {
         nock('https://api.europe-west1.gcp.commercetools.com')
           .get('/test-project-key/categories/my-cat-id')
           .query({
-            expand: 'ancestors[*]'
+            expand: 'ancestors[*]',
           })
           .reply(200, {
             id: 'my-cat-id',
             ancestors: [
               { id: 'ancestor-root', obj: { id: 'ancestor-root' } },
               { id: 'grandparent-cat', obj: { id: 'grandparent-cat' } },
-              { id: 'parent-cat', obj: { id: 'parent-cat' } }
-            ]
+              { id: 'parent-cat', obj: { id: 'parent-cat' } },
+            ],
           })
         const api = new CommercetoolsApi(defaultConfig)
 
@@ -205,8 +205,8 @@ describe('CommercetoolsApi', () => {
           { id: 'parent-cat' },
           {
             id: 'my-cat-id',
-            ancestors: [{ id: 'ancestor-root' }, { id: 'grandparent-cat' }, { id: 'parent-cat' }]
-          }
+            ancestors: [{ id: 'ancestor-root' }, { id: 'grandparent-cat' }, { id: 'parent-cat' }],
+          },
         ])
       })
 
@@ -214,15 +214,15 @@ describe('CommercetoolsApi', () => {
         nock('https://api.europe-west1.gcp.commercetools.com')
           .get('/test-project-key/categories/key=my-cat-key')
           .query({
-            expand: 'ancestors[*]'
+            expand: 'ancestors[*]',
           })
           .reply(200, {
             key: 'my-cat-key',
             ancestors: [
               { id: 'ancestor-root', obj: { id: 'ancestor-root' } },
               { id: 'grandparent-cat', obj: { id: 'grandparent-cat' } },
-              { id: 'parent-cat', obj: { id: 'parent-cat' } }
-            ]
+              { id: 'parent-cat', obj: { id: 'parent-cat' } },
+            ],
           })
         const api = new CommercetoolsApi(defaultConfig)
 
@@ -234,8 +234,8 @@ describe('CommercetoolsApi', () => {
           { id: 'parent-cat' },
           {
             key: 'my-cat-key',
-            ancestors: [{ id: 'ancestor-root' }, { id: 'grandparent-cat' }, { id: 'parent-cat' }]
-          }
+            ancestors: [{ id: 'ancestor-root' }, { id: 'grandparent-cat' }, { id: 'parent-cat' }],
+          },
         ])
       })
     })
@@ -327,7 +327,7 @@ describe('CommercetoolsApi', () => {
           .reply(200, { success: true })
         const api = new CommercetoolsApi(defaultConfig)
         api.unpublishProductByKey = jest.fn().mockResolvedValue({
-          version: 4
+          version: 4,
         })
 
         const category = await api.deleteProductByKey({ key: 'my-prod-key', version: 3, unpublish: true })
@@ -355,7 +355,7 @@ describe('CommercetoolsApi', () => {
           .reply(200, { success: true })
         const api = new CommercetoolsApi(defaultConfig)
         api.unpublishProductById = jest.fn().mockResolvedValue({
-          version: 4
+          version: 4,
         })
 
         const category = await api.deleteProductById({ id: 'my-prod-id', version: 3, unpublish: true })
@@ -410,7 +410,7 @@ describe('CommercetoolsApi', () => {
     describe('getProductById', () => {
       it('should make a GET request to the correct endpoint', async () => {
         nock('https://api.europe-west1.gcp.commercetools.com', {
-          encodedQueryParams: true
+          encodedQueryParams: true,
         })
           .get('/test-project-key/products/my-product-id')
           .reply(200, { success: true })
@@ -438,7 +438,7 @@ describe('CommercetoolsApi', () => {
     describe('getProductProjectionById', () => {
       it('should make a GET request to the correct endpoint', async () => {
         nock('https://api.europe-west1.gcp.commercetools.com', {
-          encodedQueryParams: true
+          encodedQueryParams: true,
         })
           .get('/test-project-key/product-projections/my-prod-guid')
           .reply(200, { success: true })
@@ -451,7 +451,7 @@ describe('CommercetoolsApi', () => {
 
       it('should use the `params` parameter to form the querystring', async () => {
         nock('https://api.europe-west1.gcp.commercetools.com', {
-          encodedQueryParams: true
+          encodedQueryParams: true,
         })
           .get('/test-project-key/product-projections/my-prod-guid?staged=true')
           .reply(200, { success: true })
@@ -466,7 +466,7 @@ describe('CommercetoolsApi', () => {
     describe('getProductProjectionByKey', () => {
       it('should make a GET request to the correct endpoint', async () => {
         nock('https://api.europe-west1.gcp.commercetools.com', {
-          encodedQueryParams: true
+          encodedQueryParams: true,
         })
           .get('/test-project-key/product-projections/key=my-prod-key')
           .reply(200, { success: true })
@@ -479,7 +479,7 @@ describe('CommercetoolsApi', () => {
 
       it('should use the `params` parameter to form the querystring', async () => {
         nock('https://api.europe-west1.gcp.commercetools.com', {
-          encodedQueryParams: true
+          encodedQueryParams: true,
         })
           .get('/test-project-key/product-projections/key=my-prod-key?staged=true')
           .reply(200, { success: true })
@@ -494,7 +494,7 @@ describe('CommercetoolsApi', () => {
     describe('getProductProjectionBySlug', () => {
       it('should make a GET request to the correct endpoint', async () => {
         nock('https://api.europe-west1.gcp.commercetools.com', {
-          encodedQueryParams: true
+          encodedQueryParams: true,
         })
           .get('/test-project-key/product-projections?where=slug(en%3D%22my-slug%22)')
           .reply(200, singleItemResponse)
@@ -509,7 +509,7 @@ describe('CommercetoolsApi', () => {
     describe('queryProductProjections', () => {
       it('should make a GET request to the correct endpoint when no parameters are passed', async () => {
         nock('https://api.europe-west1.gcp.commercetools.com', {
-          encodedQueryParams: true
+          encodedQueryParams: true,
         })
           .get('/test-project-key/product-projections')
           .reply(200, { success: true })
@@ -522,7 +522,7 @@ describe('CommercetoolsApi', () => {
 
       it('should make a GET request to the correct endpoint with the passed in parameters in the querystring', async () => {
         nock('https://api.europe-west1.gcp.commercetools.com', {
-          encodedQueryParams: true
+          encodedQueryParams: true,
         })
           .get('/test-project-key/product-projections?staged=true&where=slug(en%3D%22my-product-slug%22)')
           .reply(200, { success: true })
@@ -530,7 +530,7 @@ describe('CommercetoolsApi', () => {
 
         const product = await api.queryProductProjections({
           staged: true,
-          where: 'slug(en="my-product-slug")'
+          where: 'slug(en="my-product-slug")',
         })
 
         expect(product).toEqual({ success: true })
@@ -540,7 +540,7 @@ describe('CommercetoolsApi', () => {
     describe('searchProductProjections', () => {
       it('should make a GET request to the correct endpoint when no parameters are passed', async () => {
         nock('https://api.europe-west1.gcp.commercetools.com', {
-          encodedQueryParams: true
+          encodedQueryParams: true,
         })
           .get('/test-project-key/product-projections/search')
           .reply(200, { success: true })
@@ -553,7 +553,7 @@ describe('CommercetoolsApi', () => {
 
       it('should make a GET request to the correct endpoint with the passed in parameters in the querystring', async () => {
         nock('https://api.europe-west1.gcp.commercetools.com', {
-          encodedQueryParams: true
+          encodedQueryParams: true,
         })
           .get('/test-project-key/product-projections/search?staged=true&where=slug(en%3D%22my-product-slug%22)')
           .reply(200, { success: true })
@@ -562,8 +562,8 @@ describe('CommercetoolsApi', () => {
         const product = await api.searchProductProjections({
           params: {
             staged: true,
-            where: 'slug(en="my-product-slug")'
-          }
+            where: 'slug(en="my-product-slug")',
+          },
         })
 
         expect(product).toEqual({ success: true })
@@ -575,14 +575,14 @@ describe('CommercetoolsApi', () => {
         nock('https://api.europe-west1.gcp.commercetools.com')
           .post('/test-project-key/products', { test: 1 })
           .query({
-            testParam: 1
+            testParam: 1,
           })
           .reply(200, { success: true })
         const api = new CommercetoolsApi(defaultConfig)
 
         const product = await api.createProduct({
           data: { test: 1 } as unknown as ProductDraft,
-          params: { testParam: 1 }
+          params: { testParam: 1 },
         })
 
         expect(product).toEqual({ success: true })
@@ -594,7 +594,7 @@ describe('CommercetoolsApi', () => {
         nock('https://api.europe-west1.gcp.commercetools.com')
           .post('/test-project-key/products/my-prod-id', { actions: [{ test: 1 }], version: 2 })
           .query({
-            testParam: 1
+            testParam: 1,
           })
           .reply(200, { success: true })
         const api = new CommercetoolsApi(defaultConfig)
@@ -603,9 +603,9 @@ describe('CommercetoolsApi', () => {
           id: 'my-prod-id',
           data: {
             actions: [{ test: 1 }] as unknown as ProductUpdateAction[],
-            version: 2
+            version: 2,
           },
-          params: { testParam: 1 }
+          params: { testParam: 1 },
         })
 
         expect(product).toEqual({ success: true })
@@ -617,7 +617,7 @@ describe('CommercetoolsApi', () => {
         nock('https://api.europe-west1.gcp.commercetools.com')
           .post('/test-project-key/products/key=my-prod-key', { actions: [{ test: 1 }], version: 3 })
           .query({
-            testParam: 1
+            testParam: 1,
           })
           .reply(200, { success: true })
         const api = new CommercetoolsApi(defaultConfig)
@@ -625,7 +625,7 @@ describe('CommercetoolsApi', () => {
         const product = await api.updateProductByKey({
           key: 'my-prod-key',
           data: { actions: [{ test: 1 }] as unknown as ProductUpdateAction[], version: 3 },
-          params: { testParam: 1 }
+          params: { testParam: 1 },
         })
 
         expect(product).toEqual({ success: true })
@@ -640,8 +640,8 @@ describe('CommercetoolsApi', () => {
           nock('https://api.europe-west1.gcp.commercetools.com', {
             encodedQueryParams: true,
             reqheaders: {
-              authorization: 'Bearer customer-access-token'
-            }
+              authorization: 'Bearer customer-access-token',
+            },
           })
             .get('/test-project-key/me/active-cart')
             .reply(200, { success: true })
@@ -657,8 +657,8 @@ describe('CommercetoolsApi', () => {
         it('should make a POST request to the correct endpoint, passing the provided data', async () => {
           nock('https://api.europe-west1.gcp.commercetools.com', {
             reqheaders: {
-              authorization: 'Bearer customer-access-token'
-            }
+              authorization: 'Bearer customer-access-token',
+            },
           })
             .post('/test-project-key/me/carts', { currency: 'GBP' })
             .reply(200, { success: true })
@@ -667,8 +667,8 @@ describe('CommercetoolsApi', () => {
           const response = await api.createMyCart({
             accessToken: 'customer-access-token',
             data: {
-              currency: 'GBP'
-            }
+              currency: 'GBP',
+            },
           })
 
           expect(response).toEqual({ success: true })
@@ -680,16 +680,16 @@ describe('CommercetoolsApi', () => {
           nock('https://api.europe-west1.gcp.commercetools.com', {
             encodedQueryParams: true,
             reqheaders: {
-              authorization: 'Bearer my-access-token'
-            }
+              authorization: 'Bearer my-access-token',
+            },
           })
             .get('/test-project-key/me/active-cart')
             .reply(200, { id: '123', version: 2 })
           nock('https://api.europe-west1.gcp.commercetools.com', {
             encodedQueryParams: true,
             reqheaders: {
-              authorization: 'Bearer my-access-token'
-            }
+              authorization: 'Bearer my-access-token',
+            },
           })
             .delete('/test-project-key/me/carts/123')
             .query({ version: 2 })
@@ -702,15 +702,15 @@ describe('CommercetoolsApi', () => {
         it('should throw an error if there is not an active cart', async () => {
           nock('https://api.europe-west1.gcp.commercetools.com', {
             reqheaders: {
-              authorization: 'Bearer my-access-token'
-            }
+              authorization: 'Bearer my-access-token',
+            },
           })
             .get('/test-project-key/me/active-cart')
             .reply(404, {})
           const api = new CommercetoolsApi(defaultConfig)
 
           await expect(api.deleteMyActiveCart({ accessToken: 'my-access-token' })).rejects.toThrow(
-            'Request failed with status code 404'
+            'Request failed with status code 404',
           )
         })
       })
@@ -720,27 +720,27 @@ describe('CommercetoolsApi', () => {
           nock('https://api.europe-west1.gcp.commercetools.com', {
             encodedQueryParams: true,
             reqheaders: {
-              authorization: 'Bearer my-access-token'
-            }
+              authorization: 'Bearer my-access-token',
+            },
           })
             .get('/test-project-key/me/active-cart')
             .reply(200, { id: '123', version: 2 })
           nock('https://api.europe-west1.gcp.commercetools.com', {
             encodedQueryParams: true,
             reqheaders: {
-              authorization: 'Bearer my-access-token'
-            }
+              authorization: 'Bearer my-access-token',
+            },
           })
             .post('/test-project-key/me/carts/123', {
               version: 2,
-              actions: [{ action: 'setCountry', country: 'GB' }]
+              actions: [{ action: 'setCountry', country: 'GB' }],
             })
             .reply(200, { test: true })
           const api = new CommercetoolsApi(defaultConfig)
 
           const result = await api.updateMyActiveCart({
             accessToken: 'my-access-token',
-            actions: [{ action: 'setCountry', country: 'GB' }]
+            actions: [{ action: 'setCountry', country: 'GB' }],
           })
 
           expect(result).toEqual({ test: true })
@@ -753,8 +753,8 @@ describe('CommercetoolsApi', () => {
         it('should make a POST request to the correct endpoint, passing the provided data', async () => {
           nock('https://api.europe-west1.gcp.commercetools.com', {
             reqheaders: {
-              authorization: 'Bearer test-access-token'
-            }
+              authorization: 'Bearer test-access-token',
+            },
           })
             .post('/test-project-key/carts', { currency: 'GBP' })
             .reply(200, { success: true })
@@ -762,8 +762,8 @@ describe('CommercetoolsApi', () => {
 
           const response = await api.createCart({
             data: {
-              currency: 'GBP'
-            }
+              currency: 'GBP',
+            },
           })
 
           expect(response).toEqual({ success: true })
@@ -774,8 +774,8 @@ describe('CommercetoolsApi', () => {
         it('should make a GET request to the correct endpoint, passing the provided data', async () => {
           nock('https://api.europe-west1.gcp.commercetools.com', {
             reqheaders: {
-              authorization: 'Bearer test-access-token'
-            }
+              authorization: 'Bearer test-access-token',
+            },
           })
             .get('/test-project-key/carts/test-cart-id')
             .reply(200, { success: true })
@@ -789,8 +789,8 @@ describe('CommercetoolsApi', () => {
         it('should make a POST request to the correct endpoint, passing the provided data', async () => {
           nock('https://api.europe-west1.gcp.commercetools.com', {
             reqheaders: {
-              authorization: 'Bearer test-access-token'
-            }
+              authorization: 'Bearer test-access-token',
+            },
           })
             .post('/test-project-key/carts/test-cart-id', { version: 1, actions: [] })
             .reply(200, { success: true })
@@ -804,8 +804,8 @@ describe('CommercetoolsApi', () => {
         it('should get the active cart and delete that cart when it exists', async () => {
           nock('https://api.europe-west1.gcp.commercetools.com', {
             reqheaders: {
-              authorization: 'Bearer test-access-token'
-            }
+              authorization: 'Bearer test-access-token',
+            },
           })
             .delete('/test-project-key/carts/test-cart-id')
             .query({ version: 1 })
@@ -824,20 +824,20 @@ describe('CommercetoolsApi', () => {
         nock('https://api.europe-west1.gcp.commercetools.com', {
           encodedQueryParams: true,
           reqheaders: {
-            authorization: 'Bearer my-access-token'
-          }
+            authorization: 'Bearer my-access-token',
+          },
         })
           .get('/test-project-key/me/active-cart')
           .reply(200, { id: '123', version: 2 })
         nock('https://api.europe-west1.gcp.commercetools.com', {
           encodedQueryParams: true,
           reqheaders: {
-            authorization: 'Bearer my-access-token'
-          }
+            authorization: 'Bearer my-access-token',
+          },
         })
           .post('/test-project-key/me/orders', {
             id: '123',
-            version: 2
+            version: 2,
           })
           .reply(200, { success: true })
         const api = new CommercetoolsApi(defaultConfig)
@@ -852,8 +852,8 @@ describe('CommercetoolsApi', () => {
       it('should make a GET request to the correct endpoint', async () => {
         nock('https://api.europe-west1.gcp.commercetools.com', {
           reqheaders: {
-            authorization: 'Bearer my-access-token'
-          }
+            authorization: 'Bearer my-access-token',
+          },
         })
           .get('/test-project-key/me/orders/my-order-id')
           .reply(200, { success: true })
@@ -869,8 +869,8 @@ describe('CommercetoolsApi', () => {
       it('should make a GET request to the correct endpoint when no params are passed in', async () => {
         nock('https://api.europe-west1.gcp.commercetools.com', {
           reqheaders: {
-            authorization: 'Bearer my-access-token'
-          }
+            authorization: 'Bearer my-access-token',
+          },
         })
           .get('/test-project-key/me/orders')
           .reply(200, { success: true })
@@ -884,8 +884,8 @@ describe('CommercetoolsApi', () => {
       it('should make a GET request to the correct endpoint when with the given params', async () => {
         nock('https://api.europe-west1.gcp.commercetools.com', {
           reqheaders: {
-            authorization: 'Bearer my-access-token'
-          }
+            authorization: 'Bearer my-access-token',
+          },
         })
           .get('/test-project-key/me/orders')
           .query({ limit: 20 })
@@ -902,8 +902,8 @@ describe('CommercetoolsApi', () => {
       it('should make a GET request to the correct endpoint', async () => {
         nock('https://api.europe-west1.gcp.commercetools.com', {
           reqheaders: {
-            authorization: 'Bearer test-access-token'
-          }
+            authorization: 'Bearer test-access-token',
+          },
         })
           .get('/test-project-key/orders/test-order-id')
           .reply(200, { success: true })
@@ -919,8 +919,8 @@ describe('CommercetoolsApi', () => {
       it('should make a GET request to the correct endpoint', async () => {
         nock('https://api.europe-west1.gcp.commercetools.com', {
           reqheaders: {
-            authorization: 'Bearer test-access-token'
-          }
+            authorization: 'Bearer test-access-token',
+          },
         })
           .get('/test-project-key/orders/order-number=my-order-number')
           .reply(200, { success: true })
@@ -936,12 +936,12 @@ describe('CommercetoolsApi', () => {
       it('should make a POST request to the correct endpoint', async () => {
         nock('https://api.europe-west1.gcp.commercetools.com', {
           reqheaders: {
-            authorization: 'Bearer test-access-token'
-          }
+            authorization: 'Bearer test-access-token',
+          },
         })
           .post('/test-project-key/orders/test-order-id', {
             version: 2,
-            actions: []
+            actions: [],
           })
           .reply(200, { success: true })
         const api = new CommercetoolsApi(defaultConfig)
@@ -956,19 +956,19 @@ describe('CommercetoolsApi', () => {
       it('should make a POST request to the correct endpoint', async () => {
         nock('https://api.europe-west1.gcp.commercetools.com', {
           reqheaders: {
-            authorization: 'Bearer test-access-token'
-          }
+            authorization: 'Bearer test-access-token',
+          },
         })
           .post('/test-project-key/orders/order-number=test-order-num', {
             version: 2,
-            actions: []
+            actions: [],
           })
           .reply(200, { success: true })
         const api = new CommercetoolsApi(defaultConfig)
 
         const order = await api.updateOrderByOrderNumber({
           orderNumber: 'test-order-num',
-          data: { version: 2, actions: [] }
+          data: { version: 2, actions: [] },
         })
 
         expect(order).toEqual({ success: true })
@@ -979,8 +979,8 @@ describe('CommercetoolsApi', () => {
       it('should make a DELETE request to the correct endpoint', async () => {
         nock('https://api.europe-west1.gcp.commercetools.com', {
           reqheaders: {
-            authorization: 'Bearer test-access-token'
-          }
+            authorization: 'Bearer test-access-token',
+          },
         })
           .delete('/test-project-key/orders/test-order-id')
           .query({ version: 2 })
@@ -997,8 +997,8 @@ describe('CommercetoolsApi', () => {
       it('should make a DELETE request to the correct endpoint', async () => {
         nock('https://api.europe-west1.gcp.commercetools.com', {
           reqheaders: {
-            authorization: 'Bearer test-access-token'
-          }
+            authorization: 'Bearer test-access-token',
+          },
         })
           .delete('/test-project-key/orders/order-number=test-order-num')
           .query({ version: 2 })
@@ -1015,20 +1015,20 @@ describe('CommercetoolsApi', () => {
       it('should make a GET request to the correct endpoint', async () => {
         nock('https://api.europe-west1.gcp.commercetools.com', {
           reqheaders: {
-            authorization: 'Bearer test-access-token'
-          }
+            authorization: 'Bearer test-access-token',
+          },
         })
           .get('/test-project-key/orders')
           .query({
-            where: 'orderNumber="1234"'
+            where: 'orderNumber="1234"',
           })
           .reply(200, { success: true })
         const api = new CommercetoolsApi(defaultConfig)
 
         const order = await api.queryOrders({
           params: {
-            where: 'orderNumber="1234"'
-          }
+            where: 'orderNumber="1234"',
+          },
         })
 
         expect(order).toEqual({ success: true })
@@ -1041,8 +1041,8 @@ describe('CommercetoolsApi', () => {
       it('should make a POST request to the correct endpoint with the given access token and payment data', async () => {
         nock('https://api.europe-west1.gcp.commercetools.com', {
           reqheaders: {
-            authorization: 'Bearer my-access-token'
-          }
+            authorization: 'Bearer my-access-token',
+          },
         })
           .post('/test-project-key/me/payments', { amountPlanned: { centAmount: 2000, currencyCode: 'GBP' } })
           .reply(200, { success: true })
@@ -1050,7 +1050,7 @@ describe('CommercetoolsApi', () => {
 
         const response = await api.createMyPayment({
           accessToken: 'my-access-token',
-          data: { amountPlanned: { centAmount: 2000, currencyCode: 'GBP' } }
+          data: { amountPlanned: { centAmount: 2000, currencyCode: 'GBP' } },
         })
 
         expect(response).toEqual({ success: true })
@@ -1063,8 +1063,8 @@ describe('CommercetoolsApi', () => {
       it('should make a GET request to the correct endpoint', async () => {
         nock('https://api.europe-west1.gcp.commercetools.com', {
           reqheaders: {
-            authorization: 'Bearer test-access-token'
-          }
+            authorization: 'Bearer test-access-token',
+          },
         })
           .get('/test-project-key/customers/test-customer-id')
           .reply(200, { success: true })
@@ -1080,8 +1080,8 @@ describe('CommercetoolsApi', () => {
       it('should make a GET request to the correct endpoint', async () => {
         nock('https://api.europe-west1.gcp.commercetools.com', {
           reqheaders: {
-            authorization: 'Bearer test-access-token'
-          }
+            authorization: 'Bearer test-access-token',
+          },
         })
           .get('/test-project-key/customers/key=test-customer-key')
           .reply(200, { success: true })
@@ -1097,8 +1097,8 @@ describe('CommercetoolsApi', () => {
       it('should make a GET request to the correct endpoint', async () => {
         nock('https://api.europe-west1.gcp.commercetools.com', {
           reqheaders: {
-            authorization: 'Bearer test-access-token'
-          }
+            authorization: 'Bearer test-access-token',
+          },
         })
           .get('/test-project-key/customers/password-token=test-password-token')
           .reply(200, { success: true })
@@ -1114,20 +1114,20 @@ describe('CommercetoolsApi', () => {
       it('should make a GET request to the correct endpoint', async () => {
         nock('https://api.europe-west1.gcp.commercetools.com', {
           reqheaders: {
-            authorization: 'Bearer test-access-token'
-          }
+            authorization: 'Bearer test-access-token',
+          },
         })
           .get('/test-project-key/customers')
           .query({
-            where: 'email="jimmy@gradientedge.com"'
+            where: 'email="jimmy@gradientedge.com"',
           })
           .reply(200, { success: true })
         const api = new CommercetoolsApi(defaultConfig)
 
         const order = await api.queryCustomers({
           params: {
-            where: 'email="jimmy@gradientedge.com"'
-          }
+            where: 'email="jimmy@gradientedge.com"',
+          },
         })
 
         expect(order).toEqual({ success: true })
@@ -1139,12 +1139,12 @@ describe('CommercetoolsApi', () => {
         it('should make a POST request to the correct endpoint with the expected data', async () => {
           nock('https://api.europe-west1.gcp.commercetools.com', {
             reqheaders: {
-              authorization: 'Bearer test-access-token'
-            }
+              authorization: 'Bearer test-access-token',
+            },
           })
             .post('/test-project-key/customers', {
               email: 'test@test.com',
-              password: 'testing'
+              password: 'testing',
             })
             .reply(200, { success: true })
           const api = new CommercetoolsApi(defaultConfig)
@@ -1152,8 +1152,8 @@ describe('CommercetoolsApi', () => {
           const response = await api.createAccount({
             data: {
               email: 'test@test.com',
-              password: 'testing'
-            }
+              password: 'testing',
+            },
           })
 
           expect(response).toEqual({ success: true })
@@ -1164,12 +1164,12 @@ describe('CommercetoolsApi', () => {
         it('should make a POST request to the correct endpoint with the expected data', async () => {
           nock('https://api.europe-west1.gcp.commercetools.com', {
             reqheaders: {
-              authorization: 'Bearer customer-access-token'
-            }
+              authorization: 'Bearer customer-access-token',
+            },
           })
             .post('/test-project-key/me/signup', {
               email: 'test@test.com',
-              password: 'testing'
+              password: 'testing',
             })
             .reply(200, { success: true })
           const api = new CommercetoolsApi(defaultConfig)
@@ -1178,8 +1178,8 @@ describe('CommercetoolsApi', () => {
             accessToken: 'customer-access-token',
             data: {
               email: 'test@test.com',
-              password: 'testing'
-            }
+              password: 'testing',
+            },
           })
 
           expect(response).toEqual({ success: true })
@@ -1190,8 +1190,8 @@ describe('CommercetoolsApi', () => {
         it('should make a DELETE request to the correct endpoint with the expected data', async () => {
           nock('https://api.europe-west1.gcp.commercetools.com', {
             reqheaders: {
-              authorization: 'Bearer test-access-token'
-            }
+              authorization: 'Bearer test-access-token',
+            },
           })
             .delete('/test-project-key/customers/customer-id')
             .query({ version: 2 })
@@ -1200,7 +1200,7 @@ describe('CommercetoolsApi', () => {
 
           const response = await api.deleteCustomerById({
             id: 'customer-id',
-            version: 2
+            version: 2,
           })
 
           expect(response).toEqual({ success: true })
@@ -1211,8 +1211,8 @@ describe('CommercetoolsApi', () => {
         it('should make a DELETE request to the correct endpoint with the expected data', async () => {
           nock('https://api.europe-west1.gcp.commercetools.com', {
             reqheaders: {
-              authorization: 'Bearer test-access-token'
-            }
+              authorization: 'Bearer test-access-token',
+            },
           })
             .delete('/test-project-key/customers/key=customer-key')
             .query({ version: 3 })
@@ -1221,7 +1221,7 @@ describe('CommercetoolsApi', () => {
 
           const response = await api.deleteCustomerByKey({
             key: 'customer-key',
-            version: 3
+            version: 3,
           })
 
           expect(response).toEqual({ success: true })
@@ -1232,12 +1232,12 @@ describe('CommercetoolsApi', () => {
         it('should make a POST request to the correct endpoint with the expected data', async () => {
           nock('https://api.europe-west1.gcp.commercetools.com', {
             reqheaders: {
-              authorization: 'Bearer test-access-token'
-            }
+              authorization: 'Bearer test-access-token',
+            },
           })
             .post('/test-project-key/login', {
               email: 'test@test.com',
-              password: 'testing'
+              password: 'testing',
             })
             .reply(200, { success: true })
           const api = new CommercetoolsApi(defaultConfig)
@@ -1245,8 +1245,8 @@ describe('CommercetoolsApi', () => {
           const response = await api.login({
             data: {
               email: 'test@test.com',
-              password: 'testing'
-            }
+              password: 'testing',
+            },
           })
 
           expect(response).toEqual({ success: true })
@@ -1257,8 +1257,8 @@ describe('CommercetoolsApi', () => {
         it('should make a GET request to the correct endpoint using the customer token', async () => {
           nock('https://api.europe-west1.gcp.commercetools.com', {
             reqheaders: {
-              authorization: 'Bearer customer-access-token'
-            }
+              authorization: 'Bearer customer-access-token',
+            },
           })
             .get('/test-project-key/me')
             .reply(200, { success: true })
@@ -1274,12 +1274,12 @@ describe('CommercetoolsApi', () => {
         it('should make a POST request to the correct endpoint using the customer token', async () => {
           nock('https://api.europe-west1.gcp.commercetools.com', {
             reqheaders: {
-              authorization: 'Bearer customer-access-token'
-            }
+              authorization: 'Bearer customer-access-token',
+            },
           })
             .post('/test-project-key/me', {
               version: 4,
-              actions: []
+              actions: [],
             })
             .reply(200, { success: true })
           const api = new CommercetoolsApi(defaultConfig)
@@ -1288,8 +1288,8 @@ describe('CommercetoolsApi', () => {
             accessToken: 'customer-access-token',
             data: {
               version: 4,
-              actions: []
-            }
+              actions: [],
+            },
           })
 
           expect(product).toEqual({ success: true })
@@ -1300,12 +1300,12 @@ describe('CommercetoolsApi', () => {
         it('should make a POST request to the correct endpoint using the customer token', async () => {
           nock('https://api.europe-west1.gcp.commercetools.com', {
             reqheaders: {
-              authorization: 'Bearer test-access-token'
-            }
+              authorization: 'Bearer test-access-token',
+            },
           })
             .post('/test-project-key/customers/password-token', {
               email: 'jimmy@gradientedge.com',
-              ttlMinutes: 60
+              ttlMinutes: 60,
             })
             .reply(200, { success: true })
           const api = new CommercetoolsApi(defaultConfig)
@@ -1313,8 +1313,8 @@ describe('CommercetoolsApi', () => {
           const product = await api.getPasswordResetToken({
             data: {
               email: 'jimmy@gradientedge.com',
-              ttlMinutes: 60
-            }
+              ttlMinutes: 60,
+            },
           })
 
           expect(product).toEqual({ success: true })
@@ -1325,12 +1325,12 @@ describe('CommercetoolsApi', () => {
         it('should make a POST request to the correct endpoint using the customer token', async () => {
           nock('https://api.europe-west1.gcp.commercetools.com', {
             reqheaders: {
-              authorization: 'Bearer my-access-token'
-            }
+              authorization: 'Bearer my-access-token',
+            },
           })
             .post('/test-project-key/me/password/reset', {
               tokenValue: 'test-token',
-              newPassword: 'test123'
+              newPassword: 'test123',
             })
             .reply(200, { success: true })
           const api = new CommercetoolsApi(defaultConfig)
@@ -1339,8 +1339,8 @@ describe('CommercetoolsApi', () => {
             accessToken: 'my-access-token',
             data: {
               tokenValue: 'test-token',
-              newPassword: 'test123'
-            }
+              newPassword: 'test123',
+            },
           })
 
           expect(product).toEqual({ success: true })
@@ -1351,13 +1351,13 @@ describe('CommercetoolsApi', () => {
         it('should make a POST request to the correct endpoint using the customer token', async () => {
           nock('https://api.europe-west1.gcp.commercetools.com', {
             reqheaders: {
-              authorization: 'Bearer my-access-token'
-            }
+              authorization: 'Bearer my-access-token',
+            },
           })
             .post('/test-project-key/me/password', {
               version: 1,
               currentPassword: 'myOldPassword',
-              newPassword: 'myNewPassword'
+              newPassword: 'myNewPassword',
             })
             .reply(200, { success: true })
           const api = new CommercetoolsApi(defaultConfig)
@@ -1367,8 +1367,8 @@ describe('CommercetoolsApi', () => {
             data: {
               version: 1,
               currentPassword: 'myOldPassword',
-              newPassword: 'myNewPassword'
-            }
+              newPassword: 'myNewPassword',
+            },
           })
 
           expect(product).toEqual({ success: true })
@@ -1382,8 +1382,8 @@ describe('CommercetoolsApi', () => {
       it('should make a GET request to the correct endpoint', async () => {
         nock('https://api.europe-west1.gcp.commercetools.com', {
           reqheaders: {
-            authorization: 'Bearer test-access-token'
-          }
+            authorization: 'Bearer test-access-token',
+          },
         })
           .get('/test-project-key/product-types/my-product-type-id')
           .reply(200, { success: true })
@@ -1399,8 +1399,8 @@ describe('CommercetoolsApi', () => {
       it('should make a GET request to the correct endpoint', async () => {
         nock('https://api.europe-west1.gcp.commercetools.com', {
           reqheaders: {
-            authorization: 'Bearer test-access-token'
-          }
+            authorization: 'Bearer test-access-token',
+          },
         })
           .get('/test-project-key/product-types/key=my-product-type-key')
           .reply(200, { success: true })
@@ -1418,8 +1418,8 @@ describe('CommercetoolsApi', () => {
       it('should make a GET request to the correct endpoint', async () => {
         nock('https://api.europe-west1.gcp.commercetools.com', {
           reqheaders: {
-            authorization: 'Bearer test-access-token'
-          }
+            authorization: 'Bearer test-access-token',
+          },
         })
           .get('/test-project-key/types/my-type-id')
           .reply(200, { success: true })
@@ -1435,8 +1435,8 @@ describe('CommercetoolsApi', () => {
       it('should make a GET request to the correct endpoint', async () => {
         nock('https://api.europe-west1.gcp.commercetools.com', {
           reqheaders: {
-            authorization: 'Bearer test-access-token'
-          }
+            authorization: 'Bearer test-access-token',
+          },
         })
           .get('/test-project-key/types/key=my-type-key')
           .reply(200, { success: true })
@@ -1454,8 +1454,8 @@ describe('CommercetoolsApi', () => {
       it('should make a GET request to the correct endpoint', async () => {
         nock('https://api.europe-west1.gcp.commercetools.com', {
           reqheaders: {
-            authorization: 'Bearer test-access-token'
-          }
+            authorization: 'Bearer test-access-token',
+          },
         })
           .get('/test-project-key/custom-objects/my-container/my-key')
           .reply(200, { success: true })
@@ -1471,8 +1471,8 @@ describe('CommercetoolsApi', () => {
       it('should make a GET request to the correct endpoint', async () => {
         nock('https://api.europe-west1.gcp.commercetools.com', {
           reqheaders: {
-            authorization: 'Bearer test-access-token'
-          }
+            authorization: 'Bearer test-access-token',
+          },
         })
           .get('/test-project-key/custom-objects/my-custom-object-id')
           .reply(200, { success: true })
@@ -1488,15 +1488,15 @@ describe('CommercetoolsApi', () => {
       it('should make a POST request to the correct endpoint', async () => {
         nock('https://api.europe-west1.gcp.commercetools.com', {
           reqheaders: {
-            authorization: 'Bearer test-access-token'
-          }
+            authorization: 'Bearer test-access-token',
+          },
         })
           .post('/test-project-key/custom-objects', { container: 'my-container', key: 'my-key', value: { test: 1 } })
           .reply(200, { success: true })
         const api = new CommercetoolsApi(defaultConfig)
 
         const order = await api.saveCustomObject({
-          data: { container: 'my-container', key: 'my-key', value: { test: 1 } }
+          data: { container: 'my-container', key: 'my-key', value: { test: 1 } },
         })
 
         expect(order).toEqual({ success: true })
@@ -1507,8 +1507,8 @@ describe('CommercetoolsApi', () => {
       it('should make a DELETE request to the correct endpoint', async () => {
         nock('https://api.europe-west1.gcp.commercetools.com', {
           reqheaders: {
-            authorization: 'Bearer test-access-token'
-          }
+            authorization: 'Bearer test-access-token',
+          },
         })
           .delete('/test-project-key/custom-objects/my-container/my-key')
           .reply(200, { success: true })
@@ -1525,19 +1525,19 @@ describe('CommercetoolsApi', () => {
     it('should call the /graphql endpoint with the data passed in, using the client access token', async () => {
       nock('https://api.europe-west1.gcp.commercetools.com', {
         reqheaders: {
-          authorization: 'Bearer test-access-token'
-        }
+          authorization: 'Bearer test-access-token',
+        },
       })
         .post('/test-project-key/graphql', {
-          query: 'products { results { id } }'
+          query: 'products { results { id } }',
         })
         .reply(200, { success: true })
       const api = new CommercetoolsApi(defaultConfig)
 
       const response = await api.graphql({
         data: {
-          query: 'products { results { id } }'
-        }
+          query: 'products { results { id } }',
+        },
       })
 
       expect(response).toEqual({ success: true })
@@ -1546,20 +1546,20 @@ describe('CommercetoolsApi', () => {
     it('should call the /graphql endpoint with the data passed in, using the passed in access token', async () => {
       nock('https://api.europe-west1.gcp.commercetools.com', {
         reqheaders: {
-          authorization: 'Bearer customer-access-token'
-        }
+          authorization: 'Bearer customer-access-token',
+        },
       })
         .post('/test-project-key/graphql', {
-          query: 'products { results { id } }'
+          query: 'products { results { id } }',
         })
         .reply(200, { success: true })
       const api = new CommercetoolsApi(defaultConfig)
 
       const response = await api.graphql({
         data: {
-          query: 'products { results { id } }'
+          query: 'products { results { id } }',
         },
-        accessToken: 'customer-access-token'
+        accessToken: 'customer-access-token',
       })
 
       expect(response).toEqual({ success: true })
@@ -1607,7 +1607,7 @@ describe('CommercetoolsApi', () => {
 
       const response = await api.request({
         path: '/test',
-        method: 'GET'
+        method: 'GET',
       })
 
       scope.isDone()
@@ -1624,7 +1624,7 @@ describe('CommercetoolsApi', () => {
 
       const response = await api.request({
         path: '/test',
-        method: 'GET'
+        method: 'GET',
       })
 
       scope.isDone()
@@ -1633,7 +1633,7 @@ describe('CommercetoolsApi', () => {
 
     it('should timeout after the default timeout period', async () => {
       nock('https://api.europe-west1.gcp.commercetools.com', {
-        encodedQueryParams: true
+        encodedQueryParams: true,
       })
         .get('/test-project-key/products/cb3c563c-98dd-4b11-8694-8d17b15fa844')
         .delay(2000)
@@ -1651,15 +1651,15 @@ describe('CommercetoolsApi', () => {
               headers: {
                 Accept: 'application/json, text/plain, */*',
                 Authorization: 'Bearer test-access-token',
-                'User-Agent': '@gradientedge/commercetools-utils'
+                'User-Agent': '@gradientedge/commercetools-utils',
               },
               method: 'get',
               url: 'https://api.europe-west1.gcp.commercetools.com/test-project-key/products/cb3c563c-98dd-4b11-8694-8d17b15fa844',
-              params: {}
+              params: {},
             },
-            response: {}
+            response: {},
           },
-          message: 'timeout of 1000ms exceeded'
+          message: 'timeout of 1000ms exceeded',
         })
         return
       }
@@ -1678,7 +1678,7 @@ describe('CommercetoolsApi', () => {
       const response = await api.request({
         path: '/test',
         method: 'GET',
-        correlationId: 'my-correlation-id'
+        correlationId: 'my-correlation-id',
       })
 
       scope.isDone()

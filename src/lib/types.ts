@@ -7,7 +7,7 @@ export enum Region {
   NORTH_AMERICA_AWS = 'north_america_aws',
   EUROPE_GCP = 'europe_gcp',
   EUROPE_AWS = 'europe_aws',
-  AUSTRALIA_GCP = 'australia_gcp'
+  AUSTRALIA_GCP = 'australia_gcp',
 }
 
 /**

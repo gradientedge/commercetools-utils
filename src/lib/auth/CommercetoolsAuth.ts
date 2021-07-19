@@ -24,7 +24,7 @@ interface Config extends CommercetoolsAuthConfig {
  */
 const configDefaults = {
   refreshIfWithinSecs: 1800,
-  timeoutMs: 5000
+  timeoutMs: 5000,
 }
 
 /**
@@ -181,7 +181,7 @@ export class CommercetoolsAuth {
       throw new CommercetoolsError(
         'Customer scopes must be set on either the `options` ' +
           'parameter of this `login` method, or on the `customerScopes` ' +
-          'property of the `CommercetoolsAuth` constructor'
+          'property of the `CommercetoolsAuth` constructor',
       )
     }
 
@@ -190,7 +190,7 @@ export class CommercetoolsAuth {
     const data = await this.api.login({
       ...options,
       scopes,
-      projectKey: this.config.projectKey
+      projectKey: this.config.projectKey,
     })
 
     return new CommercetoolsGrant(data)
@@ -239,7 +239,7 @@ export class CommercetoolsAuth {
       throw new CommercetoolsError(
         'Customer scopes must be set on either the `options` ' +
           'parameter of this `login` method, or on the `customerScopes` ' +
-          'property of the `CommercetoolsAuth` constructor'
+          'property of the `CommercetoolsAuth` constructor',
       )
     }
 
@@ -247,7 +247,7 @@ export class CommercetoolsAuth {
 
     const data = await this.api.getAnonymousGrant({
       scopes,
-      anonymousId
+      anonymousId,
     })
 
     return new CommercetoolsGrant(data)
