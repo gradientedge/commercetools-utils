@@ -45,7 +45,7 @@ import {
   ProductType,
   ProductUpdate,
   Store,
-  Type
+  Type,
 } from '@commercetools/platform-sdk'
 
 interface FetchOptions<T = Record<string, any>> {
@@ -128,7 +128,7 @@ export class CommercetoolsApi {
     return this.request({
       ...this.extractCommonRequestOptions(options),
       path: `/stores/${options.id}`,
-      method: 'GET'
+      method: 'GET',
     })
   }
 
@@ -140,7 +140,7 @@ export class CommercetoolsApi {
     return this.request({
       ...this.extractCommonRequestOptions(options),
       path: `/stores/key=${options.key}`,
-      method: 'GET'
+      method: 'GET',
     })
   }
 
@@ -152,7 +152,7 @@ export class CommercetoolsApi {
     return this.request({
       ...this.extractCommonRequestOptions(options),
       path: `/categories/${options.id}`,
-      method: 'GET'
+      method: 'GET',
     })
   }
 
@@ -164,7 +164,7 @@ export class CommercetoolsApi {
     return this.request({
       ...this.extractCommonRequestOptions(options),
       path: `/categories/key=${options.key}`,
-      method: 'GET'
+      method: 'GET',
     })
   }
 
@@ -176,7 +176,7 @@ export class CommercetoolsApi {
     return this.request({
       ...this.extractCommonRequestOptions(options),
       path: `/channels`,
-      method: 'GET'
+      method: 'GET',
     })
   }
 
@@ -188,7 +188,7 @@ export class CommercetoolsApi {
     return this.request({
       ...this.extractCommonRequestOptions(options),
       path: `/channels/${options.id}`,
-      method: 'GET'
+      method: 'GET',
     })
   }
 
@@ -203,13 +203,13 @@ export class CommercetoolsApi {
       return this.request({
         ...this.extractCommonRequestOptions(options),
         path: `/categories/${options.id}`,
-        method: 'GET'
+        method: 'GET',
       })
     }
     return this.request({
       ...this.extractCommonRequestOptions(options),
       path: `/categories/key=${options.key}`,
-      method: 'GET'
+      method: 'GET',
     })
   }
 
@@ -222,8 +222,8 @@ export class CommercetoolsApi {
       method: 'GET',
       params: {
         ...params,
-        where: `slug(${languageCode}="${slug}")`
-      }
+        where: `slug(${languageCode}="${slug}")`,
+      },
     })
     return data.count ? data.results[0] : null
   }
@@ -236,7 +236,7 @@ export class CommercetoolsApi {
     return this.request({
       path: `/categories`,
       method: 'GET',
-      params
+      params,
     })
   }
 
@@ -251,13 +251,13 @@ export class CommercetoolsApi {
       ...options,
       params: {
         ...options.params,
-        expand: 'ancestors[*]'
-      }
+        expand: 'ancestors[*]',
+      },
     })
     const ancestors = category.ancestors.map((ref) => ref.obj as Category)
     ancestors.push({
       ...category,
-      ancestors: category.ancestors.map((ancestor) => ({ id: ancestor.id, typeId: ancestor.typeId }))
+      ancestors: category.ancestors.map((ancestor) => ({ id: ancestor.id, typeId: ancestor.typeId })),
     })
     return ancestors
   }
@@ -270,7 +270,7 @@ export class CommercetoolsApi {
     return this.request({
       path: `/products/${id}`,
       method: 'GET',
-      params
+      params,
     })
   }
 
@@ -282,7 +282,7 @@ export class CommercetoolsApi {
     return this.request({
       ...this.extractCommonRequestOptions(options),
       path: `/products/key=${options.key}`,
-      method: 'GET'
+      method: 'GET',
     })
   }
 
@@ -294,7 +294,7 @@ export class CommercetoolsApi {
     return this.request({
       ...this.extractCommonRequestOptions(options),
       path: `/product-projections/${options.id}`,
-      method: 'GET'
+      method: 'GET',
     })
   }
 
@@ -306,7 +306,7 @@ export class CommercetoolsApi {
     return this.request({
       ...this.extractCommonRequestOptions(options),
       path: `/product-projections/key=${options.key}`,
-      method: 'GET'
+      method: 'GET',
     })
   }
 
@@ -319,8 +319,8 @@ export class CommercetoolsApi {
       method: 'GET',
       params: {
         ...params,
-        where: `slug(${languageCode}="${slug}")`
-      }
+        where: `slug(${languageCode}="${slug}")`,
+      },
     })
     return data.count ? data.results[0] : null
   }
@@ -333,7 +333,7 @@ export class CommercetoolsApi {
     return this.request({
       path: `/product-projections`,
       method: 'GET',
-      params
+      params,
     })
   }
 
@@ -345,7 +345,7 @@ export class CommercetoolsApi {
     return this.request({
       ...this.extractCommonRequestOptions(options),
       path: `/product-projections/search`,
-      method: 'GET'
+      method: 'GET',
     })
   }
 
@@ -357,7 +357,7 @@ export class CommercetoolsApi {
     return this.request({
       ...this.extractCommonRequestOptions(options),
       path: this.applyStore(`/carts/${options.id}`, options.storeKey),
-      method: 'GET'
+      method: 'GET',
     })
   }
 
@@ -369,7 +369,7 @@ export class CommercetoolsApi {
     return this.request({
       ...this.extractCommonRequestOptions(options),
       path: this.applyStore(`/carts`, options?.storeKey),
-      method: 'GET'
+      method: 'GET',
     })
   }
 
@@ -378,13 +378,13 @@ export class CommercetoolsApi {
    * https://docs.commercetools.com/api/projects/me-carts#query-carts-1
    */
   async queryMyCarts(
-    options: CommonStoreEnabledRequestOptions & { accessToken: string }
+    options: CommonStoreEnabledRequestOptions & { accessToken: string },
   ): Promise<CartPagedQueryResponse> {
     return this.request({
       ...this.extractCommonRequestOptions(options),
       path: this.applyStore(`/me/carts`, options.storeKey),
       method: 'GET',
-      accessToken: options.accessToken
+      accessToken: options.accessToken,
     })
   }
 
@@ -397,7 +397,7 @@ export class CommercetoolsApi {
       ...this.extractCommonRequestOptions(options),
       path: this.applyStore(`/carts`, options.storeKey),
       method: 'POST',
-      data: options.data
+      data: options.data,
     })
   }
 
@@ -406,7 +406,7 @@ export class CommercetoolsApi {
    * https://docs.commercetools.com/api/projects/carts#update-a-cart-by-id
    */
   async updateCartById(
-    options: CommonStoreEnabledRequestOptions & { id: string; version: number; actions: CartUpdateAction[] }
+    options: CommonStoreEnabledRequestOptions & { id: string; version: number; actions: CartUpdateAction[] },
   ): Promise<Cart> {
     return this.request({
       ...this.extractCommonRequestOptions(options),
@@ -414,8 +414,8 @@ export class CommercetoolsApi {
       method: 'POST',
       data: {
         version: options.version,
-        actions: options.actions
-      }
+        actions: options.actions,
+      },
     })
   }
 
@@ -428,7 +428,7 @@ export class CommercetoolsApi {
       ...this.extractCommonRequestOptions(options),
       path: this.applyStore(`/me/active-cart`, options.storeKey),
       method: 'GET',
-      accessToken: options.accessToken
+      accessToken: options.accessToken,
     })
   }
 
@@ -437,14 +437,14 @@ export class CommercetoolsApi {
    * https://docs.commercetools.com/api/projects/me-carts#create-a-cart-1
    */
   async createMyCart(
-    options: CommonStoreEnabledRequestOptions & { accessToken: string; data: MyCartDraft }
+    options: CommonStoreEnabledRequestOptions & { accessToken: string; data: MyCartDraft },
   ): Promise<Cart> {
     return this.request<MyCartDraft, Cart>({
       ...this.extractCommonRequestOptions(options),
       path: this.applyStore(`/me/carts`, options.storeKey),
       method: 'POST',
       data: options.data,
-      accessToken: options.accessToken
+      accessToken: options.accessToken,
     })
   }
 
@@ -461,9 +461,9 @@ export class CommercetoolsApi {
       method: 'DELETE',
       params: {
         ...options.params,
-        version: cart.version
+        version: cart.version,
       },
-      accessToken: options.accessToken
+      accessToken: options.accessToken,
     })
   }
 
@@ -474,7 +474,7 @@ export class CommercetoolsApi {
    * https://docs.commercetools.com/api/projects/me-carts#update-actions
    */
   async updateMyActiveCart(
-    options: CommonStoreEnabledRequestOptions & { accessToken: string; actions: CartUpdateAction[] }
+    options: CommonStoreEnabledRequestOptions & { accessToken: string; actions: CartUpdateAction[] },
   ): Promise<Cart> {
     const cart = await this.getMyActiveCart(options)
     return this.request({
@@ -483,9 +483,9 @@ export class CommercetoolsApi {
       method: 'POST',
       data: {
         version: cart.version,
-        actions: options.actions
+        actions: options.actions,
       },
-      accessToken: options.accessToken
+      accessToken: options.accessToken,
     })
   }
 
@@ -495,7 +495,7 @@ export class CommercetoolsApi {
    * https://docs.commercetools.com/api/projects/me-orders#create-order-from-a-cart
    */
   async createMyOrderFromActiveCart(
-    options: CommonStoreEnabledRequestOptions & { accessToken: string }
+    options: CommonStoreEnabledRequestOptions & { accessToken: string },
   ): Promise<Order> {
     const cart = await this.getMyActiveCart(options)
     return this.request<MyOrderFromCartDraft, Order>({
@@ -504,9 +504,9 @@ export class CommercetoolsApi {
       method: 'POST',
       data: {
         version: cart.version,
-        id: cart.id
+        id: cart.id,
       },
-      accessToken: options.accessToken
+      accessToken: options.accessToken,
     })
   }
 
@@ -521,8 +521,8 @@ export class CommercetoolsApi {
       method: 'DELETE',
       params: {
         ...options.params,
-        version: options.version
-      }
+        version: options.version,
+      },
     })
   }
 
@@ -536,7 +536,7 @@ export class CommercetoolsApi {
       path: '/me/payments',
       method: 'POST',
       data: options.data,
-      accessToken: options.accessToken
+      accessToken: options.accessToken,
     })
   }
 
@@ -549,7 +549,7 @@ export class CommercetoolsApi {
       ...this.extractCommonRequestOptions(options),
       path: this.applyStore(`/me/orders/${options.id}`, options.storeKey),
       method: 'GET',
-      accessToken: options.accessToken
+      accessToken: options.accessToken,
     })
   }
 
@@ -562,7 +562,7 @@ export class CommercetoolsApi {
       ...this.extractCommonRequestOptions(options),
       path: this.applyStore(`/me/orders`, options.storeKey),
       method: 'GET',
-      accessToken: options.accessToken
+      accessToken: options.accessToken,
     })
   }
 
@@ -575,7 +575,7 @@ export class CommercetoolsApi {
       ...this.extractCommonRequestOptions(options),
       path: this.applyStore(`/orders/${options.id}`, options.storeKey),
       method: 'POST',
-      data: options.data
+      data: options.data,
     })
   }
 
@@ -584,13 +584,13 @@ export class CommercetoolsApi {
    * https://docs.commercetools.com/api/projects/orders#update-order-by-ordernumber
    */
   updateOrderByOrderNumber(
-    options: CommonStoreEnabledRequestOptions & { orderNumber: string; data: OrderUpdate }
+    options: CommonStoreEnabledRequestOptions & { orderNumber: string; data: OrderUpdate },
   ): Promise<Order> {
     return this.request({
       ...this.extractCommonRequestOptions(options),
       path: this.applyStore(`/orders/order-number=${options.orderNumber}`, options.storeKey),
       method: 'POST',
-      data: options.data
+      data: options.data,
     })
   }
 
@@ -602,7 +602,7 @@ export class CommercetoolsApi {
     return this.request({
       ...this.extractCommonRequestOptions(options),
       path: this.applyStore(`/orders/${options.id}`, options.storeKey),
-      method: 'GET'
+      method: 'GET',
     })
   }
 
@@ -614,7 +614,7 @@ export class CommercetoolsApi {
     return this.request({
       ...this.extractCommonRequestOptions(options),
       path: this.applyStore(`/orders/order-number=${options.orderNumber}`, options.storeKey),
-      method: 'GET'
+      method: 'GET',
     })
   }
 
@@ -623,7 +623,7 @@ export class CommercetoolsApi {
    * https://docs.commercetools.com/api/projects/orders#delete-order-by-id
    */
   deleteOrderById(
-    options: CommonStoreEnabledRequestOptions & { id: string; version: number; dataErasure?: boolean }
+    options: CommonStoreEnabledRequestOptions & { id: string; version: number; dataErasure?: boolean },
   ): Promise<Order> {
     return this.request({
       ...this.extractCommonRequestOptions(options),
@@ -632,8 +632,8 @@ export class CommercetoolsApi {
       params: {
         ...options.params,
         version: options.version,
-        dataErasure: options.dataErasure
-      }
+        dataErasure: options.dataErasure,
+      },
     })
   }
 
@@ -642,7 +642,7 @@ export class CommercetoolsApi {
    * https://docs.commercetools.com/api/projects/orders#delete-order-by-ordernumber
    */
   deleteOrderByOrderNumber(
-    options: CommonStoreEnabledRequestOptions & { orderNo: string; version: number; dataErasure?: boolean }
+    options: CommonStoreEnabledRequestOptions & { orderNo: string; version: number; dataErasure?: boolean },
   ): Promise<Order> {
     return this.request({
       ...this.extractCommonRequestOptions(options),
@@ -651,8 +651,8 @@ export class CommercetoolsApi {
       params: {
         ...options.params,
         version: options.version,
-        dataErasure: options.dataErasure
-      }
+        dataErasure: options.dataErasure,
+      },
     })
   }
 
@@ -664,7 +664,7 @@ export class CommercetoolsApi {
     return this.request({
       ...this.extractCommonRequestOptions(options),
       path: this.applyStore(`/orders`, options.storeKey),
-      method: 'GET'
+      method: 'GET',
     })
   }
 
@@ -677,7 +677,7 @@ export class CommercetoolsApi {
       ...this.extractCommonRequestOptions(options),
       path: `/products`,
       method: 'POST',
-      data: options.data
+      data: options.data,
     })
   }
 
@@ -690,7 +690,7 @@ export class CommercetoolsApi {
       ...this.extractCommonRequestOptions(options),
       path: `/products/key=${options.key}`,
       method: 'POST',
-      data: options.data
+      data: options.data,
     })
   }
 
@@ -703,7 +703,7 @@ export class CommercetoolsApi {
       ...this.extractCommonRequestOptions(options),
       path: `/products/${options.id}`,
       method: 'POST',
-      data: options.data
+      data: options.data,
     })
   }
 
@@ -719,7 +719,7 @@ export class CommercetoolsApi {
     if (options.unpublish) {
       const product = await this.unpublishProductById({
         id: options.id,
-        version: options.version
+        version: options.version,
       })
       version = product.version
     }
@@ -729,8 +729,8 @@ export class CommercetoolsApi {
       method: 'DELETE',
       params: {
         ...options.params,
-        version
-      }
+        version,
+      },
     })
   }
 
@@ -746,7 +746,7 @@ export class CommercetoolsApi {
     if (options.unpublish) {
       const product = await this.unpublishProductByKey({
         key: options.key,
-        version: options.version
+        version: options.version,
       })
       version = product.version
     }
@@ -756,8 +756,8 @@ export class CommercetoolsApi {
       method: 'DELETE',
       params: {
         ...options.params,
-        version
-      }
+        version,
+      },
     })
   }
 
@@ -775,8 +775,8 @@ export class CommercetoolsApi {
       params: options.params,
       data: {
         version: options.version,
-        actions: [{ action: 'unpublish' }]
-      }
+        actions: [{ action: 'unpublish' }],
+      },
     })
   }
 
@@ -794,8 +794,8 @@ export class CommercetoolsApi {
       params: options.params,
       data: {
         version: options.version,
-        actions: [{ action: 'unpublish' }]
-      }
+        actions: [{ action: 'unpublish' }],
+      },
     })
   }
 
@@ -807,7 +807,7 @@ export class CommercetoolsApi {
     return this.request({
       path: `/categories`,
       method: 'POST',
-      data: options.data
+      data: options.data,
     })
   }
 
@@ -819,7 +819,7 @@ export class CommercetoolsApi {
     return this.request({
       path: `/categories/key=${options.key}`,
       method: 'POST',
-      data: options.data
+      data: options.data,
     })
   }
 
@@ -832,7 +832,7 @@ export class CommercetoolsApi {
       ...this.extractCommonRequestOptions(options),
       path: `/categories/${options.id}`,
       method: 'POST',
-      data: options.data
+      data: options.data,
     })
   }
 
@@ -847,8 +847,8 @@ export class CommercetoolsApi {
       method: 'DELETE',
       params: {
         ...options.params,
-        version: options.version
-      }
+        version: options.version,
+      },
     })
   }
 
@@ -863,8 +863,8 @@ export class CommercetoolsApi {
       method: 'DELETE',
       params: {
         ...options.params,
-        version: options.version
-      }
+        version: options.version,
+      },
     })
   }
 
@@ -877,7 +877,7 @@ export class CommercetoolsApi {
       ...this.extractCommonRequestOptions(options),
       path: this.applyStore(`/customers`, options.storeKey),
       method: 'POST',
-      data: options.data
+      data: options.data,
     })
   }
 
@@ -886,7 +886,7 @@ export class CommercetoolsApi {
    * https://docs.commercetools.com/api/projects/customers#delete-customer-by-id
    */
   deleteCustomerById(
-    options: CommonStoreEnabledRequestOptions & { id: string; version: number; dataErasure?: boolean }
+    options: CommonStoreEnabledRequestOptions & { id: string; version: number; dataErasure?: boolean },
   ): Promise<Customer> {
     return this.request({
       ...this.extractCommonRequestOptions(options),
@@ -895,8 +895,8 @@ export class CommercetoolsApi {
       params: {
         ...options.params,
         version: options.version,
-        dataErasure: options.dataErasure
-      }
+        dataErasure: options.dataErasure,
+      },
     })
   }
 
@@ -905,7 +905,7 @@ export class CommercetoolsApi {
    * https://docs.commercetools.com/api/projects/customers#delete-customer-by-key
    */
   deleteCustomerByKey(
-    options: CommonStoreEnabledRequestOptions & { key: string; version: number; dataErasure?: boolean }
+    options: CommonStoreEnabledRequestOptions & { key: string; version: number; dataErasure?: boolean },
   ): Promise<Customer> {
     return this.request({
       ...this.extractCommonRequestOptions(options),
@@ -914,8 +914,8 @@ export class CommercetoolsApi {
       params: {
         ...options.params,
         version: options.version,
-        dataErasure: options.dataErasure
-      }
+        dataErasure: options.dataErasure,
+      },
     })
   }
 
@@ -924,14 +924,14 @@ export class CommercetoolsApi {
    * https://docs.commercetools.com/api/projects/me-profile#create-customer-sign-up
    */
   createMyAccount(
-    options: CommonStoreEnabledRequestOptions & { accessToken: string; data: MyCustomerDraft }
+    options: CommonStoreEnabledRequestOptions & { accessToken: string; data: MyCustomerDraft },
   ): Promise<CustomerSignInResult> {
     return this.request({
       ...this.extractCommonRequestOptions(options),
       path: this.applyStore(`/me/signup`, options.storeKey),
       method: 'POST',
       data: options.data,
-      accessToken: options.accessToken
+      accessToken: options.accessToken,
     })
   }
 
@@ -944,7 +944,7 @@ export class CommercetoolsApi {
       ...this.extractCommonRequestOptions(options),
       path: this.applyStore(`/login`, options.storeKey),
       method: 'POST',
-      data: options.data
+      data: options.data,
     })
   }
 
@@ -957,7 +957,7 @@ export class CommercetoolsApi {
       ...this.extractCommonRequestOptions(options),
       path: this.applyStore(`/me`, options.storeKey),
       method: 'GET',
-      accessToken: options.accessToken
+      accessToken: options.accessToken,
     })
   }
 
@@ -966,14 +966,14 @@ export class CommercetoolsApi {
    * https://docs.commercetools.com/api/projects/me-profile#update-customer
    */
   updateMyAccount(
-    options: CommonStoreEnabledRequestOptions & { accessToken: string; data: CustomerUpdate }
+    options: CommonStoreEnabledRequestOptions & { accessToken: string; data: CustomerUpdate },
   ): Promise<Customer> {
     return this.request({
       ...this.extractCommonRequestOptions(options),
       path: this.applyStore(`/me`, options.storeKey),
       method: 'POST',
       accessToken: options.accessToken,
-      data: options.data
+      data: options.data,
     })
   }
 
@@ -985,14 +985,14 @@ export class CommercetoolsApi {
     options: CommonStoreEnabledRequestOptions & {
       accessToken: string
       data: { version: number; currentPassword: string; newPassword: string }
-    }
+    },
   ): Promise<Customer> {
     return this.request({
       ...this.extractCommonRequestOptions(options),
       path: this.applyStore(`/me/password`, options.storeKey),
       method: 'POST',
       accessToken: options.accessToken,
-      data: options.data
+      data: options.data,
     })
   }
 
@@ -1001,14 +1001,14 @@ export class CommercetoolsApi {
    * https://docs.commercetools.com/api/projects/me-profile#reset-customers-password
    */
   resetMyPassword(
-    options: CommonStoreEnabledRequestOptions & { accessToken: string; data: CustomerResetPassword }
+    options: CommonStoreEnabledRequestOptions & { accessToken: string; data: CustomerResetPassword },
   ): Promise<Customer> {
     return this.request({
       ...this.extractCommonRequestOptions(options),
       path: this.applyStore(`/me/password/reset`, options.storeKey),
       method: 'POST',
       accessToken: options.accessToken,
-      data: options.data
+      data: options.data,
     })
   }
 
@@ -1017,13 +1017,13 @@ export class CommercetoolsApi {
    * https://docs.commercetools.com/api/projects/customers#create-a-token-for-resetting-the-customers-password
    */
   getPasswordResetToken(
-    options: CommonStoreEnabledRequestOptions & { data: CustomerCreatePasswordResetToken }
+    options: CommonStoreEnabledRequestOptions & { data: CustomerCreatePasswordResetToken },
   ): Promise<CustomerToken> {
     return this.request({
       ...this.extractCommonRequestOptions(options),
       path: this.applyStore(`/customers/password-token`, options.storeKey),
       method: 'POST',
-      data: options.data
+      data: options.data,
     })
   }
 
@@ -1035,7 +1035,7 @@ export class CommercetoolsApi {
     return this.request({
       ...this.extractCommonRequestOptions(options),
       path: this.applyStore(`/customers/${options.id}`, options.storeKey),
-      method: 'GET'
+      method: 'GET',
     })
   }
 
@@ -1047,7 +1047,7 @@ export class CommercetoolsApi {
     return this.request({
       ...this.extractCommonRequestOptions(options),
       path: this.applyStore(`/customers/key=${options.key}`, options.storeKey),
-      method: 'GET'
+      method: 'GET',
     })
   }
 
@@ -1059,7 +1059,7 @@ export class CommercetoolsApi {
     return this.request({
       ...this.extractCommonRequestOptions(options),
       path: this.applyStore(`/customers/password-token=${options.token}`, options.storeKey),
-      method: 'GET'
+      method: 'GET',
     })
   }
 
@@ -1071,7 +1071,7 @@ export class CommercetoolsApi {
     return this.request({
       ...this.extractCommonRequestOptions(options),
       path: this.applyStore(`/customers`, options.storeKey),
-      method: 'GET'
+      method: 'GET',
     })
   }
 
@@ -1083,7 +1083,7 @@ export class CommercetoolsApi {
     return this.request({
       ...this.extractCommonRequestOptions(options),
       path: `/product-types/${options.id}`,
-      method: 'GET'
+      method: 'GET',
     })
   }
 
@@ -1095,7 +1095,7 @@ export class CommercetoolsApi {
     return this.request({
       ...this.extractCommonRequestOptions(options),
       path: `/product-types/key=${options.key}`,
-      method: 'GET'
+      method: 'GET',
     })
   }
 
@@ -1107,7 +1107,7 @@ export class CommercetoolsApi {
     return this.request({
       ...this.extractCommonRequestOptions(options),
       path: `/types/${options.id}`,
-      method: 'GET'
+      method: 'GET',
     })
   }
 
@@ -1119,7 +1119,7 @@ export class CommercetoolsApi {
     return this.request({
       ...this.extractCommonRequestOptions(options),
       path: `/types/key=${options.key}`,
-      method: 'GET'
+      method: 'GET',
     })
   }
 
@@ -1131,7 +1131,7 @@ export class CommercetoolsApi {
     return this.request({
       ...this.extractCommonRequestOptions(options),
       path: `/custom-objects/${options.container}/${options.key}`,
-      method: 'GET'
+      method: 'GET',
     })
   }
 
@@ -1143,7 +1143,7 @@ export class CommercetoolsApi {
     return this.request({
       ...this.extractCommonRequestOptions(options),
       path: `/custom-objects/${options.id}`,
-      method: 'GET'
+      method: 'GET',
     })
   }
 
@@ -1156,7 +1156,7 @@ export class CommercetoolsApi {
       ...this.extractCommonRequestOptions(options),
       path: `/custom-objects`,
       method: 'POST',
-      data: options.data
+      data: options.data,
     })
   }
 
@@ -1168,7 +1168,7 @@ export class CommercetoolsApi {
     return this.request({
       ...this.extractCommonRequestOptions(options),
       path: `/custom-objects/${options.container}/${options.key}`,
-      method: 'DELETE'
+      method: 'DELETE',
     })
   }
 
@@ -1182,7 +1182,7 @@ export class CommercetoolsApi {
       path: `/graphql`,
       method: 'POST',
       data: options.data,
-      accessToken: options.accessToken
+      accessToken: options.accessToken,
     })
   }
 
@@ -1202,7 +1202,7 @@ export class CommercetoolsApi {
     }
     const headers = {
       Authorization: `Bearer ${accessToken}`,
-      ...opts.headers
+      ...opts.headers,
     }
     if (process?.release?.name) {
       headers['User-Agent'] = this.userAgent
@@ -1219,7 +1219,7 @@ export class CommercetoolsApi {
         timeout: this.config.timeoutMs || DEFAULT_REQUEST_TIMEOUT_MS,
         paramsSerializer: function (params) {
           return qs.stringify(params, { arrayFormat: 'repeat' })
-        }
+        },
       })
       return response.data
     } catch (error) {
@@ -1239,7 +1239,7 @@ export class CommercetoolsApi {
     }
     return {
       correlationId: options.correlationId,
-      params: options.params
+      params: options.params,
     }
   }
 

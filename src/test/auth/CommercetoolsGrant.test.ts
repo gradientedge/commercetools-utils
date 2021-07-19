@@ -1,4 +1,4 @@
-import { CommercetoolsGrant } from '../../lib/auth/CommercetoolsGrant'
+import { CommercetoolsGrant } from '../../lib'
 import FakeTimers from '@sinonjs/fake-timers'
 
 describe('CommercetoolsGrant', () => {
@@ -9,7 +9,7 @@ describe('CommercetoolsGrant', () => {
       access_token: '123',
       refresh_token: '456',
       expires_in: 172800,
-      scope: 'scope1:test-project'
+      scope: 'scope1:test-project',
     })
 
     expect(grant).toEqual({
@@ -17,7 +17,7 @@ describe('CommercetoolsGrant', () => {
       refreshToken: '456',
       expiresAt: new Date('2020-02-23T16:46:42.000Z'),
       expiresIn: 172800,
-      scopes: ['scope1']
+      scopes: ['scope1'],
     })
 
     clock.uninstall()
@@ -30,7 +30,7 @@ describe('CommercetoolsGrant', () => {
       access_token: '123',
       refresh_token: '456',
       expires_in: 259200, // 3 days
-      scope: 'scope1:test-project'
+      scope: 'scope1:test-project',
     })
 
     expect(grant).toEqual({
@@ -38,7 +38,7 @@ describe('CommercetoolsGrant', () => {
       refreshToken: '456',
       expiresAt: new Date('2020-02-24T16:46:42.000Z'),
       expiresIn: 259200,
-      scopes: ['scope1']
+      scopes: ['scope1'],
     })
 
     clock.uninstall()
@@ -48,7 +48,7 @@ describe('CommercetoolsGrant', () => {
     const grant = new CommercetoolsGrant({
       access_token: '123',
       expires_in: 172800,
-      scope: 'scope1:test-project'
+      scope: 'scope1:test-project',
     })
 
     expect(grant.refreshToken).toBeUndefined()
@@ -59,7 +59,7 @@ describe('CommercetoolsGrant', () => {
       access_token: '123',
       refresh_token: 'test-refresh-token',
       expires_in: 172800,
-      scope: 'scope1:test-project'
+      scope: 'scope1:test-project',
     })
 
     expect(grant.refreshToken).toBe('test-refresh-token')
@@ -70,7 +70,7 @@ describe('CommercetoolsGrant', () => {
       access_token: '123',
       refresh_token: '',
       expires_in: 172800,
-      scope: 'scope1:test-project'
+      scope: 'scope1:test-project',
     })
 
     expect(grant.refreshToken).toBeUndefined()
@@ -82,7 +82,7 @@ describe('CommercetoolsGrant', () => {
         access_token: '123',
         refresh_token: '',
         expires_in: 172800,
-        scope: 'scope1:test-project'
+        scope: 'scope1:test-project',
       })
 
       const result = grant.extractKeyFromScope('testKey', 'scope1:test scope2:test scope3:test')
@@ -95,7 +95,7 @@ describe('CommercetoolsGrant', () => {
         access_token: '123',
         refresh_token: '',
         expires_in: 172800,
-        scope: 'scope1:test-project'
+        scope: 'scope1:test-project',
       })
 
       const result = grant.extractKeyFromScope('testKey', 'scope1:test scope2:test testKey:myValue scope3:test')
@@ -108,7 +108,7 @@ describe('CommercetoolsGrant', () => {
         access_token: '123',
         refresh_token: '',
         expires_in: 172800,
-        scope: 'scope1:test-project'
+        scope: 'scope1:test-project',
       })
 
       const result = grant.extractKeyFromScope('', 'scope1:test scope2:test testKey:myValue scope3:test')
@@ -121,7 +121,7 @@ describe('CommercetoolsGrant', () => {
         access_token: '123',
         refresh_token: '',
         expires_in: 172800,
-        scope: 'scope1:test-project'
+        scope: 'scope1:test-project',
       })
 
       const result = grant.extractKeyFromScope('testKey', '')
@@ -134,7 +134,7 @@ describe('CommercetoolsGrant', () => {
         access_token: '123',
         refresh_token: '',
         expires_in: 172800,
-        scope: 'scope1:test-project'
+        scope: 'scope1:test-project',
       })
 
       const result = grant.extractKeyFromScope('testKey', 'scope1:test testKey: scope2:test')

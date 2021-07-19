@@ -98,5 +98,5 @@ export enum GrantType {
    * Used when attempting to login a customer:
    * https://docs.commercetools.com/api/authorization#password-flow
    */
-  PASSWORD = 'password'
+  PASSWORD = 'password',
 }

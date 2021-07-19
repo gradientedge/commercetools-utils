@@ -9,25 +9,25 @@ const defaultConfig = {
   clientId: 'test-client-id',
   clientSecret: 'test-client-secret',
   region: Region.NORTH_AMERICA_AWS,
-  clientScopes: ['defaultClientScope1']
+  clientScopes: ['defaultClientScope1'],
 }
 
 const defaultClientGrantResponse: CommercetoolsGrantResponse = {
   access_token: 'test-access-token',
   scope: 'scope1:test-project-key scope2:test-project-key scope3:test-project-key customer_id:123456',
-  expires_in: 172800
+  expires_in: 172800,
 }
 
 const defaultResponseToken: CommercetoolsGrantResponse = {
   access_token: 'test-access-token',
   refresh_token: 'test-refresh-token',
   scope: 'scope1:test-project-key scope2:test-project-key scope3:test-project-key customer_id:123456',
-  expires_in: 172800
+  expires_in: 172800,
 }
 
 function nockGetClientGrant(body = '') {
   return nock('https://auth.us-east-2.aws.commercetools.com', {
-    encodedQueryParams: true
+    encodedQueryParams: true,
   })
     .post('/oauth/token', body || 'grant_type=client_credentials&scope=defaultClientScope1%3Atest-project-key')
     .reply(200, defaultClientGrantResponse)
@@ -57,14 +57,14 @@ describe('CommercetoolsAuth', () => {
         projectKey: 'test-project-key',
         refreshIfWithinSecs: 1800,
         region: 'north_america_aws',
-        clientScopes: ['defaultClientScope1']
+        clientScopes: ['defaultClientScope1'],
       })
     })
 
     it('should override the config defaults when config options are explicitly passed in', () => {
       const auth = new CommercetoolsAuth({
         ...defaultConfig,
-        refreshIfWithinSecs: 2500
+        refreshIfWithinSecs: 2500,
       })
       expect((auth as any).config).toMatchObject({
         clientId: 'test-client-id',
@@ -72,7 +72,7 @@ describe('CommercetoolsAuth', () => {
         projectKey: 'test-project-key',
         refreshIfWithinSecs: 2500,
         region: 'north_america_aws',
-        clientScopes: ['defaultClientScope1']
+        clientScopes: ['defaultClientScope1'],
       })
     })
 
@@ -80,7 +80,7 @@ describe('CommercetoolsAuth', () => {
       const auth = new CommercetoolsAuth({
         ...defaultConfig,
         customerScopes: ['scope1', 'scope2'],
-        clientScopes: ['scope3', 'scope4']
+        clientScopes: ['scope3', 'scope4'],
       })
       expect((auth as any).config).toMatchObject({
         clientId: 'test-client-id',
@@ -89,7 +89,7 @@ describe('CommercetoolsAuth', () => {
         refreshIfWithinSecs: 1800,
         region: 'north_america_aws',
         customerScopes: ['scope1', 'scope2'],
-        clientScopes: ['scope3', 'scope4']
+        clientScopes: ['scope3', 'scope4'],
       })
     })
   })
@@ -108,7 +108,7 @@ describe('CommercetoolsAuth', () => {
         scopes: ['scope1', 'scope2', 'scope3'],
         expiresIn: 172800,
         expiresAt: new Date('2020-01-03T09:35:23.000'),
-        customerId: '123456'
+        customerId: '123456',
       })
       clock.uninstall()
     })
@@ -117,10 +117,10 @@ describe('CommercetoolsAuth', () => {
       const clock = FakeTimers.install({ now: new Date('2020-01-01T09:35:23.000') })
       const auth = new CommercetoolsAuth({
         ...defaultConfig,
-        clientScopes: ['test-scope1', 'test-scope2']
+        clientScopes: ['test-scope1', 'test-scope2'],
       })
       const scope = nockGetClientGrant(
-        'grant_type=client_credentials&scope=test-scope1%3Atest-project-key+test-scope2%3Atest-project-key'
+        'grant_type=client_credentials&scope=test-scope1%3Atest-project-key+test-scope2%3Atest-project-key',
       )
 
       const token = await auth.getClientGrant()
@@ -131,7 +131,7 @@ describe('CommercetoolsAuth', () => {
         scopes: ['scope1', 'scope2', 'scope3'],
         expiresIn: 172800,
         expiresAt: new Date(1578044123000),
-        customerId: '123456'
+        customerId: '123456',
       })
       clock.uninstall()
     })
@@ -152,7 +152,7 @@ describe('CommercetoolsAuth', () => {
         scopes: ['scope1', 'scope2', 'scope3'],
         expiresIn: 172800,
         expiresAt: new Date(1578044123000),
-        customerId: '123456'
+        customerId: '123456',
       })
       clock.uninstall()
     })
@@ -166,13 +166,13 @@ describe('CommercetoolsAuth', () => {
       const scope1 = nockGetClientGrant()
       // Resolving the customer refresh token request
       const scope2 = nock('https://auth.us-east-2.aws.commercetools.com', {
-        encodedQueryParams: true
+        encodedQueryParams: true,
       })
         .post('/oauth/token', `grant_type=refresh_token&refresh_token=customer-refresh-token`)
         .reply(200, {
           access_token: 'test-customer-access-token',
           expires_in: 1234567,
-          scope: `customer-test-scope1:${defaultConfig.projectKey} customer-test-scope2:${defaultConfig.projectKey}`
+          scope: `customer-test-scope1:${defaultConfig.projectKey} customer-test-scope2:${defaultConfig.projectKey}`,
         })
 
       const customerToken = await auth.refreshCustomerGrant('customer-refresh-token')
@@ -184,7 +184,7 @@ describe('CommercetoolsAuth', () => {
         refreshToken: 'customer-refresh-token',
         expiresIn: 1234567,
         expiresAt: new Date('2020-01-20T19:11:24.000Z'),
-        scopes: [`customer-test-scope1`, `customer-test-scope2`]
+        scopes: [`customer-test-scope1`, `customer-test-scope2`],
       })
       clock.uninstall()
     })
@@ -195,13 +195,13 @@ describe('CommercetoolsAuth', () => {
       const scope1 = nockGetClientGrant()
       await auth.getClientGrant()
       const scope2 = nock('https://auth.us-east-2.aws.commercetools.com', {
-        encodedQueryParams: true
+        encodedQueryParams: true,
       })
         .post('/oauth/token', `grant_type=refresh_token&refresh_token=customer-refresh-token`)
         .reply(200, {
           access_token: 'test-customer-access-token',
           expires_in: 1234567,
-          scope: `customer-test-scope1:${defaultConfig.projectKey} customer-test-scope2:${defaultConfig.projectKey}`
+          scope: `customer-test-scope1:${defaultConfig.projectKey} customer-test-scope2:${defaultConfig.projectKey}`,
         })
 
       const customerToken = await auth.refreshCustomerGrant('customer-refresh-token')
@@ -213,7 +213,7 @@ describe('CommercetoolsAuth', () => {
         refreshToken: 'customer-refresh-token',
         expiresIn: 1234567,
         expiresAt: new Date('2020-01-20T19:11:24.000Z'),
-        scopes: [`customer-test-scope1`, `customer-test-scope2`]
+        scopes: [`customer-test-scope1`, `customer-test-scope2`],
       })
       clock.uninstall()
     })
@@ -228,23 +228,23 @@ describe('CommercetoolsAuth', () => {
         const scope1 = nockGetClientGrant()
         // Resolving the customer access token request for the login request
         const scope2 = nock('https://auth.us-east-2.aws.commercetools.com', {
-          encodedQueryParams: true
+          encodedQueryParams: true,
         })
           .post(
             '/oauth/test-project-key/customers/token',
-            'username=testUsername&password=testPassword&grant_type=password&scope=scope1%3Atest-project-key'
+            'username=testUsername&password=testPassword&grant_type=password&scope=scope1%3Atest-project-key',
           )
           .reply(200, {
             access_token: 'test-customer-access-token',
             refresh_token: 'test-customer-refresh-token',
             expires_in: 1234567,
-            scope: `customer-test-scope1:${defaultConfig.projectKey} customer-test-scope2:${defaultConfig.projectKey}`
+            scope: `customer-test-scope1:${defaultConfig.projectKey} customer-test-scope2:${defaultConfig.projectKey}`,
           })
 
         const customerToken = await auth.login({
           username: 'testUsername',
           password: 'testPassword',
-          scopes: ['scope1']
+          scopes: ['scope1'],
         })
 
         scope1.isDone()
@@ -254,7 +254,7 @@ describe('CommercetoolsAuth', () => {
           refreshToken: 'test-customer-refresh-token',
           expiresIn: 1234567,
           expiresAt: new Date('2020-01-20T19:11:24.000Z'),
-          scopes: [`customer-test-scope1`, `customer-test-scope2`]
+          scopes: [`customer-test-scope1`, `customer-test-scope2`],
         })
         clock.uninstall()
       })
@@ -269,23 +269,23 @@ describe('CommercetoolsAuth', () => {
         await auth.getClientGrant()
         // Resolving the customer access token request for the login request
         const scope2 = nock('https://auth.us-east-2.aws.commercetools.com', {
-          encodedQueryParams: true
+          encodedQueryParams: true,
         })
           .post(
             '/oauth/test-project-key/customers/token',
-            'username=testUsername&password=testPassword&grant_type=password&scope=scope1%3Atest-project-key'
+            'username=testUsername&password=testPassword&grant_type=password&scope=scope1%3Atest-project-key',
           )
           .reply(200, {
             access_token: 'test-customer-access-token',
             refresh_token: 'test-customer-refresh-token',
             expires_in: 1234567,
-            scope: `customer-test-scope1:${defaultConfig.projectKey} customer-test-scope2:${defaultConfig.projectKey}`
+            scope: `customer-test-scope1:${defaultConfig.projectKey} customer-test-scope2:${defaultConfig.projectKey}`,
           })
 
         const customerToken = await auth.login({
           username: 'testUsername',
           password: 'testPassword',
-          scopes: ['scope1']
+          scopes: ['scope1'],
         })
 
         scope1.isDone()
@@ -295,7 +295,7 @@ describe('CommercetoolsAuth', () => {
           refreshToken: 'test-customer-refresh-token',
           expiresIn: 1234567,
           expiresAt: new Date('2020-01-20T19:11:24.000Z'),
-          scopes: [`customer-test-scope1`, `customer-test-scope2`]
+          scopes: [`customer-test-scope1`, `customer-test-scope2`],
         })
         clock.uninstall()
       })
@@ -305,12 +305,12 @@ describe('CommercetoolsAuth', () => {
         await expect(
           auth.login({
             username: 'testUsername',
-            password: 'testPassword'
-          })
+            password: 'testPassword',
+          }),
         ).rejects.toThrowError(
           'Customer scopes must be set on either the `options` parameter ' +
             'of this `login` method, or on the `customerScopes` property of the ' +
-            '`CommercetoolsAuth` constructor'
+            '`CommercetoolsAuth` constructor',
         )
       })
 
@@ -318,27 +318,27 @@ describe('CommercetoolsAuth', () => {
         const clock = FakeTimers.install({ now: new Date('2020-01-06T12:15:17.000Z') })
         const auth = new CommercetoolsAuth({
           ...defaultConfig,
-          customerScopes: ['configuredScope1']
+          customerScopes: ['configuredScope1'],
         })
         const scope1 = nockGetClientGrant()
         await auth.getClientGrant()
         const scope2 = nock('https://auth.us-east-2.aws.commercetools.com', {
-          encodedQueryParams: true
+          encodedQueryParams: true,
         })
           .post(
             '/oauth/test-project-key/customers/token',
-            'username=testUsername&password=testPassword&grant_type=password&scope=configuredScope1%3Atest-project-key'
+            'username=testUsername&password=testPassword&grant_type=password&scope=configuredScope1%3Atest-project-key',
           )
           .reply(200, {
             access_token: 'test-customer-access-token',
             refresh_token: 'test-customer-refresh-token',
             expires_in: 1234567,
-            scope: `customer-test-scope1:${defaultConfig.projectKey} customer-test-scope2:${defaultConfig.projectKey}`
+            scope: `customer-test-scope1:${defaultConfig.projectKey} customer-test-scope2:${defaultConfig.projectKey}`,
           })
 
         const customerToken = await auth.login({
           username: 'testUsername',
-          password: 'testPassword'
+          password: 'testPassword',
         })
 
         scope1.isDone()
@@ -348,7 +348,7 @@ describe('CommercetoolsAuth', () => {
           refreshToken: 'test-customer-refresh-token',
           expiresIn: 1234567,
           expiresAt: new Date('2020-01-20T19:11:24.000Z'),
-          scopes: [`customer-test-scope1`, `customer-test-scope2`]
+          scopes: [`customer-test-scope1`, `customer-test-scope2`],
         })
         clock.uninstall()
       })
@@ -364,21 +364,21 @@ describe('CommercetoolsAuth', () => {
         const scope1 = nockGetClientGrant()
         // Resolving the customer access token request for the login request
         const scope2 = nock('https://auth.us-east-2.aws.commercetools.com', {
-          encodedQueryParams: true
+          encodedQueryParams: true,
         })
           .post(
             '/oauth/test-project-key/anonymous/token',
-            'grant_type=client_credentials&scope=anonymousScope1%3Atest-project-key'
+            'grant_type=client_credentials&scope=anonymousScope1%3Atest-project-key',
           )
           .reply(200, {
             access_token: 'test-customer-access-token',
             refresh_token: 'test-customer-refresh-token',
             expires_in: 1234567,
-            scope: `customer-test-scope1:${defaultConfig.projectKey} customer-test-scope2:${defaultConfig.projectKey}`
+            scope: `customer-test-scope1:${defaultConfig.projectKey} customer-test-scope2:${defaultConfig.projectKey}`,
           })
 
         const customerToken = await auth.getAnonymousGrant({
-          scopes: ['anonymousScope1']
+          scopes: ['anonymousScope1'],
         })
 
         scope1.isDone()
@@ -388,7 +388,7 @@ describe('CommercetoolsAuth', () => {
           refreshToken: 'test-customer-refresh-token',
           expiresIn: 1234567,
           expiresAt: new Date('2020-01-20T19:11:24.000Z'),
-          scopes: [`customer-test-scope1`, `customer-test-scope2`]
+          scopes: [`customer-test-scope1`, `customer-test-scope2`],
         })
         clock.uninstall()
       })
@@ -402,21 +402,21 @@ describe('CommercetoolsAuth', () => {
         const scope1 = nockGetClientGrant()
         await auth.getClientGrant()
         const scope2 = nock('https://auth.us-east-2.aws.commercetools.com', {
-          encodedQueryParams: true
+          encodedQueryParams: true,
         })
           .post(
             '/oauth/test-project-key/anonymous/token',
-            'grant_type=client_credentials&scope=anonymousScope1%3Atest-project-key'
+            'grant_type=client_credentials&scope=anonymousScope1%3Atest-project-key',
           )
           .reply(200, {
             access_token: 'test-customer-access-token',
             refresh_token: 'test-customer-refresh-token',
             expires_in: 1234567,
-            scope: `customer-test-scope1:${defaultConfig.projectKey} customer-test-scope2:${defaultConfig.projectKey}`
+            scope: `customer-test-scope1:${defaultConfig.projectKey} customer-test-scope2:${defaultConfig.projectKey}`,
           })
 
         const customerToken = await auth.getAnonymousGrant({
-          scopes: ['anonymousScope1']
+          scopes: ['anonymousScope1'],
         })
 
         scope1.isDone()
@@ -426,7 +426,7 @@ describe('CommercetoolsAuth', () => {
           refreshToken: 'test-customer-refresh-token',
           expiresIn: 1234567,
           expiresAt: new Date('2020-01-20T19:11:24.000Z'),
-          scopes: [`customer-test-scope1`, `customer-test-scope2`]
+          scopes: [`customer-test-scope1`, `customer-test-scope2`],
         })
         clock.uninstall()
       })
@@ -436,7 +436,7 @@ describe('CommercetoolsAuth', () => {
         await expect(auth.getAnonymousGrant()).rejects.toThrowError(
           'Customer scopes must be set on either the `options` parameter ' +
             'of this `login` method, or on the `customerScopes` property of the ' +
-            '`CommercetoolsAuth` constructor'
+            '`CommercetoolsAuth` constructor',
         )
       })
 
@@ -444,24 +444,24 @@ describe('CommercetoolsAuth', () => {
         const clock = FakeTimers.install({ now: new Date('2020-01-06T12:15:17.000Z') })
         const auth = new CommercetoolsAuth({
           ...defaultConfig,
-          customerScopes: ['configuredScope1']
+          customerScopes: ['configuredScope1'],
         })
         // Resolving the client grant request
         const scope1 = nockGetClientGrant()
         await auth.getClientGrant()
         // Resolving the customer access token request for the anonymous customer request
         const scope2 = nock('https://auth.us-east-2.aws.commercetools.com', {
-          encodedQueryParams: true
+          encodedQueryParams: true,
         })
           .post(
             '/oauth/test-project-key/anonymous/token',
-            'grant_type=client_credentials&scope=configuredScope1%3Atest-project-key'
+            'grant_type=client_credentials&scope=configuredScope1%3Atest-project-key',
           )
           .reply(200, {
             access_token: 'test-customer-access-token',
             refresh_token: 'test-customer-refresh-token',
             expires_in: 1234567,
-            scope: `customer-test-scope1:${defaultConfig.projectKey} customer-test-scope2:${defaultConfig.projectKey}`
+            scope: `customer-test-scope1:${defaultConfig.projectKey} customer-test-scope2:${defaultConfig.projectKey}`,
           })
 
         const customerToken = await auth.getAnonymousGrant()
@@ -473,7 +473,7 @@ describe('CommercetoolsAuth', () => {
           refreshToken: 'test-customer-refresh-token',
           expiresIn: 1234567,
           expiresAt: new Date('2020-01-20T19:11:24.000Z'),
-          scopes: [`customer-test-scope1`, `customer-test-scope2`]
+          scopes: [`customer-test-scope1`, `customer-test-scope2`],
         })
         clock.uninstall()
       })
@@ -486,22 +486,22 @@ describe('CommercetoolsAuth', () => {
         await auth.getClientGrant()
         // Resolving the customer access token request for the anonymous customer request
         const scope2 = nock('https://auth.us-east-2.aws.commercetools.com', {
-          encodedQueryParams: true
+          encodedQueryParams: true,
         })
           .post(
             '/oauth/test-project-key/anonymous/token',
-            'grant_type=client_credentials&scope=test1%3Atest-project-key&anonymous_id=myAnonId'
+            'grant_type=client_credentials&scope=test1%3Atest-project-key&anonymous_id=myAnonId',
           )
           .reply(200, {
             access_token: 'test-customer-access-token',
             refresh_token: 'test-customer-refresh-token',
             expires_in: 1234567,
-            scope: `customer-test-scope1:${defaultConfig.projectKey}`
+            scope: `customer-test-scope1:${defaultConfig.projectKey}`,
           })
 
         const customerToken = await auth.getAnonymousGrant({
           anonymousId: 'myAnonId',
-          scopes: ['test1']
+          scopes: ['test1'],
         })
 
         scope1.isDone()
@@ -511,7 +511,7 @@ describe('CommercetoolsAuth', () => {
           refreshToken: 'test-customer-refresh-token',
           expiresIn: 1234567,
           expiresAt: new Date('2020-01-20T19:11:24.000Z'),
-          scopes: [`customer-test-scope1`]
+          scopes: [`customer-test-scope1`],
         })
         clock.uninstall()
       })
@@ -521,7 +521,7 @@ describe('CommercetoolsAuth', () => {
   describe('multiple simultaneous requests', () => {
     it('should make all requests wait for the pending client credentials', (done) => {
       const scope = nock('https://auth.us-east-2.aws.commercetools.com', {
-        encodedQueryParams: true
+        encodedQueryParams: true,
       })
         .post('/oauth/token', 'grant_type=client_credentials&scope=defaultClientScope1%3Atest-project-key')
         .delay(1500)

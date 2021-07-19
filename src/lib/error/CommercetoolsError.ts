@@ -44,15 +44,15 @@ export class CommercetoolsError extends Error {
           url: e.config.url,
           method: e.config.method,
           headers: e.config.headers,
-          params: e.config.params
+          params: e.config.params,
         },
         response: {
           status: e.response?.status,
           data: e.response?.data,
-          headers: e.response?.headers
-        }
+          headers: e.response?.headers,
+        },
       },
-      e.response?.status
+      e.response?.status,
     )
   }
 
@@ -60,7 +60,7 @@ export class CommercetoolsError extends Error {
     return {
       status: this.status,
       message: this.message,
-      data: this.data
+      data: this.data,
     }
   }
 

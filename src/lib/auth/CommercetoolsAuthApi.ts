@@ -45,7 +45,7 @@ export class CommercetoolsAuthApi {
   public async getClientGrant(scopes: string[]): Promise<CommercetoolsGrantResponse> {
     return this.post('/token', {
       grant_type: GrantType.CLIENT_CREDENTIALS,
-      scope: scopeArrayToRequestString(scopes, this.config.projectKey)
+      scope: scopeArrayToRequestString(scopes, this.config.projectKey),
     })
   }
 
@@ -56,7 +56,7 @@ export class CommercetoolsAuthApi {
   public async refreshGrant(refreshToken: string): Promise<CommercetoolsGrantResponse> {
     return await this.post('/token', {
       grant_type: GrantType.REFRESH_TOKEN,
-      refresh_token: refreshToken
+      refresh_token: refreshToken,
     })
   }
 
@@ -69,7 +69,7 @@ export class CommercetoolsAuthApi {
       username: options.username,
       password: options.password,
       grant_type: GrantType.PASSWORD,
-      scope: scopeArrayToRequestString(options.scopes, this.config.projectKey)
+      scope: scopeArrayToRequestString(options.scopes, this.config.projectKey),
     })
   }
 
@@ -82,7 +82,7 @@ export class CommercetoolsAuthApi {
     scopes: string[]
   }): Promise<CommercetoolsGrantResponse> {
     const postOptions: Record<string, any> = {
-      grant_type: GrantType.CLIENT_CREDENTIALS
+      grant_type: GrantType.CLIENT_CREDENTIALS,
     }
     if (options?.scopes?.length) {
       postOptions.scope = scopeArrayToRequestString(options.scopes, this.config.projectKey)
@@ -100,11 +100,11 @@ export class CommercetoolsAuthApi {
     const options = {
       url: `${this.endpoints.auth}/oauth${path}`,
       method: 'POST' as Method,
-      data: new URLSearchParams(body).toString()
+      data: new URLSearchParams(body).toString(),
     }
     const headers: any = {
       Authorization: `Basic ${base64EncodeForBasicAuth(this.config.clientId, this.config.clientSecret)}`,
-      'Content-Type': 'application/x-www-form-urlencoded'
+      'Content-Type': 'application/x-www-form-urlencoded',
     }
     if (process?.release?.name) {
       headers['User-Agent'] = this.userAgent
@@ -113,7 +113,7 @@ export class CommercetoolsAuthApi {
       const response = await axios({
         ...options,
         headers,
-        timeout: this.config.timeoutMs || DEFAULT_REQUEST_TIMEOUT_MS
+        timeout: this.config.timeoutMs || DEFAULT_REQUEST_TIMEOUT_MS,
       })
       return response.data
     } catch (error) {
