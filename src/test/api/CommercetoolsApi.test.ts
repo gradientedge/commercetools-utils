@@ -802,8 +802,8 @@ describe('CommercetoolsApi', () => {
         it('should make a GET request to the correct endpoint with no parameters', async () => {
           nock('https://api.europe-west1.gcp.commercetools.com', {
             reqheaders: {
-              authorization: 'Bearer test-access-token'
-            }
+              authorization: 'Bearer test-access-token',
+            },
           })
             .get('/test-project-key/carts')
             .reply(200, { success: true })
@@ -815,12 +815,12 @@ describe('CommercetoolsApi', () => {
         it('should make a GET request to the correct endpoint with expected parameters', async () => {
           nock('https://api.europe-west1.gcp.commercetools.com', {
             reqheaders: {
-              authorization: 'Bearer test-access-token'
-            }
+              authorization: 'Bearer test-access-token',
+            },
           })
             .get('/test-project-key/carts')
             .query({
-              limit: 100
+              limit: 100,
             })
             .reply(200, { success: true })
           const api = new CommercetoolsApi(defaultConfig)
@@ -833,8 +833,8 @@ describe('CommercetoolsApi', () => {
         it('should make a GET request to the correct endpoint with no parameters', async () => {
           nock('https://api.europe-west1.gcp.commercetools.com', {
             reqheaders: {
-              authorization: 'Bearer my-access-token'
-            }
+              authorization: 'Bearer my-access-token',
+            },
           })
             .get('/test-project-key/me/carts')
             .reply(200, { success: true })
@@ -846,12 +846,12 @@ describe('CommercetoolsApi', () => {
         it('should make a GET request to the correct endpoint with expected parameters', async () => {
           nock('https://api.europe-west1.gcp.commercetools.com', {
             reqheaders: {
-              authorization: 'Bearer my-access-token'
-            }
+              authorization: 'Bearer my-access-token',
+            },
           })
             .get('/test-project-key/me/carts')
             .query({
-              limit: 100
+              limit: 100,
             })
             .reply(200, { success: true })
           const api = new CommercetoolsApi(defaultConfig)

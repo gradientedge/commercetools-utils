@@ -152,7 +152,7 @@ export class CommercetoolsApi {
     return this.request({
       ...this.extractCommonRequestOptions(options),
       path: `/categories/${options.id}`,
-      method: 'GET'
+      method: 'GET',
     })
   }
 
@@ -164,7 +164,7 @@ export class CommercetoolsApi {
     return this.request({
       ...this.extractCommonRequestOptions(options),
       path: `/categories/key=${options.key}`,
-      method: 'GET'
+      method: 'GET',
     })
   }
 
@@ -369,7 +369,7 @@ export class CommercetoolsApi {
     return this.request({
       ...this.extractCommonRequestOptions(options),
       path: this.applyStore(`/carts`, options?.storeKey),
-      method: 'GET'
+      method: 'GET',
     })
   }
 
@@ -378,13 +378,13 @@ export class CommercetoolsApi {
    * https://docs.commercetools.com/api/projects/me-carts#query-carts-1
    */
   async queryMyCarts(
-    options: CommonStoreEnabledRequestOptions & { accessToken: string }
+    options: CommonStoreEnabledRequestOptions & { accessToken: string },
   ): Promise<CartPagedQueryResponse> {
     return this.request({
       ...this.extractCommonRequestOptions(options),
       path: this.applyStore(`/me/carts`, options.storeKey),
       method: 'GET',
-      accessToken: options.accessToken
+      accessToken: options.accessToken,
     })
   }
 
