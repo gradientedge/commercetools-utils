@@ -43,7 +43,8 @@ export class CommercetoolsError extends Error {
         request: {
           url: e.config.url,
           method: e.config.method,
-          headers: e.config.headers
+          headers: e.config.headers,
+          params: e.config.params
         },
         response: {
           status: e.response?.status,

@@ -1706,7 +1706,7 @@ describe('CommercetoolsApi', () => {
       expect(response).toEqual({ success: true })
     })
 
-    it('should time after the default timeout period', async () => {
+    it('should timeout after the default timeout period', async () => {
       nock('https://api.europe-west1.gcp.commercetools.com', {
         encodedQueryParams: true
       })
@@ -1729,7 +1729,8 @@ describe('CommercetoolsApi', () => {
                 'User-Agent': '@gradientedge/commercetools-utils'
               },
               method: 'get',
-              url: 'https://api.europe-west1.gcp.commercetools.com/test-project-key/products/cb3c563c-98dd-4b11-8694-8d17b15fa844'
+              url: 'https://api.europe-west1.gcp.commercetools.com/test-project-key/products/cb3c563c-98dd-4b11-8694-8d17b15fa844',
+              params: {}
             },
             response: {}
           },
