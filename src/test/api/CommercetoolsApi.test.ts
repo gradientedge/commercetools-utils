@@ -128,7 +128,7 @@ describe('CommercetoolsApi', () => {
           .reply(200, { success: true })
         const api = new CommercetoolsApi(defaultConfig)
 
-        const product = await api.getCategoryById('my-category-id')
+        const product = await api.getCategoryById({ id: 'my-category-id' })
 
         expect(product).toEqual({ success: true })
       })
@@ -146,6 +146,19 @@ describe('CommercetoolsApi', () => {
         const product = await api.getCategoryBySlug('my-slug', 'en')
 
         expect(product).toEqual(singleResultItem)
+      })
+    })
+
+    describe('getCategoryByKey', () => {
+      it('should make a GET request to the correct endpoint', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com')
+          .get('/test-project-key/categories/key=my-category-key')
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const product = await api.getCategoryByKey({ key: 'my-category-key' })
+
+        expect(product).toEqual({ success: true })
       })
     })
 
@@ -782,6 +795,68 @@ describe('CommercetoolsApi', () => {
           const api = new CommercetoolsApi(defaultConfig)
 
           await api.getCartById({ id: 'test-cart-id' })
+        })
+      })
+
+      describe('queryCarts', () => {
+        it('should make a GET request to the correct endpoint with no parameters', async () => {
+          nock('https://api.europe-west1.gcp.commercetools.com', {
+            reqheaders: {
+              authorization: 'Bearer test-access-token'
+            }
+          })
+            .get('/test-project-key/carts')
+            .reply(200, { success: true })
+          const api = new CommercetoolsApi(defaultConfig)
+
+          await api.queryCarts()
+        })
+
+        it('should make a GET request to the correct endpoint with expected parameters', async () => {
+          nock('https://api.europe-west1.gcp.commercetools.com', {
+            reqheaders: {
+              authorization: 'Bearer test-access-token'
+            }
+          })
+            .get('/test-project-key/carts')
+            .query({
+              limit: 100
+            })
+            .reply(200, { success: true })
+          const api = new CommercetoolsApi(defaultConfig)
+
+          await api.queryCarts({ params: { limit: 100 } })
+        })
+      })
+
+      describe('queryMyCarts', () => {
+        it('should make a GET request to the correct endpoint with no parameters', async () => {
+          nock('https://api.europe-west1.gcp.commercetools.com', {
+            reqheaders: {
+              authorization: 'Bearer my-access-token'
+            }
+          })
+            .get('/test-project-key/me/carts')
+            .reply(200, { success: true })
+          const api = new CommercetoolsApi(defaultConfig)
+
+          await api.queryMyCarts({ accessToken: 'my-access-token' })
+        })
+
+        it('should make a GET request to the correct endpoint with expected parameters', async () => {
+          nock('https://api.europe-west1.gcp.commercetools.com', {
+            reqheaders: {
+              authorization: 'Bearer my-access-token'
+            }
+          })
+            .get('/test-project-key/me/carts')
+            .query({
+              limit: 100
+            })
+            .reply(200, { success: true })
+          const api = new CommercetoolsApi(defaultConfig)
+
+          await api.queryMyCarts({ accessToken: 'my-access-token', params: { limit: 100 } })
         })
       })
 
