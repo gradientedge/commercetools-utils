@@ -1,4 +1,6 @@
-import axios from 'axios'
+import http from 'http'
+import https from 'https'
+import axios, { AxiosInstance } from 'axios'
 import qs from 'qs'
 import { CommercetoolsApiConfig } from './types'
 import { CommercetoolsAuth } from '../'
@@ -113,11 +115,33 @@ export class CommercetoolsApi {
    */
   private readonly userAgent: string
 
+  /**
+   * axios instance
+   */
+  private readonly axios: AxiosInstance
+
   constructor(config: CommercetoolsApiConfig) {
     this.config = config
     this.auth = new CommercetoolsAuth(config)
     this.endpoints = REGION_URLS[this.config.region]
     this.userAgent = buildUserAgent(this.config.systemIdentifier)
+    this.axios = this.createAxiosInstance()
+  }
+
+  /**
+   * Define the base axios instance that forms the foundation
+   * of all axios calls made by the {@see request} method.
+   */
+  createAxiosInstance() {
+    return axios.create({
+      timeout: this.config.timeoutMs || DEFAULT_REQUEST_TIMEOUT_MS,
+      headers: { common: { 'User-Agent': this.userAgent } },
+      paramsSerializer: function (params) {
+        return qs.stringify(params, { arrayFormat: 'repeat' })
+      },
+      httpAgent: new http.Agent({ keepAlive: true }),
+      httpsAgent: new https.Agent({ keepAlive: true }),
+    })
   }
 
   /**
@@ -1201,26 +1225,16 @@ export class CommercetoolsApi {
       accessToken = grant.accessToken
     }
     const headers = {
+      ...this.axios.defaults.headers,
       Authorization: `Bearer ${accessToken}`,
       ...opts.headers,
-    }
-    if (process?.release?.name) {
-      headers['User-Agent'] = this.userAgent
     }
     if (typeof options.correlationId === 'string' && options.correlationId !== '') {
       headers['X-Correlation-ID'] = options.correlationId
       delete options.correlationId
     }
     try {
-      const response = await axios({
-        ...opts,
-        url,
-        headers,
-        timeout: this.config.timeoutMs || DEFAULT_REQUEST_TIMEOUT_MS,
-        paramsSerializer: function (params) {
-          return qs.stringify(params, { arrayFormat: 'repeat' })
-        },
-      })
+      const response = await this.axios({ ...opts, url, headers })
       return response.data
     } catch (error) {
       if (error.isAxiosError) {

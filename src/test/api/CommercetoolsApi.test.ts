@@ -422,9 +422,7 @@ describe('CommercetoolsApi', () => {
   describe('Products', () => {
     describe('getProductById', () => {
       it('should make a GET request to the correct endpoint', async () => {
-        nock('https://api.europe-west1.gcp.commercetools.com', {
-          encodedQueryParams: true,
-        })
+        nock('https://api.europe-west1.gcp.commercetools.com')
           .get('/test-project-key/products/my-product-id')
           .reply(200, { success: true })
         const api = new CommercetoolsApi(defaultConfig)
@@ -1668,6 +1666,36 @@ describe('CommercetoolsApi', () => {
       expect(api.applyStore('/test', undefined)).toBe('/in-store/key=my-store-a/test')
       expect(api.applyStore('/test', null)).toBe('/in-store/key=my-store-a/test')
       expect(api.applyStore('/test', '')).toBe('/in-store/key=my-store-a/test')
+    })
+  })
+
+  describe('createAxiosInstance', () => {
+    it('should have the User-Agent header set using the userAgent property when using the default value', () => {
+      const api = new CommercetoolsApi(defaultConfig)
+
+      const result = api.createAxiosInstance()
+
+      expect(result.defaults.headers['common']).toMatchObject({
+        'User-Agent': '@gradientedge/commercetools-utils',
+      })
+    })
+
+    it('should have the User-Agent header set using the userAgent property when setting a systemIdentifier', () => {
+      const api = new CommercetoolsApi({ ...defaultConfig, systemIdentifier: 'test123' })
+
+      const result = api.createAxiosInstance()
+
+      expect(result.defaults.headers['common']).toMatchObject({
+        'User-Agent': '@gradientedge/commercetools-utils (test123)',
+      })
+    })
+
+    it('should set the timeout to the given value', () => {
+      const api = new CommercetoolsApi({ ...defaultConfig, timeoutMs: 1234 })
+
+      const result = api.createAxiosInstance()
+
+      expect(result.defaults.timeout).toBe(1234)
     })
   })
 
