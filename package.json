@@ -58,6 +58,7 @@
   "dependencies": {
     "@commercetools/platform-sdk": "^1.15.0",
     "axios": "^0.21.1",
+    "axios-logger": "^2.5.0",
     "json-stringify-safe": "^5.0.1",
     "qs": "^6.10.1"
   }

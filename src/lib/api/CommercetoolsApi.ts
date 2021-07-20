@@ -1,6 +1,7 @@
 import http from 'http'
 import https from 'https'
 import axios, { AxiosInstance } from 'axios'
+import * as AxiosLogger from 'axios-logger'
 import qs from 'qs'
 import { CommercetoolsApiConfig } from './types'
 import { CommercetoolsAuth } from '../'
@@ -133,7 +134,7 @@ export class CommercetoolsApi {
    * of all axios calls made by the {@see request} method.
    */
   createAxiosInstance() {
-    return axios.create({
+    const instance = axios.create({
       timeout: this.config.timeoutMs || DEFAULT_REQUEST_TIMEOUT_MS,
       headers: { common: { 'User-Agent': this.userAgent } },
       paramsSerializer: function (params) {
@@ -142,6 +143,11 @@ export class CommercetoolsApi {
       httpAgent: new http.Agent({ keepAlive: true }),
       httpsAgent: new https.Agent({ keepAlive: true }),
     })
+
+    instance.interceptors.request.use(AxiosLogger.requestLogger, AxiosLogger.errorLogger)
+    instance.interceptors.response.use(AxiosLogger.responseLogger, AxiosLogger.errorLogger)
+
+    return instance
   }
 
   /**
