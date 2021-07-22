@@ -1956,7 +1956,7 @@ describe('CommercetoolsApi', () => {
           scope2.isDone()
           scope3.isDone()
           scope4.isDone()
-          expect(endTime - startTime).toBeGreaterThanOrEqual(3000)
+          expect(endTime - startTime).toBeGreaterThanOrEqual(3500)
           expect(result).toEqual({ success: true })
         })
       })

@@ -1308,7 +1308,7 @@ export class CommercetoolsApi {
     if (!retryConfig || retryCount === 0) {
       return 0
     }
-    return retryConfig.delayMs * retryCount
+    return retryConfig.delayMs * 2 ** (retryCount - 1)
   }
 
   /**

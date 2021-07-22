@@ -14,8 +14,7 @@ export interface CommercetoolsApiConfig extends CommercetoolsBaseConfig {
 export interface CommercetoolsRetryConfig {
   /**
    * The number of milliseconds to wait before retrying a failed request.
-   * This will be increased for each retry, but multiplying the retry attempt
-   * number by the `delayMs` value.
+   * This will be increased exponentially {@see CommercetoolsApi.calculateDelay}
    */
   delayMs: number
 
