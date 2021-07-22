@@ -1308,6 +1308,9 @@ export class CommercetoolsApi {
     if (!retryConfig || retryCount === 0) {
       return 0
     }
+    // `retryCount` will be at least 1 at this point, so as an example,
+    // assuming a `delayMs` of 500, you'd get the following responses for
+    // the given `retryCount` value: 1 = 500, 2 = 1000, 3 = 2000, 4 = 4000
     return retryConfig.delayMs * 2 ** (retryCount - 1)
   }
 
