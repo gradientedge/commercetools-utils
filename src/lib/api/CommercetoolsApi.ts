@@ -2,7 +2,7 @@ import http from 'http'
 import https from 'https'
 import axios, { AxiosInstance } from 'axios'
 import qs from 'qs'
-import { CommercetoolsApiConfig } from './types'
+import { CommercetoolsApiConfig, CommercetoolsRetryConfig } from './types'
 import { CommercetoolsAuth } from '../'
 import { CommercetoolsError } from '../error'
 import { REGION_URLS } from '../auth/constants'
@@ -58,7 +58,21 @@ interface FetchOptions<T = Record<string, any>> {
   data?: T
   accessToken?: string
   correlationId?: string
+  retry?: CommercetoolsRetryConfig
 }
+
+/**
+ * Default retry configuration - equates to no retying at all
+ */
+const DEFAULT_RETRY_CONFIG: CommercetoolsRetryConfig = {
+  maxRetries: 0,
+  delayMs: 0,
+}
+
+/**
+ * List of status codes which are allowed to retry
+ */
+const RETRYABLE_STATUS_CODES: number[] = [500, 501, 502, 503, 504]
 
 /**
  * Options that are available to all requests.
@@ -73,6 +87,11 @@ export interface CommonRequestOptions {
    * Query string parameters.
    */
   params?: Record<string, any>
+
+  /**
+   * Retry configuration
+   */
+  retry?: CommercetoolsRetryConfig
 }
 
 /**
@@ -120,12 +139,19 @@ export class CommercetoolsApi {
    */
   private readonly axios: AxiosInstance
 
+  /**
+   * The default retry configuration for the instance. This can be overridden
+   * on a method by method basis.
+   */
+  private readonly retry: CommercetoolsRetryConfig
+
   constructor(config: CommercetoolsApiConfig) {
     this.config = config
     this.auth = new CommercetoolsAuth(config)
     this.endpoints = REGION_URLS[this.config.region]
     this.userAgent = buildUserAgent(this.config.systemIdentifier)
     this.axios = this.createAxiosInstance()
+    this.retry = config.retry || DEFAULT_RETRY_CONFIG
   }
 
   /**
@@ -1214,6 +1240,44 @@ export class CommercetoolsApi {
    * Make the request to the commercetools REST API.
    */
   async request<T = any, R = any>(options: FetchOptions<T>): Promise<R> {
+    const requestConfig = await this.getRequestOptions(options)
+    const retryConfig = this.getRetryConfig(options.retry)
+    let retryCount = 0
+    let lastError: any
+
+    do {
+      const delay = this.calculateDelay(retryCount, retryConfig)
+      await new Promise((resolve) => setTimeout(resolve, delay))
+      try {
+        const response = await this.axios(requestConfig)
+        return response.data
+      } catch (error) {
+        if (this.isRetryableError(error)) {
+          lastError = error
+        } else {
+          throw this.transformError(error)
+        }
+      }
+      retryCount++
+    } while (retryCount <= retryConfig.maxRetries)
+
+    throw this.transformError(lastError)
+  }
+
+  /**
+   * Get the {@see CommercetoolsRetryConfig} for this request.
+   * Uses the class instance's retry config and merges and additional
+   * config passed in via the request options.
+   */
+  getRetryConfig(methodRetryConfig?: CommercetoolsRetryConfig) {
+    return methodRetryConfig || this.retry
+  }
+
+  /**
+   * Generate request options. These are then fed in to axios when
+   * making the request to commercetools.
+   */
+  async getRequestOptions(options: FetchOptions) {
     let accessToken = options.accessToken
     const url = `${this.endpoints.api}/${this.config.projectKey}${options.path}`
     const opts: any = { ...options }
@@ -1233,15 +1297,46 @@ export class CommercetoolsApi {
       headers['X-Correlation-ID'] = options.correlationId
       delete options.correlationId
     }
-    try {
-      const response = await this.axios({ ...opts, url, headers })
-      return response.data
-    } catch (error) {
-      if (error.isAxiosError) {
-        throw CommercetoolsError.fromAxiosError(error)
-      }
-      throw error
+    return { ...opts, url, headers }
+  }
+
+  /**
+   * Calculate how long to delay before running the request.
+   * For each retry attempt, we increase the time that we delay for.
+   */
+  calculateDelay(retryCount: number, retryConfig?: CommercetoolsRetryConfig) {
+    if (!retryConfig || retryCount === 0) {
+      return 0
     }
+    return retryConfig.delayMs * retryCount
+  }
+
+  /**
+   * Determine whether the given error means we should allow the request
+   * to be retried (assuming retry config is provided).
+   */
+  isRetryableError(error: any) {
+    // If the error isn't an axios error, then something serious
+    // went wrong. Probably a coding error in this package. We should
+    // never really hit this scenario.
+    if (!error.isAxiosError) {
+      return true
+    }
+    // If axios makes a request successfully, the `request` property will
+    // be defined. Equally, if it received a response, the `response` property
+    // will be defined. If either is not defined then we assume there was
+    // a serious connectivity issue and allow the request to be retried.
+    if (!error.request || !error.response) {
+      return true
+    }
+    // Finally we only allow requests to be retried if the status code
+    // returned is in the given list
+    // @TODO - commercetools returns a 502 error when an extension returns
+    //    update actions that are not actionable by commercetools:
+    //    https://docs.commercetools.com/api/errors#502-extension-update-actions-failed
+    //    In this scenario, we should probably not retry the request as
+    //    this may result in successful update actions being re-run
+    return RETRYABLE_STATUS_CODES.includes(error.response.status)
   }
 
   /**
@@ -1254,6 +1349,7 @@ export class CommercetoolsApi {
     return {
       correlationId: options.correlationId,
       params: options.params,
+      retry: options.retry,
     }
   }
 
@@ -1267,5 +1363,16 @@ export class CommercetoolsApi {
       return `/in-store/key=${this.config.storeKey}${path}`
     }
     return path
+  }
+
+  /**
+   * Transform an unknown error in to a {@see CommercetoolsError}
+   * if the error we receive is from axios.
+   */
+  transformError(lastError: any) {
+    if (lastError.isAxiosError) {
+      return CommercetoolsError.fromAxiosError(lastError)
+    }
+    return lastError
   }
 }
