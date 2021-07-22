@@ -1787,5 +1787,282 @@ describe('CommercetoolsApi', () => {
       scope.isDone()
       expect(response).toEqual({ success: true })
     })
+
+    describe('retry mechanism', () => {
+      describe('with 500 status code response', () => {
+        it('should not retry when no retry configuration is passed in to the constructor or method call', async () => {
+          const scope1 = nock('https://api.europe-west1.gcp.commercetools.com')
+            .get('/test-project-key/products/key=my-product-key')
+            .reply(500)
+          const api = new CommercetoolsApi(defaultConfig)
+
+          expect(scope1.isDone())
+          await expect(api.getProductByKey({ key: 'my-product-key' })).rejects.toThrow()
+        })
+
+        it('should retry once when the appropriate constructor retry configuration is passed in', async () => {
+          const scope1 = nock('https://api.europe-west1.gcp.commercetools.com')
+            .get('/test-project-key/products/key=my-product-key')
+            .reply(500)
+          const scope2 = nock('https://api.europe-west1.gcp.commercetools.com')
+            .get('/test-project-key/products/key=my-product-key')
+            .reply(200, { success: true })
+          const api = new CommercetoolsApi({
+            ...defaultConfig,
+            retry: {
+              delayMs: 300,
+              maxRetries: 1,
+            },
+          })
+
+          const startTime = Date.now()
+          const result = await api.getProductByKey({ key: 'my-product-key' })
+          const endTime = Date.now()
+
+          scope1.isDone()
+          scope2.isDone()
+          expect(endTime - startTime).toBeGreaterThanOrEqual(300)
+          expect(result).toEqual({ success: true })
+        })
+
+        it('should retry twice when the appropriate constructor retry configuration is passed in', async () => {
+          const scope1 = nock('https://api.europe-west1.gcp.commercetools.com')
+            .get('/test-project-key/products/key=my-product-key')
+            .reply(500)
+          const scope2 = nock('https://api.europe-west1.gcp.commercetools.com')
+            .get('/test-project-key/products/key=my-product-key')
+            .reply(500)
+          const scope3 = nock('https://api.europe-west1.gcp.commercetools.com')
+            .get('/test-project-key/products/key=my-product-key')
+            .reply(200, { success: true })
+          const api = new CommercetoolsApi({
+            ...defaultConfig,
+            retry: {
+              delayMs: 300,
+              maxRetries: 2,
+            },
+          })
+
+          const startTime = Date.now()
+          const result = await api.getProductByKey({ key: 'my-product-key' })
+          const endTime = Date.now()
+
+          scope1.isDone()
+          scope2.isDone()
+          scope3.isDone()
+          expect(endTime - startTime).toBeGreaterThanOrEqual(900)
+          expect(result).toEqual({ success: true })
+        })
+
+        it('should only retry once if the first retry request succeeds, even when the retry config allows for more retries', async () => {
+          const scope1 = nock('https://api.europe-west1.gcp.commercetools.com')
+            .get('/test-project-key/products/key=my-product-key')
+            .reply(500)
+          const scope2 = nock('https://api.europe-west1.gcp.commercetools.com')
+            .get('/test-project-key/products/key=my-product-key')
+            .reply(200, { success: true })
+
+          const api = new CommercetoolsApi({
+            ...defaultConfig,
+            retry: {
+              delayMs: 300,
+              maxRetries: 4,
+            },
+          })
+
+          const startTime = Date.now()
+          const result = await api.getProductByKey({ key: 'my-product-key' })
+          const endTime = Date.now()
+
+          scope1.isDone()
+          scope2.isDone()
+          expect(endTime - startTime).toBeGreaterThanOrEqual(300)
+          expect(result).toEqual({ success: true })
+        })
+      })
+
+      describe('with 400 response status code', () => {
+        it('should not retry', async () => {
+          const scope1 = nock('https://api.europe-west1.gcp.commercetools.com')
+            .get('/test-project-key/products/key=my-product-key')
+            .reply(400)
+          const api = new CommercetoolsApi({
+            ...defaultConfig,
+            retry: {
+              delayMs: 300,
+              maxRetries: 4,
+            },
+          })
+
+          scope1.isDone()
+          await expect(api.getProductByKey({ key: 'my-product-key' })).rejects.toThrow()
+        })
+      })
+
+      describe('with 200 response status code', () => {
+        it('should not retry', async () => {
+          const scope1 = nock('https://api.europe-west1.gcp.commercetools.com')
+            .get('/test-project-key/products/key=my-product-key')
+            .reply(200, { success: true })
+          const api = new CommercetoolsApi({
+            ...defaultConfig,
+            retry: {
+              delayMs: 300,
+              maxRetries: 4,
+            },
+          })
+
+          const result = await api.getProductByKey({ key: 'my-product-key' })
+
+          scope1.isDone()
+          await expect(result).toEqual({ success: true })
+        })
+      })
+
+      describe('method level retry config override', () => {
+        it('should use the retry config provided in the method', async () => {
+          const scope1 = nock('https://api.europe-west1.gcp.commercetools.com')
+            .get('/test-project-key/products/key=my-product-key')
+            .reply(500)
+          const scope2 = nock('https://api.europe-west1.gcp.commercetools.com')
+            .get('/test-project-key/products/key=my-product-key')
+            .reply(500)
+          const scope3 = nock('https://api.europe-west1.gcp.commercetools.com')
+            .get('/test-project-key/products/key=my-product-key')
+            .reply(500)
+          const scope4 = nock('https://api.europe-west1.gcp.commercetools.com')
+            .get('/test-project-key/products/key=my-product-key')
+            .reply(200, { success: true })
+
+          const api = new CommercetoolsApi({
+            ...defaultConfig,
+            retry: {
+              delayMs: 100,
+              maxRetries: 2,
+            },
+          })
+
+          const startTime = Date.now()
+          const result = await api.getProductByKey({
+            key: 'my-product-key',
+            retry: {
+              maxRetries: 4,
+              delayMs: 500,
+            },
+          })
+          const endTime = Date.now()
+
+          scope1.isDone()
+          scope2.isDone()
+          scope3.isDone()
+          scope4.isDone()
+          expect(endTime - startTime).toBeGreaterThanOrEqual(3500)
+          expect(result).toEqual({ success: true })
+        })
+      })
+    })
+  })
+
+  describe('isRetryableError', () => {
+    it('should return true when the error is not an axios error', async () => {
+      const api = new CommercetoolsApi(defaultConfig)
+      const error = { test: 1 }
+
+      const result = api.isRetryableError(error)
+
+      expect(result).toBe(true)
+    })
+
+    it('should return true when the axios error is missing a request object', async () => {
+      const api = new CommercetoolsApi(defaultConfig)
+      const error = { isAxiosError: true, response: {} }
+
+      const result = api.isRetryableError(error)
+
+      expect(result).toBe(true)
+    })
+
+    it('should return true when the axios error is missing a response object', async () => {
+      const api = new CommercetoolsApi(defaultConfig)
+      const error = { isAxiosError: true, request: {} }
+
+      const result = api.isRetryableError(error)
+
+      expect(result).toBe(true)
+    })
+
+    it('should return true when the axios response status code is 500', async () => {
+      const api = new CommercetoolsApi(defaultConfig)
+      const error = { isAxiosError: true, request: {}, response: { status: 500 } }
+
+      const result = api.isRetryableError(error)
+
+      expect(result).toBe(true)
+    })
+
+    it('should return true when the axios response status code is 501', async () => {
+      const api = new CommercetoolsApi(defaultConfig)
+      const error = { isAxiosError: true, request: {}, response: { status: 501 } }
+
+      const result = api.isRetryableError(error)
+
+      expect(result).toBe(true)
+    })
+
+    it('should return true when the axios response status code is 502', async () => {
+      const api = new CommercetoolsApi(defaultConfig)
+      const error = { isAxiosError: true, request: {}, response: { status: 502 } }
+
+      const result = api.isRetryableError(error)
+
+      expect(result).toBe(true)
+    })
+
+    it('should return true when the axios response status code is 503', async () => {
+      const api = new CommercetoolsApi(defaultConfig)
+      const error = { isAxiosError: true, request: {}, response: { status: 503 } }
+
+      const result = api.isRetryableError(error)
+
+      expect(result).toBe(true)
+    })
+
+    it('should return true when the axios response status code is 504', async () => {
+      const api = new CommercetoolsApi(defaultConfig)
+      const error = { isAxiosError: true, request: {}, response: { status: 504 } }
+
+      const result = api.isRetryableError(error)
+
+      expect(result).toBe(true)
+    })
+
+    it('should return false when the axios response status code is 400', async () => {
+      const api = new CommercetoolsApi(defaultConfig)
+      const error = { isAxiosError: true, request: {}, response: { status: 400 } }
+
+      const result = api.isRetryableError(error)
+
+      expect(result).toBe(false)
+    })
+  })
+
+  describe('transformError', () => {
+    it("should return the object passed in when it's not an axios error object", async () => {
+      const api = new CommercetoolsApi(defaultConfig)
+      const error = { test: 1 }
+
+      const result = api.transformError(error)
+
+      expect(result).toBe(error)
+    })
+
+    it('should return a CommercetoolsError object when an axios error is passed in', async () => {
+      const api = new CommercetoolsApi(defaultConfig)
+      const error = { isAxiosError: true, message: 'Testing' }
+
+      const result = api.transformError(error)
+
+      expect(result).toBeInstanceOf(CommercetoolsError)
+    })
   })
 })

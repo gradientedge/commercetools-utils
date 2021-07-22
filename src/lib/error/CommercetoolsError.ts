@@ -41,10 +41,10 @@ export class CommercetoolsError extends Error {
       {
         code: e.code,
         request: {
-          url: e.config.url,
-          method: e.config.method,
-          headers: e.config.headers,
-          params: e.config.params,
+          url: e.config?.url,
+          method: e.config?.method,
+          headers: e.config?.headers,
+          params: e.config?.params,
         },
         response: {
           status: e.response?.status,
