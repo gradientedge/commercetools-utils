@@ -1,11 +1,12 @@
 import { CommercetoolsBaseConfig } from '../types'
+import * as https from 'https'
 
 /**
  * Configuration for constructing the {@see CommercetoolsApi} class.
  */
 export interface CommercetoolsApiConfig extends CommercetoolsBaseConfig {
-  maxConcurrency?: number
   retry?: CommercetoolsRetryConfig
+  httpsAgent?: https.Agent
 }
 
 /**
