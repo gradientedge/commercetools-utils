@@ -1,5 +1,4 @@
-import http from 'http'
-import https from 'https'
+import { Agent as HttpsAgent } from 'https'
 import axios, { AxiosInstance } from 'axios'
 import qs from 'qs'
 import { CommercetoolsApiConfig, CommercetoolsRetryConfig } from './types'
@@ -73,6 +72,17 @@ const DEFAULT_RETRY_CONFIG: CommercetoolsRetryConfig = {
  * List of status codes which are allowed to retry
  */
 const RETRYABLE_STATUS_CODES: number[] = [500, 501, 502, 503, 504]
+
+/**
+ * The config options passed in to the {@see https.Agent} used
+ * with the axios instance that we create.
+ */
+const DEFAULT_HTTPS_AGENT_CONFIG = {
+  keepAlive: true,
+  maxSockets: 32,
+  maxFreeSockets: 10,
+  timeout: 60000,
+}
 
 /**
  * Options that are available to all requests.
@@ -159,14 +169,19 @@ export class CommercetoolsApi {
    * of all axios calls made by the {@see request} method.
    */
   createAxiosInstance() {
+    let agent: HttpsAgent
+    if (this.config.httpsAgent) {
+      agent = this.config.httpsAgent
+    } else {
+      agent = new HttpsAgent(DEFAULT_HTTPS_AGENT_CONFIG)
+    }
     return axios.create({
       timeout: this.config.timeoutMs || DEFAULT_REQUEST_TIMEOUT_MS,
       headers: { common: { 'User-Agent': this.userAgent } },
       paramsSerializer: function (params) {
         return qs.stringify(params, { arrayFormat: 'repeat' })
       },
-      httpAgent: new http.Agent({ keepAlive: true }),
-      httpsAgent: new https.Agent({ keepAlive: true }),
+      httpsAgent: agent,
     })
   }
 
