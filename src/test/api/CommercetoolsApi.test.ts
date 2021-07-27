@@ -504,14 +504,15 @@ describe('CommercetoolsApi', () => {
 
     describe('getProductProjectionBySlug', () => {
       it('should make a GET request to the correct endpoint', async () => {
-        nock('https://api.europe-west1.gcp.commercetools.com', {
-          encodedQueryParams: true,
-        })
-          .get('/test-project-key/product-projections?where=slug(en%3D%22my-slug%22)')
+        nock('https://api.europe-west1.gcp.commercetools.com')
+          .get('/test-project-key/product-projections')
+          .query({
+            where: 'slug(en="my-slug")',
+          })
           .reply(200, singleItemResponse)
         const api = new CommercetoolsApi(defaultConfig)
 
-        const product = await api.getProductProjectionBySlug('my-slug', 'en')
+        const product = await api.getProductProjectionBySlug({ slug: 'my-slug', languageCode: 'en' })
 
         expect(product).toEqual(singleResultItem)
       })

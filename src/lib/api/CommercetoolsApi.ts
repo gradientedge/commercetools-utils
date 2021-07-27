@@ -378,13 +378,16 @@ export class CommercetoolsApi {
   /**
    * Get a product projection by slug and locale
    */
-  async getProductProjectionBySlug(slug: string, languageCode: string, params = {}): Promise<ProductProjection> {
+  async getProductProjectionBySlug(
+    options: CommonRequestOptions & { slug: string; lang: string },
+  ): Promise<ProductProjection> {
     const data = await this.request({
+      ...this.extractCommonRequestOptions(options),
       path: `/product-projections`,
       method: 'GET',
       params: {
-        ...params,
-        where: `slug(${languageCode}="${slug}")`,
+        ...options.params,
+        where: `slug(${options.lang}="${options.slug}")`,
       },
     })
     return data.count ? data.results[0] : null
