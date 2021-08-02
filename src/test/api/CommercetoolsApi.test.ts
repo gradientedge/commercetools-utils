@@ -1522,6 +1522,25 @@ describe('CommercetoolsApi', () => {
     })
   })
 
+  describe('Discount Codes', () => {
+    describe('getDiscountCodeById', () => {
+      it('should make a GET request to the correct endpoint', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com', {
+          reqheaders: {
+            authorization: 'Bearer test-access-token',
+          },
+        })
+          .get('/test-project-key/discount-codes/my-discount-code-id')
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const order = await api.getDiscountCodeById({ id: 'my-discount-code-id ' })
+
+        expect(order).toEqual({ success: true })
+      })
+    })
+  })
+
   describe('Custom Objects', () => {
     describe('getCustomObject', () => {
       it('should make a GET request to the correct endpoint', async () => {

@@ -29,6 +29,7 @@ import {
   CustomerUpdate,
   CustomObject,
   CustomObjectDraft,
+  DiscountCode,
   GraphQLRequest,
   GraphQLResponse,
   MyCartDraft,
@@ -1184,6 +1185,18 @@ export class CommercetoolsApi {
     return this.request({
       ...this.extractCommonRequestOptions(options),
       path: `/types/key=${options.key}`,
+      method: 'GET',
+    })
+  }
+
+  /**
+   * Get a discount code by id:
+   * https://docs.commercetools.com/api/projects/discountCodes#get-discountcode-by-id
+   */
+  getDiscountCodeById(options: CommonRequestOptions & { id: string }): Promise<DiscountCode> {
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/discount-codes/${options.id}`,
       method: 'GET',
     })
   }
