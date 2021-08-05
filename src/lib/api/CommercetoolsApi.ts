@@ -250,9 +250,7 @@ export class CommercetoolsApi {
    * Import an order.
    * https://docs.commercetools.com/api/projects/orders-import#orderimportdraft
    */
-  async importOrder(
-    options: CommonRequestOptions & { data: OrderImportDraft },
-  ): Promise<Order> {
+  async importOrder(options: CommonRequestOptions & { data: OrderImportDraft }): Promise<Order> {
     return this.request<OrderImportDraft, Order>({
       ...this.extractCommonRequestOptions(options),
       path: '/orders/import',
