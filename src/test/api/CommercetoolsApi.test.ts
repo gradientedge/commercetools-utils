@@ -1571,6 +1571,60 @@ describe('CommercetoolsApi', () => {
     })
   })
 
+  describe('Cart Discounts', () => {
+    describe('getCartDiscountById', () => {
+      it('should make a GET request to the correct endpoint', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com', {
+          reqheaders: {
+            authorization: 'Bearer test-access-token',
+          },
+        })
+          .get('/test-project-key/cart-discounts/my-cart-discount-id')
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const order = await api.getCartDiscountById({ id: 'my-cart-discount-id ' })
+
+        expect(order).toEqual({ success: true })
+      })
+    })
+
+    describe('getCartDiscountByKey', () => {
+      it('should make a GET request to the correct endpoint', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com', {
+          reqheaders: {
+            authorization: 'Bearer test-access-token',
+          },
+        })
+          .get('/test-project-key/cart-discounts/key=my-cart-discount-key')
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const order = await api.getCartDiscountByKey({ key: 'my-cart-discount-key ' })
+
+        expect(order).toEqual({ success: true })
+      })
+    })
+
+    describe('queryCartDiscounts', () => {
+      it('should make a GET request to the correct endpoint', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com', {
+          reqheaders: {
+            authorization: 'Bearer test-access-token',
+          },
+        })
+          .get('/test-project-key/cart-discounts')
+          .query({ limit: 10 })
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const order = await api.queryCartDiscounts({ params: { limit: 10 } })
+
+        expect(order).toEqual({ success: true })
+      })
+    })
+  })
+
   describe('Custom Objects', () => {
     describe('getCustomObject', () => {
       it('should make a GET request to the correct endpoint', async () => {
