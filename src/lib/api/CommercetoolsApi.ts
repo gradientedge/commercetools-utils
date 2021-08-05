@@ -38,6 +38,7 @@ import {
   MyPayment,
   MyPaymentDraft,
   Order,
+  OrderImportDraft,
   OrderPagedQueryResponse,
   OrderUpdate,
   Product,
@@ -243,6 +244,19 @@ export class CommercetoolsApi {
       ...this.extractCommonRequestOptions(options),
       path: `/channels`,
       method: 'GET',
+    })
+  }
+
+  /**
+   * Import an order.
+   * https://docs.commercetools.com/api/projects/orders-import#orderimportdraft
+   */
+  async importOrder(options: CommonRequestOptions & { data: OrderImportDraft }): Promise<Order> {
+    return this.request<OrderImportDraft, Order>({
+      ...this.extractCommonRequestOptions(options),
+      path: '/orders/import',
+      method: 'POST',
+      data: options.data,
     })
   }
 
