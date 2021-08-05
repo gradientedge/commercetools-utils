@@ -921,7 +921,7 @@ describe('CommercetoolsApi', () => {
       })
     })
 
-    describe('importOrderFromOrderDraft', () => {
+    describe('importOrder', () => {
       it('should make a POST request to the correct endpoint with the import order data', async () => {
         nock('https://api.europe-west1.gcp.commercetools.com', {
           reqheaders: {
