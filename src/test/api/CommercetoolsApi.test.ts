@@ -921,6 +921,36 @@ describe('CommercetoolsApi', () => {
       })
     })
 
+    describe('importOrderFromOrderDraft', () => {
+      it('should make a POST request to the correct endpoint with the import order data', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com', {
+          reqheaders: {
+            authorization: 'Bearer test-access-token',
+          },
+        })
+          .post('/test-project-key/orders/import', {
+            orderNumber: '12345',
+            customerId: '9999',
+            totalPrice: {
+              centAmount: 9999,
+              currencyCode: 'GBP',
+            },
+          })
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const response = await api.importMyOrderFromImportOrderDraft({
+          data: {
+            orderNumber: '12345',
+            customerId: '9999',
+            totalPrice: { centAmount: 9999, currencyCode: 'GBP' },
+          },
+        })
+
+        expect(response).toEqual({ success: true })
+      })
+    })
+
     describe('getMyOrderById', () => {
       it('should make a GET request to the correct endpoint', async () => {
         nock('https://api.europe-west1.gcp.commercetools.com', {
