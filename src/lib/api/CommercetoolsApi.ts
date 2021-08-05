@@ -250,12 +250,12 @@ export class CommercetoolsApi {
    * Import an order.
    * https://docs.commercetools.com/api/projects/orders-import#orderimportdraft
    */
-  async importMyOrderFromImportOrderDraft(
-    options: CommonStoreEnabledRequestOptions & { data: OrderImportDraft },
+  async importOrder(
+    options: CommonRequestOptions & { data: OrderImportDraft },
   ): Promise<Order> {
     return this.request<OrderImportDraft, Order>({
       ...this.extractCommonRequestOptions(options),
-      path: this.applyStore('/orders/import', options.storeKey),
+      path: '/orders/import',
       method: 'POST',
       data: options.data,
     })

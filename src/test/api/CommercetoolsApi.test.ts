@@ -939,7 +939,7 @@ describe('CommercetoolsApi', () => {
           .reply(200, { success: true })
         const api = new CommercetoolsApi(defaultConfig)
 
-        const response = await api.importMyOrderFromImportOrderDraft({
+        const response = await api.importOrder({
           data: {
             orderNumber: '12345',
             customerId: '9999',
