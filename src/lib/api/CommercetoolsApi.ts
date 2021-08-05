@@ -10,6 +10,8 @@ import { DEFAULT_REQUEST_TIMEOUT_MS } from '../constants'
 import { buildUserAgent } from '../utils'
 import {
   Cart,
+  CartDiscount,
+  CartDiscountPagedQueryResponse,
   CartDraft,
   CartPagedQueryResponse,
   CartUpdateAction,
@@ -1211,6 +1213,42 @@ export class CommercetoolsApi {
     return this.request({
       ...this.extractCommonRequestOptions(options),
       path: `/discount-codes/${options.id}`,
+      method: 'GET',
+    })
+  }
+
+  /**
+   * Get a cart discount code by id:
+   * https://docs.commercetools.com/api/projects/cartDiscounts#get-cartdiscount-by-id
+   */
+  getCartDiscountById(options: CommonRequestOptions & { id: string }): Promise<CartDiscount> {
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/cart-discounts/${options.id}`,
+      method: 'GET',
+    })
+  }
+
+  /**
+   * Get a cart discount by key:
+   * https://docs.commercetools.com/api/projects/cartDiscounts#get-cartdiscount-by-key
+   */
+  getCartDiscountByKey(options: CommonRequestOptions & { key: string }): Promise<CartDiscount> {
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/cart-discounts/key=${options.key}`,
+      method: 'GET',
+    })
+  }
+
+  /**
+   * Query cart discounts:
+   * https://docs.commercetools.com/api/projects/cartDiscounts#query-cartdiscounts
+   */
+  queryCartDiscounts(options?: CommonRequestOptions): Promise<CartDiscountPagedQueryResponse> {
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/cart-discounts`,
       method: 'GET',
     })
   }
