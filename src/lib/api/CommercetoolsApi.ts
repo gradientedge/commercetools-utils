@@ -1158,6 +1158,32 @@ export class CommercetoolsApi {
   }
 
   /**
+   * Update a customer by id:
+   * https://docs.commercetools.com/api/projects/customers#update-customer-by-id
+   */
+  updateCustomerById(options: CommonStoreEnabledRequestOptions & { id: string; data: CustomerUpdate }) {
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/customers/${options.id}`,
+      method: 'POST',
+      data: options.data,
+    })
+  }
+
+  /**
+   * Update a customer by key:
+   * https://docs.commercetools.com/api/projects/customers#update-customer-by-key
+   */
+  updateCustomerByKey(options: CommonStoreEnabledRequestOptions & { key: string; data: CustomerUpdate }) {
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/customers/key=${options.key}`,
+      method: 'POST',
+      data: options.data,
+    })
+  }
+
+  /**
    * Get a product type by id:
    * https://docs.commercetools.com/api/projects/productTypes#get-a-producttype-by-id
    */

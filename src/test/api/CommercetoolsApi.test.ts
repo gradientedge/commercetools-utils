@@ -1,7 +1,7 @@
 import nock from 'nock'
 import { CommercetoolsApi, CommercetoolsError, Region } from '../../lib'
 import { CommercetoolsGrantResponse } from '../../lib/auth/types'
-import { ProductDraft, ProductUpdateAction } from '@commercetools/platform-sdk'
+import { CustomerUpdateAction, ProductDraft, ProductUpdateAction } from '@commercetools/platform-sdk'
 
 const defaultConfig = {
   projectKey: 'test-project-key',
@@ -1237,245 +1237,286 @@ describe('CommercetoolsApi', () => {
       })
     })
 
-    describe('Customer', () => {
-      describe('createAccount', () => {
-        it('should make a POST request to the correct endpoint with the expected data', async () => {
-          nock('https://api.europe-west1.gcp.commercetools.com', {
-            reqheaders: {
-              authorization: 'Bearer test-access-token',
-            },
-          })
-            .post('/test-project-key/customers', {
-              email: 'test@test.com',
-              password: 'testing',
-            })
-            .reply(200, { success: true })
-          const api = new CommercetoolsApi(defaultConfig)
-
-          const response = await api.createAccount({
-            data: {
-              email: 'test@test.com',
-              password: 'testing',
-            },
-          })
-
-          expect(response).toEqual({ success: true })
+    describe('createAccount', () => {
+      it('should make a POST request to the correct endpoint with the expected data', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com', {
+          reqheaders: {
+            authorization: 'Bearer test-access-token',
+          },
         })
-      })
-
-      describe('createMyAccount', () => {
-        it('should make a POST request to the correct endpoint with the expected data', async () => {
-          nock('https://api.europe-west1.gcp.commercetools.com', {
-            reqheaders: {
-              authorization: 'Bearer customer-access-token',
-            },
+          .post('/test-project-key/customers', {
+            email: 'test@test.com',
+            password: 'testing',
           })
-            .post('/test-project-key/me/signup', {
-              email: 'test@test.com',
-              password: 'testing',
-            })
-            .reply(200, { success: true })
-          const api = new CommercetoolsApi(defaultConfig)
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
 
-          const response = await api.createMyAccount({
-            accessToken: 'customer-access-token',
-            data: {
-              email: 'test@test.com',
-              password: 'testing',
-            },
-          })
-
-          expect(response).toEqual({ success: true })
+        const response = await api.createAccount({
+          data: {
+            email: 'test@test.com',
+            password: 'testing',
+          },
         })
+
+        expect(response).toEqual({ success: true })
       })
+    })
 
-      describe('deleteCustomerById', () => {
-        it('should make a DELETE request to the correct endpoint with the expected data', async () => {
-          nock('https://api.europe-west1.gcp.commercetools.com', {
-            reqheaders: {
-              authorization: 'Bearer test-access-token',
-            },
+    describe('createMyAccount', () => {
+      it('should make a POST request to the correct endpoint with the expected data', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com', {
+          reqheaders: {
+            authorization: 'Bearer customer-access-token',
+          },
+        })
+          .post('/test-project-key/me/signup', {
+            email: 'test@test.com',
+            password: 'testing',
           })
-            .delete('/test-project-key/customers/customer-id')
-            .query({ version: 2 })
-            .reply(200, { success: true })
-          const api = new CommercetoolsApi(defaultConfig)
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
 
-          const response = await api.deleteCustomerById({
-            id: 'customer-id',
+        const response = await api.createMyAccount({
+          accessToken: 'customer-access-token',
+          data: {
+            email: 'test@test.com',
+            password: 'testing',
+          },
+        })
+
+        expect(response).toEqual({ success: true })
+      })
+    })
+
+    describe('updateCustomerById', () => {
+      it('should make a POST request to the correct endpoint with all expected data and params', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com')
+          .post('/test-project-key/customers/my-customer-id', { actions: [{ test: 1 }], version: 2 })
+          .query({
+            testParam: 1,
+          })
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const product = await api.updateCustomerById({
+          id: 'my-customer-id',
+          data: {
+            actions: [{ test: 1 }] as unknown as CustomerUpdateAction[],
             version: 2,
-          })
-
-          expect(response).toEqual({ success: true })
+          },
+          params: { testParam: 1 },
         })
+
+        expect(product).toEqual({ success: true })
       })
+    })
 
-      describe('deleteCustomerByKey', () => {
-        it('should make a DELETE request to the correct endpoint with the expected data', async () => {
-          nock('https://api.europe-west1.gcp.commercetools.com', {
-            reqheaders: {
-              authorization: 'Bearer test-access-token',
-            },
+    describe('updateCustomerByKey', () => {
+      it('should make a POST request to the correct endpoint with all expected data and params', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com')
+          .post('/test-project-key/customers/key=my-customer-key', { actions: [{ test: 1 }], version: 3 })
+          .query({
+            testParam: 1,
           })
-            .delete('/test-project-key/customers/key=customer-key')
-            .query({ version: 3 })
-            .reply(200, { success: true })
-          const api = new CommercetoolsApi(defaultConfig)
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
 
-          const response = await api.deleteCustomerByKey({
-            key: 'customer-key',
-            version: 3,
-          })
-
-          expect(response).toEqual({ success: true })
+        const product = await api.updateCustomerByKey({
+          key: 'my-customer-key',
+          data: { actions: [{ test: 1 }] as unknown as CustomerUpdateAction[], version: 3 },
+          params: { testParam: 1 },
         })
+
+        expect(product).toEqual({ success: true })
       })
+    })
 
-      describe('login', () => {
-        it('should make a POST request to the correct endpoint with the expected data', async () => {
-          nock('https://api.europe-west1.gcp.commercetools.com', {
-            reqheaders: {
-              authorization: 'Bearer test-access-token',
-            },
-          })
-            .post('/test-project-key/login', {
-              email: 'test@test.com',
-              password: 'testing',
-            })
-            .reply(200, { success: true })
-          const api = new CommercetoolsApi(defaultConfig)
-
-          const response = await api.login({
-            data: {
-              email: 'test@test.com',
-              password: 'testing',
-            },
-          })
-
-          expect(response).toEqual({ success: true })
+    describe('deleteCustomerById', () => {
+      it('should make a DELETE request to the correct endpoint with the expected data', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com', {
+          reqheaders: {
+            authorization: 'Bearer test-access-token',
+          },
         })
+          .delete('/test-project-key/customers/customer-id')
+          .query({ version: 2 })
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const response = await api.deleteCustomerById({
+          id: 'customer-id',
+          version: 2,
+        })
+
+        expect(response).toEqual({ success: true })
       })
+    })
 
-      describe('getMyAccount', () => {
-        it('should make a GET request to the correct endpoint using the customer token', async () => {
-          nock('https://api.europe-west1.gcp.commercetools.com', {
-            reqheaders: {
-              authorization: 'Bearer customer-access-token',
-            },
-          })
-            .get('/test-project-key/me')
-            .reply(200, { success: true })
-          const api = new CommercetoolsApi(defaultConfig)
-
-          const product = await api.getMyAccount({ accessToken: 'customer-access-token' })
-
-          expect(product).toEqual({ success: true })
+    describe('deleteCustomerByKey', () => {
+      it('should make a DELETE request to the correct endpoint with the expected data', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com', {
+          reqheaders: {
+            authorization: 'Bearer test-access-token',
+          },
         })
+          .delete('/test-project-key/customers/key=customer-key')
+          .query({ version: 3 })
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const response = await api.deleteCustomerByKey({
+          key: 'customer-key',
+          version: 3,
+        })
+
+        expect(response).toEqual({ success: true })
       })
+    })
 
-      describe('updateMyAccount', () => {
-        it('should make a POST request to the correct endpoint using the customer token', async () => {
-          nock('https://api.europe-west1.gcp.commercetools.com', {
-            reqheaders: {
-              authorization: 'Bearer customer-access-token',
-            },
-          })
-            .post('/test-project-key/me', {
-              version: 4,
-              actions: [],
-            })
-            .reply(200, { success: true })
-          const api = new CommercetoolsApi(defaultConfig)
-
-          const product = await api.updateMyAccount({
-            accessToken: 'customer-access-token',
-            data: {
-              version: 4,
-              actions: [],
-            },
-          })
-
-          expect(product).toEqual({ success: true })
+    describe('login', () => {
+      it('should make a POST request to the correct endpoint with the expected data', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com', {
+          reqheaders: {
+            authorization: 'Bearer test-access-token',
+          },
         })
+          .post('/test-project-key/login', {
+            email: 'test@test.com',
+            password: 'testing',
+          })
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const response = await api.login({
+          data: {
+            email: 'test@test.com',
+            password: 'testing',
+          },
+        })
+
+        expect(response).toEqual({ success: true })
       })
+    })
 
-      describe('getPasswordResetToken', () => {
-        it('should make a POST request to the correct endpoint using the customer token', async () => {
-          nock('https://api.europe-west1.gcp.commercetools.com', {
-            reqheaders: {
-              authorization: 'Bearer test-access-token',
-            },
-          })
-            .post('/test-project-key/customers/password-token', {
-              email: 'jimmy@gradientedge.com',
-              ttlMinutes: 60,
-            })
-            .reply(200, { success: true })
-          const api = new CommercetoolsApi(defaultConfig)
-
-          const product = await api.getPasswordResetToken({
-            data: {
-              email: 'jimmy@gradientedge.com',
-              ttlMinutes: 60,
-            },
-          })
-
-          expect(product).toEqual({ success: true })
+    describe('getMyAccount', () => {
+      it('should make a GET request to the correct endpoint using the customer token', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com', {
+          reqheaders: {
+            authorization: 'Bearer customer-access-token',
+          },
         })
+          .get('/test-project-key/me')
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const product = await api.getMyAccount({ accessToken: 'customer-access-token' })
+
+        expect(product).toEqual({ success: true })
       })
+    })
 
-      describe('resetMyPassword', () => {
-        it('should make a POST request to the correct endpoint using the customer token', async () => {
-          nock('https://api.europe-west1.gcp.commercetools.com', {
-            reqheaders: {
-              authorization: 'Bearer my-access-token',
-            },
-          })
-            .post('/test-project-key/me/password/reset', {
-              tokenValue: 'test-token',
-              newPassword: 'test123',
-            })
-            .reply(200, { success: true })
-          const api = new CommercetoolsApi(defaultConfig)
-
-          const product = await api.resetMyPassword({
-            accessToken: 'my-access-token',
-            data: {
-              tokenValue: 'test-token',
-              newPassword: 'test123',
-            },
-          })
-
-          expect(product).toEqual({ success: true })
+    describe('updateMyAccount', () => {
+      it('should make a POST request to the correct endpoint using the customer token', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com', {
+          reqheaders: {
+            authorization: 'Bearer customer-access-token',
+          },
         })
+          .post('/test-project-key/me', {
+            version: 4,
+            actions: [],
+          })
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const product = await api.updateMyAccount({
+          accessToken: 'customer-access-token',
+          data: {
+            version: 4,
+            actions: [],
+          },
+        })
+
+        expect(product).toEqual({ success: true })
       })
+    })
 
-      describe('changeMyPassword', () => {
-        it('should make a POST request to the correct endpoint using the customer token', async () => {
-          nock('https://api.europe-west1.gcp.commercetools.com', {
-            reqheaders: {
-              authorization: 'Bearer my-access-token',
-            },
-          })
-            .post('/test-project-key/me/password', {
-              version: 1,
-              currentPassword: 'myOldPassword',
-              newPassword: 'myNewPassword',
-            })
-            .reply(200, { success: true })
-          const api = new CommercetoolsApi(defaultConfig)
-
-          const product = await api.changeMyPassword({
-            accessToken: 'my-access-token',
-            data: {
-              version: 1,
-              currentPassword: 'myOldPassword',
-              newPassword: 'myNewPassword',
-            },
-          })
-
-          expect(product).toEqual({ success: true })
+    describe('getPasswordResetToken', () => {
+      it('should make a POST request to the correct endpoint using the customer token', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com', {
+          reqheaders: {
+            authorization: 'Bearer test-access-token',
+          },
         })
+          .post('/test-project-key/customers/password-token', {
+            email: 'jimmy@gradientedge.com',
+            ttlMinutes: 60,
+          })
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const product = await api.getPasswordResetToken({
+          data: {
+            email: 'jimmy@gradientedge.com',
+            ttlMinutes: 60,
+          },
+        })
+
+        expect(product).toEqual({ success: true })
+      })
+    })
+
+    describe('resetMyPassword', () => {
+      it('should make a POST request to the correct endpoint using the customer token', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com', {
+          reqheaders: {
+            authorization: 'Bearer my-access-token',
+          },
+        })
+          .post('/test-project-key/me/password/reset', {
+            tokenValue: 'test-token',
+            newPassword: 'test123',
+          })
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const product = await api.resetMyPassword({
+          accessToken: 'my-access-token',
+          data: {
+            tokenValue: 'test-token',
+            newPassword: 'test123',
+          },
+        })
+
+        expect(product).toEqual({ success: true })
+      })
+    })
+
+    describe('changeMyPassword', () => {
+      it('should make a POST request to the correct endpoint using the customer token', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com', {
+          reqheaders: {
+            authorization: 'Bearer my-access-token',
+          },
+        })
+          .post('/test-project-key/me/password', {
+            version: 1,
+            currentPassword: 'myOldPassword',
+            newPassword: 'myNewPassword',
+          })
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const product = await api.changeMyPassword({
+          accessToken: 'my-access-token',
+          data: {
+            version: 1,
+            currentPassword: 'myOldPassword',
+            newPassword: 'myNewPassword',
+          },
+        })
+
+        expect(product).toEqual({ success: true })
       })
     })
   })
