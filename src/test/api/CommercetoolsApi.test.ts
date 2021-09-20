@@ -664,6 +664,23 @@ describe('CommercetoolsApi', () => {
         })
       })
 
+      describe('getMyCartById', () => {
+        it('should make a GET request to the correct endpoint with the given access token', async () => {
+          nock('https://api.europe-west1.gcp.commercetools.com', {
+            reqheaders: {
+              authorization: 'Bearer customer-access-token',
+            },
+          })
+            .get('/test-project-key/me/carts/my-cart-id')
+            .reply(200, { success: true })
+          const api = new CommercetoolsApi(defaultConfig)
+
+          const response = await api.getMyCartById({ accessToken: 'customer-access-token', cartId: 'my-cart-id' })
+
+          expect(response).toEqual({ success: true })
+        })
+      })
+
       describe('createMyCart', () => {
         it('should make a POST request to the correct endpoint, passing the provided data', async () => {
           nock('https://api.europe-west1.gcp.commercetools.com', {
@@ -723,6 +740,30 @@ describe('CommercetoolsApi', () => {
           await expect(api.deleteMyActiveCart({ accessToken: 'my-access-token' })).rejects.toThrow(
             'Request failed with status code 404',
           )
+        })
+      })
+
+      describe('deleteMyCartById', () => {
+        it('should get the cart and delete that cart when it exists', async () => {
+          nock('https://api.europe-west1.gcp.commercetools.com', {
+            encodedQueryParams: true,
+            reqheaders: {
+              authorization: 'Bearer my-access-token',
+            },
+          })
+            .get('/test-project-key/me/carts/my-cart-id')
+            .reply(200, { id: '123', version: 2 })
+          nock('https://api.europe-west1.gcp.commercetools.com', {
+            reqheaders: {
+              authorization: 'Bearer my-access-token',
+            },
+          })
+            .delete('/test-project-key/me/carts/my-cart-id')
+            .query({ version: 2 })
+            .reply(200, { success: true })
+          const api = new CommercetoolsApi(defaultConfig)
+
+          await api.deleteMyCartById({ accessToken: 'my-access-token', cartId: 'my-cart-id' })
         })
       })
 

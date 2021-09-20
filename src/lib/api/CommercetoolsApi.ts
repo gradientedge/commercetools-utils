@@ -515,6 +515,21 @@ export class CommercetoolsApi {
   }
 
   /**
+   * Get my cart. Requires a logged in or anonymous customer access token:
+   * https://docs.commercetools.com/api/projects/me-carts#get-cart-by-id
+   */
+  async getMyCartById(
+    options: CommonStoreEnabledRequestOptions & { accessToken: string; cartId: string },
+  ): Promise<Cart> {
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: this.applyStore(`/me/carts/${options.cartId}`, options.storeKey),
+      method: 'GET',
+      accessToken: options.accessToken,
+    })
+  }
+
+  /**
    * Create a new cart for the customer associated with the given `accessToken` parameter:
    * https://docs.commercetools.com/api/projects/me-carts#create-a-cart-1
    */
@@ -540,6 +555,26 @@ export class CommercetoolsApi {
     return await this.request({
       ...this.extractCommonRequestOptions(options),
       path: this.applyStore(`/me/carts/${cart.id}`, options.storeKey),
+      method: 'DELETE',
+      params: {
+        ...options.params,
+        version: cart.version,
+      },
+      accessToken: options.accessToken,
+    })
+  }
+
+  /**
+   * Delete my cart by id
+   * https://docs.commercetools.com/api/projects/me-carts#delete-a-cart
+   */
+  async deleteMyCartById(
+    options: CommonStoreEnabledRequestOptions & { accessToken: string; cartId: string },
+  ): Promise<Cart> {
+    const cart = await this.getMyCartById(options)
+    return await this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: this.applyStore(`/me/carts/${options.cartId}`, options.storeKey),
       method: 'DELETE',
       params: {
         ...options.params,
