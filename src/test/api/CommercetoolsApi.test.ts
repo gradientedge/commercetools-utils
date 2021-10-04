@@ -1938,7 +1938,7 @@ describe('CommercetoolsApi', () => {
             request: {
               headers: {
                 Accept: 'application/json, text/plain, */*',
-                Authorization: 'Bearer test-access-token',
+                Authorization: '********',
                 'User-Agent': '@gradientedge/commercetools-utils',
               },
               method: 'get',
@@ -1947,6 +1947,7 @@ describe('CommercetoolsApi', () => {
             },
             response: {},
           },
+          isCommercetoolsError: true,
           message: 'timeout of 1000ms exceeded',
         })
         return
@@ -2144,6 +2145,105 @@ describe('CommercetoolsApi', () => {
           expect(endTime - startTime).toBeGreaterThanOrEqual(3500)
           expect(result).toEqual({ success: true })
         })
+      })
+    })
+
+    describe('masking', () => {
+      it('should mask the Authorization header when an error is thrown', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com', {
+          reqheaders: {
+            authorization: 'Bearer test-access-token',
+          },
+        })
+          .get('/test-project-key/customers/test-customer-id')
+          .reply(500, { success: false })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        try {
+          await api.getCustomerById({ id: 'test-customer-id' })
+        } catch (error) {
+          expect(error?.toJSON()).toEqual({
+            data: {
+              request: {
+                headers: {
+                  Accept: 'application/json, text/plain, */*',
+                  Authorization: '********',
+                  'User-Agent': '@gradientedge/commercetools-utils',
+                },
+                method: 'get',
+                url: 'https://api.europe-west1.gcp.commercetools.com/test-project-key/customers/test-customer-id',
+              },
+              response: {
+                data: {
+                  success: false,
+                },
+                headers: {
+                  'content-type': 'application/json',
+                },
+                status: 500,
+              },
+            },
+            isCommercetoolsError: true,
+            status: 500,
+            message: 'Request failed with status code 500',
+          })
+        }
+      })
+
+      it('should mask the Authorization header and password field when an error is thrown while creating a new customer', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com', {
+          reqheaders: {
+            authorization: 'Bearer test-access-token',
+          },
+        })
+          .post('/test-project-key/customers', {
+            email: 'test@test.com',
+            password: 'testing',
+          })
+          .reply(500, { success: false })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        try {
+          await api.createAccount({
+            data: {
+              email: 'test@test.com',
+              password: 'testing',
+            },
+          })
+          expect(false)
+        } catch (error) {
+          expect(error?.toJSON()).toEqual({
+            data: {
+              request: {
+                data: {
+                  email: 'test@test.com',
+                  password: '********',
+                },
+                headers: {
+                  Accept: 'application/json, text/plain, */*',
+                  Authorization: '********',
+                  'Content-Length': 46,
+                  'Content-Type': 'application/json;charset=utf-8',
+                  'User-Agent': '@gradientedge/commercetools-utils',
+                },
+                method: 'post',
+                url: 'https://api.europe-west1.gcp.commercetools.com/test-project-key/customers',
+              },
+              response: {
+                data: {
+                  success: false,
+                },
+                headers: {
+                  'content-type': 'application/json',
+                },
+                status: 500,
+              },
+            },
+            isCommercetoolsError: true,
+            status: 500,
+            message: 'Request failed with status code 500',
+          })
+        }
       })
     })
   })

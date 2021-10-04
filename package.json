@@ -9,7 +9,7 @@
     "lint": "eslint './src/**/*.ts' --max-warnings=0",
     "prettier": "prettier --check \"**/*.{ts,js,json,graphql}\"",
     "prettify": "prettier --write \"**/*.{ts,js,json,graphql}\"",
-    "test": "jest --passWithNoTests --runInBand",
+    "test": "TZ=UTC jest --passWithNoTests --runInBand",
     "validate": "npm run prettier && npm run lint && npm run test",
     "docs": "typedoc",
     "semantic-release": "semantic-release"
@@ -38,10 +38,12 @@
     "@types/jest": "^26.0.23",
     "@types/json-stringify-safe": "^5.0.0",
     "@types/lodash": "^4.14.170",
+    "@types/lodash.clonedeep": "^4.5.6",
     "@types/node": "15.12.2",
     "@types/node-fetch": "^2.5.10",
     "@types/qs": "^6.9.6",
     "@types/sinonjs__fake-timers": "^6.0.2",
+    "@types/traverse": "^0.6.32",
     "@typescript-eslint/eslint-plugin": "^4.27.0",
     "@typescript-eslint/parser": "^4.27.0",
     "eslint": "^7.28.0",
@@ -59,6 +61,8 @@
     "@commercetools/platform-sdk": "^1.15.0",
     "axios": "^0.21.1",
     "json-stringify-safe": "^5.0.1",
-    "qs": "^6.10.1"
+    "lodash.clonedeep": "^4.5.0",
+    "qs": "^6.10.1",
+    "traverse": "^0.6.6"
   }
 }
