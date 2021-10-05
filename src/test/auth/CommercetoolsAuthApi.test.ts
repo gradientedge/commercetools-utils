@@ -249,7 +249,7 @@ describe('CommercetoolsAuthApi', () => {
             code: 'ECONNABORTED',
             request: {
               headers: {
-                Authorization: 'Basic dGVzdC1jbGllbnQtaWQ6dGVzdC1jbGllbnQtc2VjcmV0',
+                Authorization: '********',
                 'Content-Type': 'application/x-www-form-urlencoded',
                 'User-Agent': '@gradientedge/commercetools-utils',
               },

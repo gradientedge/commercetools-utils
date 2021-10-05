@@ -1,5 +1,6 @@
 import stringify from 'json-stringify-safe'
-import { AxiosError } from 'axios'
+import { AxiosError, AxiosRequestConfig } from 'axios'
+import { maskSensitiveHeaders, maskSensitiveInput } from '../utils/mask'
 
 /**
  * The error class thrown by any of the utility classes.
@@ -43,12 +44,13 @@ export class CommercetoolsError extends Error {
         request: {
           url: e.config?.url,
           method: e.config?.method,
-          headers: e.config?.headers,
-          params: e.config?.params,
+          headers: maskSensitiveHeaders(e.config?.headers),
+          params: maskSensitiveInput(e.config?.params),
+          data: maskSensitiveInput(this.parseRequestData(e.config)),
         },
         response: {
           status: e.response?.status,
-          data: e.response?.data,
+          data: maskSensitiveInput(e.response?.data),
           headers: e.response?.headers,
         },
       },
@@ -56,11 +58,27 @@ export class CommercetoolsError extends Error {
     )
   }
 
+  /**
+   * Parse the stringified JSON data back in to an object for easier viewing
+   */
+  public static parseRequestData(config: AxiosRequestConfig) {
+    let data = config?.data
+    if (typeof data === 'string' && data) {
+      if (config?.headers?.['Content-Type']?.substr(0, 16) === 'application/json') {
+        try {
+          data = JSON.parse(config.data)
+        } catch (e) {}
+      }
+    }
+    return data
+  }
+
   toJSON() {
     return {
       status: this.status,
       message: this.message,
       data: this.data,
+      isCommercetoolsError: true,
     }
   }
 
