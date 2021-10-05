@@ -5,7 +5,7 @@ import traverse from 'traverse'
  * List of property names that we want to mask.
  * Names are not case sensitive.
  */
-export const SENSITIVE_PROPERTY_NAMES = ['password']
+export const SENSITIVE_PROPERTY_NAMES = ['password', 'refresh_token']
 
 /**
  * List of HTTP header names that we want to mask.
