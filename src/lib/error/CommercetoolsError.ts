@@ -1,6 +1,6 @@
 import stringify from 'json-stringify-safe'
 import { AxiosError, AxiosRequestConfig } from 'axios'
-import { maskSensitiveHeaders, maskSensitiveInput } from '../utils/mask'
+import { maskSensitiveHeaders, maskSensitiveInput } from '../utils'
 
 /**
  * The error class thrown by any of the utility classes.
@@ -67,6 +67,22 @@ export class CommercetoolsError extends Error {
       if (config?.headers?.['Content-Type']?.substr(0, 16) === 'application/json') {
         try {
           data = JSON.parse(config.data)
+        } catch (e) {}
+      } else if (config?.headers?.['Content-Type']?.substr(0, 33) === 'application/x-www-form-urlencoded') {
+        try {
+          const searchParams = new URLSearchParams(config.data)
+          const paramsObj: Record<string, string | string[]> = {}
+          searchParams.forEach((value, key, searchParams) => {
+            const values = searchParams.getAll(key)
+            if (values.length === 0) {
+              paramsObj[key] = ''
+            } else if (values.length === 1) {
+              paramsObj[key] = values[0]
+            } else {
+              paramsObj[key] = values
+            }
+          })
+          data = paramsObj
         } catch (e) {}
       }
     }

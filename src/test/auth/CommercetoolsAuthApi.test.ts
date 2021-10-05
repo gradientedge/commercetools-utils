@@ -296,4 +296,56 @@ describe('CommercetoolsAuthApi', () => {
       expect(auth.applyStore('/test', '')).toBe('/in-store/key=my-store-a/test')
     })
   })
+
+  describe('masking', () => {
+    it('should mask the Authorization header when an error is thrown', async () => {
+      nock('https://auth.us-east-2.aws.commercetools.com', {
+        encodedQueryParams: true,
+      })
+        .post(
+          '/oauth/test-project-key/customers/token',
+          'username=jimmy%40gradientedge.com&password=testing&grant_type=password&scope=scope1%3Atest-project-key+scope2%3Atest-project-key',
+        )
+        .reply(500)
+      const auth = new CommercetoolsAuthApi(defaultConfig)
+
+      try {
+        await auth.login({
+          username: 'jimmy@gradientedge.com',
+          password: 'testing',
+          scopes: ['scope1', 'scope2'],
+        })
+      } catch (error) {
+        expect(error?.toJSON()).toEqual({
+          data: {
+            request: {
+              data: {
+                grant_type: 'password',
+                password: '********',
+                scope: 'scope1:test-project-key scope2:test-project-key',
+                username: 'jimmy@gradientedge.com',
+              },
+              headers: {
+                Accept: 'application/json, text/plain, */*',
+                Authorization: '********',
+                'Content-Length': 128,
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'User-Agent': '@gradientedge/commercetools-utils',
+              },
+              method: 'post',
+              url: 'https://auth.us-east-2.aws.commercetools.com/oauth/test-project-key/customers/token',
+            },
+            response: {
+              data: '',
+              headers: {},
+              status: 500,
+            },
+          },
+          isCommercetoolsError: true,
+          message: 'Request failed with status code 500',
+          status: 500,
+        })
+      }
+    })
+  })
 })
