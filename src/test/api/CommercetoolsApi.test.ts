@@ -29,6 +29,14 @@ const singleItemResponse = {
   results: [singleResultItem],
 }
 
+const zeroItemResponse = {
+  limit: 20,
+  offset: 0,
+  count: 0,
+  total: 0,
+  results: [],
+}
+
 describe('CommercetoolsApi', () => {
   beforeAll(() => {
     nock.disableNetConnect()
@@ -143,9 +151,30 @@ describe('CommercetoolsApi', () => {
           .reply(200, singleItemResponse)
         const api = new CommercetoolsApi(defaultConfig)
 
-        const product = await api.getCategoryBySlug('my-slug', 'en')
+        const product = await api.getCategoryBySlug({ slug: 'my-slug', languageCode: 'en' })
 
         expect(product).toEqual(singleResultItem)
+      })
+
+      it('should throw an error if no category was found', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com')
+          .get('/test-project-key/categories')
+          .query({ where: 'slug(en="my-slug")' })
+          .reply(200, zeroItemResponse)
+        const api = new CommercetoolsApi(defaultConfig)
+
+        await expect(api.getCategoryBySlug({ slug: 'my-slug', languageCode: 'en' })).rejects.toMatchError(
+          new CommercetoolsError(
+            'No category found with slug [my-slug] and language code [en]',
+            {
+              options: {
+                languageCode: 'en',
+                slug: 'my-slug',
+              },
+            },
+            404,
+          ),
+        )
       })
     })
 
@@ -185,8 +214,10 @@ describe('CommercetoolsApi', () => {
         const api = new CommercetoolsApi(defaultConfig)
 
         const product = await api.queryCategories({
-          staged: true,
-          where: 'slug(en="my-slug")',
+          params: {
+            staged: true,
+            where: 'slug(en="my-slug")',
+          },
         })
 
         expect(product).toEqual(singleItemResponse)
@@ -427,7 +458,7 @@ describe('CommercetoolsApi', () => {
           .reply(200, { success: true })
         const api = new CommercetoolsApi(defaultConfig)
 
-        const product = await api.getProductById('my-product-id')
+        const product = await api.getProductById({ id: 'my-product-id' })
 
         expect(product).toEqual({ success: true })
       })
@@ -511,9 +542,31 @@ describe('CommercetoolsApi', () => {
           .reply(200, singleItemResponse)
         const api = new CommercetoolsApi(defaultConfig)
 
-        const product = await api.getProductProjectionBySlug('my-slug', 'en')
+        const product = await api.getProductProjectionBySlug({ slug: 'my-slug', languageCode: 'en' })
 
         expect(product).toEqual(singleResultItem)
+      })
+
+      it('should throw an error when no product projection is found', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com', {
+          encodedQueryParams: true,
+        })
+          .get('/test-project-key/product-projections?where=slug(en%3D%22my-slug%22)')
+          .reply(200, zeroItemResponse)
+        const api = new CommercetoolsApi(defaultConfig)
+
+        await expect(api.getProductProjectionBySlug({ slug: 'my-slug', languageCode: 'en' })).rejects.toMatchError(
+          new CommercetoolsError(
+            'No product projection found with slug [my-slug] and language code [en]',
+            {
+              options: {
+                languageCode: 'en',
+                slug: 'my-slug',
+              },
+            },
+            404,
+          ),
+        )
       })
     })
 
@@ -540,8 +593,10 @@ describe('CommercetoolsApi', () => {
         const api = new CommercetoolsApi(defaultConfig)
 
         const product = await api.queryProductProjections({
-          staged: true,
-          where: 'slug(en="my-product-slug")',
+          params: {
+            staged: true,
+            where: 'slug(en="my-product-slug")',
+          },
         })
 
         expect(product).toEqual({ success: true })
@@ -1929,8 +1984,8 @@ describe('CommercetoolsApi', () => {
       const api = new CommercetoolsApi(defaultConfig)
 
       try {
-        await api.getProductById('cb3c563c-98dd-4b11-8694-8d17b15fa844')
-      } catch (e) {
+        await api.getProductById({ id: 'cb3c563c-98dd-4b11-8694-8d17b15fa844' })
+      } catch (e: any) {
         expect(e).toBeInstanceOf(CommercetoolsError)
         expect(e.toJSON()).toEqual({
           data: {
@@ -1943,7 +1998,6 @@ describe('CommercetoolsApi', () => {
               },
               method: 'get',
               url: 'https://api.europe-west1.gcp.commercetools.com/test-project-key/products/cb3c563c-98dd-4b11-8694-8d17b15fa844',
-              params: {},
             },
             response: {},
           },
@@ -2161,7 +2215,7 @@ describe('CommercetoolsApi', () => {
 
         try {
           await api.getCustomerById({ id: 'test-customer-id' })
-        } catch (error) {
+        } catch (error: any) {
           expect(error?.toJSON()).toEqual({
             data: {
               request: {
@@ -2200,7 +2254,7 @@ describe('CommercetoolsApi', () => {
             email: 'test@test.com',
             password: 'testing',
           })
-          .reply(500, { success: false })
+          .reply(500, { success: false }, { 'Content-Type': 'application/json;charset=utf-8' })
         const api = new CommercetoolsApi(defaultConfig)
 
         try {
@@ -2211,7 +2265,7 @@ describe('CommercetoolsApi', () => {
             },
           })
           expect(false)
-        } catch (error) {
+        } catch (error: any) {
           expect(error?.toJSON()).toEqual({
             data: {
               request: {
@@ -2223,7 +2277,7 @@ describe('CommercetoolsApi', () => {
                   Accept: 'application/json, text/plain, */*',
                   Authorization: '********',
                   'Content-Length': 46,
-                  'Content-Type': 'application/json;charset=utf-8',
+                  'Content-Type': 'application/json',
                   'User-Agent': '@gradientedge/commercetools-utils',
                 },
                 method: 'post',
@@ -2234,7 +2288,7 @@ describe('CommercetoolsApi', () => {
                   success: false,
                 },
                 headers: {
-                  'content-type': 'application/json',
+                  'content-type': 'application/json;charset=utf-8',
                 },
                 status: 500,
               },

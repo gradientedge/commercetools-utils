@@ -116,7 +116,7 @@ export class CommercetoolsAuthApi {
         timeout: this.config.timeoutMs || DEFAULT_REQUEST_TIMEOUT_MS,
       })
       return response.data
-    } catch (error) {
+    } catch (error: any) {
       if (error.isAxiosError) {
         throw CommercetoolsError.fromAxiosError(error)
       }
