@@ -17,6 +17,7 @@ import {
   CartUpdateAction,
   Category,
   CategoryDraft,
+  CategoryPagedQueryResponse,
   CategoryUpdate,
   Channel,
   ChannelPagedQueryResponse,
@@ -179,14 +180,15 @@ export class CommercetoolsApi {
     } else {
       agent = new HttpsAgent(DEFAULT_HTTPS_AGENT_CONFIG)
     }
-    return axios.create({
+    const instance = axios.create({
       timeout: this.config.timeoutMs || DEFAULT_REQUEST_TIMEOUT_MS,
-      headers: { common: { 'User-Agent': this.userAgent } },
       paramsSerializer: function (params) {
         return qs.stringify(params, { arrayFormat: 'repeat' })
       },
       httpsAgent: agent,
     })
+    instance.defaults.headers.common['User-Agent'] = this.userAgent
+    return instance
   }
 
   /**
@@ -297,28 +299,42 @@ export class CommercetoolsApi {
 
   /**
    * Get a category projection by slug and locale
+   * Queries the categories for the given slug + locale using:
+   * https://docs.commercetools.com/api/projects/categories#query-categories
    */
-  async getCategoryBySlug(slug: string, languageCode: string, params = {}): Promise<any> {
+  async getCategoryBySlug(
+    options: CommonRequestOptions & { slug: string; languageCode: string },
+  ): Promise<Category | null> {
     const data = await this.request({
+      ...this.extractCommonRequestOptions({
+        ...options,
+        params: {
+          ...options?.params,
+          where: `slug(${options.languageCode}="${options.slug}")`,
+        },
+      }),
       path: `/categories`,
       method: 'GET',
-      params: {
-        ...params,
-        where: `slug(${languageCode}="${slug}")`,
-      },
     })
-    return data.count ? data.results[0] : null
+    if (!data.count) {
+      throw new CommercetoolsError(
+        `No category found with slug [${options.slug}] and language code [${options.languageCode}]`,
+        { options },
+        404,
+      )
+    }
+    return data.results[0]
   }
 
   /**
    * Query categories
    * https://docs.commercetools.com/api/projects/categories#query-categories
    */
-  queryCategories(params = {}): Promise<any> {
+  queryCategories(options?: CommonRequestOptions): Promise<CategoryPagedQueryResponse> {
     return this.request({
+      ...this.extractCommonRequestOptions(options),
       path: `/categories`,
       method: 'GET',
-      params,
     })
   }
 
@@ -348,11 +364,11 @@ export class CommercetoolsApi {
    * Get an individual product by id:
    * https://docs.commercetools.com/api/projects/products#get-product-by-id
    */
-  getProductById(id: string, params = {}): Promise<any> {
+  getProductById(options: CommonRequestOptions & { id: string }): Promise<Product> {
     return this.request({
-      path: `/products/${id}`,
+      ...this.extractCommonRequestOptions(options),
+      path: `/products/${options.id}`,
       method: 'GET',
-      params,
     })
   }
 
@@ -395,27 +411,39 @@ export class CommercetoolsApi {
   /**
    * Get a product projection by slug and locale
    */
-  async getProductProjectionBySlug(slug: string, languageCode: string, params = {}): Promise<ProductProjection> {
+  async getProductProjectionBySlug(
+    options: CommonRequestOptions & { slug: string; languageCode: string },
+  ): Promise<ProductProjection> {
     const data = await this.request({
+      ...this.extractCommonRequestOptions({
+        ...options,
+        params: {
+          ...options?.params,
+          where: `slug(${options.languageCode}="${options.slug}")`,
+        },
+      }),
       path: `/product-projections`,
       method: 'GET',
-      params: {
-        ...params,
-        where: `slug(${languageCode}="${slug}")`,
-      },
     })
-    return data.count ? data.results[0] : null
+    if (!data.count) {
+      throw new CommercetoolsError(
+        `No product projection found with slug [${options.slug}] and language code [${options.languageCode}]`,
+        { options },
+        404,
+      )
+    }
+    return data.results[0]
   }
 
   /**
    * Query product projections
    * https://docs.commercetools.com/api/projects/productProjections#query-productprojections
    */
-  queryProductProjections(params = {}): Promise<any> {
+  queryProductProjections(options?: CommonRequestOptions): Promise<ProductProjectionPagedQueryResponse> {
     return this.request({
+      ...this.extractCommonRequestOptions(options),
       path: `/product-projections`,
       method: 'GET',
-      params,
     })
   }
 
@@ -789,7 +817,7 @@ export class CommercetoolsApi {
    * Create a product:
    * https://docs.commercetools.com/api/projects/products#create-a-product
    */
-  createProduct(options: CommonRequestOptions & { data: ProductDraft }) {
+  createProduct(options: CommonRequestOptions & { data: ProductDraft }): Promise<Product> {
     return this.request({
       ...this.extractCommonRequestOptions(options),
       path: `/products`,
@@ -802,7 +830,7 @@ export class CommercetoolsApi {
    * Update a product by key:
    * https://docs.commercetools.com/api/projects/products#update-product-by-key
    */
-  updateProductByKey(options: CommonRequestOptions & { key: string; data: ProductUpdate }) {
+  updateProductByKey(options: CommonRequestOptions & { key: string; data: ProductUpdate }): Promise<Product> {
     return this.request({
       ...this.extractCommonRequestOptions(options),
       path: `/products/key=${options.key}`,
@@ -815,7 +843,7 @@ export class CommercetoolsApi {
    * Update a product by id:
    * https://docs.commercetools.com/api/projects/products#update-product-by-id
    */
-  updateProductById(options: CommonRequestOptions & { id: string; data: ProductUpdate }) {
+  updateProductById(options: CommonRequestOptions & { id: string; data: ProductUpdate }): Promise<Product> {
     return this.request({
       ...this.extractCommonRequestOptions(options),
       path: `/products/${options.id}`,
@@ -831,7 +859,9 @@ export class CommercetoolsApi {
    * @param {object} options Request options
    * @param {boolean} options.unpublish If true, the product will be unpublished before being deleted
    */
-  async deleteProductById(options: CommonRequestOptions & { id: string; version: number; unpublish?: boolean }) {
+  async deleteProductById(
+    options: CommonRequestOptions & { id: string; version: number; unpublish?: boolean },
+  ): Promise<Product> {
     let version = options.version
     if (options.unpublish) {
       const product = await this.unpublishProductById({
@@ -858,7 +888,9 @@ export class CommercetoolsApi {
    * @param {object} options Request options
    * @param {boolean} options.unpublish If true, the product will be unpublished before being deleted
    */
-  async deleteProductByKey(options: CommonRequestOptions & { key: string; version: number; unpublish?: boolean }) {
+  async deleteProductByKey(
+    options: CommonRequestOptions & { key: string; version: number; unpublish?: boolean },
+  ): Promise<Product> {
     let version = options.version
     if (options.unpublish) {
       const product = await this.unpublishProductByKey({
@@ -884,7 +916,7 @@ export class CommercetoolsApi {
    * Issues an 'unpublish' action for the given product:
    * https://docs.commercetools.com/api/projects/products#unpublish
    */
-  unpublishProductByKey(options: CommonRequestOptions & { key: string; version: number }) {
+  unpublishProductByKey(options: CommonRequestOptions & { key: string; version: number }): Promise<Product> {
     return this.request({
       ...this.extractCommonRequestOptions(options),
       path: `/products/key=${options.key}`,
@@ -903,7 +935,7 @@ export class CommercetoolsApi {
    * Issues an 'unpublish' action for the given product:
    * https://docs.commercetools.com/api/projects/products#unpublish
    */
-  unpublishProductById(options: CommonRequestOptions & { id: string; version: number }) {
+  unpublishProductById(options: CommonRequestOptions & { id: string; version: number }): Promise<Product> {
     return this.request({
       ...this.extractCommonRequestOptions(options),
       path: `/products/${options.id}`,
@@ -920,7 +952,7 @@ export class CommercetoolsApi {
    * Create a category:
    * https://docs.commercetools.com/api/projects/categories#create-a-category
    */
-  createCategory(options: CommonRequestOptions & { data: CategoryDraft }) {
+  createCategory(options: CommonRequestOptions & { data: CategoryDraft }): Promise<Category> {
     return this.request({
       path: `/categories`,
       method: 'POST',
@@ -932,7 +964,7 @@ export class CommercetoolsApi {
    * Update a category by key:
    * https://docs.commercetools.com/api/projects/categories#update-category-by-key
    */
-  updateCategoryByKey(options: CommonRequestOptions & { key: string; data: CategoryUpdate }) {
+  updateCategoryByKey(options: CommonRequestOptions & { key: string; data: CategoryUpdate }): Promise<Category> {
     return this.request({
       path: `/categories/key=${options.key}`,
       method: 'POST',
@@ -944,7 +976,7 @@ export class CommercetoolsApi {
    * Update a category by id:
    * https://docs.commercetools.com/api/projects/categories#update-category-by-id
    */
-  updateCategoryById(options: CommonRequestOptions & { id: string; data: CategoryUpdate }) {
+  updateCategoryById(options: CommonRequestOptions & { id: string; data: CategoryUpdate }): Promise<Category> {
     return this.request({
       ...this.extractCommonRequestOptions(options),
       path: `/categories/${options.id}`,
@@ -957,7 +989,7 @@ export class CommercetoolsApi {
    * Delete a category by id:
    * https://docs.commercetools.com/api/projects/categories#delete-category-by-id
    */
-  deleteCategoryById(options: CommonRequestOptions & { id: string; version: number }) {
+  deleteCategoryById(options: CommonRequestOptions & { id: string; version: number }): Promise<Category> {
     return this.request({
       ...this.extractCommonRequestOptions(options),
       path: `/categories/${options.id}`,
@@ -973,7 +1005,7 @@ export class CommercetoolsApi {
    * Delete a category by key:
    * https://docs.commercetools.com/api/projects/categories#delete-category-by-key
    */
-  deleteCategoryByKey(options: CommonRequestOptions & { key: string; version: number }) {
+  deleteCategoryByKey(options: CommonRequestOptions & { key: string; version: number }): Promise<Category> {
     return this.request({
       ...this.extractCommonRequestOptions(options),
       path: `/categories/key=${options.key}`,
@@ -1196,7 +1228,9 @@ export class CommercetoolsApi {
    * Update a customer by id:
    * https://docs.commercetools.com/api/projects/customers#update-customer-by-id
    */
-  updateCustomerById(options: CommonStoreEnabledRequestOptions & { id: string; data: CustomerUpdate }) {
+  updateCustomerById(
+    options: CommonStoreEnabledRequestOptions & { id: string; data: CustomerUpdate },
+  ): Promise<Customer> {
     return this.request({
       ...this.extractCommonRequestOptions(options),
       path: `/customers/${options.id}`,
@@ -1209,7 +1243,9 @@ export class CommercetoolsApi {
    * Update a customer by key:
    * https://docs.commercetools.com/api/projects/customers#update-customer-by-key
    */
-  updateCustomerByKey(options: CommonStoreEnabledRequestOptions & { key: string; data: CustomerUpdate }) {
+  updateCustomerByKey(
+    options: CommonStoreEnabledRequestOptions & { key: string; data: CustomerUpdate },
+  ): Promise<Customer> {
     return this.request({
       ...this.extractCommonRequestOptions(options),
       path: `/customers/key=${options.key}`,

@@ -242,7 +242,7 @@ describe('CommercetoolsAuthApi', () => {
 
       try {
         await auth.getClientGrant(['scope1'])
-      } catch (e) {
+      } catch (e: any) {
         expect(e).toBeInstanceOf(CommercetoolsError)
         expect(e.toJSON()).toMatchObject({
           data: {
@@ -315,7 +315,7 @@ describe('CommercetoolsAuthApi', () => {
           password: 'testing',
           scopes: ['scope1', 'scope2'],
         })
-      } catch (error) {
+      } catch (error: any) {
         expect(error?.toJSON()).toEqual({
           data: {
             request: {
