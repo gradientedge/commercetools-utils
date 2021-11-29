@@ -18,13 +18,13 @@ export class CommercetoolsAuthApi {
    * type passed in to the constructor and the default values specified in the
    * `configDefaults` object.
    */
-  private readonly config: CommercetoolsAuthApiConfig
+  public readonly config: CommercetoolsAuthApiConfig
 
   /**
    * The Auth and API endpoints driven by the user's setting of {@link CommercetoolsAuthApiConfig.region}
    * https://docs.commercetools.com/api/general-concepts#regions
    */
-  private endpoints: RegionEndpoints
+  public readonly endpoints: RegionEndpoints
 
   /**
    * The string that's sent over in the `User-Agent` header

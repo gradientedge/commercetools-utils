@@ -64,7 +64,7 @@ export class CommercetoolsAuth {
    * type passed in to the constructor and the default values specified in the
    * `configDefaults` object.
    */
-  private readonly config: Config
+  public readonly config: Config
 
   /**
    * This holds the client grant, once one has been generated.

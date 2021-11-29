@@ -79,7 +79,7 @@ const DEFAULT_RETRY_CONFIG: CommercetoolsRetryConfig = {
 const RETRYABLE_STATUS_CODES: number[] = [500, 501, 502, 503, 504]
 
 /**
- * The config options passed in to the {@see https.Agent} used
+ * The config options passed in to the {@see HttpsAgent.Agent} used
  * with the axios instance that we create.
  */
 const DEFAULT_HTTPS_AGENT_CONFIG = {
@@ -135,13 +135,13 @@ export class CommercetoolsApi {
   /**
    * The configuration passed in to the constructor.
    */
-  private readonly config: CommercetoolsApiConfig
+  public readonly config: CommercetoolsApiConfig
 
   /**
    * The Auth and API endpoints driven by the user's setting of {@link CommercetoolsApiConfig.region}
    * https://docs.commercetools.com/api/general-concepts#regions
    */
-  private readonly endpoints: RegionEndpoints
+  public readonly endpoints: RegionEndpoints
 
   /**
    * The string that's sent over in the `User-Agent` header
