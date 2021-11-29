@@ -3,7 +3,7 @@ import { CommercetoolsError } from '../'
 import { scopeArrayToRequestString } from './scopes'
 import { REGION_URLS } from './constants'
 import { base64EncodeForBasicAuth } from './utils'
-import { RegionEndpoints } from '../types'
+import { Logger, RegionEndpoints } from '../types'
 import axios, { Method } from 'axios'
 import { DEFAULT_REQUEST_TIMEOUT_MS } from '../constants'
 import { buildUserAgent } from '../utils'
@@ -32,10 +32,16 @@ export class CommercetoolsAuthApi {
    */
   private readonly userAgent: string
 
+  /**
+   * Logger implementation as provided by the user
+   */
+  private readonly logger?: Logger
+
   constructor(config: CommercetoolsAuthApiConfig) {
     this.config = config
     this.endpoints = REGION_URLS[this.config.region]
     this.userAgent = buildUserAgent(this.config.systemIdentifier)
+    this.logger = config.logger
   }
 
   /**

@@ -2,6 +2,7 @@ import { AnonymousGrantOptions, CommercetoolsAuthConfig, LoginOptions } from './
 import { CommercetoolsError } from '../'
 import { CommercetoolsGrant } from './CommercetoolsGrant'
 import { CommercetoolsAuthApi } from './CommercetoolsAuthApi'
+import { Logger } from '../types'
 
 /**
  * This interface used for holding the internal config of {@see CommercetoolsAuth}.
@@ -87,6 +88,11 @@ export class CommercetoolsAuth {
   private api: CommercetoolsAuthApi
 
   /**
+   * Logger implementation as provided by the user
+   */
+  private readonly logger?: Logger
+
+  /**
    * Store the configuration locally and do some light validation to ensure
    * that we have some `clientScopes` defined. We also set a `member` called
    * {@see api} to an instance of {@see CommercetoolsAuthApi}, which handles
@@ -94,6 +100,7 @@ export class CommercetoolsAuth {
    */
   constructor(config: CommercetoolsAuthConfig) {
     this.config = { ...configDefaults, ...config }
+    this.logger = config.logger
 
     if (!this.config.clientScopes.length) {
       throw new CommercetoolsError('`config.clientScopes` must contain at least one scope')

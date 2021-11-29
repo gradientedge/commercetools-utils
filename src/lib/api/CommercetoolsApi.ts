@@ -5,7 +5,7 @@ import { CommercetoolsApiConfig, CommercetoolsRetryConfig } from './types'
 import { CommercetoolsAuth } from '../'
 import { CommercetoolsError } from '../error'
 import { REGION_URLS } from '../auth/constants'
-import { RegionEndpoints } from '../types'
+import { Logger, RegionEndpoints } from '../types'
 import { DEFAULT_REQUEST_TIMEOUT_MS } from '../constants'
 import { buildUserAgent } from '../utils'
 import {
@@ -79,7 +79,7 @@ const DEFAULT_RETRY_CONFIG: CommercetoolsRetryConfig = {
 const RETRYABLE_STATUS_CODES: number[] = [500, 501, 502, 503, 504]
 
 /**
- * The config options passed in to the {@see https.Agent} used
+ * The config options passed in to the {@see HttpsAgent.Agent} used
  * with the axios instance that we create.
  */
 const DEFAULT_HTTPS_AGENT_CONFIG = {
@@ -155,6 +155,11 @@ export class CommercetoolsApi {
   private readonly axios: AxiosInstance
 
   /**
+   * Logger implementation as provided by the user
+   */
+  private readonly logger?: Logger
+
+  /**
    * The default retry configuration for the instance. This can be overridden
    * on a method by method basis.
    */
@@ -166,6 +171,7 @@ export class CommercetoolsApi {
     this.endpoints = REGION_URLS[this.config.region]
     this.userAgent = buildUserAgent(this.config.systemIdentifier)
     this.axios = this.createAxiosInstance()
+    this.logger = config.logger
     this.retry = config.retry || DEFAULT_RETRY_CONFIG
   }
 

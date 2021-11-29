@@ -1,4 +1,4 @@
-import { CommercetoolsBaseConfig, Region } from '../types'
+import { CommercetoolsBaseConfig, Logger, Region } from '../types'
 
 /**
  * Configuration for {@see CommercetoolsAuth}
@@ -19,6 +19,7 @@ export interface CommercetoolsAuthApiConfig {
   timeoutMs?: number
   systemIdentifier?: string
   storeKey?: string
+  logger?: Logger
 }
 
 /**

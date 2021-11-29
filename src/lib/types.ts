@@ -36,6 +36,7 @@ export interface CommercetoolsBaseConfig {
   region: Region
   clientScopes: string[]
   timeoutMs?: number
+  logger?: Logger
 
   /**
    * If provided, will be passed across to commercetools in the
@@ -43,4 +44,14 @@ export interface CommercetoolsBaseConfig {
    * identify the source of incoming requests.
    */
   systemIdentifier?: string
+}
+
+/**
+ * If a logger is passed to the {@see CommercetoolsBaseConfig}, then it
+ * must implement the following interface.
+ */
+export interface Logger {
+  debug: (message: string, data?: Record<string, unknown>) => any
+  warn: (message: string, data?: Record<string, unknown>) => any
+  error: (message: string, data?: Record<string, unknown>) => any
 }
