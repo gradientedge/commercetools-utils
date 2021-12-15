@@ -1069,11 +1069,11 @@ export class CommercetoolsApi {
   }
 
   /**
-   * Create a customer account given an anonymous access token:
+   * Create a customer account given an (optional) anonymous access token:
    * https://docs.commercetools.com/api/projects/me-profile#create-customer-sign-up
    */
   createMyAccount(
-    options: CommonStoreEnabledRequestOptions & { accessToken: string; data: MyCustomerDraft },
+    options: CommonStoreEnabledRequestOptions & { accessToken?: string; data: MyCustomerDraft },
   ): Promise<CustomerSignInResult> {
     return this.request({
       ...this.extractCommonRequestOptions(options),
