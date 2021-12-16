@@ -4,9 +4,11 @@
   "description": "Provide utility classes and functions for interacting with the commercetools API",
   "main": "build/index.js",
   "scripts": {
+    "cz": "cz",
     "build": "tsc",
     "watch": "tsc --watch",
     "lint": "eslint './src/**/*.ts' --max-warnings=0",
+    "prepare": "husky install",
     "prettier": "prettier --check \"**/*.{ts,js,json,graphql}\"",
     "prettify": "prettier --write \"**/*.{ts,js,json,graphql}\"",
     "test": "TZ=UTC jest --passWithNoTests --runInBand",
@@ -46,8 +48,11 @@
     "@types/traverse": "^0.6.32",
     "@typescript-eslint/eslint-plugin": "^5.7.0",
     "@typescript-eslint/parser": "^5.7.0",
+    "commitizen": "^4.2.4",
+    "cz-conventional-changelog": "^3.3.0",
     "eslint": "^8.4.1",
     "eslint-config-prettier": "^8.3.0",
+    "husky": "^7.0.4",
     "jest": "^27.4.5",
     "jest-matcher-specific-error": "^1.0.0",
     "nock": "^13.2.1",
@@ -65,5 +70,10 @@
     "lodash.clonedeep": "^4.5.0",
     "qs": "^6.10.2",
     "traverse": "^0.6.6"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
   }
 }
