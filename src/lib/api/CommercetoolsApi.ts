@@ -50,6 +50,8 @@ import {
   ProductProjectionPagedQueryResponse,
   ProductType,
   ProductUpdate,
+  ShippingMethod,
+  ShippingMethodPagedQueryResponse,
   Store,
   Type,
 } from '@commercetools/platform-sdk'
@@ -1412,6 +1414,62 @@ export class CommercetoolsApi {
       ...this.extractCommonRequestOptions(options),
       path: `/custom-objects/${options.container}/${options.key}`,
       method: 'DELETE',
+    })
+  }
+
+  /**
+   * Get a shipping method by id:
+   * https://docs.commercetools.com/api/projects/shippingMethods#get-shippingmethod-by-id
+   */
+  getShippingMethodById(options: CommonRequestOptions & { id: string }): Promise<ShippingMethod> {
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/shipping-methods/${options.id}`,
+      method: 'GET',
+    })
+  }
+
+  /**
+   * Get a shipping method by key:
+   * https://docs.commercetools.com/api/projects/shippingMethods#get-shippingmethod-by-key
+   */
+  getShippingMethodByKey(options: CommonRequestOptions & { key: string }): Promise<ShippingMethod> {
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/shipping-methods/key=${options.key}`,
+      method: 'GET',
+    })
+  }
+
+  /**
+   * Get shipping methods applicable to a given cart id:
+   * https://docs.commercetools.com/api/projects/shippingMethods#get-shippingmethods-for-a-cart
+   */
+  getShippingMethodsForCart(
+    options: CommonStoreEnabledRequestOptions & { cartId: string },
+  ): Promise<ShippingMethodPagedQueryResponse> {
+    return this.request({
+      ...this.extractCommonRequestOptions({
+        ...options,
+        params: {
+          ...options?.params,
+          cartId: options.cartId,
+        },
+      }),
+      path: `/shipping-methods/matching-cart`,
+      method: 'GET',
+    })
+  }
+
+  /**
+   * Query shipping methods:
+   * https://docs.commercetools.com/api/projects/shippingMethods#query-shippingmethods
+   */
+  queryShippingMethods(options?: CommonRequestOptions): Promise<ShippingMethodPagedQueryResponse> {
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/shipping-methods`,
+      method: 'GET',
     })
   }
 

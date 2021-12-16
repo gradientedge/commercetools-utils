@@ -1906,6 +1906,78 @@ describe('CommercetoolsApi', () => {
     })
   })
 
+  describe('Shipping Methods', () => {
+    describe('getShippingMethodById', () => {
+      it('should make a GET request to the correct endpoint', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com', {
+          reqheaders: {
+            authorization: 'Bearer test-access-token',
+          },
+        })
+          .get('/test-project-key/shipping-methods/my-shipping-method-id')
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const order = await api.getShippingMethodById({ id: 'my-shipping-method-id' })
+
+        expect(order).toEqual({ success: true })
+      })
+    })
+
+    describe('getShippingMethodByKey', () => {
+      it('should make a GET request to the correct endpoint', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com', {
+          reqheaders: {
+            authorization: 'Bearer test-access-token',
+          },
+        })
+          .get('/test-project-key/shipping-methods/key=my-shipping-method-key')
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const order = await api.getShippingMethodByKey({ key: 'my-shipping-method-key' })
+
+        expect(order).toEqual({ success: true })
+      })
+    })
+
+    describe('getShippingMethodsForCart', () => {
+      it('should make a GET request to the correct endpoint', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com', {
+          reqheaders: {
+            authorization: 'Bearer test-access-token',
+          },
+        })
+          .get('/test-project-key/shipping-methods/matching-cart')
+          .query({ limit: 10, cartId: 'my-cart-id' })
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const order = await api.getShippingMethodsForCart({ cartId: 'my-cart-id', params: { limit: 10 } })
+
+        expect(order).toEqual({ success: true })
+      })
+    })
+
+    describe('queryShippingMethods', () => {
+      it('should make a GET request to the correct endpoint', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com', {
+          reqheaders: {
+            authorization: 'Bearer test-access-token',
+          },
+        })
+          .get('/test-project-key/shipping-methods')
+          .query({ limit: 10 })
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const order = await api.queryShippingMethods({ params: { limit: 10 } })
+
+        expect(order).toEqual({ success: true })
+      })
+    })
+  })
+
   describe('graphql', () => {
     it('should call the /graphql endpoint with the data passed in, using the client access token', async () => {
       nock('https://api.europe-west1.gcp.commercetools.com', {
