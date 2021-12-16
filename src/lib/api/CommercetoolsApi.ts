@@ -1085,6 +1085,22 @@ export class CommercetoolsApi {
   }
 
   /**
+   * Login to customer's account given an (optional) anonymous access token:
+   * https://docs.commercetools.com/api/projects/me-profile#authenticate-customer-sign-in
+   */
+  loginMyAccount(
+    options: CommonStoreEnabledRequestOptions & { accessToken?: string; data: CustomerSignin },
+  ): Promise<CustomerSignInResult> {
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: this.applyStore(`/me/login`, options.storeKey),
+      method: 'POST',
+      data: options.data,
+      accessToken: options.accessToken,
+    })
+  }
+
+  /**
    * Login to customer's account:
    * https://docs.commercetools.com/api/projects/customers#authenticate-customer-sign-in
    */
