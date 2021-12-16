@@ -1442,6 +1442,28 @@ export class CommercetoolsApi {
   }
 
   /**
+   * Get shipping method by location:
+   * https://docs.commercetools.com/api/projects/shippingMethods#get-shippingmethods-for-a-location
+   */
+  getShippingMethodsForLocation(
+    options: CommonRequestOptions & { country: string; state?: string; currency?: string },
+  ): Promise<ShippingMethodPagedQueryResponse> {
+    return this.request({
+      ...this.extractCommonRequestOptions({
+        ...options,
+        params: {
+          ...options?.params,
+          country: options.country,
+          state: options.state,
+          currency: options.currency,
+        },
+      }),
+      path: `/shipping-methods/matching-location`,
+      method: 'GET',
+    })
+  }
+
+  /**
    * Get shipping methods applicable to a given cart id:
    * https://docs.commercetools.com/api/projects/shippingMethods#get-shippingmethods-for-a-cart
    */

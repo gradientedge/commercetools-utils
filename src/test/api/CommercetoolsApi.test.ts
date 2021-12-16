@@ -1941,6 +1941,45 @@ describe('CommercetoolsApi', () => {
       })
     })
 
+    describe('getShippingMethodsForLocation', () => {
+      it('should make a GET request to the correct endpoint when only sending through a country', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com', {
+          reqheaders: {
+            authorization: 'Bearer test-access-token',
+          },
+        })
+          .get('/test-project-key/shipping-methods/matching-location')
+          .query({ country: 'GB' })
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const order = await api.getShippingMethodsForLocation({ country: 'GB' })
+
+        expect(order).toEqual({ success: true })
+      })
+
+      it('should make a GET request to the correct endpoint', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com', {
+          reqheaders: {
+            authorization: 'Bearer test-access-token',
+          },
+        })
+          .get('/test-project-key/shipping-methods/matching-location')
+          .query({ limit: 10, country: 'GB', currency: 'GBP', state: 'Norfolk' })
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const order = await api.getShippingMethodsForLocation({
+          country: 'GB',
+          currency: 'GBP',
+          state: 'Norfolk',
+          params: { limit: 10 },
+        })
+
+        expect(order).toEqual({ success: true })
+      })
+    })
+
     describe('getShippingMethodsForCart', () => {
       it('should make a GET request to the correct endpoint', async () => {
         nock('https://api.europe-west1.gcp.commercetools.com', {
