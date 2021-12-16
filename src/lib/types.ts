@@ -2,6 +2,8 @@
  * The commercetools region that your API client id/secret relate to.
  * This is used to determine the authentication endpoint.
  */
+import { CommercetoolsLogger } from './logger/CommercetoolsLogger'
+
 export enum Region {
   NORTH_AMERICA_GCP = 'north_america_gcp',
   NORTH_AMERICA_AWS = 'north_america_aws',
@@ -36,7 +38,7 @@ export interface CommercetoolsBaseConfig {
   region: Region
   clientScopes: string[]
   timeoutMs?: number
-  logger?: Logger
+  logger?: CommercetoolsLoggerConfig
 
   /**
    * If provided, will be passed across to commercetools in the
@@ -47,11 +49,29 @@ export interface CommercetoolsBaseConfig {
 }
 
 /**
- * If a logger is passed to the {@see CommercetoolsBaseConfig}, then it
- * must implement the following interface.
+ * Logger options
+ *
+ * If either the debug, warn or error fields are assigned a function,
+ * then that function will be called when the API logs a message of
+ * the corresponding level.
  */
-export interface Logger {
-  debug: (message: string, data?: Record<string, unknown>) => any
-  warn: (message: string, data?: Record<string, unknown>) => any
-  error: (message: string, data?: Record<string, unknown>) => any
+export interface CommercetoolsLoggerConfig {
+  /** Function for receiving debug messages */
+  debug: CommercetoolsLoggerFunction
+  /** Function for receiving warning messages */
+  warn: CommercetoolsLoggerFunction
+  /** Function for receiving error messages */
+  error?: CommercetoolsLoggerFunction
+  /** Log level to output (defaults to 'warn') */
+  level?: CommercetoolsLoggerLevel
 }
+
+/**
+ * Log function signature
+ */
+export type CommercetoolsLoggerFunction = (message: string, data?: Record<string, unknown>) => any
+
+/**
+ * Log level enum
+ */
+export type CommercetoolsLoggerLevel = 'silent' | 'debug' | 'warn' | 'error'

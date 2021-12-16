@@ -5,7 +5,7 @@ import { CommercetoolsApiConfig, CommercetoolsRetryConfig } from './types'
 import { CommercetoolsAuth } from '../'
 import { CommercetoolsError } from '../error'
 import { REGION_URLS } from '../auth/constants'
-import { Logger, RegionEndpoints } from '../types'
+import { RegionEndpoints } from '../types'
 import { DEFAULT_REQUEST_TIMEOUT_MS } from '../constants'
 import { buildUserAgent } from '../utils'
 import {
@@ -53,6 +53,7 @@ import {
   Store,
   Type,
 } from '@commercetools/platform-sdk'
+import { CommercetoolsLogger } from '../logger/CommercetoolsLogger'
 
 interface FetchOptions<T = Record<string, any>> {
   path: string
@@ -157,7 +158,7 @@ export class CommercetoolsApi {
   /**
    * Logger implementation as provided by the user
    */
-  private readonly logger?: Logger
+  private readonly logger: CommercetoolsLogger
 
   /**
    * The default retry configuration for the instance. This can be overridden
@@ -171,7 +172,7 @@ export class CommercetoolsApi {
     this.endpoints = REGION_URLS[this.config.region]
     this.userAgent = buildUserAgent(this.config.systemIdentifier)
     this.axios = this.createAxiosInstance()
-    this.logger = config.logger
+    this.logger = new CommercetoolsLogger(config.logger)
     this.retry = config.retry || DEFAULT_RETRY_CONFIG
   }
 
@@ -1432,9 +1433,12 @@ export class CommercetoolsApi {
       const delay = this.calculateDelay(retryCount, retryConfig)
       await new Promise((resolve) => setTimeout(resolve, delay))
       try {
+        this.logger.debug('Request with config:', requestConfig)
         const response = await this.axios(requestConfig)
+        this.logger.debug('Response with data:', response.data)
         return response.data
       } catch (error) {
+        this.logger.warn('Response with data:', response.data)
         if (this.isRetryableError(error)) {
           lastError = error
         } else {
