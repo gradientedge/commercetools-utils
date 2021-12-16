@@ -1407,6 +1407,55 @@ describe('CommercetoolsApi', () => {
       })
     })
 
+    describe('loginMyAccount', () => {
+      it('should make a POST request to the correct endpoint with the expected data when an access token is passed in', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com', {
+          reqheaders: {
+            authorization: 'Bearer customer-access-token',
+          },
+        })
+          .post('/test-project-key/me/login', {
+            email: 'test@test.com',
+            password: 'testing',
+          })
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const response = await api.loginMyAccount({
+          accessToken: 'customer-access-token',
+          data: {
+            email: 'test@test.com',
+            password: 'testing',
+          },
+        })
+
+        expect(response).toEqual({ success: true })
+      })
+
+      it('should make a POST request to the correct endpoint with the expected data when an access token is not passed in', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com', {
+          reqheaders: {
+            authorization: 'Bearer test-access-token',
+          },
+        })
+          .post('/test-project-key/me/login', {
+            email: 'test@test.com',
+            password: 'testing',
+          })
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const response = await api.loginMyAccount({
+          data: {
+            email: 'test@test.com',
+            password: 'testing',
+          },
+        })
+
+        expect(response).toEqual({ success: true })
+      })
+    })
+
     describe('updateCustomerById', () => {
       it('should make a POST request to the correct endpoint with all expected data and params', async () => {
         nock('https://api.europe-west1.gcp.commercetools.com')
