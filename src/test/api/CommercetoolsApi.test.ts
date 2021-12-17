@@ -1978,6 +1978,28 @@ describe('CommercetoolsApi', () => {
 
         expect(order).toEqual({ success: true })
       })
+
+      it('should send through the customer access token when supplied', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com', {
+          reqheaders: {
+            authorization: 'Bearer my-access-token',
+          },
+        })
+          .get('/test-project-key/shipping-methods/matching-location')
+          .query({ limit: 10, country: 'GB', currency: 'GBP', state: 'Norfolk' })
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const order = await api.getShippingMethodsForLocation({
+          accessToken: 'my-access-token',
+          country: 'GB',
+          currency: 'GBP',
+          state: 'Norfolk',
+          params: { limit: 10 },
+        })
+
+        expect(order).toEqual({ success: true })
+      })
     })
 
     describe('getShippingMethodsForCart', () => {
@@ -1993,6 +2015,26 @@ describe('CommercetoolsApi', () => {
         const api = new CommercetoolsApi(defaultConfig)
 
         const order = await api.getShippingMethodsForCart({ cartId: 'my-cart-id', params: { limit: 10 } })
+
+        expect(order).toEqual({ success: true })
+      })
+
+      it('should use the customer token when supplied', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com', {
+          reqheaders: {
+            authorization: 'Bearer my-access-token',
+          },
+        })
+          .get('/test-project-key/shipping-methods/matching-cart')
+          .query({ limit: 10, cartId: 'my-cart-id' })
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const order = await api.getShippingMethodsForCart({
+          accessToken: 'my-access-token',
+          cartId: 'my-cart-id',
+          params: { limit: 10 },
+        })
 
         expect(order).toEqual({ success: true })
       })

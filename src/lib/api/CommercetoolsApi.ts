@@ -1446,7 +1446,7 @@ export class CommercetoolsApi {
    * https://docs.commercetools.com/api/projects/shippingMethods#get-shippingmethods-for-a-location
    */
   getShippingMethodsForLocation(
-    options: CommonRequestOptions & { country: string; state?: string; currency?: string },
+    options: CommonRequestOptions & { accessToken?: string; country: string; state?: string; currency?: string },
   ): Promise<ShippingMethodPagedQueryResponse> {
     return this.request({
       ...this.extractCommonRequestOptions({
@@ -1460,6 +1460,7 @@ export class CommercetoolsApi {
       }),
       path: `/shipping-methods/matching-location`,
       method: 'GET',
+      accessToken: options.accessToken,
     })
   }
 
@@ -1468,7 +1469,7 @@ export class CommercetoolsApi {
    * https://docs.commercetools.com/api/projects/shippingMethods#get-shippingmethods-for-a-cart
    */
   getShippingMethodsForCart(
-    options: CommonStoreEnabledRequestOptions & { cartId: string },
+    options: CommonStoreEnabledRequestOptions & { accessToken?: string; cartId: string },
   ): Promise<ShippingMethodPagedQueryResponse> {
     return this.request({
       ...this.extractCommonRequestOptions({
@@ -1480,6 +1481,7 @@ export class CommercetoolsApi {
       }),
       path: `/shipping-methods/matching-cart`,
       method: 'GET',
+      accessToken: options.accessToken,
     })
   }
 
