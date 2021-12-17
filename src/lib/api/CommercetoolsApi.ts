@@ -1431,6 +1431,9 @@ export class CommercetoolsApi {
 
     do {
       const delay = this.calculateDelay(retryCount, retryConfig)
+      if (delay) {
+        this.logger.debug(`Delaying request by ${delay}ms:`)
+      }
       await new Promise((resolve) => setTimeout(resolve, delay))
       try {
         this.logger.debug('Request with config:', requestConfig)
@@ -1440,6 +1443,7 @@ export class CommercetoolsApi {
       } catch (error) {
         this.logger.warn('Response with data:', response.data)
         if (this.isRetryableError(error)) {
+          this.logger.debug('Request can be retried')
           lastError = error
         } else {
           throw this.transformError(error)
@@ -1488,7 +1492,7 @@ export class CommercetoolsApi {
   }
 
   /**
-   * Calculate how long to delay before running the request.
+   * Calculate how long to delay (in milliseconds) before running the request.
    * For each retry attempt, we increase the time that we delay for.
    */
   calculateDelay(retryCount: number, retryConfig?: CommercetoolsRetryConfig) {
