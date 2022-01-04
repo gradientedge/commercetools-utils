@@ -40,6 +40,8 @@ import {
   MyOrderFromCartDraft,
   MyPayment,
   MyPaymentDraft,
+  MyPaymentPagedQueryResponse,
+  MyPaymentUpdate,
   Order,
   OrderImportDraft,
   OrderPagedQueryResponse,
@@ -683,6 +685,48 @@ export class CommercetoolsApi {
       path: '/me/payments',
       method: 'POST',
       data: options.data,
+      accessToken: options.accessToken,
+    })
+  }
+
+  /**
+   * Update a payment object using the customer's access token:
+   * https://docs.commercetools.com/api/projects/me-payments#update-mypayment
+   */
+  updateMyPaymentById(
+    options: CommonRequestOptions & { id: string; data: MyPaymentUpdate; accessToken: string },
+  ): Promise<MyPayment> {
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/me/payments/${options.id}`,
+      method: 'POST',
+      data: options.data,
+      accessToken: options.accessToken,
+    })
+  }
+
+  /**
+   * Get a payment object by id using the customer's access token:
+   * https://docs.commercetools.com/api/projects/me-payments#get-mypayment-by-id
+   */
+  getMyPaymentById(options: CommonRequestOptions & { id: string; accessToken: string }): Promise<MyPayment> {
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/me/payments/${options.id}`,
+      method: 'GET',
+      accessToken: options.accessToken,
+    })
+  }
+
+  /**
+   * Query payment objects using the customer's access token:
+   * https://docs.commercetools.com/api/projects/me-payments#query-mypayments
+   */
+  queryMyPayments(options: CommonRequestOptions & { accessToken: string }): Promise<MyPaymentPagedQueryResponse> {
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: '/me/payments',
+      method: 'GET',
       accessToken: options.accessToken,
     })
   }

@@ -1255,6 +1255,70 @@ describe('CommercetoolsApi', () => {
         expect(response).toEqual({ success: true })
       })
     })
+
+    describe('updateMyPayment', () => {
+      it('should make a POST request to the correct endpoint with the given access token and payment data', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com', {
+          reqheaders: {
+            authorization: 'Bearer my-access-token',
+          },
+        })
+          .post('/test-project-key/me/payments/my-payment-id', { version: 1, actions: [] })
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const response = await api.updateMyPaymentById({
+          accessToken: 'my-access-token',
+          id: 'my-payment-id',
+          data: { version: 1, actions: [] },
+        })
+
+        expect(response).toEqual({ success: true })
+      })
+    })
+
+    describe('getMyPaymentById', () => {
+      it('should make a GET request to the correct endpoint with the given access token', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com', {
+          reqheaders: {
+            authorization: 'Bearer my-access-token',
+          },
+        })
+          .get('/test-project-key/me/payments/my-payment-id')
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const response = await api.getMyPaymentById({
+          accessToken: 'my-access-token',
+          id: 'my-payment-id',
+        })
+
+        expect(response).toEqual({ success: true })
+      })
+    })
+
+    describe('queryMyPayments', () => {
+      it('should make a GET request to the correct endpoint with the given access token', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com', {
+          reqheaders: {
+            authorization: 'Bearer my-access-token',
+          },
+        })
+          .get('/test-project-key/me/payments')
+          .query({ where: 'test=1' })
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const response = await api.queryMyPayments({
+          accessToken: 'my-access-token',
+          params: {
+            where: 'test=1',
+          },
+        })
+
+        expect(response).toEqual({ success: true })
+      })
+    })
   })
 
   describe('Customer', () => {
