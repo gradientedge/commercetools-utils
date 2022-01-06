@@ -167,6 +167,18 @@ describe('CommercetoolsAuthApi', () => {
     })
   })
 
+  describe('logout', () => {
+    it('should call commercetools with the expected request', async () => {
+      const scope = nock('https://auth.us-east-2.aws.commercetools.com')
+        .post('/oauth/token/revoke', 'token=my-refresh-token&token_type_hint=refresh_token')
+        .reply(200, {})
+      const auth = new CommercetoolsAuthApi(defaultConfig)
+
+      await expect(auth.logout({ tokenValue: 'my-refresh-token', tokenType: 'refresh_token' })).resolves.toBeUndefined()
+      scope.isDone()
+    })
+  })
+
   describe('post', () => {
     it('should POST to the expected URL and return the result when no errors occurs', async () => {
       const scope = nock('https://auth.us-east-2.aws.commercetools.com', {

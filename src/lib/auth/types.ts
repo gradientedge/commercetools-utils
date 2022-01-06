@@ -58,6 +58,23 @@ export interface LoginOptions {
   storeKey?: string
 }
 
+/**
+ * LogoutOptions
+ *
+ * Either the {@see refreshToken} and/or {@see accessToken} must be provided.
+ */
+export interface LogoutOptions {
+  /**
+   * The token string (either an access token or refresh token)
+   */
+  tokenValue: string
+
+  /**
+   * The token type
+   */
+  tokenType: 'access_token' | 'refresh_token'
+}
+
 export interface AnonymousGrantOptions {
   /**
    * The scopes of the anonymous customer must be less than or equal to

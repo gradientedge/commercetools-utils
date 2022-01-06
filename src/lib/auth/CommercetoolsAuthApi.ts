@@ -74,6 +74,17 @@ export class CommercetoolsAuthApi {
   }
 
   /**
+   * Logout a customer:
+   * https://docs.commercetools.com/api/authorization#revoking-tokens
+   */
+  public async logout(options: { tokenType: 'access_token' | 'refresh_token'; tokenValue: string }): Promise<void> {
+    await this.post('/token/revoke', {
+      token: options.tokenValue,
+      token_type_hint: options.tokenType,
+    })
+  }
+
+  /**
    * Get a grant an anonymous customer:
    * https://docs.commercetools.com/api/authorization#tokens-for-anonymous-sessions
    */

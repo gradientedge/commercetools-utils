@@ -1,4 +1,4 @@
-import { AnonymousGrantOptions, CommercetoolsAuthConfig, LoginOptions } from './types'
+import { AnonymousGrantOptions, CommercetoolsAuthConfig, LoginOptions, LogoutOptions } from './types'
 import { CommercetoolsError } from '../'
 import { CommercetoolsGrant } from './CommercetoolsGrant'
 import { CommercetoolsAuthApi } from './CommercetoolsAuthApi'
@@ -251,5 +251,12 @@ export class CommercetoolsAuth {
     })
 
     return new CommercetoolsGrant(data)
+  }
+
+  /**
+   * Logout the customer
+   */
+  public async logout(options: LogoutOptions): Promise<void> {
+    await this.api.logout(options)
   }
 }
