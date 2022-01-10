@@ -197,6 +197,125 @@ describe('CommercetoolsAuthApi', () => {
       scope1.isDone()
       scope2.isDone()
     })
+
+    it('should throw an exception encapsulating the failed revocation call exception when one revocation call fails', async () => {
+      const scope1 = nock('https://auth.us-east-2.aws.commercetools.com')
+        .post('/oauth/token/revoke', 'token=my-refresh-token&token_type_hint=refresh_token')
+        .reply(200, {})
+      const scope2 = nock('https://auth.us-east-2.aws.commercetools.com')
+        .post('/oauth/token/revoke', 'token=my-access-token&token_type_hint=access_token')
+        .reply(500, {})
+      const auth = new CommercetoolsAuthApi(defaultConfig)
+
+      let didThrow = false
+      try {
+        await auth.logout({ accessToken: 'my-access-token', refreshToken: 'my-refresh-token' })
+      } catch (e: any) {
+        didThrow = true
+        expect(e).toBeInstanceOf(CommercetoolsError)
+        expect(e.data?.[0]).toBeInstanceOf(CommercetoolsError)
+        expect(e.data?.[0].data).toEqual({
+          request: {
+            data: {
+              token: 'my-access-token',
+              token_type_hint: 'access_token',
+            },
+            headers: {
+              Accept: 'application/json, text/plain, */*',
+              Authorization: '********',
+              'Content-Length': 50,
+              'Content-Type': 'application/x-www-form-urlencoded',
+              'User-Agent': '@gradientedge/commercetools-utils',
+            },
+            method: 'post',
+            url: 'https://auth.us-east-2.aws.commercetools.com/oauth/token/revoke',
+          },
+          response: {
+            data: {},
+            headers: {
+              'content-type': 'application/json',
+            },
+            status: 500,
+          },
+        })
+      }
+
+      expect(didThrow).toBe(true)
+      scope1.isDone()
+      scope2.isDone()
+    })
+
+    it('should throw an exception encapsulating both failed revocation call exceptions when both revocation call fails', async () => {
+      const scope1 = nock('https://auth.us-east-2.aws.commercetools.com')
+        .post('/oauth/token/revoke', 'token=my-refresh-token&token_type_hint=refresh_token')
+        .reply(500, {})
+      const scope2 = nock('https://auth.us-east-2.aws.commercetools.com')
+        .post('/oauth/token/revoke', 'token=my-access-token&token_type_hint=access_token')
+        .reply(500, {})
+      const auth = new CommercetoolsAuthApi(defaultConfig)
+
+      let didThrow = false
+      try {
+        await auth.logout({ accessToken: 'my-access-token', refreshToken: 'my-refresh-token' })
+      } catch (e: any) {
+        didThrow = true
+        expect(e).toBeInstanceOf(CommercetoolsError)
+        expect(e.data?.[0]).toBeInstanceOf(CommercetoolsError)
+        expect(e.data?.[0].data).toEqual({
+          request: {
+            data: {
+              token: 'my-access-token',
+              token_type_hint: 'access_token',
+            },
+            headers: {
+              Accept: 'application/json, text/plain, */*',
+              Authorization: '********',
+              'Content-Length': 50,
+              'Content-Type': 'application/x-www-form-urlencoded',
+              'User-Agent': '@gradientedge/commercetools-utils',
+            },
+            method: 'post',
+            url: 'https://auth.us-east-2.aws.commercetools.com/oauth/token/revoke',
+          },
+          response: {
+            data: {},
+            headers: {
+              'content-type': 'application/json',
+            },
+            status: 500,
+          },
+        })
+        expect(e.data?.[1]).toBeInstanceOf(CommercetoolsError)
+        expect(e.data?.[1].data).toEqual({
+          request: {
+            data: {
+              token: 'my-refresh-token',
+              token_type_hint: 'refresh_token',
+            },
+            headers: {
+              Accept: 'application/json, text/plain, */*',
+              Authorization: '********',
+              'Content-Length': 52,
+              'Content-Type': 'application/x-www-form-urlencoded',
+              'User-Agent': '@gradientedge/commercetools-utils',
+            },
+            method: 'post',
+            url: 'https://auth.us-east-2.aws.commercetools.com/oauth/token/revoke',
+          },
+          response: {
+            data: {},
+            headers: {
+              'content-type': 'application/json',
+            },
+            status: 500,
+          },
+        })
+      }
+
+      expect(didThrow).toBe(true)
+      scope1.isDone()
+      scope2.isDone()
+    })
   })
 
   describe('post', () => {
