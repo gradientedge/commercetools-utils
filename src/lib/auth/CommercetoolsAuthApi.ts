@@ -101,10 +101,19 @@ export class CommercetoolsAuthApi {
    * the hood (in parallel). One with the access token and one with the refresh token.
    */
   public async logout(options: LogoutOptions) {
-    await Promise.all([
+    const settlements = await Promise.allSettled([
       this.revokeToken({ tokenType: 'access_token', tokenValue: options.accessToken }),
       this.revokeToken({ tokenType: 'refresh_token', tokenValue: options.refreshToken }),
     ])
+    const errors = settlements.reduce((errors: any[], settlement) => {
+      if (settlement.status === 'rejected') {
+        errors.push(settlement.reason)
+      }
+      return errors
+    }, [])
+    if (errors.length) {
+      throw new CommercetoolsError(`Logout failed in one or more calls to the token revocation endpoint`, errors)
+    }
   }
 
   /**
