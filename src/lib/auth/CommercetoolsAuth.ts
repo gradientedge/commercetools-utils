@@ -1,4 +1,10 @@
-import { AnonymousGrantOptions, CommercetoolsAuthConfig, LoginOptions, LogoutOptions } from './types'
+import {
+  AnonymousGrantOptions,
+  CommercetoolsAuthConfig,
+  LoginOptions,
+  LogoutOptions,
+  RevokeTokenOptions,
+} from './types'
 import { CommercetoolsError } from '../'
 import { CommercetoolsGrant } from './CommercetoolsGrant'
 import { CommercetoolsAuthApi } from './CommercetoolsAuthApi'
@@ -190,7 +196,6 @@ export class CommercetoolsAuth {
     const data = await this.api.login({
       ...options,
       scopes,
-      projectKey: this.config.projectKey,
     })
 
     return new CommercetoolsGrant(data)
@@ -258,5 +263,15 @@ export class CommercetoolsAuth {
    */
   public async logout(options: LogoutOptions): Promise<void> {
     await this.api.logout(options)
+  }
+
+  /**
+   * Revoke the given access/refresh token
+   *
+   * Remember that you can only revoke tokens that were generated using
+   * this client access token.
+   */
+  public async revokeToken(options: RevokeTokenOptions): Promise<void> {
+    await this.api.revokeToken(options)
   }
 }

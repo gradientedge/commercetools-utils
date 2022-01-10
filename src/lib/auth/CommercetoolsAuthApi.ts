@@ -1,4 +1,11 @@
-import { CommercetoolsAuthApiConfig, CommercetoolsGrantResponse, GrantType } from './types'
+import {
+  CommercetoolsAuthApiConfig,
+  CommercetoolsGrantResponse,
+  GrantType,
+  LoginOptions,
+  LogoutOptions,
+  RevokeTokenOptions,
+} from './types'
 import { CommercetoolsError } from '../'
 import { scopeArrayToRequestString } from './scopes'
 import { REGION_URLS } from './constants'
@@ -64,7 +71,7 @@ export class CommercetoolsAuthApi {
    * Login the customer using the given options:
    * https://docs.commercetools.com/api/authorization#password-flow
    */
-  public async login(options: any): Promise<CommercetoolsGrantResponse> {
+  public async login(options: LoginOptions & { scopes: string[] }): Promise<CommercetoolsGrantResponse> {
     return this.post(`/${this.config.projectKey}${this.applyStore('/customers/token', options.storeKey)}`, {
       username: options.username,
       password: options.password,
@@ -74,14 +81,30 @@ export class CommercetoolsAuthApi {
   }
 
   /**
-   * Logout a customer:
+   * Revoke a refresh or access token:
    * https://docs.commercetools.com/api/authorization#revoking-tokens
+   *
+   * If you're logging out a customer, you will likely want to call this method twice;
+   * once with the access token and once with the refresh token (you can call these in parallel).
    */
-  public async logout(options: { tokenType: 'access_token' | 'refresh_token'; tokenValue: string }): Promise<void> {
+  public async revokeToken(options: RevokeTokenOptions): Promise<void> {
     await this.post('/token/revoke', {
       token: options.tokenValue,
       token_type_hint: options.tokenType,
     })
+  }
+
+  /**
+   * Log the customer out
+   *
+   * This is a convenience mechanism which makes 2 calls to the `revokeToken` method under
+   * the hood (in parallel). One with the access token and one with the refresh token.
+   */
+  public async logout(options: LogoutOptions) {
+    await Promise.all([
+      this.revokeToken({ tokenType: 'access_token', tokenValue: options.accessToken }),
+      this.revokeToken({ tokenType: 'refresh_token', tokenValue: options.refreshToken }),
+    ])
   }
 
   /**

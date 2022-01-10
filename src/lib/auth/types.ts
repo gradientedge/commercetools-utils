@@ -53,26 +53,39 @@ export interface LoginOptions {
   scopes?: string[]
 
   /**
-   * The specific store to login to
+   * The key of the store to login to
    */
   storeKey?: string
 }
 
 /**
+ * RevokeTokenOptions
+ */
+export interface RevokeTokenOptions {
+  /**
+   * The type of token to be revoked
+   */
+  tokenType: 'access_token' | 'refresh_token'
+
+  /**
+   * The value of the token to be revoked
+   */
+  tokenValue: string
+}
+
+/**
  * LogoutOptions
- *
- * Either the {@see refreshToken} and/or {@see accessToken} must be provided.
  */
 export interface LogoutOptions {
   /**
-   * The token string (either an access token or refresh token)
+   * The customer's access token
    */
-  tokenValue: string
+  accessToken: string
 
   /**
-   * The token type
+   * The customer's refresh token
    */
-  tokenType: 'access_token' | 'refresh_token'
+  refreshToken: string
 }
 
 export interface AnonymousGrantOptions {

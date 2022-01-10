@@ -167,15 +167,35 @@ describe('CommercetoolsAuthApi', () => {
     })
   })
 
-  describe('logout', () => {
+  describe('revokeToken', () => {
     it('should call commercetools with the expected request', async () => {
       const scope = nock('https://auth.us-east-2.aws.commercetools.com')
         .post('/oauth/token/revoke', 'token=my-refresh-token&token_type_hint=refresh_token')
         .reply(200, {})
       const auth = new CommercetoolsAuthApi(defaultConfig)
 
-      await expect(auth.logout({ tokenValue: 'my-refresh-token', tokenType: 'refresh_token' })).resolves.toBeUndefined()
+      await expect(
+        auth.revokeToken({ tokenValue: 'my-refresh-token', tokenType: 'refresh_token' }),
+      ).resolves.toBeUndefined()
       scope.isDone()
+    })
+  })
+
+  describe('logout', () => {
+    it('should call commercetools with the expected requests', async () => {
+      const scope1 = nock('https://auth.us-east-2.aws.commercetools.com')
+        .post('/oauth/token/revoke', 'token=my-refresh-token&token_type_hint=refresh_token')
+        .reply(200, {})
+      const scope2 = nock('https://auth.us-east-2.aws.commercetools.com')
+        .post('/oauth/token/revoke', 'token=my-access-token&token_type_hint=access_token')
+        .reply(200, {})
+      const auth = new CommercetoolsAuthApi(defaultConfig)
+
+      await expect(
+        auth.logout({ accessToken: 'my-access-token', refreshToken: 'my-refresh-token' }),
+      ).resolves.toBeUndefined()
+      scope1.isDone()
+      scope2.isDone()
     })
   })
 
