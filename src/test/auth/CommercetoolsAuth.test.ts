@@ -521,12 +521,18 @@ describe('CommercetoolsAuth', () => {
   describe('logout', () => {
     it('should make a call to revoke the given token', async () => {
       const auth = new CommercetoolsAuth(defaultConfig)
-      const scope = nock('https://auth.us-east-2.aws.commercetools.com')
-        .post('/oauth/token/revoke', `token=my-token&token_type_hint=access_token`)
+      const scope1 = nock('https://auth.us-east-2.aws.commercetools.com')
+        .post('/oauth/token/revoke', `token=my-access-token&token_type_hint=access_token`)
+        .reply(200, {})
+      const scope2 = nock('https://auth.us-east-2.aws.commercetools.com')
+        .post('/oauth/token/revoke', `token=my-refresh-token&token_type_hint=refresh_token`)
         .reply(200, {})
 
-      await expect(auth.logout({ tokenType: 'access_token', tokenValue: 'my-token' })).resolves.toBe(undefined)
-      scope.isDone()
+      await expect(auth.logout({ accessToken: 'my-access-token', refreshToken: 'my-refresh-token' })).resolves.toBe(
+        undefined,
+      )
+      scope1.isDone()
+      scope2.isDone()
     })
   })
 
