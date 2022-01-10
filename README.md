@@ -1,29 +1,29 @@
+[![semantic-release](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg)](https://github.com/semantic-release/semantic-release)
+[![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg)](http://commitizen.github.io/cz-cli/)
+
 # Gradient Edge commercetools utils
 
-# ************************
-# BETA - Not recommended for production use #
-This library is undergoing many changes, and will not be ready for public consumption until
-at least version 2. This message will be removed when the API has been stabilised. Your 
-comments and PRs are however very welcome.
-# ************************
+An easy-to-use toolkit for working with the commercetools HTTP API:
+https://docs.commercetools.com/api/
 
-An easy-to-use toolkit for working with the commercetools HTTP Authorization API:
-https://docs.commercetools.com/api/authorization.
+**Please note:** this API is being built out bit by bit. If you're looking to use a method
+that doesn't appear to exist, please either raise an issue or feel free to make the change
+yourself and raise a PR 👍
 
-For more details, see our full [API documentation](https://gradientedge.github.io/commercetools-utils/).
+See full documentation here: [API documentation](https://gradientedge.github.io/commercetools-utils/).
+
+## How does this compare to the official commercetools SDK?
+
+We think it's easier to use and less verbose. On the flip side, the 
+[official commercetools SDK](https://github.com/commercetools/commercetools-sdk-typescript) is
+more flexible and certainly more complete and up to date.
 
 ## Installation
 
-With **npm**:
+Simply install the `@gradientedge/commercetools-utils` package using your package manager, e.g.:
 
 ```shell
 npm install --save @gradientedge/commercetools-utils
-```
-
-With **yarn**:
-
-```shell
-yarn add @gradientedge/commercetools-utils
 ```
 
 ## Code examples
