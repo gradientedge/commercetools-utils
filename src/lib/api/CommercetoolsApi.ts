@@ -165,6 +165,7 @@ export class CommercetoolsApi {
   private readonly retry: CommercetoolsRetryConfig
 
   constructor(config: CommercetoolsApiConfig) {
+    CommercetoolsApi.validateConfig(config)
     this.config = config
     this.auth = new CommercetoolsAuth(config)
     this.endpoints = REGION_URLS[this.config.region]
@@ -1696,5 +1697,50 @@ export class CommercetoolsApi {
       return CommercetoolsError.fromAxiosError(lastError)
     }
     return lastError
+  }
+
+  /**
+   * Ensure that all required properties on the {@see CommercetoolsApiConfig}
+   * object have been populated. These are currently:
+   *
+   *   projectKey: string
+   *   clientId: string
+   *   clientSecret: string
+   *   region: Region
+   *   clientScopes: string[]
+   */
+  public static validateConfig(config: any) {
+    const errors: string[] = []
+    if (!config) {
+      errors.push('The config object missing or empty')
+    } else {
+      if (!config.projectKey) {
+        errors.push('The `projectKey` property is empty')
+      } else if (typeof config.projectKey !== 'string') {
+        errors.push('The `projectKey` property must be a string')
+      }
+      if (!config.clientId) {
+        errors.push('The `clientId` property is empty')
+      } else if (typeof config.clientId !== 'string') {
+        errors.push('The `clientId` property must be a string')
+      }
+      if (!config.clientSecret) {
+        errors.push('The `clientSecret` property is empty')
+      } else if (typeof config.clientSecret !== 'string') {
+        errors.push('The `clientSecret` property must be a string')
+      }
+      if (!Array.isArray(config.clientScopes)) {
+        errors.push('The `clientScopes` property must be an array')
+      } else if (config.clientScopes.length === 0) {
+        errors.push('The `clientScopes` property must have at least 1 scope defined')
+      }
+    }
+
+    if (errors.length) {
+      throw new CommercetoolsError(
+        'The configuration object passed in to the `CommercetoolsApi` constructor is not valid: \n' +
+          errors.map((error) => `• ${error}`).join('\n'),
+      )
+    }
   }
 }
