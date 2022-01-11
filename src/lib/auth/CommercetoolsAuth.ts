@@ -18,7 +18,6 @@ import { CommercetoolsAuthApi } from './CommercetoolsAuthApi'
  */
 interface Config extends CommercetoolsAuthConfig {
   clientScopes: string[]
-  customerScopes?: string[]
   refreshIfWithinSecs: number
   timeoutMs: number
   storeKey?: string

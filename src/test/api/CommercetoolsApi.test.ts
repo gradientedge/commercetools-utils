@@ -1,9 +1,9 @@
 import nock from 'nock'
-import { CommercetoolsApi, CommercetoolsError, Region } from '../../lib'
+import { CommercetoolsApi, CommercetoolsApiConfig, CommercetoolsError, Region } from '../../lib'
 import { CommercetoolsGrantResponse } from '../../lib/auth/types'
 import { CustomerUpdateAction, ProductDraft, ProductUpdateAction } from '@commercetools/platform-sdk'
 
-const defaultConfig = {
+const defaultConfig: CommercetoolsApiConfig = {
   projectKey: 'test-project-key',
   clientId: 'test-client-id',
   clientSecret: 'test-client-secret',
@@ -46,6 +46,37 @@ describe('CommercetoolsApi', () => {
       .persist()
       .post('/oauth/token', 'grant_type=client_credentials&scope=defaultClientScope1%3Atest-project-key')
       .reply(200, defaultClientGrantResponse)
+  })
+
+  describe('constructor', () => {
+    it('should set the `config` member property with the correct values', () => {
+      const api = new CommercetoolsApi({ ...defaultConfig, customerScopes: ['manage_my_profile'] })
+
+      expect(api.config).toEqual({
+        clientId: 'test-client-id',
+        clientSecret: 'test-client-secret',
+        clientScopes: ['defaultClientScope1'],
+        customerScopes: ['manage_my_profile'],
+        projectKey: 'test-project-key',
+        region: 'europe_gcp',
+        timeoutMs: 1000,
+      })
+    })
+
+    it('should set the `config` member property of the local `CommercetoolsAuth` instance with the correct values', () => {
+      const api = new CommercetoolsApi({ ...defaultConfig, customerScopes: ['manage_my_profile'] })
+
+      expect(api.auth.config).toEqual({
+        clientId: 'test-client-id',
+        clientSecret: 'test-client-secret',
+        clientScopes: ['defaultClientScope1'],
+        customerScopes: ['manage_my_profile'],
+        projectKey: 'test-project-key',
+        region: 'europe_gcp',
+        timeoutMs: 1000,
+        refreshIfWithinSecs: 1800,
+      })
+    })
   })
 
   describe('Stores', () => {
