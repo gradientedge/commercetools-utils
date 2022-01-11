@@ -77,6 +77,10 @@ describe('CommercetoolsApi', () => {
         refreshIfWithinSecs: 1800,
       })
     })
+
+    it('should bubble up the error if `validateConfig` method throws an error', () => {
+      expect(() => new CommercetoolsApi({ ...defaultConfig, projectKey: '' })).toThrowError()
+    })
   })
 
   describe('Stores', () => {
@@ -2722,6 +2726,54 @@ describe('CommercetoolsApi', () => {
       const result = api.transformError(error)
 
       expect(result).toBeInstanceOf(CommercetoolsError)
+    })
+  })
+
+  describe('validateConfig', () => {
+    it('should throw an error if the `projectKey` property is falsy', () => {
+      expect(() => CommercetoolsApi.validateConfig({ ...defaultConfig, projectKey: null })).toThrowError()
+      expect(() => CommercetoolsApi.validateConfig({ ...defaultConfig, projectKey: '' })).toThrowError()
+    })
+
+    it('should throw an error if the `projectKey` property is not a string', () => {
+      expect(() => CommercetoolsApi.validateConfig({ ...defaultConfig, projectKey: 123 })).toThrowError()
+    })
+
+    it('should throw an error if the `clientId` property is falsy', () => {
+      expect(() => CommercetoolsApi.validateConfig({ ...defaultConfig, clientId: null })).toThrowError()
+      expect(() => CommercetoolsApi.validateConfig({ ...defaultConfig, clientId: '' })).toThrowError()
+    })
+
+    it('should throw an error if the `clientId` property is not a string', () => {
+      expect(() => CommercetoolsApi.validateConfig({ ...defaultConfig, clientId: 123 })).toThrowError()
+    })
+
+    it('should throw an error if the `clientSecret` property is falsy', () => {
+      expect(() => CommercetoolsApi.validateConfig({ ...defaultConfig, clientSecret: null })).toThrowError()
+      expect(() => CommercetoolsApi.validateConfig({ ...defaultConfig, clientSecret: '' })).toThrowError()
+    })
+
+    it('should throw an error if the `clientSecret` property is not a string', () => {
+      expect(() => CommercetoolsApi.validateConfig({ ...defaultConfig, clientSecret: 123 })).toThrowError()
+    })
+
+    it('should throw an error if the `clientScopes` property is not an array', () => {
+      expect(() => CommercetoolsApi.validateConfig({ ...defaultConfig, clientScopes: 'test' })).toThrowError()
+    })
+
+    it('should throw an error if the `clientScopes` array does not contain at least one item', () => {
+      expect(() => CommercetoolsApi.validateConfig({ ...defaultConfig, clientScopes: [] })).toThrowError()
+    })
+
+    it('should not throw an error if all required properties are populated', () => {
+      expect(() =>
+        CommercetoolsApi.validateConfig({
+          clientId: 'test',
+          clientSecret: 'test',
+          clientScopes: ['manage_project'],
+          projectKey: 'test',
+        }),
+      ).not.toThrowError()
     })
   })
 })
