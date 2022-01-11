@@ -1,10 +1,10 @@
-import { CommercetoolsBaseConfig } from '../types'
 import * as https from 'https'
+import { CommercetoolsAuthConfig } from '../auth'
 
 /**
  * Configuration for constructing the {@see CommercetoolsApi} class.
  */
-export interface CommercetoolsApiConfig extends CommercetoolsBaseConfig {
+export interface CommercetoolsApiConfig extends CommercetoolsAuthConfig {
   retry?: CommercetoolsRetryConfig
   httpsAgent?: https.Agent
 }
