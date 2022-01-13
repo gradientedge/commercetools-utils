@@ -569,7 +569,7 @@ describe('CommercetoolsApi', () => {
     })
 
     describe('getProductProjectionBySlug', () => {
-      it('should make a GET request to the correct endpoint', async () => {
+      it('should make a GET request to the correct endpoint when passing a single locale', async () => {
         nock('https://api.europe-west1.gcp.commercetools.com', {
           encodedQueryParams: true,
         })
@@ -580,6 +580,32 @@ describe('CommercetoolsApi', () => {
         const product = await api.getProductProjectionBySlug({ slug: 'my-slug', languageCode: 'en' })
 
         expect(product).toEqual(singleResultItem)
+      })
+
+      it('should make a GET request to the correct endpoint when passing multiple locales', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com', {
+          encodedQueryParams: true,
+        })
+          .get('/test-project-key/product-projections?where=slug(en%3D%22my-slug%22%20or%20en-GB%3D%22my-slug%22)')
+          .reply(200, singleItemResponse)
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const product = await api.getProductProjectionBySlug({ slug: 'my-slug', languageCodes: ['en', 'en-GB'] })
+
+        expect(product).toEqual(singleResultItem)
+      })
+
+      it('should throw an error when neither the `languageCode` or `languageCodes` properties are populated ', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com', {
+          encodedQueryParams: true,
+        })
+          .get('/test-project-key/product-projections?where=slug(en%3D%22my-slug%22)')
+          .reply(200, zeroItemResponse)
+        const api = new CommercetoolsApi(defaultConfig)
+
+        await expect(api.getProductProjectionBySlug({ slug: 'my-slug' })).rejects.toMatchError(
+          new CommercetoolsError('Either the `languageCode` or `languageCodes` property must be provided'),
+        )
       })
 
       it('should throw an error when no product projection is found', async () => {
