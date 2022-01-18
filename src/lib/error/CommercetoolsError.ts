@@ -59,16 +59,20 @@ export class CommercetoolsError extends Error {
   }
 
   /**
-   * Parse the stringified JSON data back in to an object for easier viewing
+   * Parse the JSON string back in to an object for easier viewing
    */
   public static parseRequestData(config: AxiosRequestConfig) {
     let data = config?.data
     if (typeof data === 'string' && data) {
-      if (config?.headers?.['Content-Type']?.substr(0, 16) === 'application/json') {
+      let contentType = ''
+      if (typeof config?.headers?.['Content-Type'] === 'string') {
+        contentType = config?.headers?.['Content-Type']
+      }
+      if (contentType.substring(0, 16) === 'application/json') {
         try {
           data = JSON.parse(config.data)
         } catch (e) {}
-      } else if (config?.headers?.['Content-Type']?.substr(0, 33) === 'application/x-www-form-urlencoded') {
+      } else if (contentType.substring(0, 33) === 'application/x-www-form-urlencoded') {
         try {
           const searchParams = new URLSearchParams(config.data)
           const paramsObj: Record<string, string | string[]> = {}
