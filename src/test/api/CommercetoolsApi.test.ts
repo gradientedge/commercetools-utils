@@ -1297,6 +1297,86 @@ describe('CommercetoolsApi', () => {
   })
 
   describe('Payment', () => {
+    describe('createPayment', () => {
+      it('should make a POST request to the correct endpoint with the given payment data', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com', {
+          reqheaders: {
+            authorization: 'Bearer test-access-token',
+          },
+        })
+          .post('/test-project-key/payments', { amountPlanned: { centAmount: 2000, currencyCode: 'GBP' } })
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const response = await api.createPayment({
+          data: { amountPlanned: { centAmount: 2000, currencyCode: 'GBP' } },
+        })
+
+        expect(response).toEqual({ success: true })
+      })
+    })
+
+    describe('updatePayment', () => {
+      it('should make a POST request to the correct endpoint with the given access token and payment data', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com', {
+          reqheaders: {
+            authorization: 'Bearer test-access-token',
+          },
+        })
+          .post('/test-project-key/payments/payment-id', { version: 1, actions: [] })
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const response = await api.updatePaymentById({
+          id: 'payment-id',
+          data: { version: 1, actions: [] },
+        })
+
+        expect(response).toEqual({ success: true })
+      })
+    })
+
+    describe('getPaymentById', () => {
+      it('should make a GET request to the correct endpoint with the given access token', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com', {
+          reqheaders: {
+            authorization: 'Bearer test-access-token',
+          },
+        })
+          .get('/test-project-key/payments/payment-id')
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const response = await api.getPaymentById({
+          id: 'payment-id',
+        })
+
+        expect(response).toEqual({ success: true })
+      })
+    })
+
+    describe('queryPayments', () => {
+      it('should make a GET request to the correct endpoint', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com', {
+          reqheaders: {
+            authorization: 'Bearer test-access-token',
+          },
+        })
+          .get('/test-project-key/payments')
+          .query({ where: 'test=1' })
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const response = await api.queryPayments({
+          params: {
+            where: 'test=1',
+          },
+        })
+
+        expect(response).toEqual({ success: true })
+      })
+    })
+
     describe('createMyPayment', () => {
       it('should make a POST request to the correct endpoint with the given access token and payment data', async () => {
         nock('https://api.europe-west1.gcp.commercetools.com', {

@@ -46,6 +46,9 @@ import {
   OrderImportDraft,
   OrderPagedQueryResponse,
   OrderUpdate,
+  Payment,
+  PaymentPagedQueryResponse,
+  PaymentUpdate,
   Product,
   ProductDraft,
   ProductProjection,
@@ -689,6 +692,56 @@ export class CommercetoolsApi {
         ...options.params,
         version: options.version,
       },
+    })
+  }
+
+  /**
+   * Create a payment object:
+   * https://docs.commercetools.com/api/projects/payments#create-a-payment
+   */
+  createPayment(options: CommonRequestOptions & { data: MyPaymentDraft }): Promise<Payment> {
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: '/payments',
+      method: 'POST',
+      data: options.data,
+    })
+  }
+
+  /**
+   * Update a payment object by id:
+   * https://docs.commercetools.com/api/projects/payments#update-payment-by-id
+   */
+  updatePaymentById(options: CommonRequestOptions & { id: string; data: PaymentUpdate }): Promise<Payment> {
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/payments/${options.id}`,
+      method: 'POST',
+      data: options.data,
+    })
+  }
+
+  /**
+   * Get a payment object by id:
+   * https://docs.commercetools.com/api/projects/payments#get-payment-by-id
+   */
+  getPaymentById(options: CommonRequestOptions & { id: string }): Promise<Payment> {
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/payments/${options.id}`,
+      method: 'GET',
+    })
+  }
+
+  /**
+   * Query payment objects:
+   * https://docs.commercetools.com/api/projects/payments#query-payments
+   */
+  queryPayments(options: CommonRequestOptions): Promise<PaymentPagedQueryResponse> {
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: '/payments',
+      method: 'GET',
     })
   }
 
