@@ -1316,6 +1316,24 @@ describe('CommercetoolsApi', () => {
       })
     })
 
+    describe('deletePaymentById', () => {
+      it('should make a POST request to the correct endpoint', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com', {
+          reqheaders: {
+            authorization: 'Bearer test-access-token',
+          },
+        })
+          .delete('/test-project-key/payments/payment-id')
+          .query({ version: 4 })
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const response = await api.deletePaymentById({ id: 'payment-id', version: 4 })
+
+        expect(response).toEqual({ success: true })
+      })
+    })
+
     describe('updatePayment', () => {
       it('should make a POST request to the correct endpoint with the given access token and payment data', async () => {
         nock('https://api.europe-west1.gcp.commercetools.com', {

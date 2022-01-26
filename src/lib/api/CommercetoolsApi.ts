@@ -709,6 +709,22 @@ export class CommercetoolsApi {
   }
 
   /**
+   * Delete a payment object by id:
+   * https://docs.commercetools.com/api/projects/payments#delete-payment-by-id
+   */
+  deletePaymentById(options: CommonRequestOptions & { id: string; version: number }): Promise<Payment> {
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/payments/${options.id}`,
+      method: 'DELETE',
+      params: {
+        ...options.params,
+        version: options.version,
+      },
+    })
+  }
+
+  /**
    * Update a payment object by id:
    * https://docs.commercetools.com/api/projects/payments#update-payment-by-id
    */
