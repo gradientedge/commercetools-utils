@@ -311,14 +311,23 @@ export class CommercetoolsApi {
    * https://docs.commercetools.com/api/projects/categories#query-categories
    */
   async getCategoryBySlug(
-    options: CommonRequestOptions & { slug: string; languageCode: string },
+    options: CommonRequestOptions & { slug: string; languageCode?: string; languageCodes?: string[] },
   ): Promise<Category | null> {
+    if (!options.languageCode && !options.languageCodes) {
+      throw new CommercetoolsError('Either the `languageCode` or `languageCodes` property must be provided')
+    }
+    const languageCodes: string[] = []
+    if (options.languageCodes) {
+      languageCodes.push(...options.languageCodes)
+    } else if (options.languageCode) {
+      languageCodes.push(options.languageCode)
+    }
     const data = await this.request({
       ...this.extractCommonRequestOptions({
         ...options,
         params: {
           ...options?.params,
-          where: `slug(${options.languageCode}="${options.slug}")`,
+          where: `slug(${languageCodes.map((code) => `${code}="${options.slug}"`).join(' or ')})`,
         },
       }),
       path: `/categories`,
