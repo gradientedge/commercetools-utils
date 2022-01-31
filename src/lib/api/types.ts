@@ -15,7 +15,7 @@ export interface CommercetoolsApiConfig extends CommercetoolsAuthConfig {
 export interface CommercetoolsRetryConfig {
   /**
    * The number of milliseconds to wait before retrying a failed request.
-   * This will be increased exponentially {@see CommercetoolsApi.calculateDelay}
+   * This will be increased exponentially {@see CommercetoolsApi.calculateDelay}.
    */
   delayMs: number
 
@@ -24,4 +24,12 @@ export interface CommercetoolsRetryConfig {
    * returning the error caught from the last failure.
    */
   maxRetries: number
+
+  /**
+   * If enabled, adds a random element to the exponential increase
+   * in retry time. See the following url for more details:
+   * https://aws.amazon.com/blogs/architecture/exponential-backoff-and-jitter/
+   * We utilise the 'full' jitter + plus an additional decaying variance.
+   */
+  jitter?: boolean
 }
