@@ -405,10 +405,10 @@ export class CommercetoolsApi {
    * Get a product projection by id
    * https://docs.commercetools.com/api/projects/productProjections#get-productprojection-by-id
    */
-  getProductProjectionById(options: CommonRequestOptions & { id: string }): Promise<ProductProjection> {
+  getProductProjectionById(options: CommonStoreEnabledRequestOptions & { id: string }): Promise<ProductProjection> {
     return this.request({
       ...this.extractCommonRequestOptions(options),
-      path: `/product-projections/${options.id}`,
+      path: this.applyStore(`/product-projections/${options.id}`, options.storeKey),
       method: 'GET',
     })
   }
@@ -417,10 +417,10 @@ export class CommercetoolsApi {
    * Get a product projection by key
    * https://docs.commercetools.com/api/projects/productProjections#get-productprojection-by-key
    */
-  getProductProjectionByKey(options: CommonRequestOptions & { key: string }): Promise<ProductProjection> {
+  getProductProjectionByKey(options: CommonStoreEnabledRequestOptions & { key: string }): Promise<ProductProjection> {
     return this.request({
       ...this.extractCommonRequestOptions(options),
-      path: `/product-projections/key=${options.key}`,
+      path: this.applyStore(`/product-projections/key=${options.key}`, options.storeKey),
       method: 'GET',
     })
   }
