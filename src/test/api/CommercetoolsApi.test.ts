@@ -723,6 +723,96 @@ describe('CommercetoolsApi', () => {
       })
     })
 
+    describe('getProductSelectionById', () => {
+      it('should make a GET request to the correct endpoint', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com')
+          .get('/test-project-key/product-selections/my-product-selection-id')
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const product = await api.getProductSelectionById({ id: 'my-product-selection-id' })
+
+        expect(product).toEqual({ success: true })
+      })
+    })
+
+    describe('getProductSelectionByKey', () => {
+      it('should make a GET request to the correct endpoint', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com')
+          .get('/test-project-key/product-selections/key=my-product-selection-key')
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const product = await api.getProductSelectionByKey({ key: 'my-product-selection-key' })
+
+        expect(product).toEqual({ success: true })
+      })
+    })
+
+    describe('queryProductSelections', () => {
+      it('should make a GET request to the correct endpoint', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com')
+          .get('/test-project-key/product-selections')
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const product = await api.queryProductSelections({})
+
+        expect(product).toEqual({ success: true })
+      })
+    })
+
+    describe('createProductSelection', () => {
+      it('should make a POST request to the correct endpoint', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com')
+          .post('/test-project-key/product-selections', { name: { en: 'finest-products' } })
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const product = await api.createProductSelection({ data: { name: { en: 'finest-products' } } })
+
+        expect(product).toEqual({ success: true })
+      })
+    })
+
+    describe('updateProductSelectionByKey', () => {
+      it('should make a POST request to the correct endpoint', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com')
+          .post('/test-project-key/product-selections/key=my-product-selection-key', {
+            version: 3,
+            actions: [
+              {
+                action: 'addProduct',
+                product: { id: 'prod12345', typeId: 'product' },
+              },
+            ],
+          })
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const product = await api.updateProductSelectionByKey({
+          key: 'my-product-selection-key',
+          version: 3,
+          actions: [{ action: 'addProduct', product: { id: 'prod12345', typeId: 'product' } }],
+        })
+
+        expect(product).toEqual({ success: true })
+      })
+    })
+
+    describe('deleteProductSelectionByKey', () => {
+      it('should make a DELETE request to the correct endpoint', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com')
+          .delete('/test-project-key/product-selections/key=my-product-selection-key&version=5')
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const product = await api.deleteProductSelectionByKey({ key: 'my-product-selection-key', version: 5 })
+
+        expect(product).toEqual({ success: true })
+      })
+    })
+
     describe('createProduct', () => {
       it('should make a POST request to the correct endpoint with all expected data and params', async () => {
         nock('https://api.europe-west1.gcp.commercetools.com')
