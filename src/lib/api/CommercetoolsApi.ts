@@ -61,14 +61,100 @@ import {
   Type,
 } from '@commercetools/platform-sdk'
 
-interface FetchOptions<T = Record<string, any>> {
+export interface FetchOptions<T = Record<string, any>> {
+  /**
+   * Path of the REST endpoint
+   *
+   * This is the absolute path, without the host/schema/port etc.
+   * You should not include your project key, as this will be
+   * automatically prepended.
+   *
+   * Example: `/product-projections`
+   *
+   * Note that if you want to create a path that takes in to account
+   * the store key that you defined in {@see CommercetoolsApiConfig}
+   * then you should use the {@see CommercetoolsApi.applyStore} method.
+   */
   path: string
+
+  /**
+   * Key/value pairs representing the HTTP headers to send
+   *
+   * You can pass in any headers you like using this property, however
+   * this is generally not necessary, as the {@see CommercetoolsApi.request}
+   * method applies all necessary headers.
+   *
+   * You should specifically avoid setting values for the following headers:
+   *
+   *  - `Authorization`
+   *  - `Content-Type`
+   *  - `X-Correlation-ID`
+   *  - `User-Agent`
+   *
+   * All of the above are set by the `CommercetoolsApi` class.
+   *
+   * Example value:
+   *
+   * ```
+   * {
+   *   ...
+   *   headers: {
+   *     'X-My-Special-Header': 'MyCustomValue'
+   *   }
+   *   ...
+   * }
+   * ```
+   */
   headers?: Record<string, string>
-  method: 'GET' | 'POST' | 'DELETE'
+
+  /**
+   * HTTP method to use when sending the request
+   */
+  method: 'GET' | 'POST' | 'DELETE' | 'HEAD'
+
+  /**
+   * Querystring parameters to send with the request
+   *
+   * Key/value pairs that are then converted in to a querystring
+   * using the `qs` npm package. See the `paramSerializer` option
+   * in {@see CommercetoolsApi.createAxiosInstance} for
+   * implementation details.
+   */
   params?: Record<string, any>
+
+  /**
+   * Plain JavaScript object containing the payload to send as JSON
+   *
+   * This object will be converted to a JSON string and sent as the body
+   * of a `POST` or `DELETE` request.
+   */
   data?: T
+
+  /**
+   * Access token to use as the value for the `Authorization` bearer token
+   *
+   * Typically this would be the access token that belongs to a customer.
+   * This must be passed in when using one of the `me` endpoints.
+   *
+   * If this property is not passed in, we fall back to using the client
+   * access token.
+   */
   accessToken?: string
+
+  /**
+   * Value to be passed in the `X-Correlation-ID` HTTP header
+   */
   correlationId?: string
+
+  /**
+   * Request retry configuration
+   *
+   * The request retry configuration can be set on the `CommercetoolsApi`
+   * instance or on a request by request basis. If no value is passed in
+   * here, we fall back to using the configuration provided when constructing
+   * the `CommercetoolsApi` instance. If no value was passed in to the
+   * constructor configuration, then no retries will take place.
+   */
   retry?: CommercetoolsRetryConfig
 }
 
@@ -1772,7 +1858,7 @@ export class CommercetoolsApi {
   /**
    * Type-guard against any additional unexpected properties being passed in.
    */
-  private extractCommonRequestOptions(options?: CommonRequestOptions): CommonRequestOptions {
+  extractCommonRequestOptions(options?: CommonRequestOptions): CommonRequestOptions {
     if (!options) {
       return {}
     }
