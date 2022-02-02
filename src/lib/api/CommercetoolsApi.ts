@@ -53,6 +53,10 @@ import {
   ProductDraft,
   ProductProjection,
   ProductProjectionPagedQueryResponse,
+  ProductSelection,
+  ProductSelectionDraft,
+  ProductSelectionPagedQueryResponse,
+  ProductSelectionUpdateAction,
   ProductType,
   ProductUpdate,
   ShippingMethod,
@@ -558,7 +562,7 @@ export class CommercetoolsApi {
    * Query product projections
    * https://docs.commercetools.com/api/projects/productProjections#query-productprojections
    */
-  queryProductProjections(options?: CommonRequestOptions): Promise<ProductProjectionPagedQueryResponse> {
+  async queryProductProjections(options?: CommonRequestOptions): Promise<ProductProjectionPagedQueryResponse> {
     return this.request({
       ...this.extractCommonRequestOptions(options),
       path: `/product-projections`,
@@ -570,11 +574,104 @@ export class CommercetoolsApi {
    * Search product projections
    * https://docs.commercetools.com/api/projects/products-search#search-productprojections
    */
-  searchProductProjections(options: CommonStoreEnabledRequestOptions): Promise<ProductProjectionPagedQueryResponse> {
+  async searchProductProjections(
+    options: CommonStoreEnabledRequestOptions,
+  ): Promise<ProductProjectionPagedQueryResponse> {
     return this.request({
       ...this.extractCommonRequestOptions(options),
       path: `/product-projections/search`,
       method: 'GET',
+    })
+  }
+
+  /**
+   * Get a product selection by id
+   * https://docs.commercetools.com/api/projects/product-selections#get-product-selection
+   */
+  async getProductSelectionById(options: CommonStoreEnabledRequestOptions & { id: string }): Promise<ProductSelection> {
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: this.applyStore(`/product-selections/${options.id}`, options.storeKey),
+      method: 'GET',
+    })
+  }
+
+  /**
+   * Get a product selection by key
+   * https://docs.commercetools.com/api/projects/product-selections#get-product-selection-by-key
+   */
+  async getProductSelectionByKey(
+    options: CommonStoreEnabledRequestOptions & { key: string },
+  ): Promise<ProductSelection> {
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: this.applyStore(`/product-selections/key=${options.key}`, options.storeKey),
+      method: 'GET',
+    })
+  }
+
+  /**
+   * Query product selections
+   * https://docs.commercetools.com/api/projects/product-selections#query-product-selections
+   */
+  async queryProductSelections(options: CommonStoreEnabledRequestOptions): Promise<ProductSelectionPagedQueryResponse> {
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/product-selections`,
+      method: 'GET',
+    })
+  }
+
+  /**
+   * Create a product selection
+   * https://docs.commercetools.com/api/projects/product-selections#create-product-selection
+   */
+  async createProductSelection(
+    options: CommonStoreEnabledRequestOptions & { data: ProductSelectionDraft },
+  ): Promise<ProductSelection> {
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/product-selections`,
+      method: 'POST',
+      data: options.data,
+    })
+  }
+
+  /**
+   * Update a product selection by key
+   * https://docs.commercetools.com/api/projects/product-selections#update-product-selection-by-key
+   */
+  async updateProductSelectionByKey(
+    options: CommonStoreEnabledRequestOptions & {
+      key: string
+      version: number
+      actions: ProductSelectionUpdateAction[]
+    },
+  ): Promise<ProductSelection> {
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/product-selections/key=${options.key}`,
+      method: 'POST',
+      data: { version: options.version, actions: options.actions },
+    })
+  }
+
+  /**
+   * Delete a product selection by key
+   * https://docs.commercetools.com/api/projects/product-selections#delete-product-selection-by-key
+   */
+  async deleteProductSelectionByKey(
+    options: CommonStoreEnabledRequestOptions & {
+      key: string
+      version: number
+      actions: ProductSelectionUpdateAction[]
+    },
+  ): Promise<ProductSelection> {
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/product-selections/key=${options.key}`,
+      method: 'DELETE',
+      data: { version: options.version, actions: options.actions },
     })
   }
 
