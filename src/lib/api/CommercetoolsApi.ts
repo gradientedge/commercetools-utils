@@ -63,6 +63,7 @@ import {
   ShippingMethodPagedQueryResponse,
   Store,
   StoreDraft,
+  StorePagedQueryResponse,
   StoreUpdate,
   Type,
 } from '@commercetools/platform-sdk'
@@ -319,7 +320,7 @@ export class CommercetoolsApi {
    * Query stores
    * https://docs.commercetools.com/api/projects/stores#get-a-store-by-key
    */
-  queryStores(options?: CommonRequestOptions): Promise<Store> {
+  queryStores(options?: CommonRequestOptions): Promise<StorePagedQueryResponse> {
     return this.request({
       ...this.extractCommonRequestOptions(options),
       path: '/stores',
