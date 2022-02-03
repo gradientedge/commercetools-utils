@@ -62,6 +62,8 @@ import {
   ShippingMethod,
   ShippingMethodPagedQueryResponse,
   Store,
+  StoreDraft,
+  StoreUpdate,
   Type,
 } from '@commercetools/platform-sdk'
 
@@ -310,6 +312,87 @@ export class CommercetoolsApi {
       ...this.extractCommonRequestOptions(options),
       path: `/stores/key=${options.key}`,
       method: 'GET',
+    })
+  }
+
+  /**
+   * Query stores
+   * https://docs.commercetools.com/api/projects/stores#get-a-store-by-key
+   */
+  queryStores(options?: CommonRequestOptions): Promise<Store> {
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: '/stores',
+      method: 'GET',
+    })
+  }
+
+  /**
+   * Create a store:
+   * https://docs.commercetools.com/api/projects/stores#create-a-store
+   */
+  createStore(options: CommonRequestOptions & { data: StoreDraft }): Promise<Store> {
+    return this.request({
+      path: `/stores`,
+      method: 'POST',
+      data: options.data,
+    })
+  }
+
+  /**
+   * Update a store by id:
+   * https://docs.commercetools.com/api/projects/stores#update-store-by-id
+   */
+  updateStoreById(options: CommonRequestOptions & { id: string; data: StoreUpdate }): Promise<Store> {
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/stores/${options.id}`,
+      method: 'POST',
+      data: options.data,
+    })
+  }
+
+  /**
+   * Update a store by key:
+   * https://docs.commercetools.com/api/projects/stores#update-store-by-key
+   */
+  updateStoreByKey(options: CommonRequestOptions & { key: string; data: StoreUpdate }): Promise<Store> {
+    return this.request({
+      path: `/stores/key=${options.key}`,
+      method: 'POST',
+      data: options.data,
+    })
+  }
+
+  /**
+   * Delete a store by id:
+   * https://docs.commercetools.com/api/projects/stores#delete-store-by-id
+   */
+  deleteStoreById(options: CommonRequestOptions & { id: string; version: number }): Promise<Store> {
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/stores/${options.id}`,
+      method: 'DELETE',
+      params: {
+        ...options.params,
+        version: options.version,
+      },
+    })
+  }
+
+  /**
+   * Delete a store by key:
+   * https://docs.commercetools.com/api/projects/stores#delete-store-by-key
+   */
+  deleteStoreByKey(options: CommonRequestOptions & { key: string; version: number }): Promise<Store> {
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/stores/key=${options.key}`,
+      method: 'DELETE',
+      params: {
+        ...options.params,
+        version: options.version,
+      },
     })
   }
 

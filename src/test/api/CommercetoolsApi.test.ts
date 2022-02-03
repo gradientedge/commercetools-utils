@@ -109,6 +109,105 @@ describe('CommercetoolsApi', () => {
         expect(product).toEqual({ success: true })
       })
     })
+
+    describe('queryStores', () => {
+      it('should make a GET request to the correct endpoint when no parameters are passed', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com', {
+          encodedQueryParams: true,
+        })
+          .get('/test-project-key/stores')
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const product = await api.queryStores()
+
+        expect(product).toEqual({ success: true })
+      })
+
+      it('should make a GET request to the correct endpoint with the passed in parameters in the querystring', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com', {
+          encodedQueryParams: true,
+        })
+          .get('/test-project-key/stores?where=name(en%3D%22test%22)')
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const product = await api.queryStores({
+          params: {
+            where: 'name(en="test")',
+          },
+        })
+
+        expect(product).toEqual({ success: true })
+      })
+    })
+
+    describe('createStore', () => {
+      it('should make a POST request to the correct endpoint with all expected data and params', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com')
+          .post('/test-project-key/stores', { key: 'test', name: { en: 'Test' } })
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const product = await api.createStore({ data: { key: 'test', name: { en: 'Test' } } })
+
+        expect(product).toEqual({ success: true })
+      })
+    })
+
+    describe('updateStoreById', () => {
+      it('should make a POST request to the correct endpoint with all expected data and params', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com')
+          .post('/test-project-key/stores/my-store-id', { version: 1, actions: [] })
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const category = await api.updateStoreById({ id: 'my-store-id', data: { version: 1, actions: [] } })
+
+        expect(category).toEqual({ success: true })
+      })
+    })
+
+    describe('updateStoreByKey', () => {
+      it('should make a POST request to the correct endpoint with all expected data and params', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com')
+          .post('/test-project-key/stores/key=my-store-key', { version: 1, actions: [] })
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const category = await api.updateStoreByKey({ key: 'my-store-key', data: { version: 1, actions: [] } })
+
+        expect(category).toEqual({ success: true })
+      })
+    })
+
+    describe('deleteStoreById', () => {
+      it('should make a DELETE request to the correct endpoint with all expected data and params', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com')
+          .delete('/test-project-key/stores/my-store-id')
+          .query({ version: 3 })
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const category = await api.deleteStoreById({ id: 'my-store-id', version: 3 })
+
+        expect(category).toEqual({ success: true })
+      })
+    })
+
+    describe('deleteStoreByKey', () => {
+      it('should make a DELETE request to the correct endpoint with all expected data and params', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com')
+          .delete('/test-project-key/stores/key=my-store-key')
+          .query({ version: 4 })
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const category = await api.deleteStoreByKey({ key: 'my-store-key', version: 4 })
+
+        expect(category).toEqual({ success: true })
+      })
+    })
   })
 
   describe('Channels', () => {
