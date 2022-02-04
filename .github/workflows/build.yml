@@ -30,6 +30,8 @@ jobs:
           clover_file: .coverage/clover.xml
           threshold_alert: 50
           threshold_warning: 60
+      - name: Publish Code Coverage
+        run: npx codecov
       - name: Compile the TypeScript code
         run: npm run build
       - name: Build the documentation
