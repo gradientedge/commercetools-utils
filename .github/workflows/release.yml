@@ -24,6 +24,8 @@ jobs:
         run: npm test
       - name: Compile the TypeScript code
         run: npm run build
+      - name: Publish Code Coverage
+        run: npx codecov
       - name: Release to npm
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
