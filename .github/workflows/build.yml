@@ -23,6 +23,13 @@ jobs:
         run: npm run lint
       - name: Run the test suite
         run: npm test
+      - name: Monitor coverage
+        uses: slavcodev/coverage-monitor-action@1.2.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          clover_file: .coverage/clover.xml
+          threshold_alert: 50
+          threshold_warning: 60
       - name: Compile the TypeScript code
         run: npm run build
       - name: Build the documentation
