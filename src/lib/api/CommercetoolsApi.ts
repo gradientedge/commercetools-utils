@@ -24,6 +24,10 @@ import {
   Customer,
   CustomerCreatePasswordResetToken,
   CustomerDraft,
+  CustomerGroup,
+  CustomerGroupDraft,
+  CustomerGroupPagedQueryResponse,
+  CustomerGroupUpdate,
   CustomerPagedQueryResponse,
   CustomerResetPassword,
   CustomerSignin,
@@ -1894,6 +1898,115 @@ export class CommercetoolsApi {
       ...this.extractCommonRequestOptions(options),
       path: `/shipping-methods`,
       method: 'GET',
+    })
+  }
+
+  /**
+   * Get an individual customer group by id:
+   * https://docs.commercetools.com/api/projects/customerGroups#get-customergroup-by-id
+   */
+  getCustomerGroupById(options: CommonRequestOptions & { id: string }): Promise<CustomerGroup> {
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/customer-groups/${options.id}`,
+      method: 'GET',
+    })
+  }
+
+  /**
+   * Get an individual customer group by key:
+   * https://docs.commercetools.com/api/projects/customerGroups#get-customergroup-by-key
+   */
+  getCustomerGroupByKey(options: CommonRequestOptions & { key: string }): Promise<CustomerGroup> {
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/customer-groups/key=${options.key}`,
+      method: 'GET',
+    })
+  }
+
+  /**
+   * Query customer groups:
+   * https://docs.commercetools.com/api/projects/customerGroups#query-customergroups
+   */
+  queryCustomerGroups(options?: CommonRequestOptions): Promise<CustomerGroupPagedQueryResponse> {
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/customer-groups`,
+      method: 'GET',
+    })
+  }
+
+  /**
+   * Create a customer group:
+   * https://docs.commercetools.com/api/projects/customerGroups#create-a-customergroup
+   */
+  createCustomerGroup(options: CommonRequestOptions & { data: CustomerGroupDraft }): Promise<CustomerGroup> {
+    return this.request({
+      path: `/customer-groups`,
+      method: 'POST',
+      data: options.data,
+    })
+  }
+
+  /**
+   * Update a customer group by key:
+   * https://docs.commercetools.com/api/projects/customerGroups#update-customergroup-by-key
+   */
+  updateCustomerGroupByKey(
+    options: CommonRequestOptions & { key: string; data: CustomerGroupUpdate },
+  ): Promise<CustomerGroup> {
+    return this.request({
+      path: `/customer-groups/key=${options.key}`,
+      method: 'POST',
+      data: options.data,
+    })
+  }
+
+  /**
+   * Update a customer group by id:
+   * https://docs.commercetools.com/api/projects/customerGroups#update-customergroup-by-id
+   */
+  updateCustomerGroupById(
+    options: CommonRequestOptions & { id: string; data: CustomerGroupUpdate },
+  ): Promise<CustomerGroup> {
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/customer-groups/${options.id}`,
+      method: 'POST',
+      data: options.data,
+    })
+  }
+
+  /**
+   * Delete a customer group by id:
+   * https://docs.commercetools.com/api/projects/customerGroups#delete-customergroup-by-id
+   */
+  deleteCustomerGroupById(options: CommonRequestOptions & { id: string; version: number }): Promise<CustomerGroup> {
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/customer-groups/${options.id}`,
+      method: 'DELETE',
+      params: {
+        ...options.params,
+        version: options.version,
+      },
+    })
+  }
+
+  /**
+   * Delete a customer group by key:
+   * https://docs.commercetools.com/api/projects/customerGroups#delete-customergroup-by-key
+   */
+  deleteCustomerGroupByKey(options: CommonRequestOptions & { key: string; version: number }): Promise<CustomerGroup> {
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/customer-groups/key=${options.key}`,
+      method: 'DELETE',
+      params: {
+        ...options.params,
+        version: options.version,
+      },
     })
   }
 
