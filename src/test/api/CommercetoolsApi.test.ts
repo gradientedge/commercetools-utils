@@ -912,6 +912,19 @@ describe('CommercetoolsApi', () => {
       })
     })
 
+    describe('getProductsInStore', () => {
+      it('should make a GET request to the correct endpoint', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com')
+          .get('/test-project-key/in-store/key=my-store-key/product-selection-assignments')
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const product = await api.queryProductsInStore({ storeKey: 'my-store-key' })
+
+        expect(product).toEqual({ success: true })
+      })
+    })
+
     describe('createProduct', () => {
       it('should make a POST request to the correct endpoint with all expected data and params', async () => {
         nock('https://api.europe-west1.gcp.commercetools.com')
