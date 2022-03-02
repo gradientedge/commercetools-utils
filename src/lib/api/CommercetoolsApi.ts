@@ -57,6 +57,7 @@ import {
   ProductDraft,
   ProductProjection,
   ProductProjectionPagedQueryResponse,
+  ProductsInStorePagedQueryResponse,
   ProductSelection,
   ProductSelectionDraft,
   ProductSelectionPagedQueryResponse,
@@ -754,6 +755,18 @@ export class CommercetoolsApi {
       ...this.extractCommonRequestOptions(options),
       path: `/product-selections/key=${options.key}&version=${options.version}`,
       method: 'DELETE',
+    })
+  }
+
+  /**
+   * Query the products available in a store through active Product Selections
+   * https://docs.commercetools.com/api/projects/product-selections#query-products-available-in-a-store-through-active-product-selections
+   */
+  queryProductsInStore(options: CommonStoreEnabledRequestOptions): Promise<ProductsInStorePagedQueryResponse> {
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/in-store/key=${options.storeKey}/product-selection-assignments`,
+      method: `GET`,
     })
   }
 
