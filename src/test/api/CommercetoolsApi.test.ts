@@ -912,7 +912,7 @@ describe('CommercetoolsApi', () => {
       })
     })
 
-    describe('getProductsInStore', () => {
+    describe('queryProductsInStore', () => {
       it('should make a GET request to the correct endpoint', async () => {
         nock('https://api.europe-west1.gcp.commercetools.com')
           .get('/test-project-key/in-store/key=my-store-key/product-selection-assignments')
