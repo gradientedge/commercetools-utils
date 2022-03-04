@@ -491,7 +491,7 @@ export class CommercetoolsApi {
    */
   async getCategoryBySlug(
     options: CommonRequestOptions & { slug: string; languageCode?: string; languageCodes?: string[] },
-  ): Promise<Category | null> {
+  ): Promise<Category> {
     if (!options.languageCode && !options.languageCodes) {
       throw new CommercetoolsError('Either the `languageCode` or `languageCodes` property must be provided')
     }
