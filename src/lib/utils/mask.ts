@@ -39,7 +39,7 @@ export function maskSensitiveHeaders(data: unknown) {
 export function maskSensitiveData(data: unknown, propertyNames: string[], mask = DEFAULT_MASKING_STRING) {
   if (typeof data === 'object') {
     const mutatedData = cloneDeep(data)
-    traverse(mutatedData).forEach(function () {
+    traverse(mutatedData).forEach(function (this: any) {
       if (propertyNames.includes(this.key?.toLowerCase() ?? '')) {
         this.update(mask)
       }

@@ -1,4 +1,3 @@
-import { Agent as HttpsAgent } from 'https'
 import axios, { AxiosInstance } from 'axios'
 import qs from 'qs'
 import { CommercetoolsApiConfig, CommercetoolsRetryConfig } from './types'
@@ -8,7 +7,7 @@ import { REGION_URLS } from '../auth/constants'
 import { RegionEndpoints } from '../types'
 import { DEFAULT_REQUEST_TIMEOUT_MS } from '../constants'
 import { buildUserAgent } from '../utils'
-import {
+import type {
   Cart,
   CartDiscount,
   CartDiscountPagedQueryResponse,
@@ -72,6 +71,7 @@ import {
   StoreUpdate,
   Type,
 } from '@commercetools/platform-sdk'
+import { isNode } from '../utils'
 
 export interface FetchOptions<T = Record<string, any>> {
   /**
@@ -280,20 +280,26 @@ export class CommercetoolsApi {
    * of all axios calls made by the {@see request} method.
    */
   createAxiosInstance() {
-    let agent: HttpsAgent
-    if (this.config.httpsAgent) {
-      agent = this.config.httpsAgent
-    } else {
-      agent = new HttpsAgent(DEFAULT_HTTPS_AGENT_CONFIG)
-    }
+    let agent
+    try {
+      if (this.config.httpsAgent) {
+        agent = this.config.httpsAgent
+      } else if (isNode()) {
+        const https = require('https')
+        agent = new https.Agent(DEFAULT_HTTPS_AGENT_CONFIG)
+      }
+    } catch (e) {}
+
     const instance = axios.create({
       timeout: this.config.timeoutMs || DEFAULT_REQUEST_TIMEOUT_MS,
-      paramsSerializer: function (params) {
+      paramsSerializer: function (params: any) {
         return qs.stringify(params, { arrayFormat: 'repeat' })
       },
       httpsAgent: agent,
     })
-    instance.defaults.headers.common['User-Agent'] = this.userAgent
+    if (isNode()) {
+      instance.defaults.headers.common['User-Agent'] = this.userAgent
+    }
     return instance
   }
 
