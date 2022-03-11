@@ -1,5 +1,5 @@
 package.json
-build/
+dist/
 .coverage
 docs
 tsconfig.json

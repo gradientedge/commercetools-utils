@@ -1,3 +1,3 @@
 export * from './CommercetoolsAuth'
 export * from './CommercetoolsGrant'
-export { CommercetoolsAuthConfig, AnonymousGrantOptions, GrantType, LoginOptions } from './types'
+export type { CommercetoolsAuthConfig, AnonymousGrantOptions, GrantType, LoginOptions } from './types'
