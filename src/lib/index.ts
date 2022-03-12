@@ -4,4 +4,4 @@ export * from './api'
 export { Region, type RegionEndpoints } from './types'
 export * from './utils'
 
-export * from '@commercetools/platform-sdk'
+export * from './models'

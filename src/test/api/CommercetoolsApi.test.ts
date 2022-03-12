@@ -1,7 +1,7 @@
 import nock from 'nock'
 import { CommercetoolsApi, CommercetoolsApiConfig, CommercetoolsError, Region } from '../../lib'
 import { CommercetoolsGrantResponse } from '../../lib/auth/types'
-import type { CustomerUpdateAction, ProductDraft, ProductUpdateAction } from '@commercetools/platform-sdk'
+import type { CustomerUpdateAction, ProductDraft, ProductUpdateAction } from '../../lib/models'
 import * as https from 'https'
 
 const defaultConfig: CommercetoolsApiConfig = {
