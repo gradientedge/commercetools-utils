@@ -23,7 +23,7 @@ jobs:
       - name: Run the test suite
         run: npm test
       - name: Compile the TypeScript code
-        run: npm run build
+        run: npm run package
       - name: Publish Code Coverage
         run: npx codecov
       - name: Release to npm

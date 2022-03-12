@@ -6,7 +6,7 @@ import {
   LogoutOptions,
   RevokeTokenOptions,
 } from './types'
-import { CommercetoolsError, isNode } from '../'
+import { CommercetoolsError } from '../'
 import { scopeArrayToRequestString } from './scopes'
 import { REGION_URLS } from './constants'
 import { base64EncodeForBasicAuth } from './utils'
@@ -149,7 +149,7 @@ export class CommercetoolsAuthApi {
       Authorization: `Basic ${base64EncodeForBasicAuth(this.config.clientId, this.config.clientSecret)}`,
       'Content-Type': 'application/x-www-form-urlencoded',
     }
-    if (isNode()) {
+    if (process.env.GECTU_IS_BROWSER !== '1') {
       headers['User-Agent'] = this.userAgent
     }
     try {
