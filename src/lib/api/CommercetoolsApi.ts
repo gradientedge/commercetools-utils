@@ -71,7 +71,6 @@ import type {
   StoreUpdate,
   Type,
 } from '@commercetools/platform-sdk'
-import { isNode } from '../utils'
 
 export interface FetchOptions<T = Record<string, any>> {
   /**
@@ -282,11 +281,13 @@ export class CommercetoolsApi {
   createAxiosInstance() {
     let agent
     try {
-      if (this.config.httpsAgent) {
-        agent = this.config.httpsAgent
-      } else if (isNode()) {
-        const https = require('https')
-        agent = new https.Agent(DEFAULT_HTTPS_AGENT_CONFIG)
+      if (process.env.GECTU_IS_BROWSER !== '1') {
+        if (this.config.httpsAgent) {
+          agent = this.config.httpsAgent
+        } else {
+          const https = require('https')
+          agent = new https.Agent(DEFAULT_HTTPS_AGENT_CONFIG)
+        }
       }
     } catch (e) {}
 
@@ -297,7 +298,7 @@ export class CommercetoolsApi {
       },
       httpsAgent: agent,
     })
-    if (isNode()) {
+    if (process.env.GECTU_IS_BROWSER !== '1') {
       instance.defaults.headers.common['User-Agent'] = this.userAgent
     }
     return instance

@@ -32,7 +32,7 @@ jobs:
           threshold_warning: 60
       - name: Publish Code Coverage
         run: npx codecov
-      - name: Compile the TypeScript code
-        run: npm run build
+      - name: Build and package the code
+        run: npm run package
       - name: Build the documentation
         run: npm run docs

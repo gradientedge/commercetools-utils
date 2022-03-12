@@ -1,11 +1,8 @@
 import nock from 'nock'
-import { isNode } from '../../lib/utils/isNode'
 import { CommercetoolsApi, CommercetoolsApiConfig, CommercetoolsError, Region } from '../../lib'
 import { CommercetoolsGrantResponse } from '../../lib/auth/types'
 import type { CustomerUpdateAction, ProductDraft, ProductUpdateAction } from '@commercetools/platform-sdk'
-import { mocked } from 'jest-mock'
-
-jest.mock('../../lib/utils/isNode')
+import * as https from 'https'
 
 const defaultConfig: CommercetoolsApiConfig = {
   projectKey: 'test-project-key',
@@ -42,6 +39,8 @@ const zeroItemResponse = {
 }
 
 describe('CommercetoolsApi', () => {
+  let originalProcessEnv = {}
+
   beforeAll(() => {
     nock.disableNetConnect()
     nock('https://auth.europe-west1.gcp.commercetools.com', {
@@ -50,10 +49,11 @@ describe('CommercetoolsApi', () => {
       .persist()
       .post('/oauth/token', 'grant_type=client_credentials&scope=defaultClientScope1%3Atest-project-key')
       .reply(200, defaultClientGrantResponse)
+    originalProcessEnv = { ...process.env }
   })
 
   beforeEach(() => {
-    mocked(isNode).mockReturnValue(true)
+    process.env = { ...originalProcessEnv }
   })
 
   describe('constructor', () => {
@@ -2752,7 +2752,7 @@ describe('CommercetoolsApi', () => {
     })
 
     it('should not set the User-Agent header if not in a nodejs environment', () => {
-      mocked(isNode).mockReturnValue(false)
+      process.env.GECTU_IS_BROWSER = '1'
       const api = new CommercetoolsApi(defaultConfig)
 
       const result = api.createAxiosInstance()
@@ -2786,8 +2786,16 @@ describe('CommercetoolsApi', () => {
       expect(result.defaults.httpsAgent).toBeDefined()
     })
 
+    it('should set the given https agent when in a nodejs environment', () => {
+      const api = new CommercetoolsApi({ ...defaultConfig, httpsAgent: new https.Agent() })
+
+      const result = api.createAxiosInstance()
+
+      expect(result.defaults.httpsAgent).toBeDefined()
+    })
+
     it('should not set the https agent when not in a nodejs environment', () => {
-      mocked(isNode).mockReturnValue(false)
+      process.env.GECTU_IS_BROWSER = '1'
       const api = new CommercetoolsApi(defaultConfig)
 
       const result = api.createAxiosInstance()
