@@ -1,0 +1,602 @@
+import {
+  ExternalLineItemTotalPrice,
+  ExternalTaxAmountDraft,
+  ExternalTaxRateDraft,
+  ItemShippingDetailsDraft,
+  RoundingMode,
+  ShippingRateInputDraft,
+  TaxCalculationMode,
+  TaxedPrice,
+  TaxMode,
+  TaxPortionDraft,
+} from './cart'
+import { ChannelResourceIdentifier } from './channel'
+import { BaseAddress, BaseResource, CreatedBy, LastModifiedBy, LocalizedString, Money, TypedMoney } from './common'
+import { CustomerGroupResourceIdentifier } from './customer-group'
+import { DiscountCodeReference } from './discount-code'
+import { ErrorObject } from './error'
+import { MessagePayload } from './message'
+import {
+  DeliveryItem,
+  ItemState,
+  Order,
+  OrderReference,
+  OrderState,
+  ParcelDraft,
+  ParcelMeasurements,
+  PaymentState,
+  ReturnInfoDraft,
+  ReturnItemDraft,
+  ReturnPaymentState,
+  ReturnShipmentState,
+  ShipmentState,
+  StagedOrderUpdateAction,
+  TrackingData,
+} from './order'
+import { PaymentResourceIdentifier } from './payment'
+import { ShippingMethodResourceIdentifier, ShippingRateDraft } from './shipping-method'
+import { ShoppingListResourceIdentifier } from './shopping-list'
+import { StateResourceIdentifier } from './state'
+import { TaxCategoryResourceIdentifier } from './tax-category'
+import { CustomFields, CustomFieldsDraft, FieldContainer, TypeResourceIdentifier } from './type'
+export interface OrderEdit extends BaseResource {
+  readonly id: string
+  readonly version: number
+  readonly createdAt: string
+  readonly lastModifiedAt: string
+  readonly lastModifiedBy?: LastModifiedBy
+  readonly createdBy?: CreatedBy
+  readonly key?: string
+  readonly resource: OrderReference
+  readonly stagedActions: StagedOrderUpdateAction[]
+  readonly custom?: CustomFields
+  readonly result: OrderEditResult
+  readonly comment?: string
+}
+export interface OrderEditApply {
+  readonly editVersion: number
+  readonly resourceVersion: number
+}
+export interface OrderEditDraft {
+  readonly key?: string
+  readonly resource: OrderReference
+  readonly stagedActions?: StagedOrderUpdateAction[]
+  readonly custom?: CustomFieldsDraft
+  readonly comment?: string
+  readonly dryRun?: boolean
+}
+export interface OrderEditPagedQueryResponse {
+  readonly limit: number
+  readonly count: number
+  readonly total?: number
+  readonly offset: number
+  readonly results: OrderEdit[]
+}
+export interface OrderEditReference {
+  readonly typeId: 'order-edit'
+  readonly id: string
+  readonly obj?: OrderEdit
+}
+export interface OrderEditResourceIdentifier {
+  readonly typeId: 'order-edit'
+  readonly id?: string
+  readonly key?: string
+}
+export declare type OrderEditResult =
+  | OrderEditApplied
+  | OrderEditNotProcessed
+  | OrderEditPreviewFailure
+  | OrderEditPreviewSuccess
+export interface OrderEditApplied {
+  readonly type: 'Applied'
+  readonly appliedAt: string
+  readonly excerptBeforeEdit: OrderExcerpt
+  readonly excerptAfterEdit: OrderExcerpt
+}
+export interface OrderEditNotProcessed {
+  readonly type: 'NotProcessed'
+}
+export interface OrderEditPreviewFailure {
+  readonly type: 'PreviewFailure'
+  readonly errors: ErrorObject[]
+}
+export interface OrderEditPreviewSuccess {
+  readonly type: 'PreviewSuccess'
+  readonly preview: StagedOrder
+  readonly messagePayloads: MessagePayload[]
+}
+export interface OrderEditUpdate {
+  readonly version: number
+  readonly actions: OrderEditUpdateAction[]
+  readonly dryRun?: boolean
+}
+export declare type OrderEditUpdateAction =
+  | OrderEditAddStagedActionAction
+  | OrderEditSetCommentAction
+  | OrderEditSetCustomFieldAction
+  | OrderEditSetCustomTypeAction
+  | OrderEditSetKeyAction
+  | OrderEditSetStagedActionsAction
+export interface OrderExcerpt {
+  readonly totalPrice: TypedMoney
+  readonly taxedPrice?: TaxedPrice
+  readonly version: number
+}
+export interface StagedOrder extends Order {}
+export interface OrderEditAddStagedActionAction {
+  readonly action: 'addStagedAction'
+  readonly stagedAction: StagedOrderUpdateAction
+}
+export interface OrderEditSetCommentAction {
+  readonly action: 'setComment'
+  readonly comment?: string
+}
+export interface OrderEditSetCustomFieldAction {
+  readonly action: 'setCustomField'
+  readonly name: string
+  readonly value?: any
+}
+export interface OrderEditSetCustomTypeAction {
+  readonly action: 'setCustomType'
+  readonly type?: TypeResourceIdentifier
+  readonly fields?: FieldContainer
+}
+export interface OrderEditSetKeyAction {
+  readonly action: 'setKey'
+  readonly key?: string
+}
+export interface OrderEditSetStagedActionsAction {
+  readonly action: 'setStagedActions'
+  readonly stagedActions: StagedOrderUpdateAction[]
+}
+export interface StagedOrderAddCustomLineItemAction {
+  readonly action: 'addCustomLineItem'
+  readonly money: Money
+  readonly name: LocalizedString
+  readonly quantity?: number
+  readonly slug: string
+  readonly taxCategory?: TaxCategoryResourceIdentifier
+  readonly custom?: CustomFieldsDraft
+  readonly externalTaxRate?: ExternalTaxRateDraft
+}
+export interface StagedOrderAddDeliveryAction {
+  readonly action: 'addDelivery'
+  readonly items?: DeliveryItem[]
+  readonly address?: BaseAddress
+  readonly parcels?: ParcelDraft[]
+  readonly custom?: CustomFields
+}
+export interface StagedOrderAddDiscountCodeAction {
+  readonly action: 'addDiscountCode'
+  readonly code: string
+}
+export interface StagedOrderAddItemShippingAddressAction {
+  readonly action: 'addItemShippingAddress'
+  readonly address: BaseAddress
+}
+export interface StagedOrderAddLineItemAction {
+  readonly action: 'addLineItem'
+  readonly custom?: CustomFieldsDraft
+  readonly distributionChannel?: ChannelResourceIdentifier
+  readonly externalTaxRate?: ExternalTaxRateDraft
+  readonly productId?: string
+  readonly variantId?: number
+  readonly sku?: string
+  readonly quantity?: number
+  readonly addedAt?: string
+  readonly supplyChannel?: ChannelResourceIdentifier
+  readonly externalPrice?: Money
+  readonly externalTotalPrice?: ExternalLineItemTotalPrice
+  readonly shippingDetails?: ItemShippingDetailsDraft
+}
+export interface StagedOrderAddParcelToDeliveryAction {
+  readonly action: 'addParcelToDelivery'
+  readonly deliveryId: string
+  readonly measurements?: ParcelMeasurements
+  readonly trackingData?: TrackingData
+  readonly items?: DeliveryItem[]
+}
+export interface StagedOrderAddPaymentAction {
+  readonly action: 'addPayment'
+  readonly payment: PaymentResourceIdentifier
+}
+export interface StagedOrderAddReturnInfoAction {
+  readonly action: 'addReturnInfo'
+  readonly returnTrackingId?: string
+  readonly items: ReturnItemDraft[]
+  readonly returnDate?: string
+}
+export interface StagedOrderAddShoppingListAction {
+  readonly action: 'addShoppingList'
+  readonly shoppingList: ShoppingListResourceIdentifier
+  readonly supplyChannel?: ChannelResourceIdentifier
+  readonly distributionChannel?: ChannelResourceIdentifier
+}
+export interface StagedOrderChangeCustomLineItemMoneyAction {
+  readonly action: 'changeCustomLineItemMoney'
+  readonly customLineItemId: string
+  readonly money: Money
+}
+export interface StagedOrderChangeCustomLineItemQuantityAction {
+  readonly action: 'changeCustomLineItemQuantity'
+  readonly customLineItemId: string
+  readonly quantity: number
+}
+export interface StagedOrderChangeLineItemQuantityAction {
+  readonly action: 'changeLineItemQuantity'
+  readonly lineItemId: string
+  readonly quantity: number
+  readonly externalPrice?: Money
+  readonly externalTotalPrice?: ExternalLineItemTotalPrice
+}
+export interface StagedOrderChangeOrderStateAction {
+  readonly action: 'changeOrderState'
+  readonly orderState: OrderState
+}
+export interface StagedOrderChangePaymentStateAction {
+  readonly action: 'changePaymentState'
+  readonly paymentState?: PaymentState
+}
+export interface StagedOrderChangeShipmentStateAction {
+  readonly action: 'changeShipmentState'
+  readonly shipmentState?: ShipmentState
+}
+export interface StagedOrderChangeTaxCalculationModeAction {
+  readonly action: 'changeTaxCalculationMode'
+  readonly taxCalculationMode: TaxCalculationMode
+}
+export interface StagedOrderChangeTaxModeAction {
+  readonly action: 'changeTaxMode'
+  readonly taxMode: TaxMode
+}
+export interface StagedOrderChangeTaxRoundingModeAction {
+  readonly action: 'changeTaxRoundingMode'
+  readonly taxRoundingMode: RoundingMode
+}
+export interface StagedOrderImportCustomLineItemStateAction {
+  readonly action: 'importCustomLineItemState'
+  readonly customLineItemId: string
+  readonly state: ItemState[]
+}
+export interface StagedOrderImportLineItemStateAction {
+  readonly action: 'importLineItemState'
+  readonly lineItemId: string
+  readonly state: ItemState[]
+}
+export interface StagedOrderRemoveCustomLineItemAction {
+  readonly action: 'removeCustomLineItem'
+  readonly customLineItemId: string
+}
+export interface StagedOrderRemoveDeliveryAction {
+  readonly action: 'removeDelivery'
+  readonly deliveryId: string
+}
+export interface StagedOrderRemoveDiscountCodeAction {
+  readonly action: 'removeDiscountCode'
+  readonly discountCode: DiscountCodeReference
+}
+export interface StagedOrderRemoveItemShippingAddressAction {
+  readonly action: 'removeItemShippingAddress'
+  readonly addressKey: string
+}
+export interface StagedOrderRemoveLineItemAction {
+  readonly action: 'removeLineItem'
+  readonly lineItemId: string
+  readonly quantity?: number
+  readonly externalPrice?: Money
+  readonly externalTotalPrice?: ExternalLineItemTotalPrice
+  readonly shippingDetailsToRemove?: ItemShippingDetailsDraft
+}
+export interface StagedOrderRemoveParcelFromDeliveryAction {
+  readonly action: 'removeParcelFromDelivery'
+  readonly parcelId: string
+}
+export interface StagedOrderRemovePaymentAction {
+  readonly action: 'removePayment'
+  readonly payment: PaymentResourceIdentifier
+}
+export interface StagedOrderSetBillingAddressAction {
+  readonly action: 'setBillingAddress'
+  readonly address?: BaseAddress
+}
+export interface StagedOrderSetBillingAddressCustomFieldAction {
+  readonly action: 'setBillingAddressCustomField'
+  readonly name: string
+  readonly value?: any
+}
+export interface StagedOrderSetBillingAddressCustomTypeAction {
+  readonly action: 'setBillingAddressCustomType'
+  readonly type?: TypeResourceIdentifier
+  readonly fields?: FieldContainer
+}
+export interface StagedOrderSetCountryAction {
+  readonly action: 'setCountry'
+  readonly country?: string
+}
+export interface StagedOrderSetCustomFieldAction {
+  readonly action: 'setCustomField'
+  readonly name: string
+  readonly value?: any
+}
+export interface StagedOrderSetCustomLineItemCustomFieldAction {
+  readonly action: 'setCustomLineItemCustomField'
+  readonly customLineItemId: string
+  readonly name: string
+  readonly value?: any
+}
+export interface StagedOrderSetCustomLineItemCustomTypeAction {
+  readonly action: 'setCustomLineItemCustomType'
+  readonly customLineItemId: string
+  readonly type?: TypeResourceIdentifier
+  readonly fields?: FieldContainer
+}
+export interface StagedOrderSetCustomLineItemShippingDetailsAction {
+  readonly action: 'setCustomLineItemShippingDetails'
+  readonly customLineItemId: string
+  readonly shippingDetails?: ItemShippingDetailsDraft
+}
+export interface StagedOrderSetCustomLineItemTaxAmountAction {
+  readonly action: 'setCustomLineItemTaxAmount'
+  readonly customLineItemId: string
+  readonly externalTaxAmount?: ExternalTaxAmountDraft
+}
+export interface StagedOrderSetCustomLineItemTaxRateAction {
+  readonly action: 'setCustomLineItemTaxRate'
+  readonly customLineItemId: string
+  readonly externalTaxRate?: ExternalTaxRateDraft
+}
+export interface StagedOrderSetCustomShippingMethodAction {
+  readonly action: 'setCustomShippingMethod'
+  readonly shippingMethodName: string
+  readonly shippingRate: ShippingRateDraft
+  readonly taxCategory?: TaxCategoryResourceIdentifier
+  readonly externalTaxRate?: ExternalTaxRateDraft
+}
+export interface StagedOrderSetCustomTypeAction {
+  readonly action: 'setCustomType'
+  readonly type?: TypeResourceIdentifier
+  readonly fields?: FieldContainer
+}
+export interface StagedOrderSetCustomerEmailAction {
+  readonly action: 'setCustomerEmail'
+  readonly email?: string
+}
+export interface StagedOrderSetCustomerGroupAction {
+  readonly action: 'setCustomerGroup'
+  readonly customerGroup?: CustomerGroupResourceIdentifier
+}
+export interface StagedOrderSetCustomerIdAction {
+  readonly action: 'setCustomerId'
+  readonly customerId?: string
+}
+export interface StagedOrderSetDeliveryAddressAction {
+  readonly action: 'setDeliveryAddress'
+  readonly deliveryId: string
+  readonly address?: BaseAddress
+}
+export interface StagedOrderSetDeliveryAddressCustomFieldAction {
+  readonly action: 'setDeliveryAddressCustomField'
+  readonly deliveryId: string
+  readonly name: string
+  readonly value?: any
+}
+export interface StagedOrderSetDeliveryAddressCustomTypeAction {
+  readonly action: 'setDeliveryAddressCustomType'
+  readonly deliveryId: string
+  readonly type?: TypeResourceIdentifier
+  readonly fields?: FieldContainer
+}
+export interface StagedOrderSetDeliveryCustomFieldAction {
+  readonly action: 'setDeliveryCustomField'
+  readonly deliveryId: string
+  readonly name: string
+  readonly value?: any
+}
+export interface StagedOrderSetDeliveryCustomTypeAction {
+  readonly action: 'setDeliveryCustomType'
+  readonly deliveryId: string
+  readonly type?: TypeResourceIdentifier
+  readonly fields?: FieldContainer
+}
+export interface StagedOrderSetDeliveryItemsAction {
+  readonly action: 'setDeliveryItems'
+  readonly deliveryId: string
+  readonly items: DeliveryItem[]
+}
+export interface StagedOrderSetItemShippingAddressCustomFieldAction {
+  readonly action: 'setItemShippingAddressCustomField'
+  readonly addressKey: string
+  readonly name: string
+  readonly value?: any
+}
+export interface StagedOrderSetItemShippingAddressCustomTypeAction {
+  readonly action: 'setItemShippingAddressCustomType'
+  readonly addressKey: string
+  readonly type?: TypeResourceIdentifier
+  readonly fields?: FieldContainer
+}
+export interface StagedOrderSetLineItemCustomFieldAction {
+  readonly action: 'setLineItemCustomField'
+  readonly lineItemId: string
+  readonly name: string
+  readonly value?: any
+}
+export interface StagedOrderSetLineItemCustomTypeAction {
+  readonly action: 'setLineItemCustomType'
+  readonly lineItemId: string
+  readonly type?: TypeResourceIdentifier
+  readonly fields?: FieldContainer
+}
+export interface StagedOrderSetLineItemDistributionChannelAction {
+  readonly action: 'setLineItemDistributionChannel'
+  readonly lineItemId: string
+  readonly distributionChannel?: ChannelResourceIdentifier
+}
+export interface StagedOrderSetLineItemPriceAction {
+  readonly action: 'setLineItemPrice'
+  readonly lineItemId: string
+  readonly externalPrice?: Money
+}
+export interface StagedOrderSetLineItemShippingDetailsAction {
+  readonly action: 'setLineItemShippingDetails'
+  readonly lineItemId: string
+  readonly shippingDetails?: ItemShippingDetailsDraft
+}
+export interface StagedOrderSetLineItemTaxAmountAction {
+  readonly action: 'setLineItemTaxAmount'
+  readonly lineItemId: string
+  readonly externalTaxAmount?: ExternalTaxAmountDraft
+}
+export interface StagedOrderSetLineItemTaxRateAction {
+  readonly action: 'setLineItemTaxRate'
+  readonly lineItemId: string
+  readonly externalTaxRate?: ExternalTaxRateDraft
+}
+export interface StagedOrderSetLineItemTotalPriceAction {
+  readonly action: 'setLineItemTotalPrice'
+  readonly lineItemId: string
+  readonly externalTotalPrice?: ExternalLineItemTotalPrice
+}
+export interface StagedOrderSetLocaleAction {
+  readonly action: 'setLocale'
+  readonly locale?: string
+}
+export interface StagedOrderSetOrderNumberAction {
+  readonly action: 'setOrderNumber'
+  readonly orderNumber?: string
+}
+export interface StagedOrderSetOrderTotalTaxAction {
+  readonly action: 'setOrderTotalTax'
+  readonly externalTotalGross: Money
+  readonly externalTaxPortions?: TaxPortionDraft[]
+}
+export interface StagedOrderSetParcelCustomFieldAction {
+  readonly action: 'setParcelCustomField'
+  readonly parcelId: string
+  readonly name: string
+  readonly value?: any
+}
+export interface StagedOrderSetParcelCustomTypeAction {
+  readonly action: 'setParcelCustomType'
+  readonly parcelId: string
+  readonly type?: TypeResourceIdentifier
+  readonly fields?: FieldContainer
+}
+export interface StagedOrderSetParcelItemsAction {
+  readonly action: 'setParcelItems'
+  readonly parcelId: string
+  readonly items: DeliveryItem[]
+}
+export interface StagedOrderSetParcelMeasurementsAction {
+  readonly action: 'setParcelMeasurements'
+  readonly parcelId: string
+  readonly measurements?: ParcelMeasurements
+}
+export interface StagedOrderSetParcelTrackingDataAction {
+  readonly action: 'setParcelTrackingData'
+  readonly parcelId: string
+  readonly trackingData?: TrackingData
+}
+export interface StagedOrderSetReturnInfoAction {
+  readonly action: 'setReturnInfo'
+  readonly items?: ReturnInfoDraft[]
+}
+export interface StagedOrderSetReturnItemCustomFieldAction {
+  readonly action: 'setReturnItemCustomField'
+  readonly returnItemId: string
+  readonly name: string
+  readonly value?: any
+}
+export interface StagedOrderSetReturnItemCustomTypeAction {
+  readonly action: 'setReturnItemCustomType'
+  readonly returnItemId: string
+  readonly type?: TypeResourceIdentifier
+  readonly fields?: FieldContainer
+}
+export interface StagedOrderSetReturnPaymentStateAction {
+  readonly action: 'setReturnPaymentState'
+  readonly returnItemId: string
+  readonly paymentState: ReturnPaymentState
+}
+export interface StagedOrderSetReturnShipmentStateAction {
+  readonly action: 'setReturnShipmentState'
+  readonly returnItemId: string
+  readonly shipmentState: ReturnShipmentState
+}
+export interface StagedOrderSetShippingAddressAction {
+  readonly action: 'setShippingAddress'
+  readonly address?: BaseAddress
+}
+export interface StagedOrderSetShippingAddressAndCustomShippingMethodAction {
+  readonly action: 'setShippingAddressAndCustomShippingMethod'
+  readonly address: BaseAddress
+  readonly shippingMethodName: string
+  readonly shippingRate: ShippingRateDraft
+  readonly taxCategory?: TaxCategoryResourceIdentifier
+  readonly externalTaxRate?: ExternalTaxRateDraft
+}
+export interface StagedOrderSetShippingAddressAndShippingMethodAction {
+  readonly action: 'setShippingAddressAndShippingMethod'
+  readonly address: BaseAddress
+  readonly shippingMethod?: ShippingMethodResourceIdentifier
+  readonly externalTaxRate?: ExternalTaxRateDraft
+}
+export interface StagedOrderSetShippingAddressCustomFieldAction {
+  readonly action: 'setShippingAddressCustomField'
+  readonly name: string
+  readonly value?: any
+}
+export interface StagedOrderSetShippingAddressCustomTypeAction {
+  readonly action: 'setShippingAddressCustomType'
+  readonly type?: TypeResourceIdentifier
+  readonly fields?: FieldContainer
+}
+export interface StagedOrderSetShippingMethodAction {
+  readonly action: 'setShippingMethod'
+  readonly shippingMethod?: ShippingMethodResourceIdentifier
+  readonly externalTaxRate?: ExternalTaxRateDraft
+}
+export interface StagedOrderSetShippingMethodTaxAmountAction {
+  readonly action: 'setShippingMethodTaxAmount'
+  readonly externalTaxAmount?: ExternalTaxAmountDraft
+}
+export interface StagedOrderSetShippingMethodTaxRateAction {
+  readonly action: 'setShippingMethodTaxRate'
+  readonly externalTaxRate?: ExternalTaxRateDraft
+}
+export interface StagedOrderSetShippingRateInputAction {
+  readonly action: 'setShippingRateInput'
+  readonly shippingRateInput?: ShippingRateInputDraft
+}
+export interface StagedOrderTransitionCustomLineItemStateAction {
+  readonly action: 'transitionCustomLineItemState'
+  readonly customLineItemId: string
+  readonly quantity: number
+  readonly fromState: StateResourceIdentifier
+  readonly toState: StateResourceIdentifier
+  readonly actualTransitionDate?: string
+}
+export interface StagedOrderTransitionLineItemStateAction {
+  readonly action: 'transitionLineItemState'
+  readonly lineItemId: string
+  readonly quantity: number
+  readonly fromState: StateResourceIdentifier
+  readonly toState: StateResourceIdentifier
+  readonly actualTransitionDate?: string
+}
+export interface StagedOrderTransitionStateAction {
+  readonly action: 'transitionState'
+  readonly state: StateResourceIdentifier
+  readonly force?: boolean
+}
+export interface StagedOrderUpdateItemShippingAddressAction {
+  readonly action: 'updateItemShippingAddress'
+  readonly address: BaseAddress
+}
+export interface StagedOrderUpdateSyncInfoAction {
+  readonly action: 'updateSyncInfo'
+  readonly channel: ChannelResourceIdentifier
+  readonly externalId?: string
+  readonly syncedAt?: string
+}
+//# sourceMappingURL=order-edit.d.ts.map

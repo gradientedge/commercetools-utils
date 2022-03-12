@@ -70,7 +70,7 @@ import type {
   StorePagedQueryResponse,
   StoreUpdate,
   Type,
-} from '@commercetools/platform-sdk'
+} from '../models'
 
 export interface FetchOptions<T = Record<string, any>> {
   /**
