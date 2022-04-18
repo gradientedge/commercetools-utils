@@ -39,6 +39,13 @@ export interface InventoryEntry extends BaseResource {
    */
   readonly createdBy?: CreatedBy
   /**
+   *	User-defined unique identifier for the InventoryEntry.
+   *	Keys can only contain alphanumeric characters, underscores, and hyphens.
+   *
+   *
+   */
+  readonly key?: string
+  /**
    *
    */
   readonly sku: string
@@ -79,6 +86,13 @@ export interface InventoryEntryDraft {
    *
    */
   readonly sku: string
+  /**
+   *	User-defined unique identifier for the InventoryEntry.
+   *	Keys can only contain alphanumeric characters, underscores, and hyphens.
+   *
+   *
+   */
+  readonly key?: string
   /**
    *
    */
@@ -146,6 +160,7 @@ export type InventoryEntryUpdateAction =
   | InventoryEntrySetCustomFieldAction
   | InventoryEntrySetCustomTypeAction
   | InventoryEntrySetExpectedDeliveryAction
+  | InventoryEntrySetKeyAction
   | InventoryEntrySetRestockableInDaysAction
   | InventoryEntrySetSupplyChannelAction
 export interface InventoryPagedQueryResponse {
@@ -230,6 +245,15 @@ export interface InventoryEntrySetExpectedDeliveryAction {
    *
    */
   readonly expectedDelivery?: string
+}
+export interface InventoryEntrySetKeyAction {
+  readonly action: 'setKey'
+  /**
+   *	Value to set. If empty, any existing value will be removed.
+   *
+   *
+   */
+  readonly key?: string
 }
 export interface InventoryEntrySetRestockableInDaysAction {
   readonly action: 'setRestockableInDays'

@@ -719,12 +719,6 @@ export type TypedMoney = CentPrecisionMoney | HighPrecisionMoney
 export interface CentPrecisionMoney {
   readonly type: 'centPrecision'
   /**
-   *	The currency code compliant to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
-   *
-   *
-   */
-  readonly currencyCode: string
-  /**
    *	amount in the smallest indivisible unit of a currency, such as
    *
    *	* cents for EUR and USD, pence for GBP, or centime for CHF (5 CHF is specified as 500).
@@ -733,6 +727,12 @@ export interface CentPrecisionMoney {
    *
    */
   readonly centAmount: number
+  /**
+   *	The currency code compliant to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
+   *
+   *
+   */
+  readonly currencyCode: string
   /**
    *	number of digits after the decimal separator
    *
@@ -749,12 +749,6 @@ export interface CentPrecisionMoney {
 export interface HighPrecisionMoney {
   readonly type: 'highPrecision'
   /**
-   *	The currency code compliant to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
-   *
-   *
-   */
-  readonly currencyCode: string
-  /**
    *	amount in the smallest indivisible unit of a currency, such as
    *
    *	* cents for EUR and USD, pence for GBP, or centime for CHF (5 CHF is specified as 500).
@@ -763,6 +757,12 @@ export interface HighPrecisionMoney {
    *
    */
   readonly centAmount: number
+  /**
+   *	The currency code compliant to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
+   *
+   *
+   */
+  readonly currencyCode: string
   /**
    *	number of digits after the decimal separator
    *
@@ -810,14 +810,9 @@ export interface CentPrecisionMoneyDraft {
 export interface HighPrecisionMoneyDraft {
   readonly type: 'highPrecision'
   /**
-   *	amount in the smallest indivisible unit of a currency, such as
-   *
-   *	* cents for EUR and USD, pence for GBP, or centime for CHF (5 CHF is specified as 500).
-   *	* the value in the major unit for currencies without minor units, like JPY (5 JPY is specified as 5).
-   *
    *
    */
-  readonly centAmount: number
+  readonly centAmount?: number
   /**
    *	The currency code compliant to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
    *
