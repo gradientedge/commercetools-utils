@@ -190,7 +190,7 @@ export interface MyCustomerDraft {
    *	The custom fields.
    *
    */
-  readonly custom?: CustomFields
+  readonly custom?: CustomFieldsDraft
   /**
    *
    */
@@ -483,7 +483,7 @@ export interface MyTransactionDraft {
    *	Custom Fields for the Transaction.
    *
    */
-  readonly custom?: CustomFields
+  readonly custom?: CustomFieldsDraft
 }
 export interface MyCartAddDiscountCodeAction {
   readonly action: 'addDiscountCode'
