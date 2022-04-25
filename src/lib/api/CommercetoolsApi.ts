@@ -39,6 +39,7 @@ import type {
   GraphQLRequest,
   GraphQLResponse,
   MyCartDraft,
+  MyCartUpdateAction,
   MyCustomerDraft,
   MyOrderFromCartDraft,
   MyPayment,
@@ -937,7 +938,7 @@ export class CommercetoolsApi {
    * https://docs.commercetools.com/api/projects/me-carts#update-actions
    */
   async updateMyActiveCart(
-    options: CommonStoreEnabledRequestOptions & { accessToken: string; actions: CartUpdateAction[] },
+    options: CommonStoreEnabledRequestOptions & { accessToken: string; actions: MyCartUpdateAction[] },
   ): Promise<Cart> {
     const cart = await this.getMyActiveCart(options)
     return this.request({
