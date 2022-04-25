@@ -1862,7 +1862,7 @@ describe('CommercetoolsApi', () => {
       })
     })
 
-    describe('deleteMyPayment', () => {
+    describe('deleteMyPaymentById', () => {
       it('should make a DELETE request to the correct endpoint with the given access token', async () => {
         nock('https://api.europe-west1.gcp.commercetools.com', {
           reqheaders: {
@@ -1873,7 +1873,7 @@ describe('CommercetoolsApi', () => {
           .reply(200, { success: true })
         const api = new CommercetoolsApi(defaultConfig)
 
-        const response = await api.deleteMyPayment({
+        const response = await api.deleteMyPaymentById({
           accessToken: 'my-access-token',
           id: 'my-payment-id',
           version: 1,

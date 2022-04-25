@@ -1115,7 +1115,7 @@ export class CommercetoolsApi {
    * Delete payment object using the customer's access token:
    * https://docs.commercetools.com/api/projects/me-payments#delete-mypayment
    */
-  deleteMyPayment(
+  deleteMyPaymentById(
     options: CommonRequestOptions & { id: string; version: number; accessToken: string },
   ): Promise<MyPayment> {
     return this.request({
