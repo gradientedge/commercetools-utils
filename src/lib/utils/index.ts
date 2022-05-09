@@ -1,3 +1,5 @@
+export * from './calculate-delay'
 export * from './format'
-export * from './useragent'
 export * from './mask'
+export * from './retry-on-conflict'
+export * from './useragent'
