@@ -4,11 +4,16 @@
  * For more information about the commercetools platform APIs, visit https://docs.commercetools.com/.
  */
 
-import { BaseResource, CreatedBy, LastModifiedBy, LocalizedString } from './common'
+import {
+  BaseResource,
+  CreatedBy,
+  LastModifiedBy,
+  LocalizedString,
+} from './common'
 
 export interface State extends BaseResource {
   /**
-   *	Unique ID of the State.
+   *	Platform-generated unique identifier of the State.
    *
    *
    */
@@ -44,7 +49,7 @@ export interface State extends BaseResource {
    */
   readonly createdBy?: CreatedBy
   /**
-   *	User-defined unique identifier for the State.
+   *	User-defined unique identifier of the State.
    *
    *
    */
@@ -148,7 +153,7 @@ export interface StateDraft {
  */
 export interface StatePagedQueryResponse {
   /**
-   *	Number of results requested in the query request.
+   *	Number of [results requested](/../api/general-concepts#limit).
    *
    *
    */
@@ -190,13 +195,13 @@ export interface StatePagedQueryResponse {
 export interface StateReference {
   readonly typeId: 'state'
   /**
-   *	Unique ID of the referenced [State](ctp:api:type:State).
+   *	Platform-generated unique identifier of the referenced [State](ctp:api:type:State).
    *
    *
    */
   readonly id: string
   /**
-   *	Contains the representation of the expanded State. Only present in responses to requests with [Reference Expansion](/../api/general-concepts#reference-expansion) for State.
+   *	Contains the representation of the expanded State. Only present in responses to requests with [Reference Expansion](/../api/general-concepts#reference-expansion) for States.
    *
    *
    */
@@ -209,13 +214,13 @@ export interface StateReference {
 export interface StateResourceIdentifier {
   readonly typeId: 'state'
   /**
-   *	Unique ID of the referenced [State](ctp:api:type:State). Either `id` or `key` is required.
+   *	Platform-generated unique identifier of the referenced [State](ctp:api:type:State). Either `id` or `key` is required.
    *
    *
    */
   readonly id?: string
   /**
-   *	Unique key of the referenced [State](ctp:api:type:State). Either `id` or `key` is required.
+   *	User-defined unique identifier of the referenced [State](ctp:api:type:State). Either `id` or `key` is required.
    *
    *
    */
@@ -230,7 +235,12 @@ export type StateRoleEnum = 'Return' | 'ReviewIncludedInStatistics'
  *	Resource or object type the State can be assigned to.
  *
  */
-export type StateTypeEnum = 'LineItemState' | 'OrderState' | 'PaymentState' | 'ProductState' | 'ReviewState'
+export type StateTypeEnum =
+  | 'LineItemState'
+  | 'OrderState'
+  | 'PaymentState'
+  | 'ProductState'
+  | 'ReviewState'
 export interface StateUpdate {
   /**
    *	Expected version of the State on which the changes should be applied. If the expected version does not match the actual version, a [409 Conflict](/../api/errors#409-conflict) will be returned.

@@ -8,7 +8,7 @@ import { BaseResource, CreatedBy, LastModifiedBy, Reference } from './common'
 
 export interface Extension extends BaseResource {
   /**
-   *	Unique ID of the Extension.
+   *	Platform-generated unique identifier of the Extension.
    *
    *
    */
@@ -44,8 +44,7 @@ export interface Extension extends BaseResource {
    */
   readonly createdBy?: CreatedBy
   /**
-   *	User-defined unique identifier for the Extension.
-   *	Keys can only contain alphanumeric characters, underscores, and hyphens.
+   *	User-defined unique identifier of the Extension.
    *
    *
    */
@@ -108,7 +107,6 @@ export interface AWSLambdaDestination {
 export interface ExtensionDraft {
   /**
    *	User-defined unique identifier for the Extension.
-   *	Keys can only contain alphanumeric characters, underscores, and hyphens.
    *
    *
    */
@@ -157,7 +155,7 @@ export interface ExtensionInput {
  */
 export interface ExtensionPagedQueryResponse {
   /**
-   *	Number of results requested in the query request.
+   *	Number of [results requested](/../api/general-concepts#limit).
    *
    *
    */
@@ -248,7 +246,9 @@ export interface HttpDestination {
    */
   readonly authentication?: HttpDestinationAuthentication
 }
-export type HttpDestinationAuthentication = AuthorizationHeaderAuthentication | AzureFunctionsAuthentication
+export type HttpDestinationAuthentication =
+  | AuthorizationHeaderAuthentication
+  | AzureFunctionsAuthentication
 /**
  *	The `Authorization` header will be set to the content of `headerValue`. The authentication scheme (such as `Basic` or `Bearer`) should be included in the `headerValue`.
  *

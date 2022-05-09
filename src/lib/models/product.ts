@@ -20,10 +20,16 @@ import {
   PriceDraft,
   ScopedPrice,
 } from './common'
-import { ProductTypeReference, ProductTypeResourceIdentifier } from './product-type'
+import {
+  ProductTypeReference,
+  ProductTypeResourceIdentifier,
+} from './product-type'
 import { ReviewRatingStatistics } from './review'
 import { StateReference, StateResourceIdentifier } from './state'
-import { TaxCategoryReference, TaxCategoryResourceIdentifier } from './tax-category'
+import {
+  TaxCategoryReference,
+  TaxCategoryResourceIdentifier,
+} from './tax-category'
 import { FieldContainer, TypeResourceIdentifier } from './type'
 
 export interface Attribute {
@@ -82,7 +88,10 @@ export interface FacetRange {
    */
   readonly mean: number
 }
-export type FacetResult = FilteredFacetResult | RangeFacetResult | TermFacetResult
+export type FacetResult =
+  | FilteredFacetResult
+  | RangeFacetResult
+  | TermFacetResult
 export interface FacetResults {
   [key: string]: FacetResult
 }
@@ -114,7 +123,7 @@ export interface FilteredFacetResult {
 }
 export interface Product extends BaseResource {
   /**
-   *	The unique ID of the product.
+   *	Platform-generated unique identifier of the Product.
    *
    */
   readonly id: string
@@ -144,8 +153,8 @@ export interface Product extends BaseResource {
    */
   readonly createdBy?: CreatedBy
   /**
-   *	User-specific unique identifier for the product.
-   *	*Product keys are different from product variant keys.*
+   *	User-defined unique identifier of the Product.
+   *	*Product keys are different from ProductVariant keys.*
    *
    */
   readonly key?: string
@@ -256,7 +265,7 @@ export interface ProductDraft {
    */
   readonly slug: LocalizedString
   /**
-   *	User-specific unique identifier for the product.
+   *	User-defined unique identifier for the Product.
    *
    */
   readonly key?: string
@@ -316,6 +325,8 @@ export interface ProductDraft {
 }
 export interface ProductPagedQueryResponse {
   /**
+   *	Number of [results requested](/../api/general-concepts#limit).
+   *
    *
    */
   readonly limit: number
@@ -425,6 +436,8 @@ export interface ProductProjection extends BaseResource {
 }
 export interface ProductProjectionPagedQueryResponse {
   /**
+   *	Number of [results requested](/../api/general-concepts#limit).
+   *
    *
    */
   readonly limit: number
@@ -447,6 +460,8 @@ export interface ProductProjectionPagedQueryResponse {
 }
 export interface ProductProjectionPagedSearchResponse {
   /**
+   *	Number of [results requested](/../api/general-concepts#limit).
+   *
    *
    */
   readonly limit: number
@@ -471,29 +486,39 @@ export interface ProductProjectionPagedSearchResponse {
    */
   readonly facets: FacetResults
 }
+/**
+ *	[Reference](/../api/types#reference) to a [Product](ctp:api:type:Product).
+ *
+ */
 export interface ProductReference {
   readonly typeId: 'product'
   /**
-   *	Unique ID of the referenced resource.
+   *	Platform-generated unique identifier of the referenced [Product](ctp:api:type:Product).
    *
    *
    */
   readonly id: string
   /**
+   *	Contains the representation of the expanded Product. Only present in responses to requests with [Reference Expansion](/../api/general-concepts#reference-expansion) for Products.
+   *
    *
    */
   readonly obj?: Product
 }
+/**
+ *	[ResourceIdentifier](/../api/types#resourceidentifier) to a [Product](ctp:api:type:Product).
+ *
+ */
 export interface ProductResourceIdentifier {
   readonly typeId: 'product'
   /**
-   *	Unique ID of the referenced resource. Either `id` or `key` is required.
+   *	Platform-generated unique identifier of the referenced [Product](ctp:api:type:Product). Either `id` or `key` is required.
    *
    *
    */
   readonly id?: string
   /**
-   *	Unique key of the referenced resource. Either `id` or `key` is required.
+   *	User-defined unique identifier of the referenced [Product](ctp:api:type:Product). Either `id` or `key` is required.
    *
    *
    */
@@ -558,6 +583,7 @@ export type ProductUpdateAction =
   | ProductUnpublishAction
 export interface ProductVariant {
   /**
+   *	Platform-generated sequential and unique identifier of the ProductVariant within the Product.
    *
    */
   readonly id: number
@@ -566,6 +592,9 @@ export interface ProductVariant {
    */
   readonly sku?: string
   /**
+   *	User-defined unique identifier of the ProductVariant.
+   *	*ProductVariant keys are different from Product keys.*
+   *
    *
    */
   readonly key?: string
@@ -647,6 +676,9 @@ export interface ProductVariantDraft {
    */
   readonly sku?: string
   /**
+   *	User-defined unique identifier for the ProductVariant.
+   *	*ProductVariant keys are different from Product keys.*
+   *
    *
    */
   readonly key?: string
@@ -728,7 +760,13 @@ export interface TermFacetResult {
    */
   readonly terms: FacetTerm[]
 }
-export type TermFacetResultType = 'boolean' | 'date' | 'datetime' | 'number' | 'text' | 'time'
+export type TermFacetResultType =
+  | 'boolean'
+  | 'date'
+  | 'datetime'
+  | 'number'
+  | 'text'
+  | 'time'
 export interface WhitespaceTokenizer {
   readonly type: 'whitespace'
 }

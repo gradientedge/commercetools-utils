@@ -4,13 +4,27 @@
  * For more information about the commercetools platform APIs, visit https://docs.commercetools.com/.
  */
 
-import { CartDiscountReference, CartDiscountResourceIdentifier } from './cart-discount'
-import { BaseResource, CreatedBy, LastModifiedBy, LocalizedString, Reference } from './common'
-import { CustomFields, CustomFieldsDraft, FieldContainer, TypeResourceIdentifier } from './type'
+import {
+  CartDiscountReference,
+  CartDiscountResourceIdentifier,
+} from './cart-discount'
+import {
+  BaseResource,
+  CreatedBy,
+  LastModifiedBy,
+  LocalizedString,
+  Reference,
+} from './common'
+import {
+  CustomFields,
+  CustomFieldsDraft,
+  FieldContainer,
+  TypeResourceIdentifier,
+} from './type'
 
 export interface DiscountCode extends BaseResource {
   /**
-   *	The unique ID of the discount code.
+   *	Platform-generated unique identifier of the DiscountCode.
    *
    */
   readonly id: string
@@ -47,9 +61,8 @@ export interface DiscountCode extends BaseResource {
    */
   readonly description?: LocalizedString
   /**
-   *	Unique identifier of this discount code.
-   *	This value is added to the cart
-   *	to enable the related cart discounts in the cart.
+   *	User-defined unique identifier of the DiscountCode.
+   *	It is [added to a Cart](/../api/projects/carts#add-discountcode) to enable the related CartDiscounts in that Cart.
    *
    */
   readonly code: string
@@ -124,9 +137,8 @@ export interface DiscountCodeDraft {
    */
   readonly description?: LocalizedString
   /**
-   *	Unique identifier of this discount code.
-   *	This value is added to the cart
-   *	to enable the related cart discounts in the cart.
+   *	User-defined unique identifier for the DiscountCode.
+   *	[Add it to a Cart](/../api/projects/carts#add-discountcode) to enable the related CartDiscounts in that Cart.
    *
    */
   readonly code: string
@@ -177,6 +189,8 @@ export interface DiscountCodeDraft {
 }
 export interface DiscountCodePagedQueryResponse {
   /**
+   *	Number of [results requested](/../api/general-concepts#limit).
+   *
    *
    */
   readonly limit: number
@@ -197,29 +211,39 @@ export interface DiscountCodePagedQueryResponse {
    */
   readonly results: DiscountCode[]
 }
+/**
+ *	[Reference](/../api/types#reference) to a [DiscountCode](ctp:api:type:DiscountCode).
+ *
+ */
 export interface DiscountCodeReference {
   readonly typeId: 'discount-code'
   /**
-   *	Unique ID of the referenced resource.
+   *	Platform-generated unique identifier of the referenced [DiscountCode](ctp:api:type:DiscountCode).
    *
    *
    */
   readonly id: string
   /**
+   *	Contains the representation of the expanded DiscountCode. Only present in responses to requests with [Reference Expansion](/../api/general-concepts#reference-expansion) for DiscountCodes.
+   *
    *
    */
   readonly obj?: DiscountCode
 }
+/**
+ *	[ResourceIdentifier](/../api/types#resourceidentifier) to a [DiscountCode](ctp:api:type:DiscountCode).
+ *
+ */
 export interface DiscountCodeResourceIdentifier {
   readonly typeId: 'discount-code'
   /**
-   *	Unique ID of the referenced resource. Either `id` or `key` is required.
+   *	Platform-generated unique identifier of the referenced [DiscountCode](ctp:api:type:DiscountCode). Either `id` or `key` is required.
    *
    *
    */
   readonly id?: string
   /**
-   *	Unique key of the referenced resource. Either `id` or `key` is required.
+   *	User-defined unique identifier of the referenced [DiscountCode](ctp:api:type:DiscountCode). Either `id` or `key` is required.
    *
    *
    */

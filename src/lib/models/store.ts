@@ -5,9 +5,23 @@
  */
 
 import { ChannelReference, ChannelResourceIdentifier } from './channel'
-import { BaseResource, CreatedBy, LastModifiedBy, LocalizedString, ResourceIdentifier } from './common'
-import { ProductSelectionReference, ProductSelectionResourceIdentifier } from './product-selection'
-import { CustomFields, CustomFieldsDraft, FieldContainer, TypeResourceIdentifier } from './type'
+import {
+  BaseResource,
+  CreatedBy,
+  LastModifiedBy,
+  LocalizedString,
+  ResourceIdentifier,
+} from './common'
+import {
+  ProductSelectionReference,
+  ProductSelectionResourceIdentifier,
+} from './product-selection'
+import {
+  CustomFields,
+  CustomFieldsDraft,
+  FieldContainer,
+  TypeResourceIdentifier,
+} from './type'
 
 export interface ProductSelectionSetting {
   /**
@@ -148,6 +162,8 @@ export interface StoreKeyReference {
 }
 export interface StorePagedQueryResponse {
   /**
+   *	Number of [results requested](/../api/general-concepts#limit).
+   *
    *
    */
   readonly limit: number
@@ -231,10 +247,15 @@ export interface StoreAddDistributionChannelAction {
 export interface StoreAddProductSelectionAction {
   readonly action: 'addProductSelection'
   /**
-   *	A Product Selection to be added to the current Product Selections of this Store.
+   *	Resource Identifier of a Product Selection
    *
    */
-  readonly productSelection: ProductSelectionSettingDraft
+  readonly productSelection: ProductSelectionResourceIdentifier
+  /**
+   *	If `true` all Products assigned to this Product Selection become part of the Store's assortment.
+   *
+   */
+  readonly active?: boolean
 }
 export interface StoreAddSupplyChannelAction {
   readonly action: 'addSupplyChannel'

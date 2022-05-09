@@ -9,11 +9,16 @@ import { BaseResource, CreatedBy, LastModifiedBy } from './common'
 import { CustomerReference, CustomerResourceIdentifier } from './customer'
 import { ProductReference, ProductResourceIdentifier } from './product'
 import { StateReference, StateResourceIdentifier } from './state'
-import { CustomFields, CustomFieldsDraft, FieldContainer, TypeResourceIdentifier } from './type'
+import {
+  CustomFields,
+  CustomFieldsDraft,
+  FieldContainer,
+  TypeResourceIdentifier,
+} from './type'
 
 export interface Review extends BaseResource {
   /**
-   *	The unique ID of the review.
+   *	Platform-generated unique identifier of the Review.
    *
    */
   readonly id: string
@@ -43,7 +48,7 @@ export interface Review extends BaseResource {
    */
   readonly createdBy?: CreatedBy
   /**
-   *	User-specific unique identifier for the review.
+   *	User-defined unique identifier of the Review.
    *
    */
   readonly key?: string
@@ -101,7 +106,7 @@ export interface Review extends BaseResource {
 }
 export interface ReviewDraft {
   /**
-   *	User-specific unique identifier for the review.
+   *	User-defined unique identifier for the Review.
    *
    */
   readonly key?: string
@@ -157,6 +162,8 @@ export interface ReviewDraft {
 }
 export interface ReviewPagedQueryResponse {
   /**
+   *	Number of [results requested](/../api/general-concepts#limit).
+   *
    *
    */
   readonly limit: number
@@ -207,29 +214,39 @@ export interface ReviewRatingStatistics {
    */
   readonly ratingsDistribution: any
 }
+/**
+ *	[Reference](/../api/types#reference) to a [Review](ctp:api:type:Review).
+ *
+ */
 export interface ReviewReference {
   readonly typeId: 'review'
   /**
-   *	Unique ID of the referenced resource.
+   *	Platform-generated unique identifier of the referenced [Review](ctp:api:type:Review).
    *
    *
    */
   readonly id: string
   /**
+   *	Contains the representation of the expanded Review. Only present in responses to requests with [Reference Expansion](/../api/general-concepts#reference-expansion) for Reviews.
+   *
    *
    */
   readonly obj?: Review
 }
+/**
+ *	[ResourceIdentifier](/../api/types#resourceidentifier) to a [Review](ctp:api:type:Review).
+ *
+ */
 export interface ReviewResourceIdentifier {
   readonly typeId: 'review'
   /**
-   *	Unique ID of the referenced resource. Either `id` or `key` is required.
+   *	Platform-generated unique identifier of the referenced [Review](ctp:api:type:Review). Either `id` or `key` is required.
    *
    *
    */
   readonly id?: string
   /**
-   *	Unique key of the referenced resource. Either `id` or `key` is required.
+   *	User-defined unique identifier of the referenced [Review](ctp:api:type:Review). Either `id` or `key` is required.
    *
    *
    */

@@ -47,7 +47,12 @@ import {
   TrackingData,
 } from './order'
 import { OrderEditApplied, OrderEditReference } from './order-edit'
-import { Payment, PaymentReference, Transaction, TransactionState } from './payment'
+import {
+  Payment,
+  PaymentReference,
+  Transaction,
+  TransactionState,
+} from './payment'
 import { ProductProjection, ProductReference, ProductVariant } from './product'
 import { ProductSelectionType } from './product-selection'
 import { Review } from './review'
@@ -164,6 +169,7 @@ export type Message =
 export interface CategoryCreatedMessage {
   readonly type: 'CategoryCreated'
   /**
+   *	Platform-generated unique identifier of the Message.
    *
    */
   readonly id: string
@@ -215,6 +221,7 @@ export interface CategoryCreatedMessage {
 export interface CategorySlugChangedMessage {
   readonly type: 'CategorySlugChanged'
   /**
+   *	Platform-generated unique identifier of the Message.
    *
    */
   readonly id: string
@@ -270,6 +277,7 @@ export interface CategorySlugChangedMessage {
 export interface CustomerAddressAddedMessage {
   readonly type: 'CustomerAddressAdded'
   /**
+   *	Platform-generated unique identifier of the Message.
    *
    */
   readonly id: string
@@ -321,6 +329,7 @@ export interface CustomerAddressAddedMessage {
 export interface CustomerAddressChangedMessage {
   readonly type: 'CustomerAddressChanged'
   /**
+   *	Platform-generated unique identifier of the Message.
    *
    */
   readonly id: string
@@ -372,6 +381,7 @@ export interface CustomerAddressChangedMessage {
 export interface CustomerAddressRemovedMessage {
   readonly type: 'CustomerAddressRemoved'
   /**
+   *	Platform-generated unique identifier of the Message.
    *
    */
   readonly id: string
@@ -423,6 +433,7 @@ export interface CustomerAddressRemovedMessage {
 export interface CustomerCompanyNameSetMessage {
   readonly type: 'CustomerCompanyNameSet'
   /**
+   *	Platform-generated unique identifier of the Message.
    *
    */
   readonly id: string
@@ -474,6 +485,7 @@ export interface CustomerCompanyNameSetMessage {
 export interface CustomerCreatedMessage {
   readonly type: 'CustomerCreated'
   /**
+   *	Platform-generated unique identifier of the Message.
    *
    */
   readonly id: string
@@ -525,6 +537,7 @@ export interface CustomerCreatedMessage {
 export interface CustomerDateOfBirthSetMessage {
   readonly type: 'CustomerDateOfBirthSet'
   /**
+   *	Platform-generated unique identifier of the Message.
    *
    */
   readonly id: string
@@ -576,6 +589,7 @@ export interface CustomerDateOfBirthSetMessage {
 export interface CustomerDeletedMessage {
   readonly type: 'CustomerDeleted'
   /**
+   *	Platform-generated unique identifier of the Message.
    *
    */
   readonly id: string
@@ -623,6 +637,7 @@ export interface CustomerDeletedMessage {
 export interface CustomerEmailChangedMessage {
   readonly type: 'CustomerEmailChanged'
   /**
+   *	Platform-generated unique identifier of the Message.
    *
    */
   readonly id: string
@@ -674,6 +689,7 @@ export interface CustomerEmailChangedMessage {
 export interface CustomerEmailVerifiedMessage {
   readonly type: 'CustomerEmailVerified'
   /**
+   *	Platform-generated unique identifier of the Message.
    *
    */
   readonly id: string
@@ -721,6 +737,7 @@ export interface CustomerEmailVerifiedMessage {
 export interface CustomerFirstNameSetMessage {
   readonly type: 'CustomerFirstNameSet'
   /**
+   *	Platform-generated unique identifier of the Message.
    *
    */
   readonly id: string
@@ -772,6 +789,7 @@ export interface CustomerFirstNameSetMessage {
 export interface CustomerGroupSetMessage {
   readonly type: 'CustomerGroupSet'
   /**
+   *	Platform-generated unique identifier of the Message.
    *
    */
   readonly id: string
@@ -816,7 +834,7 @@ export interface CustomerGroupSetMessage {
    */
   readonly resourceUserProvidedIdentifiers?: UserProvidedIdentifiers
   /**
-   *	[Reference](/types#reference) to a [CustomerGroup](ctp:api:type:CustomerGroup).
+   *	[Reference](/../api/types#reference) to a [CustomerGroup](ctp:api:type:CustomerGroup).
    *
    *
    */
@@ -825,6 +843,7 @@ export interface CustomerGroupSetMessage {
 export interface CustomerLastNameSetMessage {
   readonly type: 'CustomerLastNameSet'
   /**
+   *	Platform-generated unique identifier of the Message.
    *
    */
   readonly id: string
@@ -876,6 +895,7 @@ export interface CustomerLastNameSetMessage {
 export interface CustomerPasswordUpdatedMessage {
   readonly type: 'CustomerPasswordUpdated'
   /**
+   *	Platform-generated unique identifier of the Message.
    *
    */
   readonly id: string
@@ -928,6 +948,7 @@ export interface CustomerPasswordUpdatedMessage {
 export interface CustomerTitleSetMessage {
   readonly type: 'CustomerTitleSet'
   /**
+   *	Platform-generated unique identifier of the Message.
    *
    */
   readonly id: string
@@ -979,6 +1000,7 @@ export interface CustomerTitleSetMessage {
 export interface InventoryEntryCreatedMessage {
   readonly type: 'InventoryEntryCreated'
   /**
+   *	Platform-generated unique identifier of the Message.
    *
    */
   readonly id: string
@@ -1030,6 +1052,7 @@ export interface InventoryEntryCreatedMessage {
 export interface InventoryEntryDeletedMessage {
   readonly type: 'InventoryEntryDeleted'
   /**
+   *	Platform-generated unique identifier of the Message.
    *
    */
   readonly id: string
@@ -1087,6 +1110,7 @@ export interface InventoryEntryDeletedMessage {
 export interface InventoryEntryQuantitySetMessage {
   readonly type: 'InventoryEntryQuantitySet'
   /**
+   *	Platform-generated unique identifier of the Message.
    *
    */
   readonly id: string
@@ -1155,6 +1179,8 @@ export interface InventoryEntryQuantitySetMessage {
 }
 export interface MessagePagedQueryResponse {
   /**
+   *	Number of [results requested](/../api/general-concepts#limit).
+   *
    *
    */
   readonly limit: number
@@ -1253,6 +1279,7 @@ export type OrderMessage =
 export interface CustomLineItemStateTransitionMessage {
   readonly type: 'CustomLineItemStateTransition'
   /**
+   *	Platform-generated unique identifier of the Message.
    *
    */
   readonly id: string
@@ -1324,6 +1351,7 @@ export interface CustomLineItemStateTransitionMessage {
 export interface DeliveryAddedMessage {
   readonly type: 'DeliveryAdded'
   /**
+   *	Platform-generated unique identifier of the Message.
    *
    */
   readonly id: string
@@ -1375,6 +1403,7 @@ export interface DeliveryAddedMessage {
 export interface DeliveryAddressSetMessage {
   readonly type: 'DeliveryAddressSet'
   /**
+   *	Platform-generated unique identifier of the Message.
    *
    */
   readonly id: string
@@ -1434,6 +1463,7 @@ export interface DeliveryAddressSetMessage {
 export interface DeliveryItemsUpdatedMessage {
   readonly type: 'DeliveryItemsUpdated'
   /**
+   *	Platform-generated unique identifier of the Message.
    *
    */
   readonly id: string
@@ -1493,6 +1523,7 @@ export interface DeliveryItemsUpdatedMessage {
 export interface DeliveryRemovedMessage {
   readonly type: 'DeliveryRemoved'
   /**
+   *	Platform-generated unique identifier of the Message.
    *
    */
   readonly id: string
@@ -1544,6 +1575,7 @@ export interface DeliveryRemovedMessage {
 export interface LineItemStateTransitionMessage {
   readonly type: 'LineItemStateTransition'
   /**
+   *	Platform-generated unique identifier of the Message.
    *
    */
   readonly id: string
@@ -1615,6 +1647,7 @@ export interface LineItemStateTransitionMessage {
 export interface OrderBillingAddressSetMessage {
   readonly type: 'OrderBillingAddressSet'
   /**
+   *	Platform-generated unique identifier of the Message.
    *
    */
   readonly id: string
@@ -1670,6 +1703,7 @@ export interface OrderBillingAddressSetMessage {
 export interface OrderCreatedMessage {
   readonly type: 'OrderCreated'
   /**
+   *	Platform-generated unique identifier of the Message.
    *
    */
   readonly id: string
@@ -1721,6 +1755,7 @@ export interface OrderCreatedMessage {
 export interface OrderCustomLineItemDiscountSetMessage {
   readonly type: 'OrderCustomLineItemDiscountSet'
   /**
+   *	Platform-generated unique identifier of the Message.
    *
    */
   readonly id: string
@@ -1780,6 +1815,7 @@ export interface OrderCustomLineItemDiscountSetMessage {
 export interface OrderCustomerEmailSetMessage {
   readonly type: 'OrderCustomerEmailSet'
   /**
+   *	Platform-generated unique identifier of the Message.
    *
    */
   readonly id: string
@@ -1835,6 +1871,7 @@ export interface OrderCustomerEmailSetMessage {
 export interface OrderCustomerGroupSetMessage {
   readonly type: 'OrderCustomerGroupSet'
   /**
+   *	Platform-generated unique identifier of the Message.
    *
    */
   readonly id: string
@@ -1879,13 +1916,13 @@ export interface OrderCustomerGroupSetMessage {
    */
   readonly resourceUserProvidedIdentifiers?: UserProvidedIdentifiers
   /**
-   *	[Reference](/types#reference) to a [CustomerGroup](ctp:api:type:CustomerGroup).
+   *	[Reference](/../api/types#reference) to a [CustomerGroup](ctp:api:type:CustomerGroup).
    *
    *
    */
   readonly customerGroup?: CustomerGroupReference
   /**
-   *	[Reference](/types#reference) to a [CustomerGroup](ctp:api:type:CustomerGroup).
+   *	[Reference](/../api/types#reference) to a [CustomerGroup](ctp:api:type:CustomerGroup).
    *
    *
    */
@@ -1894,6 +1931,7 @@ export interface OrderCustomerGroupSetMessage {
 export interface OrderCustomerSetMessage {
   readonly type: 'OrderCustomerSet'
   /**
+   *	Platform-generated unique identifier of the Message.
    *
    */
   readonly id: string
@@ -1938,21 +1976,25 @@ export interface OrderCustomerSetMessage {
    */
   readonly resourceUserProvidedIdentifiers?: UserProvidedIdentifiers
   /**
+   *	[Reference](/../api/types#reference) to a [Customer](ctp:api:type:Customer).
+   *
    *
    */
   readonly customer?: CustomerReference
   /**
-   *	[Reference](/types#reference) to a [CustomerGroup](ctp:api:type:CustomerGroup).
+   *	[Reference](/../api/types#reference) to a [CustomerGroup](ctp:api:type:CustomerGroup).
    *
    *
    */
   readonly customerGroup?: CustomerGroupReference
   /**
+   *	[Reference](/../api/types#reference) to a [Customer](ctp:api:type:Customer).
+   *
    *
    */
   readonly oldCustomer?: CustomerReference
   /**
-   *	[Reference](/types#reference) to a [CustomerGroup](ctp:api:type:CustomerGroup).
+   *	[Reference](/../api/types#reference) to a [CustomerGroup](ctp:api:type:CustomerGroup).
    *
    *
    */
@@ -1961,6 +2003,7 @@ export interface OrderCustomerSetMessage {
 export interface OrderDeletedMessage {
   readonly type: 'OrderDeleted'
   /**
+   *	Platform-generated unique identifier of the Message.
    *
    */
   readonly id: string
@@ -2012,6 +2055,7 @@ export interface OrderDeletedMessage {
 export interface OrderDiscountCodeAddedMessage {
   readonly type: 'OrderDiscountCodeAdded'
   /**
+   *	Platform-generated unique identifier of the Message.
    *
    */
   readonly id: string
@@ -2056,6 +2100,8 @@ export interface OrderDiscountCodeAddedMessage {
    */
   readonly resourceUserProvidedIdentifiers?: UserProvidedIdentifiers
   /**
+   *	[Reference](/../api/types#reference) to a [DiscountCode](ctp:api:type:DiscountCode).
+   *
    *
    */
   readonly discountCode: DiscountCodeReference
@@ -2063,6 +2109,7 @@ export interface OrderDiscountCodeAddedMessage {
 export interface OrderDiscountCodeRemovedMessage {
   readonly type: 'OrderDiscountCodeRemoved'
   /**
+   *	Platform-generated unique identifier of the Message.
    *
    */
   readonly id: string
@@ -2107,6 +2154,8 @@ export interface OrderDiscountCodeRemovedMessage {
    */
   readonly resourceUserProvidedIdentifiers?: UserProvidedIdentifiers
   /**
+   *	[Reference](/../api/types#reference) to a [DiscountCode](ctp:api:type:DiscountCode).
+   *
    *
    */
   readonly discountCode: DiscountCodeReference
@@ -2114,6 +2163,7 @@ export interface OrderDiscountCodeRemovedMessage {
 export interface OrderDiscountCodeStateSetMessage {
   readonly type: 'OrderDiscountCodeStateSet'
   /**
+   *	Platform-generated unique identifier of the Message.
    *
    */
   readonly id: string
@@ -2158,6 +2208,8 @@ export interface OrderDiscountCodeStateSetMessage {
    */
   readonly resourceUserProvidedIdentifiers?: UserProvidedIdentifiers
   /**
+   *	[Reference](/../api/types#reference) to a [DiscountCode](ctp:api:type:DiscountCode).
+   *
    *
    */
   readonly discountCode: DiscountCodeReference
@@ -2173,6 +2225,7 @@ export interface OrderDiscountCodeStateSetMessage {
 export interface OrderEditAppliedMessage {
   readonly type: 'OrderEditApplied'
   /**
+   *	Platform-generated unique identifier of the Message.
    *
    */
   readonly id: string
@@ -2217,6 +2270,8 @@ export interface OrderEditAppliedMessage {
    */
   readonly resourceUserProvidedIdentifiers?: UserProvidedIdentifiers
   /**
+   *	[Reference](/../api/types#reference) to a [OrderEdit](ctp:api:type:OrderEdit).
+   *
    *
    */
   readonly edit: OrderEditReference
@@ -2228,6 +2283,7 @@ export interface OrderEditAppliedMessage {
 export interface OrderImportedMessage {
   readonly type: 'OrderImported'
   /**
+   *	Platform-generated unique identifier of the Message.
    *
    */
   readonly id: string
@@ -2279,6 +2335,7 @@ export interface OrderImportedMessage {
 export interface OrderLineItemAddedMessage {
   readonly type: 'OrderLineItemAdded'
   /**
+   *	Platform-generated unique identifier of the Message.
    *
    */
   readonly id: string
@@ -2334,6 +2391,7 @@ export interface OrderLineItemAddedMessage {
 export interface OrderLineItemDiscountSetMessage {
   readonly type: 'OrderLineItemDiscountSet'
   /**
+   *	Platform-generated unique identifier of the Message.
    *
    */
   readonly id: string
@@ -2400,6 +2458,7 @@ export interface OrderLineItemDiscountSetMessage {
 export interface OrderLineItemDistributionChannelSetMessage {
   readonly type: 'OrderLineItemDistributionChannelSet'
   /**
+   *	Platform-generated unique identifier of the Message.
    *
    */
   readonly id: string
@@ -2457,6 +2516,7 @@ export interface OrderLineItemDistributionChannelSetMessage {
 export interface OrderLineItemRemovedMessage {
   readonly type: 'OrderLineItemRemoved'
   /**
+   *	Platform-generated unique identifier of the Message.
    *
    */
   readonly id: string
@@ -2538,6 +2598,7 @@ export interface OrderLineItemRemovedMessage {
 export interface OrderPaymentAddedMessage {
   readonly type: 'OrderPaymentAdded'
   /**
+   *	Platform-generated unique identifier of the Message.
    *
    */
   readonly id: string
@@ -2582,6 +2643,8 @@ export interface OrderPaymentAddedMessage {
    */
   readonly resourceUserProvidedIdentifiers?: UserProvidedIdentifiers
   /**
+   *	[Reference](/../api/types#reference) to a [Payment](ctp:api:type:Payment).
+   *
    *
    */
   readonly payment: PaymentReference
@@ -2589,6 +2652,7 @@ export interface OrderPaymentAddedMessage {
 export interface OrderPaymentStateChangedMessage {
   readonly type: 'OrderPaymentStateChanged'
   /**
+   *	Platform-generated unique identifier of the Message.
    *
    */
   readonly id: string
@@ -2644,6 +2708,7 @@ export interface OrderPaymentStateChangedMessage {
 export interface OrderReturnInfoAddedMessage {
   readonly type: 'ReturnInfoAdded'
   /**
+   *	Platform-generated unique identifier of the Message.
    *
    */
   readonly id: string
@@ -2695,6 +2760,7 @@ export interface OrderReturnInfoAddedMessage {
 export interface OrderReturnInfoSetMessage {
   readonly type: 'ReturnInfoSet'
   /**
+   *	Platform-generated unique identifier of the Message.
    *
    */
   readonly id: string
@@ -2746,6 +2812,7 @@ export interface OrderReturnInfoSetMessage {
 export interface OrderReturnShipmentStateChangedMessage {
   readonly type: 'OrderReturnShipmentStateChanged'
   /**
+   *	Platform-generated unique identifier of the Message.
    *
    */
   readonly id: string
@@ -2801,6 +2868,7 @@ export interface OrderReturnShipmentStateChangedMessage {
 export interface OrderShipmentStateChangedMessage {
   readonly type: 'OrderShipmentStateChanged'
   /**
+   *	Platform-generated unique identifier of the Message.
    *
    */
   readonly id: string
@@ -2856,6 +2924,7 @@ export interface OrderShipmentStateChangedMessage {
 export interface OrderShippingAddressSetMessage {
   readonly type: 'OrderShippingAddressSet'
   /**
+   *	Platform-generated unique identifier of the Message.
    *
    */
   readonly id: string
@@ -2911,6 +2980,7 @@ export interface OrderShippingAddressSetMessage {
 export interface OrderShippingInfoSetMessage {
   readonly type: 'OrderShippingInfoSet'
   /**
+   *	Platform-generated unique identifier of the Message.
    *
    */
   readonly id: string
@@ -2966,6 +3036,7 @@ export interface OrderShippingInfoSetMessage {
 export interface OrderShippingRateInputSetMessage {
   readonly type: 'OrderShippingRateInputSet'
   /**
+   *	Platform-generated unique identifier of the Message.
    *
    */
   readonly id: string
@@ -3021,6 +3092,7 @@ export interface OrderShippingRateInputSetMessage {
 export interface OrderStateChangedMessage {
   readonly type: 'OrderStateChanged'
   /**
+   *	Platform-generated unique identifier of the Message.
    *
    */
   readonly id: string
@@ -3076,6 +3148,7 @@ export interface OrderStateChangedMessage {
 export interface OrderStateTransitionMessage {
   readonly type: 'OrderStateTransition'
   /**
+   *	Platform-generated unique identifier of the Message.
    *
    */
   readonly id: string
@@ -3139,6 +3212,7 @@ export interface OrderStateTransitionMessage {
 export interface OrderStoreSetMessage {
   readonly type: 'OrderStoreSet'
   /**
+   *	Platform-generated unique identifier of the Message.
    *
    */
   readonly id: string
@@ -3190,6 +3264,7 @@ export interface OrderStoreSetMessage {
 export interface ParcelAddedToDeliveryMessage {
   readonly type: 'ParcelAddedToDelivery'
   /**
+   *	Platform-generated unique identifier of the Message.
    *
    */
   readonly id: string
@@ -3245,6 +3320,7 @@ export interface ParcelAddedToDeliveryMessage {
 export interface ParcelItemsUpdatedMessage {
   readonly type: 'ParcelItemsUpdated'
   /**
+   *	Platform-generated unique identifier of the Message.
    *
    */
   readonly id: string
@@ -3308,6 +3384,7 @@ export interface ParcelItemsUpdatedMessage {
 export interface ParcelMeasurementsUpdatedMessage {
   readonly type: 'ParcelMeasurementsUpdated'
   /**
+   *	Platform-generated unique identifier of the Message.
    *
    */
   readonly id: string
@@ -3367,6 +3444,7 @@ export interface ParcelMeasurementsUpdatedMessage {
 export interface ParcelRemovedFromDeliveryMessage {
   readonly type: 'ParcelRemovedFromDelivery'
   /**
+   *	Platform-generated unique identifier of the Message.
    *
    */
   readonly id: string
@@ -3422,6 +3500,7 @@ export interface ParcelRemovedFromDeliveryMessage {
 export interface ParcelTrackingDataUpdatedMessage {
   readonly type: 'ParcelTrackingDataUpdated'
   /**
+   *	Platform-generated unique identifier of the Message.
    *
    */
   readonly id: string
@@ -3481,6 +3560,7 @@ export interface ParcelTrackingDataUpdatedMessage {
 export interface PaymentCreatedMessage {
   readonly type: 'PaymentCreated'
   /**
+   *	Platform-generated unique identifier of the Message.
    *
    */
   readonly id: string
@@ -3532,6 +3612,7 @@ export interface PaymentCreatedMessage {
 export interface PaymentInteractionAddedMessage {
   readonly type: 'PaymentInteractionAdded'
   /**
+   *	Platform-generated unique identifier of the Message.
    *
    */
   readonly id: string
@@ -3585,6 +3666,7 @@ export interface PaymentInteractionAddedMessage {
 export interface PaymentStatusInterfaceCodeSetMessage {
   readonly type: 'PaymentStatusInterfaceCodeSet'
   /**
+   *	Platform-generated unique identifier of the Message.
    *
    */
   readonly id: string
@@ -3640,6 +3722,7 @@ export interface PaymentStatusInterfaceCodeSetMessage {
 export interface PaymentStatusStateTransitionMessage {
   readonly type: 'PaymentStatusStateTransition'
   /**
+   *	Platform-generated unique identifier of the Message.
    *
    */
   readonly id: string
@@ -3697,6 +3780,7 @@ export interface PaymentStatusStateTransitionMessage {
 export interface PaymentTransactionAddedMessage {
   readonly type: 'PaymentTransactionAdded'
   /**
+   *	Platform-generated unique identifier of the Message.
    *
    */
   readonly id: string
@@ -3748,6 +3832,7 @@ export interface PaymentTransactionAddedMessage {
 export interface PaymentTransactionStateChangedMessage {
   readonly type: 'PaymentTransactionStateChanged'
   /**
+   *	Platform-generated unique identifier of the Message.
    *
    */
   readonly id: string
@@ -3803,6 +3888,7 @@ export interface PaymentTransactionStateChangedMessage {
 export interface ProductAddedToCategoryMessage {
   readonly type: 'ProductAddedToCategory'
   /**
+   *	Platform-generated unique identifier of the Message.
    *
    */
   readonly id: string
@@ -3847,6 +3933,8 @@ export interface ProductAddedToCategoryMessage {
    */
   readonly resourceUserProvidedIdentifiers?: UserProvidedIdentifiers
   /**
+   *	[Reference](/../api/types#reference) to a [Category](ctp:api:type:Category).
+   *
    *
    */
   readonly category: CategoryReference
@@ -3858,6 +3946,7 @@ export interface ProductAddedToCategoryMessage {
 export interface ProductCreatedMessage {
   readonly type: 'ProductCreated'
   /**
+   *	Platform-generated unique identifier of the Message.
    *
    */
   readonly id: string
@@ -3909,6 +3998,7 @@ export interface ProductCreatedMessage {
 export interface ProductDeletedMessage {
   readonly type: 'ProductDeleted'
   /**
+   *	Platform-generated unique identifier of the Message.
    *
    */
   readonly id: string
@@ -3964,6 +4054,7 @@ export interface ProductDeletedMessage {
 export interface ProductImageAddedMessage {
   readonly type: 'ProductImageAdded'
   /**
+   *	Platform-generated unique identifier of the Message.
    *
    */
   readonly id: string
@@ -4023,6 +4114,7 @@ export interface ProductImageAddedMessage {
 export interface ProductPriceDiscountsSetMessage {
   readonly type: 'ProductPriceDiscountsSet'
   /**
+   *	Platform-generated unique identifier of the Message.
    *
    */
   readonly id: string
@@ -4100,6 +4192,7 @@ export interface ProductPriceDiscountsSetUpdatedPrice {
 export interface ProductPriceExternalDiscountSetMessage {
   readonly type: 'ProductPriceExternalDiscountSet'
   /**
+   *	Platform-generated unique identifier of the Message.
    *
    */
   readonly id: string
@@ -4171,6 +4264,7 @@ export interface ProductPriceExternalDiscountSetMessage {
 export interface ProductPublishedMessage {
   readonly type: 'ProductPublished'
   /**
+   *	Platform-generated unique identifier of the Message.
    *
    */
   readonly id: string
@@ -4230,6 +4324,7 @@ export interface ProductPublishedMessage {
 export interface ProductRemovedFromCategoryMessage {
   readonly type: 'ProductRemovedFromCategory'
   /**
+   *	Platform-generated unique identifier of the Message.
    *
    */
   readonly id: string
@@ -4274,6 +4369,8 @@ export interface ProductRemovedFromCategoryMessage {
    */
   readonly resourceUserProvidedIdentifiers?: UserProvidedIdentifiers
   /**
+   *	[Reference](/../api/types#reference) to a [Category](ctp:api:type:Category).
+   *
    *
    */
   readonly category: CategoryReference
@@ -4285,6 +4382,7 @@ export interface ProductRemovedFromCategoryMessage {
 export interface ProductRevertedStagedChangesMessage {
   readonly type: 'ProductRevertedStagedChanges'
   /**
+   *	Platform-generated unique identifier of the Message.
    *
    */
   readonly id: string
@@ -4336,6 +4434,7 @@ export interface ProductRevertedStagedChangesMessage {
 export interface ProductSelectionCreatedMessage {
   readonly type: 'ProductSelectionCreated'
   /**
+   *	Platform-generated unique identifier of the Message.
    *
    */
   readonly id: string
@@ -4387,6 +4486,7 @@ export interface ProductSelectionCreatedMessage {
 export interface ProductSelectionDeletedMessage {
   readonly type: 'ProductSelectionDeleted'
   /**
+   *	Platform-generated unique identifier of the Message.
    *
    */
   readonly id: string
@@ -4438,6 +4538,7 @@ export interface ProductSelectionDeletedMessage {
 export interface ProductSelectionProductAddedMessage {
   readonly type: 'ProductSelectionProductAdded'
   /**
+   *	Platform-generated unique identifier of the Message.
    *
    */
   readonly id: string
@@ -4482,6 +4583,8 @@ export interface ProductSelectionProductAddedMessage {
    */
   readonly resourceUserProvidedIdentifiers?: UserProvidedIdentifiers
   /**
+   *	[Reference](/../api/types#reference) to a [Product](ctp:api:type:Product).
+   *
    *
    */
   readonly product: ProductReference
@@ -4489,6 +4592,7 @@ export interface ProductSelectionProductAddedMessage {
 export interface ProductSelectionProductRemovedMessage {
   readonly type: 'ProductSelectionProductRemoved'
   /**
+   *	Platform-generated unique identifier of the Message.
    *
    */
   readonly id: string
@@ -4533,6 +4637,8 @@ export interface ProductSelectionProductRemovedMessage {
    */
   readonly resourceUserProvidedIdentifiers?: UserProvidedIdentifiers
   /**
+   *	[Reference](/../api/types#reference) to a [Product](ctp:api:type:Product).
+   *
    *
    */
   readonly product: ProductReference
@@ -4540,6 +4646,7 @@ export interface ProductSelectionProductRemovedMessage {
 export interface ProductSlugChangedMessage {
   readonly type: 'ProductSlugChanged'
   /**
+   *	Platform-generated unique identifier of the Message.
    *
    */
   readonly id: string
@@ -4595,6 +4702,7 @@ export interface ProductSlugChangedMessage {
 export interface ProductStateTransitionMessage {
   readonly type: 'ProductStateTransition'
   /**
+   *	Platform-generated unique identifier of the Message.
    *
    */
   readonly id: string
@@ -4652,6 +4760,7 @@ export interface ProductStateTransitionMessage {
 export interface ProductUnpublishedMessage {
   readonly type: 'ProductUnpublished'
   /**
+   *	Platform-generated unique identifier of the Message.
    *
    */
   readonly id: string
@@ -4699,6 +4808,7 @@ export interface ProductUnpublishedMessage {
 export interface ProductVariantAddedMessage {
   readonly type: 'ProductVariantAdded'
   /**
+   *	Platform-generated unique identifier of the Message.
    *
    */
   readonly id: string
@@ -4754,6 +4864,7 @@ export interface ProductVariantAddedMessage {
 export interface ProductVariantDeletedMessage {
   readonly type: 'ProductVariantDeleted'
   /**
+   *	Platform-generated unique identifier of the Message.
    *
    */
   readonly id: string
@@ -4809,6 +4920,7 @@ export interface ProductVariantDeletedMessage {
 export interface ReviewCreatedMessage {
   readonly type: 'ReviewCreated'
   /**
+   *	Platform-generated unique identifier of the Message.
    *
    */
   readonly id: string
@@ -4860,6 +4972,7 @@ export interface ReviewCreatedMessage {
 export interface ReviewRatingSetMessage {
   readonly type: 'ReviewRatingSet'
   /**
+   *	Platform-generated unique identifier of the Message.
    *
    */
   readonly id: string
@@ -4923,6 +5036,7 @@ export interface ReviewRatingSetMessage {
 export interface ReviewStateTransitionMessage {
   readonly type: 'ReviewStateTransition'
   /**
+   *	Platform-generated unique identifier of the Message.
    *
    */
   readonly id: string
@@ -4998,6 +5112,7 @@ export interface ReviewStateTransitionMessage {
 export interface StoreCreatedMessage {
   readonly type: 'StoreCreated'
   /**
+   *	Platform-generated unique identifier of the Message.
    *
    */
   readonly id: string
@@ -5071,6 +5186,7 @@ export interface StoreCreatedMessage {
 export interface StoreDeletedMessage {
   readonly type: 'StoreDeleted'
   /**
+   *	Platform-generated unique identifier of the Message.
    *
    */
   readonly id: string
@@ -5118,6 +5234,7 @@ export interface StoreDeletedMessage {
 export interface StoreProductSelectionsChangedMessage {
   readonly type: 'StoreProductSelectionsChanged'
   /**
+   *	Platform-generated unique identifier of the Message.
    *
    */
   readonly id: string
@@ -5176,6 +5293,7 @@ export interface StoreProductSelectionsChangedMessage {
 }
 export interface UserProvidedIdentifiers {
   /**
+   *	User-provided unique identifier of the resource.
    *
    */
   readonly key?: string
@@ -5380,7 +5498,7 @@ export interface CustomerFirstNameSetMessagePayload {
 export interface CustomerGroupSetMessagePayload {
   readonly type: 'CustomerGroupSet'
   /**
-   *	[Reference](/types#reference) to a [CustomerGroup](ctp:api:type:CustomerGroup).
+   *	[Reference](/../api/types#reference) to a [CustomerGroup](ctp:api:type:CustomerGroup).
    *
    *
    */
@@ -5637,13 +5755,13 @@ export interface OrderCustomerEmailSetMessagePayload {
 export interface OrderCustomerGroupSetMessagePayload {
   readonly type: 'OrderCustomerGroupSet'
   /**
-   *	[Reference](/types#reference) to a [CustomerGroup](ctp:api:type:CustomerGroup).
+   *	[Reference](/../api/types#reference) to a [CustomerGroup](ctp:api:type:CustomerGroup).
    *
    *
    */
   readonly customerGroup?: CustomerGroupReference
   /**
-   *	[Reference](/types#reference) to a [CustomerGroup](ctp:api:type:CustomerGroup).
+   *	[Reference](/../api/types#reference) to a [CustomerGroup](ctp:api:type:CustomerGroup).
    *
    *
    */
@@ -5652,21 +5770,25 @@ export interface OrderCustomerGroupSetMessagePayload {
 export interface OrderCustomerSetMessagePayload {
   readonly type: 'OrderCustomerSet'
   /**
+   *	[Reference](/../api/types#reference) to a [Customer](ctp:api:type:Customer).
+   *
    *
    */
   readonly customer?: CustomerReference
   /**
-   *	[Reference](/types#reference) to a [CustomerGroup](ctp:api:type:CustomerGroup).
+   *	[Reference](/../api/types#reference) to a [CustomerGroup](ctp:api:type:CustomerGroup).
    *
    *
    */
   readonly customerGroup?: CustomerGroupReference
   /**
+   *	[Reference](/../api/types#reference) to a [Customer](ctp:api:type:Customer).
+   *
    *
    */
   readonly oldCustomer?: CustomerReference
   /**
-   *	[Reference](/types#reference) to a [CustomerGroup](ctp:api:type:CustomerGroup).
+   *	[Reference](/../api/types#reference) to a [CustomerGroup](ctp:api:type:CustomerGroup).
    *
    *
    */
@@ -5682,6 +5804,8 @@ export interface OrderDeletedMessagePayload {
 export interface OrderDiscountCodeAddedMessagePayload {
   readonly type: 'OrderDiscountCodeAdded'
   /**
+   *	[Reference](/../api/types#reference) to a [DiscountCode](ctp:api:type:DiscountCode).
+   *
    *
    */
   readonly discountCode: DiscountCodeReference
@@ -5689,6 +5813,8 @@ export interface OrderDiscountCodeAddedMessagePayload {
 export interface OrderDiscountCodeRemovedMessagePayload {
   readonly type: 'OrderDiscountCodeRemoved'
   /**
+   *	[Reference](/../api/types#reference) to a [DiscountCode](ctp:api:type:DiscountCode).
+   *
    *
    */
   readonly discountCode: DiscountCodeReference
@@ -5696,6 +5822,8 @@ export interface OrderDiscountCodeRemovedMessagePayload {
 export interface OrderDiscountCodeStateSetMessagePayload {
   readonly type: 'OrderDiscountCodeStateSet'
   /**
+   *	[Reference](/../api/types#reference) to a [DiscountCode](ctp:api:type:DiscountCode).
+   *
    *
    */
   readonly discountCode: DiscountCodeReference
@@ -5711,6 +5839,8 @@ export interface OrderDiscountCodeStateSetMessagePayload {
 export interface OrderEditAppliedMessagePayload {
   readonly type: 'OrderEditApplied'
   /**
+   *	[Reference](/../api/types#reference) to a [OrderEdit](ctp:api:type:OrderEdit).
+   *
    *
    */
   readonly edit: OrderEditReference
@@ -5812,6 +5942,8 @@ export interface OrderLineItemRemovedMessagePayload {
 export interface OrderPaymentAddedMessagePayload {
   readonly type: 'OrderPaymentAdded'
   /**
+   *	[Reference](/../api/types#reference) to a [Payment](ctp:api:type:Payment).
+   *
    *
    */
   readonly payment: PaymentReference
@@ -6065,6 +6197,8 @@ export interface PaymentTransactionStateChangedMessagePayload {
 export interface ProductAddedToCategoryMessagePayload {
   readonly type: 'ProductAddedToCategory'
   /**
+   *	[Reference](/../api/types#reference) to a [Category](ctp:api:type:Category).
+   *
    *
    */
   readonly category: CategoryReference
@@ -6158,6 +6292,8 @@ export interface ProductPublishedMessagePayload {
 export interface ProductRemovedFromCategoryMessagePayload {
   readonly type: 'ProductRemovedFromCategory'
   /**
+   *	[Reference](/../api/types#reference) to a [Category](ctp:api:type:Category).
+   *
    *
    */
   readonly category: CategoryReference
@@ -6190,6 +6326,8 @@ export interface ProductSelectionDeletedMessagePayload {
 export interface ProductSelectionProductAddedMessagePayload {
   readonly type: 'ProductSelectionProductAdded'
   /**
+   *	[Reference](/../api/types#reference) to a [Product](ctp:api:type:Product).
+   *
    *
    */
   readonly product: ProductReference
@@ -6197,6 +6335,8 @@ export interface ProductSelectionProductAddedMessagePayload {
 export interface ProductSelectionProductRemovedMessagePayload {
   readonly type: 'ProductSelectionProductRemoved'
   /**
+   *	[Reference](/../api/types#reference) to a [Product](ctp:api:type:Product).
+   *
    *
    */
   readonly product: ProductReference

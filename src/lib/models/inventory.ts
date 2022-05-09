@@ -6,11 +6,16 @@
 
 import { ChannelReference, ChannelResourceIdentifier } from './channel'
 import { BaseResource, CreatedBy, LastModifiedBy } from './common'
-import { CustomFields, CustomFieldsDraft, FieldContainer, TypeResourceIdentifier } from './type'
+import {
+  CustomFields,
+  CustomFieldsDraft,
+  FieldContainer,
+  TypeResourceIdentifier,
+} from './type'
 
 export interface InventoryEntry extends BaseResource {
   /**
-   *	The unique ID of the inventory entry.
+   *	Platform-generated unique identifier of the InventoryEntry.
    *
    */
   readonly id: string
@@ -39,8 +44,7 @@ export interface InventoryEntry extends BaseResource {
    */
   readonly createdBy?: CreatedBy
   /**
-   *	User-defined unique identifier for the InventoryEntry.
-   *	Keys can only contain alphanumeric characters, underscores, and hyphens.
+   *	User-defined unique identifier of the InventoryEntry.
    *
    *
    */
@@ -88,7 +92,6 @@ export interface InventoryEntryDraft {
   readonly sku: string
   /**
    *	User-defined unique identifier for the InventoryEntry.
-   *	Keys can only contain alphanumeric characters, underscores, and hyphens.
    *
    *
    */
@@ -115,29 +118,39 @@ export interface InventoryEntryDraft {
    */
   readonly custom?: CustomFieldsDraft
 }
+/**
+ *	[Reference](/../api/types#reference) to a [InventoryEntry](ctp:api:type:InventoryEntry).
+ *
+ */
 export interface InventoryEntryReference {
   readonly typeId: 'inventory-entry'
   /**
-   *	Unique ID of the referenced resource.
+   *	Platform-generated unique identifier of the referenced [InventoryEntry](ctp:api:type:InventoryEntry).
    *
    *
    */
   readonly id: string
   /**
+   *	Contains the representation of the expanded InventoryEntry. Only present in responses to requests with [Reference Expansion](/../api/general-concepts#reference-expansion) for InventoryEntries.
+   *
    *
    */
   readonly obj?: InventoryEntry
 }
+/**
+ *	[ResourceIdentifier](/../api/types#resourceidentifier) to a [InventoryEntry](ctp:api:type:InventoryEntry).
+ *
+ */
 export interface InventoryEntryResourceIdentifier {
   readonly typeId: 'inventory-entry'
   /**
-   *	Unique ID of the referenced resource. Either `id` or `key` is required.
+   *	Platform-generated unique identifier of the referenced [InventoryEntry](ctp:api:type:InventoryEntry). Either `id` or `key` is required.
    *
    *
    */
   readonly id?: string
   /**
-   *	Unique key of the referenced resource. Either `id` or `key` is required.
+   *	User-defined unique identifier of the referenced [InventoryEntry](ctp:api:type:InventoryEntry). Either `id` or `key` is required.
    *
    *
    */
@@ -165,6 +178,8 @@ export type InventoryEntryUpdateAction =
   | InventoryEntrySetSupplyChannelAction
 export interface InventoryPagedQueryResponse {
   /**
+   *	Number of [results requested](/../api/general-concepts#limit).
+   *
    *
    */
   readonly limit: number
