@@ -178,10 +178,7 @@ export interface SearchIndexingConfiguration {
 /**
  *	Status of resource indexing.
  */
-export type SearchIndexingConfigurationStatus =
-  | 'Activated'
-  | 'Deactivated'
-  | 'Indexing'
+export type SearchIndexingConfigurationStatus = 'Activated' | 'Deactivated' | 'Indexing'
 export interface SearchIndexingConfigurationValues {
   /**
    *	Current status of resource indexing. Present on Projects from 1 February 2019.
@@ -201,10 +198,7 @@ export interface SearchIndexingConfigurationValues {
    */
   readonly lastModifiedBy?: LastModifiedBy
 }
-export type ShippingRateInputType =
-  | CartClassificationType
-  | CartScoreType
-  | CartValueType
+export type ShippingRateInputType = CartClassificationType | CartScoreType | CartValueType
 export interface CartClassificationType {
   readonly type: 'CartClassification'
   /**

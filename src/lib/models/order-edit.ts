@@ -17,15 +17,7 @@ import {
   TaxPortionDraft,
 } from './cart'
 import { ChannelResourceIdentifier } from './channel'
-import {
-  BaseAddress,
-  BaseResource,
-  CreatedBy,
-  LastModifiedBy,
-  LocalizedString,
-  Money,
-  TypedMoney,
-} from './common'
+import { BaseAddress, BaseResource, CreatedBy, LastModifiedBy, LocalizedString, Money, TypedMoney } from './common'
 import { CustomerGroupResourceIdentifier } from './customer-group'
 import { DiscountCodeReference } from './discount-code'
 import { ErrorObject } from './error'
@@ -48,19 +40,11 @@ import {
   TrackingData,
 } from './order'
 import { PaymentResourceIdentifier } from './payment'
-import {
-  ShippingMethodResourceIdentifier,
-  ShippingRateDraft,
-} from './shipping-method'
+import { ShippingMethodResourceIdentifier, ShippingRateDraft } from './shipping-method'
 import { ShoppingListResourceIdentifier } from './shopping-list'
 import { StateResourceIdentifier } from './state'
 import { TaxCategoryResourceIdentifier } from './tax-category'
-import {
-  CustomFields,
-  CustomFieldsDraft,
-  FieldContainer,
-  TypeResourceIdentifier,
-} from './type'
+import { CustomFields, CustomFieldsDraft, FieldContainer, TypeResourceIdentifier } from './type'
 
 export interface OrderEdit extends BaseResource {
   /**

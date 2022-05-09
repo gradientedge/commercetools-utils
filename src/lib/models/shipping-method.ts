@@ -4,24 +4,9 @@
  * For more information about the commercetools platform APIs, visit https://docs.commercetools.com/.
  */
 
-import {
-  BaseResource,
-  CreatedBy,
-  LastModifiedBy,
-  LocalizedString,
-  Money,
-  TypedMoney,
-} from './common'
-import {
-  TaxCategoryReference,
-  TaxCategoryResourceIdentifier,
-} from './tax-category'
-import {
-  CustomFields,
-  CustomFieldsDraft,
-  FieldContainer,
-  TypeResourceIdentifier,
-} from './type'
+import { BaseResource, CreatedBy, LastModifiedBy, LocalizedString, Money, TypedMoney } from './common'
+import { TaxCategoryReference, TaxCategoryResourceIdentifier } from './tax-category'
+import { CustomFields, CustomFieldsDraft, FieldContainer, TypeResourceIdentifier } from './type'
 import { ZoneReference, ZoneResourceIdentifier } from './zone'
 
 export interface PriceFunction {
@@ -283,10 +268,7 @@ export interface ShippingRateDraft {
    */
   readonly tiers?: ShippingRatePriceTier[]
 }
-export type ShippingRatePriceTier =
-  | CartClassificationTier
-  | CartScoreTier
-  | CartValueTier
+export type ShippingRatePriceTier = CartClassificationTier | CartScoreTier | CartValueTier
 export interface CartClassificationTier {
   readonly type: 'CartClassification'
   /**
@@ -348,10 +330,7 @@ export interface CartValueTier {
 /**
  *	Can be one of the following or absent.
  */
-export type ShippingRateTierType =
-  | 'CartClassification'
-  | 'CartScore'
-  | 'CartValue'
+export type ShippingRateTierType = 'CartClassification' | 'CartScore' | 'CartValue'
 export interface ZoneRate {
   /**
    *

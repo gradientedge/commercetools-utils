@@ -246,9 +246,7 @@ export interface HttpDestination {
    */
   readonly authentication?: HttpDestinationAuthentication
 }
-export type HttpDestinationAuthentication =
-  | AuthorizationHeaderAuthentication
-  | AzureFunctionsAuthentication
+export type HttpDestinationAuthentication = AuthorizationHeaderAuthentication | AzureFunctionsAuthentication
 /**
  *	The `Authorization` header will be set to the content of `headerValue`. The authentication scheme (such as `Basic` or `Bearer`) should be included in the `headerValue`.
  *

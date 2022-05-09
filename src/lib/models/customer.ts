@@ -5,28 +5,12 @@
  */
 
 import { Cart, CartResourceIdentifier } from './cart'
-import {
-  Address,
-  BaseAddress,
-  BaseResource,
-  CreatedBy,
-  LastModifiedBy,
-} from './common'
-import {
-  CustomerGroupReference,
-  CustomerGroupResourceIdentifier,
-} from './customer-group'
+import { Address, BaseAddress, BaseResource, CreatedBy, LastModifiedBy } from './common'
+import { CustomerGroupReference, CustomerGroupResourceIdentifier } from './customer-group'
 import { StoreKeyReference, StoreResourceIdentifier } from './store'
-import {
-  CustomFields,
-  CustomFieldsDraft,
-  FieldContainer,
-  TypeResourceIdentifier,
-} from './type'
+import { CustomFields, CustomFieldsDraft, FieldContainer, TypeResourceIdentifier } from './type'
 
-export type AnonymousCartSignInMode =
-  | 'MergeWithExistingCustomerCart'
-  | 'UseAsNewActiveCustomerCart'
+export type AnonymousCartSignInMode = 'MergeWithExistingCustomerCart' | 'UseAsNewActiveCustomerCart'
 export type AuthenticationMode = 'ExternalAuth' | 'Password'
 export interface Customer extends BaseResource {
   /**

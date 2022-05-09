@@ -47,12 +47,7 @@ import {
   TrackingData,
 } from './order'
 import { OrderEditApplied, OrderEditReference } from './order-edit'
-import {
-  Payment,
-  PaymentReference,
-  Transaction,
-  TransactionState,
-} from './payment'
+import { Payment, PaymentReference, Transaction, TransactionState } from './payment'
 import { ProductProjection, ProductReference, ProductVariant } from './product'
 import { ProductSelectionType } from './product-selection'
 import { Review } from './review'

@@ -5,12 +5,7 @@
  */
 
 import { BaseResource, CreatedBy, LastModifiedBy } from './common'
-import {
-  CustomFields,
-  CustomFieldsDraft,
-  FieldContainer,
-  TypeResourceIdentifier,
-} from './type'
+import { CustomFields, CustomFieldsDraft, FieldContainer, TypeResourceIdentifier } from './type'
 
 export interface CustomerGroup extends BaseResource {
   /**

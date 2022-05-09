@@ -4,22 +4,12 @@
  * For more information about the commercetools platform APIs, visit https://docs.commercetools.com/.
  */
 
-import {
-  BaseResource,
-  CreatedBy,
-  LastModifiedBy,
-  LocalizedString,
-} from './common'
+import { BaseResource, CreatedBy, LastModifiedBy, LocalizedString } from './common'
 import { CustomerReference, CustomerResourceIdentifier } from './customer'
 import { ProductVariant } from './product'
 import { ProductTypeReference } from './product-type'
 import { StoreKeyReference, StoreResourceIdentifier } from './store'
-import {
-  CustomFields,
-  CustomFieldsDraft,
-  FieldContainer,
-  TypeResourceIdentifier,
-} from './type'
+import { CustomFields, CustomFieldsDraft, FieldContainer, TypeResourceIdentifier } from './type'
 
 export interface ShoppingList extends BaseResource {
   /**

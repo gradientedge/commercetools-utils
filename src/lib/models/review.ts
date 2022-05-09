@@ -9,12 +9,7 @@ import { BaseResource, CreatedBy, LastModifiedBy } from './common'
 import { CustomerReference, CustomerResourceIdentifier } from './customer'
 import { ProductReference, ProductResourceIdentifier } from './product'
 import { StateReference, StateResourceIdentifier } from './state'
-import {
-  CustomFields,
-  CustomFieldsDraft,
-  FieldContainer,
-  TypeResourceIdentifier,
-} from './type'
+import { CustomFields, CustomFieldsDraft, FieldContainer, TypeResourceIdentifier } from './type'
 
 export interface Review extends BaseResource {
   /**

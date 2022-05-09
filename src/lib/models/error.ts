@@ -4,18 +4,8 @@
  * For more information about the commercetools platform APIs, visit https://docs.commercetools.com/.
  */
 
-import {
-  ChannelReference,
-  ChannelResourceIdentifier,
-  ChannelRoleEnum,
-} from './channel'
-import {
-  LocalizedString,
-  Price,
-  PriceDraft,
-  Reference,
-  ReferenceTypeId,
-} from './common'
+import { ChannelReference, ChannelResourceIdentifier, ChannelRoleEnum } from './channel'
+import { LocalizedString, Price, PriceDraft, Reference, ReferenceTypeId } from './common'
 import { CustomerGroupReference } from './customer-group'
 import { OrderEditPreviewFailure } from './order-edit'
 import { Attribute } from './product'

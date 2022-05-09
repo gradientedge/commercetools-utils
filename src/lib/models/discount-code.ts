@@ -4,23 +4,9 @@
  * For more information about the commercetools platform APIs, visit https://docs.commercetools.com/.
  */
 
-import {
-  CartDiscountReference,
-  CartDiscountResourceIdentifier,
-} from './cart-discount'
-import {
-  BaseResource,
-  CreatedBy,
-  LastModifiedBy,
-  LocalizedString,
-  Reference,
-} from './common'
-import {
-  CustomFields,
-  CustomFieldsDraft,
-  FieldContainer,
-  TypeResourceIdentifier,
-} from './type'
+import { CartDiscountReference, CartDiscountResourceIdentifier } from './cart-discount'
+import { BaseResource, CreatedBy, LastModifiedBy, LocalizedString, Reference } from './common'
+import { CustomFields, CustomFieldsDraft, FieldContainer, TypeResourceIdentifier } from './type'
 
 export interface DiscountCode extends BaseResource {
   /**

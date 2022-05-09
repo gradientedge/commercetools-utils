@@ -4,22 +4,10 @@
  * For more information about the commercetools platform APIs, visit https://docs.commercetools.com/.
  */
 
-import {
-  BaseResource,
-  CreatedBy,
-  LastModifiedBy,
-  LocalizedString,
-  Money,
-  TypedMoney,
-} from './common'
+import { BaseResource, CreatedBy, LastModifiedBy, LocalizedString, Money, TypedMoney } from './common'
 import { CustomerReference, CustomerResourceIdentifier } from './customer'
 import { StateReference, StateResourceIdentifier } from './state'
-import {
-  CustomFields,
-  CustomFieldsDraft,
-  FieldContainer,
-  TypeResourceIdentifier,
-} from './type'
+import { CustomFields, CustomFieldsDraft, FieldContainer, TypeResourceIdentifier } from './type'
 
 export interface Payment extends BaseResource {
   /**
@@ -437,12 +425,7 @@ export interface TransactionDraft {
   readonly custom?: CustomFieldsDraft
 }
 export type TransactionState = 'Failure' | 'Initial' | 'Pending' | 'Success'
-export type TransactionType =
-  | 'Authorization'
-  | 'CancelAuthorization'
-  | 'Charge'
-  | 'Chargeback'
-  | 'Refund'
+export type TransactionType = 'Authorization' | 'CancelAuthorization' | 'Charge' | 'Chargeback' | 'Refund'
 export interface PaymentAddInterfaceInteractionAction {
   readonly action: 'addInterfaceInteraction'
   /**

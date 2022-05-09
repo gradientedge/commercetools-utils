@@ -5,23 +5,9 @@
  */
 
 import { ChannelReference, ChannelResourceIdentifier } from './channel'
-import {
-  BaseResource,
-  CreatedBy,
-  LastModifiedBy,
-  LocalizedString,
-  ResourceIdentifier,
-} from './common'
-import {
-  ProductSelectionReference,
-  ProductSelectionResourceIdentifier,
-} from './product-selection'
-import {
-  CustomFields,
-  CustomFieldsDraft,
-  FieldContainer,
-  TypeResourceIdentifier,
-} from './type'
+import { BaseResource, CreatedBy, LastModifiedBy, LocalizedString, ResourceIdentifier } from './common'
+import { ProductSelectionReference, ProductSelectionResourceIdentifier } from './product-selection'
+import { CustomFields, CustomFieldsDraft, FieldContainer, TypeResourceIdentifier } from './type'
 
 export interface ProductSelectionSetting {
   /**

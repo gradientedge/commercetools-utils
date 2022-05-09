@@ -20,16 +20,10 @@ import {
   PriceDraft,
   ScopedPrice,
 } from './common'
-import {
-  ProductTypeReference,
-  ProductTypeResourceIdentifier,
-} from './product-type'
+import { ProductTypeReference, ProductTypeResourceIdentifier } from './product-type'
 import { ReviewRatingStatistics } from './review'
 import { StateReference, StateResourceIdentifier } from './state'
-import {
-  TaxCategoryReference,
-  TaxCategoryResourceIdentifier,
-} from './tax-category'
+import { TaxCategoryReference, TaxCategoryResourceIdentifier } from './tax-category'
 import { FieldContainer, TypeResourceIdentifier } from './type'
 
 export interface Attribute {
@@ -88,10 +82,7 @@ export interface FacetRange {
    */
   readonly mean: number
 }
-export type FacetResult =
-  | FilteredFacetResult
-  | RangeFacetResult
-  | TermFacetResult
+export type FacetResult = FilteredFacetResult | RangeFacetResult | TermFacetResult
 export interface FacetResults {
   [key: string]: FacetResult
 }
@@ -760,13 +751,7 @@ export interface TermFacetResult {
    */
   readonly terms: FacetTerm[]
 }
-export type TermFacetResultType =
-  | 'boolean'
-  | 'date'
-  | 'datetime'
-  | 'number'
-  | 'text'
-  | 'time'
+export type TermFacetResultType = 'boolean' | 'date' | 'datetime' | 'number' | 'text' | 'time'
 export interface WhitespaceTokenizer {
   readonly type: 'whitespace'
 }

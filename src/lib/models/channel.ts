@@ -4,22 +4,9 @@
  * For more information about the commercetools platform APIs, visit https://docs.commercetools.com/.
  */
 
-import {
-  Address,
-  BaseAddress,
-  BaseResource,
-  CreatedBy,
-  GeoJson,
-  LastModifiedBy,
-  LocalizedString,
-} from './common'
+import { Address, BaseAddress, BaseResource, CreatedBy, GeoJson, LastModifiedBy, LocalizedString } from './common'
 import { ReviewRatingStatistics } from './review'
-import {
-  CustomFields,
-  CustomFieldsDraft,
-  FieldContainer,
-  TypeResourceIdentifier,
-} from './type'
+import { CustomFields, CustomFieldsDraft, FieldContainer, TypeResourceIdentifier } from './type'
 
 export interface Channel extends BaseResource {
   /**
@@ -238,12 +225,7 @@ export interface ChannelResourceIdentifier {
  *	Describes the purpose and type of the Channel. A Channel can have one or more roles.
  *
  */
-export type ChannelRoleEnum =
-  | 'InventorySupply'
-  | 'OrderExport'
-  | 'OrderImport'
-  | 'Primary'
-  | 'ProductDistribution'
+export type ChannelRoleEnum = 'InventorySupply' | 'OrderExport' | 'OrderImport' | 'Primary' | 'ProductDistribution'
 export interface ChannelUpdate {
   /**
    *	Expected version of the Channel on which the changes should be applied. If the expected version does not match the actual version, a [409 Conflict](/../api/errors#409-conflict) error will be returned.

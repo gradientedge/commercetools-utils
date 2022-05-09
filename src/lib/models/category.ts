@@ -4,21 +4,8 @@
  * For more information about the commercetools platform APIs, visit https://docs.commercetools.com/.
  */
 
-import {
-  Asset,
-  AssetDraft,
-  AssetSource,
-  BaseResource,
-  CreatedBy,
-  LastModifiedBy,
-  LocalizedString,
-} from './common'
-import {
-  CustomFields,
-  CustomFieldsDraft,
-  FieldContainer,
-  TypeResourceIdentifier,
-} from './type'
+import { Asset, AssetDraft, AssetSource, BaseResource, CreatedBy, LastModifiedBy, LocalizedString } from './common'
+import { CustomFields, CustomFieldsDraft, FieldContainer, TypeResourceIdentifier } from './type'
 
 export interface Category extends BaseResource {
   /**

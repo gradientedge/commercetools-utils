@@ -4,19 +4,9 @@
  * For more information about the commercetools platform APIs, visit https://docs.commercetools.com/.
  */
 
-import {
-  BaseResource,
-  CreatedBy,
-  LastModifiedBy,
-  LocalizedString,
-  ReferenceTypeId,
-} from './common'
+import { BaseResource, CreatedBy, LastModifiedBy, LocalizedString, ReferenceTypeId } from './common'
 
-export type AttributeConstraintEnum =
-  | 'CombinationUnique'
-  | 'None'
-  | 'SameForAll'
-  | 'Unique'
+export type AttributeConstraintEnum = 'CombinationUnique' | 'None' | 'SameForAll' | 'Unique'
 export type AttributeConstraintEnumDraft = 'None'
 export interface AttributeDefinition {
   /**

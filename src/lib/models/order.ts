@@ -38,10 +38,7 @@ import {
   PriceDraft,
   TypedMoney,
 } from './common'
-import {
-  CustomerGroupReference,
-  CustomerGroupResourceIdentifier,
-} from './customer-group'
+import { CustomerGroupReference, CustomerGroupResourceIdentifier } from './customer-group'
 import {
   StagedOrderAddCustomLineItemAction,
   StagedOrderAddDeliveryAction,
@@ -131,19 +128,11 @@ import {
 } from './order-edit'
 import { PaymentReference, PaymentResourceIdentifier } from './payment'
 import { Attribute } from './product'
-import {
-  ShippingMethodResourceIdentifier,
-  ShippingRateDraft,
-} from './shipping-method'
+import { ShippingMethodResourceIdentifier, ShippingRateDraft } from './shipping-method'
 import { StateReference, StateResourceIdentifier } from './state'
 import { StoreKeyReference, StoreResourceIdentifier } from './store'
 import { TaxCategoryResourceIdentifier, TaxRate } from './tax-category'
-import {
-  CustomFields,
-  CustomFieldsDraft,
-  FieldContainer,
-  TypeResourceIdentifier,
-} from './type'
+import { CustomFields, CustomFieldsDraft, FieldContainer, TypeResourceIdentifier } from './type'
 
 export type StagedOrderUpdateAction =
   | StagedOrderAddCustomLineItemAction
@@ -971,12 +960,7 @@ export interface PaymentInfo {
    */
   readonly payments: PaymentReference[]
 }
-export type PaymentState =
-  | 'BalanceDue'
-  | 'CreditOwed'
-  | 'Failed'
-  | 'Paid'
-  | 'Pending'
+export type PaymentState = 'BalanceDue' | 'CreditOwed' | 'Failed' | 'Paid' | 'Pending'
 export interface ProductVariantImportDraft {
   /**
    *	The sequential ID of the variant within the product.
@@ -1150,23 +1134,9 @@ export interface ReturnItemDraft {
    */
   readonly custom?: CustomFieldsDraft
 }
-export type ReturnPaymentState =
-  | 'Initial'
-  | 'NonRefundable'
-  | 'NotRefunded'
-  | 'Refunded'
-export type ReturnShipmentState =
-  | 'Advised'
-  | 'BackInStock'
-  | 'Returned'
-  | 'Unusable'
-export type ShipmentState =
-  | 'Backorder'
-  | 'Delayed'
-  | 'Partial'
-  | 'Pending'
-  | 'Ready'
-  | 'Shipped'
+export type ReturnPaymentState = 'Initial' | 'NonRefundable' | 'NotRefunded' | 'Refunded'
+export type ReturnShipmentState = 'Advised' | 'BackInStock' | 'Returned' | 'Unusable'
+export type ShipmentState = 'Backorder' | 'Delayed' | 'Partial' | 'Pending' | 'Ready' | 'Shipped'
 export interface ShippingInfoImportDraft {
   /**
    *

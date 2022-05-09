@@ -17,10 +17,7 @@ import {
   Price,
   TypedMoney,
 } from './common'
-import {
-  CustomerGroupReference,
-  CustomerGroupResourceIdentifier,
-} from './customer-group'
+import { CustomerGroupReference, CustomerGroupResourceIdentifier } from './customer-group'
 import { DiscountCodeReference } from './discount-code'
 import { Delivery, ItemState, OrderReference, PaymentInfo } from './order'
 import { PaymentResourceIdentifier } from './payment'
@@ -34,18 +31,8 @@ import {
 } from './shipping-method'
 import { ShoppingListResourceIdentifier } from './shopping-list'
 import { StoreKeyReference, StoreResourceIdentifier } from './store'
-import {
-  SubRate,
-  TaxCategoryReference,
-  TaxCategoryResourceIdentifier,
-  TaxRate,
-} from './tax-category'
-import {
-  CustomFields,
-  CustomFieldsDraft,
-  FieldContainer,
-  TypeResourceIdentifier,
-} from './type'
+import { SubRate, TaxCategoryReference, TaxCategoryResourceIdentifier, TaxRate } from './tax-category'
+import { CustomFields, CustomFieldsDraft, FieldContainer, TypeResourceIdentifier } from './type'
 
 export interface Cart extends BaseResource {
   /**
@@ -998,9 +985,7 @@ export interface ShippingInfo {
   readonly shippingMethodState: ShippingMethodState
 }
 export type ShippingMethodState = 'DoesNotMatchCart' | 'MatchesCart'
-export type ShippingRateInput =
-  | ClassificationShippingRateInput
-  | ScoreShippingRateInput
+export type ShippingRateInput = ClassificationShippingRateInput | ScoreShippingRateInput
 export interface ClassificationShippingRateInput {
   readonly type: 'Classification'
   /**
@@ -1019,9 +1004,7 @@ export interface ScoreShippingRateInput {
    */
   readonly score: number
 }
-export type ShippingRateInputDraft =
-  | ClassificationShippingRateInputDraft
-  | ScoreShippingRateInputDraft
+export type ShippingRateInputDraft = ClassificationShippingRateInputDraft | ScoreShippingRateInputDraft
 export interface ClassificationShippingRateInputDraft {
   readonly type: 'Classification'
   /**

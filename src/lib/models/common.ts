@@ -5,67 +5,28 @@
  */
 
 import { CartReference, CartResourceIdentifier } from './cart'
-import {
-  CartDiscountReference,
-  CartDiscountResourceIdentifier,
-} from './cart-discount'
+import { CartDiscountReference, CartDiscountResourceIdentifier } from './cart-discount'
 import { CategoryReference, CategoryResourceIdentifier } from './category'
 import { ChannelReference, ChannelResourceIdentifier } from './channel'
 import { CustomObjectReference } from './custom-object'
 import { CustomerReference, CustomerResourceIdentifier } from './customer'
-import {
-  CustomerGroupReference,
-  CustomerGroupResourceIdentifier,
-} from './customer-group'
-import {
-  DiscountCodeReference,
-  DiscountCodeResourceIdentifier,
-} from './discount-code'
-import {
-  InventoryEntryReference,
-  InventoryEntryResourceIdentifier,
-} from './inventory'
+import { CustomerGroupReference, CustomerGroupResourceIdentifier } from './customer-group'
+import { DiscountCodeReference, DiscountCodeResourceIdentifier } from './discount-code'
+import { InventoryEntryReference, InventoryEntryResourceIdentifier } from './inventory'
 import { OrderReference, OrderResourceIdentifier } from './order'
 import { OrderEditReference, OrderEditResourceIdentifier } from './order-edit'
 import { PaymentReference, PaymentResourceIdentifier } from './payment'
 import { ProductReference, ProductResourceIdentifier } from './product'
-import {
-  ProductDiscountReference,
-  ProductDiscountResourceIdentifier,
-} from './product-discount'
-import {
-  ProductSelectionReference,
-  ProductSelectionResourceIdentifier,
-} from './product-selection'
-import {
-  ProductTypeReference,
-  ProductTypeResourceIdentifier,
-} from './product-type'
+import { ProductDiscountReference, ProductDiscountResourceIdentifier } from './product-discount'
+import { ProductSelectionReference, ProductSelectionResourceIdentifier } from './product-selection'
+import { ProductTypeReference, ProductTypeResourceIdentifier } from './product-type'
 import { ReviewReference, ReviewResourceIdentifier } from './review'
-import {
-  ShippingMethodReference,
-  ShippingMethodResourceIdentifier,
-} from './shipping-method'
-import {
-  ShoppingListReference,
-  ShoppingListResourceIdentifier,
-} from './shopping-list'
+import { ShippingMethodReference, ShippingMethodResourceIdentifier } from './shipping-method'
+import { ShoppingListReference, ShoppingListResourceIdentifier } from './shopping-list'
 import { StateReference, StateResourceIdentifier } from './state'
-import {
-  StoreKeyReference,
-  StoreReference,
-  StoreResourceIdentifier,
-} from './store'
-import {
-  TaxCategoryReference,
-  TaxCategoryResourceIdentifier,
-} from './tax-category'
-import {
-  CustomFields,
-  CustomFieldsDraft,
-  TypeReference,
-  TypeResourceIdentifier,
-} from './type'
+import { StoreKeyReference, StoreReference, StoreResourceIdentifier } from './store'
+import { TaxCategoryReference, TaxCategoryResourceIdentifier } from './tax-category'
+import { CustomFields, CustomFieldsDraft, TypeReference, TypeResourceIdentifier } from './type'
 import { ZoneReference, ZoneResourceIdentifier } from './zone'
 
 export interface PagedQueryResponse {

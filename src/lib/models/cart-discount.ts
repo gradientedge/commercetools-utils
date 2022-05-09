@@ -5,22 +5,9 @@
  */
 
 import { ChannelReference, ChannelResourceIdentifier } from './channel'
-import {
-  BaseResource,
-  CreatedBy,
-  LastModifiedBy,
-  LocalizedString,
-  Money,
-  Reference,
-  TypedMoney,
-} from './common'
+import { BaseResource, CreatedBy, LastModifiedBy, LocalizedString, Money, Reference, TypedMoney } from './common'
 import { ProductReference, ProductResourceIdentifier } from './product'
-import {
-  CustomFields,
-  CustomFieldsDraft,
-  FieldContainer,
-  TypeResourceIdentifier,
-} from './type'
+import { CustomFields, CustomFieldsDraft, FieldContainer, TypeResourceIdentifier } from './type'
 
 export interface CartDiscount extends BaseResource {
   /**

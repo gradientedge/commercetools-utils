@@ -19,22 +19,11 @@ import { BaseAddress, LocalizedString, Money, TypedMoney } from './common'
 import { CustomerReference } from './customer'
 import { DiscountCodeReference } from './discount-code'
 import { OrderReference } from './order'
-import {
-  PaymentMethodInfo,
-  PaymentResourceIdentifier,
-  Transaction,
-  TransactionDraft,
-  TransactionType,
-} from './payment'
+import { PaymentMethodInfo, PaymentResourceIdentifier, Transaction, TransactionDraft, TransactionType } from './payment'
 import { ShippingMethodResourceIdentifier } from './shipping-method'
 import { ShoppingListLineItemDraft, TextLineItemDraft } from './shopping-list'
 import { StoreKeyReference, StoreResourceIdentifier } from './store'
-import {
-  CustomFields,
-  CustomFieldsDraft,
-  FieldContainer,
-  TypeResourceIdentifier,
-} from './type'
+import { CustomFields, CustomFieldsDraft, FieldContainer, TypeResourceIdentifier } from './type'
 
 export interface MyCartDraft {
   /**
