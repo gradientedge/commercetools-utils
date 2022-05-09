@@ -303,6 +303,8 @@ export interface ClientLogging {
    */
   readonly externalUserId?: string
   /**
+   *	[Reference](/../api/types#reference) to a [Customer](ctp:api:type:Customer).
+   *
    *
    */
   readonly customer?: CustomerReference
@@ -320,6 +322,8 @@ export interface DiscountedPrice {
    */
   readonly value: TypedMoney
   /**
+   *	[Reference](/../api/types#reference) to a [ProductDiscount](ctp:api:type:ProductDiscount).
+   *
    *
    */
   readonly discount: ProductDiscountReference
@@ -333,6 +337,8 @@ export interface DiscountedPriceDraft {
    */
   readonly value: Money
   /**
+   *	[Reference](/../api/types#reference) to a [ProductDiscount](ctp:api:type:ProductDiscount).
+   *
    *
    */
   readonly discount: ProductDiscountReference
@@ -418,7 +424,7 @@ export interface Price {
    */
   readonly country?: string
   /**
-   *	[Reference](/types#reference) to a [CustomerGroup](ctp:api:type:CustomerGroup).
+   *	[Reference](/../api/types#reference) to a [CustomerGroup](ctp:api:type:CustomerGroup).
    *
    *
    */
@@ -545,7 +551,7 @@ export interface QueryPrice {
    */
   readonly country?: string
   /**
-   *	[Reference](/types#reference) to a [CustomerGroup](ctp:api:type:CustomerGroup).
+   *	[Reference](/../api/types#reference) to a [CustomerGroup](ctp:api:type:CustomerGroup).
    *
    *
    */
@@ -681,7 +687,7 @@ export interface ScopedPrice {
    */
   readonly country?: string
   /**
-   *	[Reference](/types#reference) to a [CustomerGroup](ctp:api:type:CustomerGroup).
+   *	[Reference](/../api/types#reference) to a [CustomerGroup](ctp:api:type:CustomerGroup).
    *
    *
    */

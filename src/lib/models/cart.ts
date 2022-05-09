@@ -36,12 +36,12 @@ import { CustomFields, CustomFieldsDraft, FieldContainer, TypeResourceIdentifier
 
 export interface Cart extends BaseResource {
   /**
-   *	The unique ID of the cart.
+   *	Platform-generated unique identifier of the Cart.
    *
    */
   readonly id: string
   /**
-   *	User-specific unique identifier of the cart.
+   *	User-defined unique identifier of the Cart.
    *
    */
   readonly key?: string
@@ -215,7 +215,8 @@ export interface CartDraft {
    */
   readonly currency: string
   /**
-   *	User-specific unique identifier of the cart.
+   *	User-defined unique identifier for the Cart.
+   *
    *
    */
   readonly key?: string
@@ -344,6 +345,8 @@ export interface CartDraft {
 export type CartOrigin = 'Customer' | 'Merchant'
 export interface CartPagedQueryResponse {
   /**
+   *	Number of [results requested](/../api/general-concepts#limit).
+   *
    *
    */
   readonly limit: number
@@ -364,29 +367,39 @@ export interface CartPagedQueryResponse {
    */
   readonly results: Cart[]
 }
+/**
+ *	[Reference](/../api/types#reference) to a [Cart](ctp:api:type:Cart).
+ *
+ */
 export interface CartReference {
   readonly typeId: 'cart'
   /**
-   *	Unique ID of the referenced resource.
+   *	Platform-generated unique identifier of the referenced [Cart](ctp:api:type:Cart).
    *
    *
    */
   readonly id: string
   /**
+   *	Contains the representation of the expanded Cart. Only present in responses to requests with [Reference Expansion](/../api/general-concepts#reference-expansion) for Carts.
+   *
    *
    */
   readonly obj?: Cart
 }
+/**
+ *	[ResourceIdentifier](/../api/types#resourceidentifier) to a [Cart](ctp:api:type:Cart).
+ *
+ */
 export interface CartResourceIdentifier {
   readonly typeId: 'cart'
   /**
-   *	Unique ID of the referenced resource. Either `id` or `key` is required.
+   *	Platform-generated unique identifier of the referenced [Cart](ctp:api:type:Cart). Either `id` or `key` is required.
    *
    *
    */
   readonly id?: string
   /**
-   *	Unique key of the referenced resource. Either `id` or `key` is required.
+   *	User-defined unique identifier of the referenced [Cart](ctp:api:type:Cart). Either `id` or `key` is required.
    *
    *
    */
@@ -467,7 +480,7 @@ export type CartUpdateAction =
   | CartUpdateItemShippingAddressAction
 export interface CustomLineItem {
   /**
-   *	The unique ID of this CustomLineItem.
+   *	Platform-generated unique identifier of the CustomLineItem.
    *
    */
   readonly id: string
@@ -722,7 +735,7 @@ export interface ItemShippingTarget {
 }
 export interface LineItem {
   /**
-   *	The unique ID of this LineItem.
+   *	Platform-generated unique identifier of the LineItem.
    *
    */
   readonly id: string
@@ -731,7 +744,7 @@ export interface LineItem {
    */
   readonly productId: string
   /**
-   *	User-defined unique identifier for the [Product](ctp:api:type:Product).
+   *	User-defined unique identifier of the [Product](ctp:api:type:Product).
    *	Only present on Line Items in a [Cart](ctp:api:type:Cart) when the `key` is available on that specific Product at the time the Line Item is created or updated on the Cart. On [Order](/ctp:api:type:Order) resources this field is only present when the `key` is available on the specific Product at the time the Order is created from the Cart. This field is in general not present on Carts that had no updates until 3 December 2021 and on Orders created before this date.
    *
    */
@@ -1050,6 +1063,12 @@ export interface TaxedItemPrice {
    *
    */
   readonly totalGross: TypedMoney
+  /**
+   *	Platform-calculated value as subtraction of `totalGross` - `totalNet`.
+   *
+   *
+   */
+  readonly totalTax?: TypedMoney
 }
 export interface TaxedPrice {
   /**
@@ -1065,6 +1084,12 @@ export interface TaxedPrice {
    *
    */
   readonly taxPortions: TaxPortion[]
+  /**
+   *	Platform-calculated value as subtraction of `totalGross` - `totalNet`.
+   *
+   *
+   */
+  readonly totalTax?: TypedMoney
 }
 export interface TaxedPriceDraft {
   /**
@@ -1204,6 +1229,8 @@ export interface CartAddPaymentAction {
 export interface CartAddShoppingListAction {
   readonly action: 'addShoppingList'
   /**
+   *	[ResourceIdentifier](/../api/types#resourceidentifier) to a [ShoppingList](ctp:api:type:ShoppingList).
+   *
    *
    */
   readonly shoppingList: ShoppingListResourceIdentifier
@@ -1331,6 +1358,8 @@ export interface CartRemoveCustomLineItemAction {
 export interface CartRemoveDiscountCodeAction {
   readonly action: 'removeDiscountCode'
   /**
+   *	[Reference](/../api/types#reference) to a [DiscountCode](ctp:api:type:DiscountCode).
+   *
    *
    */
   readonly discountCode: DiscountCodeReference
@@ -1867,6 +1896,8 @@ export interface CartSetShippingAddressCustomTypeAction {
 export interface CartSetShippingMethodAction {
   readonly action: 'setShippingMethod'
   /**
+   *	[ResourceIdentifier](/../api/types#resourceidentifier) to a [ShippingMethod](ctp:api:type:ShippingMethod).
+   *
    *
    */
   readonly shippingMethod?: ShippingMethodResourceIdentifier

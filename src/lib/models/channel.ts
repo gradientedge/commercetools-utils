@@ -10,7 +10,7 @@ import { CustomFields, CustomFieldsDraft, FieldContainer, TypeResourceIdentifier
 
 export interface Channel extends BaseResource {
   /**
-   *	Unique ID of the Channel.
+   *	Platform-generated unique identifier of the Channel.
    *
    *
    */
@@ -46,7 +46,7 @@ export interface Channel extends BaseResource {
    */
   readonly createdBy?: CreatedBy
   /**
-   *	User-defined unique identifier for the Channel.
+   *	User-defined unique identifier of the Channel.
    *
    *
    */
@@ -147,7 +147,7 @@ export interface ChannelDraft {
  */
 export interface ChannelPagedQueryResponse {
   /**
-   *	Number of results requested in the query request.
+   *	Number of [results requested](/../api/general-concepts#limit).
    *
    *
    */
@@ -189,7 +189,7 @@ export interface ChannelPagedQueryResponse {
 export interface ChannelReference {
   readonly typeId: 'channel'
   /**
-   *	Unique ID of the referenced [Channel](ctp:api:type:Channel).
+   *	Platform-generated unique identifier of the referenced [Channel](ctp:api:type:Channel).
    *
    *
    */
@@ -209,13 +209,13 @@ export interface ChannelReference {
 export interface ChannelResourceIdentifier {
   readonly typeId: 'channel'
   /**
-   *	Unique ID of the referenced [Channel](ctp:api:type:Channel). Either `id` or `key` is required.
+   *	Platform-generated unique identifier of the referenced [Channel](ctp:api:type:Channel). Either `id` or `key` is required.
    *
    *
    */
   readonly id?: string
   /**
-   *	Unique key of the referenced [Channel](ctp:api:type:Channel). Either `id` or `key` is required.
+   *	User-defined unique identifier of the referenced [Channel](ctp:api:type:Channel). Either `id` or `key` is required.
    *
    *
    */

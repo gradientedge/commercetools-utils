@@ -1,8 +1,13 @@
 *.iml
 .idea
 .vscode
+.project
 
 node_modules
 .coverage
 docs
 dist
+
+src/lib/models/*
+!src/lib/models/*.ts
+src/lib/models/*.d.ts

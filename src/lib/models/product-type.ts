@@ -173,6 +173,8 @@ export interface AttributeMoneyType {
 export interface AttributeNestedType {
   readonly name: 'nested'
   /**
+   *	[Reference](/../api/types#reference) to a [ProductType](ctp:api:type:ProductType).
+   *
    *
    */
   readonly typeReference: ProductTypeReference
@@ -202,7 +204,7 @@ export interface AttributeTimeType {
 }
 export interface ProductType extends BaseResource {
   /**
-   *	The unique ID of the product type.
+   *	Platform-generated unique identifier for the ProductType.
    *
    */
   readonly id: string
@@ -232,8 +234,7 @@ export interface ProductType extends BaseResource {
    */
   readonly createdBy?: CreatedBy
   /**
-   *	User-specific unique identifier for the product type (max.
-   *	256 characters).
+   *	User-defined unique identifier of the ProductType.
    *
    */
   readonly key?: string
@@ -252,9 +253,7 @@ export interface ProductType extends BaseResource {
 }
 export interface ProductTypeDraft {
   /**
-   *	User-specific unique identifier for the product type (min.
-   *	2 and max.
-   *	256 characters).
+   *	User-defined unique identifier for the ProductType.
    *
    */
   readonly key?: string
@@ -273,6 +272,8 @@ export interface ProductTypeDraft {
 }
 export interface ProductTypePagedQueryResponse {
   /**
+   *	Number of [results requested](/../api/general-concepts#limit).
+   *
    *
    */
   readonly limit: number
@@ -293,29 +294,39 @@ export interface ProductTypePagedQueryResponse {
    */
   readonly results: ProductType[]
 }
+/**
+ *	[Reference](/../api/types#reference) to a [ProductType](ctp:api:type:ProductType).
+ *
+ */
 export interface ProductTypeReference {
   readonly typeId: 'product-type'
   /**
-   *	Unique ID of the referenced resource.
+   *	Platform-generated unique identifier of the referenced [ProductType](ctp:api:type:ProductType).
    *
    *
    */
   readonly id: string
   /**
+   *	Contains the representation of the expanded ProductType. Only present in responses to requests with [Reference Expansion](/../api/general-concepts#reference-expansion) for ProductTypes.
+   *
    *
    */
   readonly obj?: ProductType
 }
+/**
+ *	[ResourceIdentifier](/../api/types#resourceidentifier) to a [ProductType](ctp:api:type:ProductType).
+ *
+ */
 export interface ProductTypeResourceIdentifier {
   readonly typeId: 'product-type'
   /**
-   *	Unique ID of the referenced resource. Either `id` or `key` is required.
+   *	Platform-generated unique identifier of the referenced [ProductType](ctp:api:type:ProductType). Either `id` or `key` is required.
    *
    *
    */
   readonly id?: string
   /**
-   *	Unique key of the referenced resource. Either `id` or `key` is required.
+   *	User-defined unique identifier of the referenced [ProductType](ctp:api:type:ProductType). Either `id` or `key` is required.
    *
    *
    */

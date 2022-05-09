@@ -11,6 +11,7 @@ import { CustomFields, CustomFieldsDraft, FieldContainer, TypeResourceIdentifier
 
 export interface Payment extends BaseResource {
   /**
+   *	Platform-generated unique identifier of the Payment.
    *
    */
   readonly id: string
@@ -113,8 +114,7 @@ export interface Payment extends BaseResource {
    */
   readonly custom?: CustomFields
   /**
-   *	User-specific unique identifier for the payment (max.
-   *	256 characters).
+   *	User-defined unique identifier of the Payment.
    *
    */
   readonly key?: string
@@ -198,8 +198,7 @@ export interface PaymentDraft {
    */
   readonly custom?: CustomFieldsDraft
   /**
-   *	User-specific unique identifier for the payment (max.
-   *	256 characters).
+   *	User-defined unique identifier for the Payment.
    *
    */
   readonly key?: string
@@ -228,6 +227,8 @@ export interface PaymentMethodInfo {
 }
 export interface PaymentPagedQueryResponse {
   /**
+   *	Number of [results requested](/../api/general-concepts#limit).
+   *
    *
    */
   readonly limit: number
@@ -248,29 +249,39 @@ export interface PaymentPagedQueryResponse {
    */
   readonly results: Payment[]
 }
+/**
+ *	[Reference](/../api/types#reference) to a [Payment](ctp:api:type:Payment).
+ *
+ */
 export interface PaymentReference {
   readonly typeId: 'payment'
   /**
-   *	Unique ID of the referenced resource.
+   *	Platform-generated unique identifier of the referenced [Payment](ctp:api:type:Payment).
    *
    *
    */
   readonly id: string
   /**
+   *	Contains the representation of the expanded Payment. Only present in responses to requests with [Reference Expansion](/../api/general-concepts#reference-expansion) for Payments.
+   *
    *
    */
   readonly obj?: Payment
 }
+/**
+ *	[ResourceIdentifier](/../api/types#resourceidentifier) to a [Payment](ctp:api:type:Payment).
+ *
+ */
 export interface PaymentResourceIdentifier {
   readonly typeId: 'payment'
   /**
-   *	Unique ID of the referenced resource. Either `id` or `key` is required.
+   *	Platform-generated unique identifier of the referenced [Payment](ctp:api:type:Payment). Either `id` or `key` is required.
    *
    *
    */
   readonly id?: string
   /**
-   *	Unique key of the referenced resource. Either `id` or `key` is required.
+   *	User-defined unique identifier of the referenced [Payment](ctp:api:type:Payment). Either `id` or `key` is required.
    *
    *
    */
@@ -345,7 +356,7 @@ export type PaymentUpdateAction =
   | PaymentTransitionStateAction
 export interface Transaction {
   /**
-   *	The unique ID of this object.
+   *	Platform-generated unique identifier of the Transaction.
    *
    */
   readonly id: string

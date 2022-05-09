@@ -222,7 +222,7 @@ export type StagedOrderUpdateAction =
   | StagedOrderUpdateSyncInfoAction
 export interface Hit {
   /**
-   *	Unique ID of the Order.
+   *	Platform-generated unique identifier of the Order.
    *
    */
   readonly id: string
@@ -261,6 +261,7 @@ export interface OrderPagedSearchResponse {
 }
 export interface Delivery {
   /**
+   *	Platform-generated unique identifier of the Delivery.
    *
    */
   readonly id: string
@@ -290,6 +291,7 @@ export interface Delivery {
 }
 export interface DeliveryItem {
   /**
+   *	Platform-generated unique identifier of the DeliveryItem.
    *
    */
   readonly id: string
@@ -380,7 +382,7 @@ export interface LineItemImportDraft {
 }
 export interface Order extends BaseResource {
   /**
-   *	The unique ID of the order.
+   *	Platform-generated unique identifier of the Order.
    *
    */
   readonly id: string
@@ -575,7 +577,7 @@ export interface Order extends BaseResource {
 }
 export interface OrderFromCartDraft {
   /**
-   *	The unique id of the cart from which an order is created.
+   *	Platform-generated unique identifier of the Cart from which you can create an Order.
    *	@deprecated
    */
   readonly id?: string
@@ -615,10 +617,9 @@ export interface OrderFromCartDraft {
    */
   readonly state?: StateResourceIdentifier
   /**
-   *	[Custom Fields](/../api/projects/custom-fields) to be added to the Order.
-   *
-   *	- If provided, only the Custom Fields given here are added to the Order and the Custom Fields on the referenced [Cart](/../api/projects/carts#cart) are ignored.
-   *	- If not provided, the Custom Fields on the referenced [Cart](/../api/projects/carts#cart) are added to the Order automatically.
+   *	[Custom Fields](/../api/projects/custom-fields) for the Order. The Custom Field type must match the type of the Custom Fields in the referenced [Cart](/../api/projects/carts#cart).
+   *	If specified, the Custom Fields are merged with the Custom Fields on the referenced [Cart](/../api/projects/carts#cart) and added to the Order.
+   *	If empty, the Custom Fields on the referenced [Cart](/../api/projects/carts#cart) are added to the Order automatically.
    *
    *
    */
@@ -745,6 +746,8 @@ export interface OrderImportDraft {
 }
 export interface OrderPagedQueryResponse {
   /**
+   *	Number of [results requested](/../api/general-concepts#limit).
+   *
    *
    */
   readonly limit: number
@@ -886,6 +889,7 @@ export type OrderUpdateAction =
   | OrderUpdateSyncInfoAction
 export interface Parcel {
   /**
+   *	Platform-generated unique identifier of the Parcel.
    *
    */
   readonly id: string
@@ -1024,6 +1028,7 @@ export type ReturnItem = CustomLineItemReturnItem | LineItemReturnItem
 export interface CustomLineItemReturnItem {
   readonly type: 'CustomLineItemReturnItem'
   /**
+   *	Platform-generated unique identifier of the ReturnItem.
    *
    */
   readonly id: string
@@ -1064,6 +1069,7 @@ export interface CustomLineItemReturnItem {
 export interface LineItemReturnItem {
   readonly type: 'LineItemReturnItem'
   /**
+   *	Platform-generated unique identifier of the ReturnItem.
    *
    */
   readonly id: string
@@ -1279,6 +1285,8 @@ export interface OrderAddParcelToDeliveryAction {
 export interface OrderAddPaymentAction {
   readonly action: 'addPayment'
   /**
+   *	[ResourceIdentifier](/../api/types#resourceidentifier) to a [Payment](ctp:api:type:Payment).
+   *
    *
    */
   readonly payment: PaymentResourceIdentifier
@@ -1365,6 +1373,8 @@ export interface OrderRemoveParcelFromDeliveryAction {
 export interface OrderRemovePaymentAction {
   readonly action: 'removePayment'
   /**
+   *	[ResourceIdentifier](/../api/types#resourceidentifier) to a [Payment](ctp:api:type:Payment).
+   *
    *
    */
   readonly payment: PaymentResourceIdentifier

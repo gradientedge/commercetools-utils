@@ -23,7 +23,7 @@ export interface PriceFunction {
 }
 export interface ShippingMethod extends BaseResource {
   /**
-   *	The unique ID of the shipping method.
+   *	Platform-generated unique identifier of the ShippingMethod.
    *
    */
   readonly id: string
@@ -53,7 +53,7 @@ export interface ShippingMethod extends BaseResource {
    */
   readonly createdBy?: CreatedBy
   /**
-   *	User-specific unique identifier for the shipping method
+   *	User-defined unique identifier of the ShippingMethod.
    *
    */
   readonly key?: string
@@ -98,6 +98,8 @@ export interface ShippingMethod extends BaseResource {
 }
 export interface ShippingMethodDraft {
   /**
+   *	User-defined unique identifier for the ShippingMethod.
+   *
    *
    */
   readonly key?: string
@@ -162,29 +164,39 @@ export interface ShippingMethodPagedQueryResponse {
    */
   readonly results: ShippingMethod[]
 }
+/**
+ *	[Reference](/../api/types#reference) to a [ShippingMethod](ctp:api:type:ShippingMethod).
+ *
+ */
 export interface ShippingMethodReference {
   readonly typeId: 'shipping-method'
   /**
-   *	Unique ID of the referenced resource.
+   *	Platform-generated unique identifier of the referenced [ShippingMethod](ctp:api:type:ShippingMethod).
    *
    *
    */
   readonly id: string
   /**
+   *	Contains the representation of the expanded Review. Only present in responses to requests with [Reference Expansion](/../api/general-concepts#reference-expansion) for ShippingMethods.
+   *
    *
    */
   readonly obj?: ShippingMethod
 }
+/**
+ *	[ResourceIdentifier](/../api/types#resourceidentifier) to a [ShippingMethod](ctp:api:type:ShippingMethod).
+ *
+ */
 export interface ShippingMethodResourceIdentifier {
   readonly typeId: 'shipping-method'
   /**
-   *	Unique ID of the referenced resource. Either `id` or `key` is required.
+   *	Platform-generated unique identifier of the referenced [ShippingMethod](ctp:api:type:ShippingMethod). Either `id` or `key` is required.
    *
    *
    */
   readonly id?: string
   /**
-   *	Unique key of the referenced resource. Either `id` or `key` is required.
+   *	User-defined unique identifier of the referenced [ShippingMethod](ctp:api:type:ShippingMethod). Either `id` or `key` is required.
    *
    *
    */
