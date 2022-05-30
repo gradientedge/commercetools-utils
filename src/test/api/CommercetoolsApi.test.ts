@@ -234,6 +234,21 @@ describe('CommercetoolsApi', () => {
       })
     })
 
+    describe('getChannelByKey', () => {
+      it('should make a GET request to the correct endpoint', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com', {
+          encodedQueryParams: true,
+        })
+          .get('/test-project-key/channels/key=my-channel-key')
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const channel = await api.getChannelByKey({ key: 'my-channel-key' })
+
+        expect(channel).toEqual({ success: true })
+      })
+    })
+
     describe('queryChannels', () => {
       it('should make a GET request to the correct endpoint when no parameters are passed', async () => {
         nock('https://api.europe-west1.gcp.commercetools.com')
