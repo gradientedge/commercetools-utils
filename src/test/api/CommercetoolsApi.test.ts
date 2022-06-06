@@ -2686,6 +2686,66 @@ describe('CommercetoolsApi', () => {
     })
   })
 
+  describe('States', () => {
+    describe('getStateById', () => {
+      it('should make a GET request to the correct endpoint', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com')
+          .get('/test-project-key/states/my-state-id')
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const product = await api.getStateById({ id: 'my-state-id' })
+
+        expect(product).toEqual({ success: true })
+      })
+    })
+
+    describe('getStateByKey', () => {
+      it('should make a GET request to the correct endpoint', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com')
+          .get('/test-project-key/states/key=my-state-key')
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const product = await api.getStateByKey({ key: 'my-state-key' })
+
+        expect(product).toEqual({ success: true })
+      })
+    })
+
+    describe('queryStates', () => {
+      it('should make a GET request to the correct endpoint when no parameters are passed', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com', {
+          encodedQueryParams: true,
+        })
+          .get('/test-project-key/states')
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const product = await api.queryStates()
+
+        expect(product).toEqual({ success: true })
+      })
+
+      it('should make a GET request to the correct endpoint with the passed in parameters in the querystring', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com', {
+          encodedQueryParams: true,
+        })
+          .get('/test-project-key/states?where=name(en%3D%22test%22)')
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const product = await api.queryStates({
+          params: {
+            where: 'name(en="test")',
+          },
+        })
+
+        expect(product).toEqual({ success: true })
+      })
+    })
+  })
+
   describe('graphql', () => {
     it('should call the /graphql endpoint with the data passed in, using the client access token', async () => {
       nock('https://api.europe-west1.gcp.commercetools.com', {
