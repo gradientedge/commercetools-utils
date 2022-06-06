@@ -66,6 +66,8 @@ import type {
   ProductUpdate,
   ShippingMethod,
   ShippingMethodPagedQueryResponse,
+  State,
+  StatePagedQueryResponse,
   Store,
   StoreDraft,
   StorePagedQueryResponse,
@@ -2046,6 +2048,42 @@ export class CommercetoolsApi {
         ...options.params,
         version: options.version,
       },
+    })
+  }
+
+  /**
+   * Get a state given it's id
+   * https://docs.commercetools.com/api/projects/states#get-state-by-id
+   */
+  getStateById(options: CommonRequestOptions & { id: string }): Promise<State> {
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/states/${options.id}`,
+      method: 'GET',
+    })
+  }
+
+  /**
+   * Get a state given it's key
+   * https://docs.commercetools.com/api/projects/states#get-state-by-key
+   */
+  getStateByKey(options: CommonRequestOptions & { key: string }): Promise<State> {
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/states/key=${options.key}`,
+      method: 'GET',
+    })
+  }
+
+  /**
+   * Query state
+   * https://docs.commercetools.com/api/projects/states#query-states
+   */
+  queryStates(options?: CommonRequestOptions): Promise<StatePagedQueryResponse> {
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: '/states',
+      method: 'GET',
     })
   }
 
