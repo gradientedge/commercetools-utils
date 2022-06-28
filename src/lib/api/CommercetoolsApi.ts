@@ -206,9 +206,9 @@ export interface CommonRequestOptions {
   correlationId?: string
 
   /**
-   * Query string parameters.
+   * Query string parameters. For repeated param=value in the query string, define a array with values
    */
-  params?: Record<string, any>
+  params?: Record<string, undefined | string | boolean | number | (string | boolean | number)[]>
 
   /**
    * Retry configuration
