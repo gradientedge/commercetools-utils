@@ -19,11 +19,11 @@ describe('scopeRequestStringToArray', () => {
     expect(scopeRequestStringToArray('')).toEqual([])
   })
 
-  it('should return a array with one item when a string with one scope is provided', () => {
+  it('should return an array with one item when a string with one scope is provided', () => {
     expect(scopeRequestStringToArray('scope1:test')).toEqual(['scope1'])
   })
 
-  it('should return a array with two items when a string with two scopes is provided', () => {
+  it('should return an array with two items when a string with two scopes is provided', () => {
     expect(scopeRequestStringToArray('scope1:test scope2:test')).toEqual(['scope1', 'scope2'])
   })
 })
