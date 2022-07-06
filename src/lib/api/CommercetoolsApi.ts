@@ -1,7 +1,7 @@
 import axios, { AxiosInstance } from 'axios'
 import qs from 'qs'
 import { CommercetoolsApiConfig, CommercetoolsRetryConfig } from './types'
-import { CommercetoolsAuth } from '../'
+import { CommercetoolsAuth, PaymentDraft } from '../'
 import { CommercetoolsError } from '../error'
 import { REGION_URLS } from '../auth/constants'
 import { RegionEndpoints } from '../types'
@@ -996,7 +996,7 @@ export class CommercetoolsApi {
    * Create a payment object:
    * https://docs.commercetools.com/api/projects/payments#create-a-payment
    */
-  createPayment(options: CommonRequestOptions & { data: MyPaymentDraft }): Promise<Payment> {
+  createPayment(options: CommonRequestOptions & { data: PaymentDraft }): Promise<Payment> {
     return this.request({
       ...this.extractCommonRequestOptions(options),
       path: '/payments',
