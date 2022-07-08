@@ -1,7 +1,7 @@
 import axios, { AxiosInstance } from 'axios'
 import qs from 'qs'
 import { CommercetoolsApiConfig, CommercetoolsRetryConfig } from './types'
-import { CommercetoolsAuth, PaymentDraft } from '../'
+import { CommercetoolsAuth, OrderFromCartDraft, PaymentDraft } from '../'
 import { CommercetoolsError } from '../error'
 import { REGION_URLS } from '../auth/constants'
 import { RegionEndpoints } from '../types'
@@ -973,6 +973,24 @@ export class CommercetoolsApi {
         id: cart.id,
       },
       accessToken: options.accessToken,
+    })
+  }
+
+  /**
+   * Create an order from the given cart id. The cart id and version are automatically
+   * retrieved by looking up the cart:
+   * https://docs.commercetools.com/api/projects/orders#create-order
+   */
+  async createOrderFromCart(options: CommonStoreEnabledRequestOptions & { id: string }): Promise<Order> {
+    const cart = await this.getCartById(options)
+    return this.request<OrderFromCartDraft, Order>({
+      ...this.extractCommonRequestOptions(options),
+      path: this.applyStore('/orders', options.storeKey),
+      method: 'POST',
+      data: {
+        version: cart.version,
+        id: cart.id,
+      },
     })
   }
 
