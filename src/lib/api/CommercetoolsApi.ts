@@ -74,6 +74,7 @@ import type {
   StoreUpdate,
   Type,
 } from '../models'
+import { Status } from '@tshttp/status'
 
 export interface FetchOptions<T = Record<string, any>> {
   /**
@@ -183,7 +184,13 @@ const DEFAULT_RETRY_CONFIG: CommercetoolsRetryConfig = {
 /**
  * List of status codes which are allowed to retry
  */
-const RETRYABLE_STATUS_CODES: number[] = [500, 501, 502, 503, 504]
+const RETRYABLE_STATUS_CODES: number[] = [
+  Status.InternalServerError,
+  Status.NotImplemented,
+  Status.BadGateway,
+  Status.ServiceUnavailable,
+  Status.GatewayTimeout,
+]
 
 /**
  * The config options passed in to the {@see HttpsAgent.Agent} used
