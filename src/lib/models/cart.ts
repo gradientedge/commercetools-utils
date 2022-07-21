@@ -4,7 +4,7 @@
  * For more information about the commercetools platform APIs, visit https://docs.commercetools.com/.
  */
 
-import { CartDiscountReference } from './cart-discount'
+import { CartDiscountReference, CartDiscountTarget, CartDiscountValueDraft } from './cart-discount'
 import { ChannelReference, ChannelResourceIdentifier } from './channel'
 import {
   Address,
@@ -457,6 +457,7 @@ export type CartUpdateAction =
   | CartSetDeleteDaysAfterLastModificationAction
   | CartSetDeliveryAddressCustomFieldAction
   | CartSetDeliveryAddressCustomTypeAction
+  | CartSetDirectDiscountsAction
   | CartSetItemShippingAddressCustomFieldAction
   | CartSetItemShippingAddressCustomTypeAction
   | CartSetKeyAction
@@ -588,6 +589,16 @@ export interface CustomLineItemDraft {
    *
    */
   readonly shippingDetails?: ItemShippingDetailsDraft
+}
+export interface DirectDiscountDraft {
+  /**
+   * The value of the direct discount
+   */
+  value: CartDiscountValueDraft
+  /**
+   * What parts of the cart benefit from it
+   */
+  target?: CartDiscountTarget
 }
 export interface DiscountCodeInfo {
   /**
@@ -1672,6 +1683,15 @@ export interface CartSetDeliveryAddressCustomTypeAction {
    *
    */
   readonly fields?: FieldContainer
+}
+export interface CartSetDirectDiscountsAction {
+  readonly action: 'setDirectDiscounts'
+  /**
+   * Adds DirectDiscounts to the Cart or Order. If not empty, the action replaces all existing DirectDiscounts. If empty,
+   * the action removes all existing DirectDiscounts and recalculates all affected prices on the cart or order.
+   * Adding DirectDiscounts is only possible if no DiscountCode has been applied to the Cart or Order.
+   */
+  readonly discounts: DirectDiscountDraft[]
 }
 export interface CartSetItemShippingAddressCustomFieldAction {
   readonly action: 'setItemShippingAddressCustomField'
