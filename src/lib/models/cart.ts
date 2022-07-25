@@ -608,6 +608,7 @@ export interface DirectDiscount {
    * Optional - Empty when the value has type giftLineItem, otherwise a CartDiscountTarget is set.
    * Defines which line item(s) are reduced in price
    */
+  target?: CartDiscountTarget
 }
 export interface DirectDiscountDraft {
   /**
