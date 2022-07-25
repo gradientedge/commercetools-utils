@@ -4,7 +4,7 @@
  * For more information about the commercetools platform APIs, visit https://docs.commercetools.com/.
  */
 
-import { CartDiscountReference, CartDiscountTarget, CartDiscountValueDraft } from './cart-discount'
+import { CartDiscountReference, CartDiscountTarget, CartDiscountValue, CartDiscountValueDraft } from './cart-discount'
 import { ChannelReference, ChannelResourceIdentifier } from './channel'
 import {
   Address,
@@ -157,6 +157,11 @@ export interface Cart extends BaseResource {
    *
    */
   readonly shippingInfo?: ShippingInfo
+  /**
+   * The DirectDiscounts that change the order price with external price reductions
+   *
+   */
+  readonly directDiscounts?: DirectDiscount[]
   /**
    *
    */
@@ -589,6 +594,20 @@ export interface CustomLineItemDraft {
    *
    */
   readonly shippingDetails?: ItemShippingDetailsDraft
+}
+export interface DirectDiscount {
+  /**
+   * The unique ID of the DirectDiscount.
+   */
+  id: string
+  /**
+   * The value of the discount
+   */
+  value: CartDiscountValue
+  /**
+   * Optional - Empty when the value has type giftLineItem, otherwise a CartDiscountTarget is set.
+   * Defines which line item(s) are reduced in price
+   */
 }
 export interface DirectDiscountDraft {
   /**
