@@ -10,7 +10,7 @@ import { CustomFields, CustomFieldsDraft, FieldContainer, TypeResourceIdentifier
 
 export interface Channel extends BaseResource {
   /**
-   *	Platform-generated unique identifier of the Channel.
+   *	Unique identifier of the Channel.
    *
    *
    */
@@ -135,7 +135,7 @@ export interface ChannelDraft {
   readonly custom?: CustomFieldsDraft
   /**
    *	GeoJSON geometry object encoding the geo location of the Channel.
-   *	Currently, only the [Point](/../api/types#point) type is supported.
+   *	Currently, only the [Point](ctp:api:type:GeoJsonPoint) type is supported.
    *
    *
    */
@@ -153,8 +153,7 @@ export interface ChannelPagedQueryResponse {
    */
   readonly limit: number
   /**
-   *	Offset supplied by the client or server default.
-   *	It is the number of elements skipped, not a page number.
+   *	Number of [elements skipped](/../api/general-concepts#offset).
    *
    *
    */
@@ -183,13 +182,13 @@ export interface ChannelPagedQueryResponse {
   readonly results: Channel[]
 }
 /**
- *	[Reference](/../api/types#reference) to a [Channel](ctp:api:type:Channel).
+ *	[Reference](ctp:api:type:Reference) to a [Channel](ctp:api:type:Channel).
  *
  */
 export interface ChannelReference {
   readonly typeId: 'channel'
   /**
-   *	Platform-generated unique identifier of the referenced [Channel](ctp:api:type:Channel).
+   *	Unique identifier of the referenced [Channel](ctp:api:type:Channel).
    *
    *
    */
@@ -203,13 +202,13 @@ export interface ChannelReference {
   readonly obj?: Channel
 }
 /**
- *	[ResourceIdentifier](/../api/types#resourceidentifier) to a [Channel](ctp:api:type:Channel).
+ *	[ResourceIdentifier](ctp:api:type:ResourceIdentifier) to a [Channel](ctp:api:type:Channel).
  *
  */
 export interface ChannelResourceIdentifier {
   readonly typeId: 'channel'
   /**
-   *	Platform-generated unique identifier of the referenced [Channel](ctp:api:type:Channel). Either `id` or `key` is required.
+   *	Unique identifier of the referenced [Channel](ctp:api:type:Channel). Either `id` or `key` is required.
    *
    *
    */

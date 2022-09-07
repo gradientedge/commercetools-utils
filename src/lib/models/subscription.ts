@@ -59,12 +59,12 @@ export interface AzureServiceBusDestination {
 export interface EventBridgeDestination {
   readonly type: 'EventBridge'
   /**
-   *	AWS region to which commercetools sends the events.
+   *	AWS region of the Subscriptions that receives the events.
    *
    */
   readonly region: string
   /**
-   *	ID of the AWS account that receives events from the commercetools platform.
+   *	ID of the AWS account that receives events.
    *
    */
   readonly accountId: string
@@ -94,6 +94,8 @@ export interface MessageDeliveryPayload {
    */
   readonly projectKey: string
   /**
+   *	A Reference represents a loose reference to another resource in the same Project identified by its `id`. The `typeId` indicates the type of the referenced resource. Each resource type has its corresponding Reference type, like [ChannelReference](ctp:api:type:ChannelReference).  A referenced resource can be embedded through [Reference Expansion](/general-concepts#reference-expansion). The expanded reference is the value of an additional `obj` field then.
+   *
    *
    */
   readonly resource: Reference
@@ -160,6 +162,8 @@ export interface ResourceCreatedDeliveryPayload {
    */
   readonly projectKey: string
   /**
+   *	A Reference represents a loose reference to another resource in the same Project identified by its `id`. The `typeId` indicates the type of the referenced resource. Each resource type has its corresponding Reference type, like [ChannelReference](ctp:api:type:ChannelReference).  A referenced resource can be embedded through [Reference Expansion](/general-concepts#reference-expansion). The expanded reference is the value of an additional `obj` field then.
+   *
    *
    */
   readonly resource: Reference
@@ -183,6 +187,8 @@ export interface ResourceDeletedDeliveryPayload {
    */
   readonly projectKey: string
   /**
+   *	A Reference represents a loose reference to another resource in the same Project identified by its `id`. The `typeId` indicates the type of the referenced resource. Each resource type has its corresponding Reference type, like [ChannelReference](ctp:api:type:ChannelReference).  A referenced resource can be embedded through [Reference Expansion](/general-concepts#reference-expansion). The expanded reference is the value of an additional `obj` field then.
+   *
    *
    */
   readonly resource: Reference
@@ -210,6 +216,8 @@ export interface ResourceUpdatedDeliveryPayload {
    */
   readonly projectKey: string
   /**
+   *	A Reference represents a loose reference to another resource in the same Project identified by its `id`. The `typeId` indicates the type of the referenced resource. Each resource type has its corresponding Reference type, like [ChannelReference](ctp:api:type:ChannelReference).  A referenced resource can be embedded through [Reference Expansion](/general-concepts#reference-expansion). The expanded reference is the value of an additional `obj` field then.
+   *
    *
    */
   readonly resource: Reference
@@ -266,7 +274,7 @@ export interface SqsDestination {
 }
 export interface Subscription extends BaseResource {
   /**
-   *	Platform-generated unique identifier of the Subscription.
+   *	Unique identifier of the Subscription.
    *
    */
   readonly id: string
@@ -365,6 +373,8 @@ export interface SubscriptionPagedQueryResponse {
    */
   readonly total?: number
   /**
+   *	Number of [elements skipped](/../api/general-concepts#offset).
+   *
    *
    */
   readonly offset: number

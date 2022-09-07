@@ -13,7 +13,7 @@ import { CustomFields, CustomFieldsDraft, FieldContainer, TypeResourceIdentifier
 
 export interface ShoppingList extends BaseResource {
   /**
-   *	Platform-generated unique identifier of the ShoppingList.
+   *	Unique identifier of the ShoppingList.
    *
    */
   readonly id: string
@@ -163,11 +163,13 @@ export interface ShoppingListLineItem {
    */
   readonly deactivatedAt?: string
   /**
-   *	Platform-generated unique identifier of the ShoppingListLineItem.
+   *	Unique identifier of the ShoppingListLineItem.
    *
    */
   readonly id: string
   /**
+   *	JSON object where the keys are of type [Locale](ctp:api:type:Locale), and the values are the strings used for the corresponding language.
+   *
    *
    */
   readonly name: LocalizedString
@@ -176,11 +178,13 @@ export interface ShoppingListLineItem {
    */
   readonly productId: string
   /**
+   *	JSON object where the keys are of type [Locale](ctp:api:type:Locale), and the values are the strings used for the corresponding language.
+   *
    *
    */
   readonly productSlug?: LocalizedString
   /**
-   *	[Reference](/../api/types#reference) to a [ProductType](ctp:api:type:ProductType).
+   *	[Reference](ctp:api:type:Reference) to a [ProductType](ctp:api:type:ProductType).
    *
    *
    */
@@ -242,6 +246,8 @@ export interface ShoppingListPagedQueryResponse {
    */
   readonly total?: number
   /**
+   *	Number of [elements skipped](/../api/general-concepts#offset).
+   *
    *
    */
   readonly offset: number
@@ -251,13 +257,13 @@ export interface ShoppingListPagedQueryResponse {
   readonly results: ShoppingList[]
 }
 /**
- *	[Reference](/../api/types#reference) to a [ShoppingList](ctp:api:type:ShoppingList).
+ *	[Reference](ctp:api:type:Reference) to a [ShoppingList](ctp:api:type:ShoppingList).
  *
  */
 export interface ShoppingListReference {
   readonly typeId: 'shopping-list'
   /**
-   *	Platform-generated unique identifier of the referenced [ShoppingList](ctp:api:type:ShoppingList).
+   *	Unique identifier of the referenced [ShoppingList](ctp:api:type:ShoppingList).
    *
    *
    */
@@ -270,13 +276,13 @@ export interface ShoppingListReference {
   readonly obj?: ShoppingList
 }
 /**
- *	[ResourceIdentifier](/../api/types#resourceidentifier) to a [ShoppingList](ctp:api:type:ShoppingList).
+ *	[ResourceIdentifier](ctp:api:type:ResourceIdentifier) to a [ShoppingList](ctp:api:type:ShoppingList).
  *
  */
 export interface ShoppingListResourceIdentifier {
   readonly typeId: 'shopping-list'
   /**
-   *	Platform-generated unique identifier of the referenced [ShoppingList](ctp:api:type:ShoppingList). Either `id` or `key` is required.
+   *	Unique identifier of the referenced [ShoppingList](ctp:api:type:ShoppingList). Either `id` or `key` is required.
    *
    *
    */
@@ -338,7 +344,7 @@ export interface TextLineItem {
    */
   readonly description?: LocalizedString
   /**
-   *	Platform-generated unique identifier of the TextLineItem.
+   *	Unique identifier of the TextLineItem.
    *
    */
   readonly id: string
@@ -408,10 +414,14 @@ export interface ShoppingListAddLineItemAction {
 export interface ShoppingListAddTextLineItemAction {
   readonly action: 'addTextLineItem'
   /**
+   *	JSON object where the keys are of type [Locale](ctp:api:type:Locale), and the values are the strings used for the corresponding language.
+   *
    *
    */
   readonly name: LocalizedString
   /**
+   *	JSON object where the keys are of type [Locale](ctp:api:type:Locale), and the values are the strings used for the corresponding language.
+   *
    *
    */
   readonly description?: LocalizedString
@@ -462,6 +472,8 @@ export interface ShoppingListChangeTextLineItemNameAction {
    */
   readonly textLineItemId: string
   /**
+   *	JSON object where the keys are of type [Locale](ctp:api:type:Locale), and the values are the strings used for the corresponding language.
+   *
    *
    */
   readonly name: LocalizedString
@@ -680,6 +692,8 @@ export interface ShoppingListSetTextLineItemDescriptionAction {
    */
   readonly textLineItemId: string
   /**
+   *	JSON object where the keys are of type [Locale](ctp:api:type:Locale), and the values are the strings used for the corresponding language.
+   *
    *
    */
   readonly description?: LocalizedString

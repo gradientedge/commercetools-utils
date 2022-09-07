@@ -28,6 +28,7 @@ import { CartDiscountReference } from './cart-discount'
 import { ChannelReference, ChannelResourceIdentifier } from './channel'
 import {
   Address,
+  AddressDraft,
   BaseAddress,
   BaseResource,
   CreatedBy,
@@ -128,6 +129,7 @@ import {
 } from './order-edit'
 import { PaymentReference, PaymentResourceIdentifier } from './payment'
 import { Attribute } from './product'
+import { QuoteReference, QuoteResourceIdentifier } from './quote'
 import { ShippingMethodResourceIdentifier, ShippingRateDraft } from './shipping-method'
 import { StateReference, StateResourceIdentifier } from './state'
 import { StoreKeyReference, StoreResourceIdentifier } from './store'
@@ -222,7 +224,7 @@ export type StagedOrderUpdateAction =
   | StagedOrderUpdateSyncInfoAction
 export interface Hit {
   /**
-   *	Platform-generated unique identifier of the Order.
+   *	Unique identifier of the Order.
    *
    */
   readonly id: string
@@ -244,12 +246,14 @@ export interface OrderPagedSearchResponse {
    */
   readonly total: number
   /**
-   *	Number of results skipped, used for pagination.
+   *	Number of [elements skipped](/../api/general-concepts#offset).
+   *
    *
    */
   readonly offset?: number
   /**
-   *	Number of results the response should contain at maximum, used for pagination.
+   *	Number of [results requested](/../api/general-concepts#limit).
+   *
    *
    */
   readonly limit?: number
@@ -261,7 +265,7 @@ export interface OrderPagedSearchResponse {
 }
 export interface Delivery {
   /**
-   *	Platform-generated unique identifier of the Delivery.
+   *	Unique identifier of the Delivery.
    *
    */
   readonly id: string
@@ -289,9 +293,30 @@ export interface Delivery {
    */
   readonly custom?: CustomFields
 }
+export interface DeliveryDraft {
+  /**
+   *	Items which are shipped in this delivery regardless their distribution over several parcels.
+   *	Can also be specified individually for each Parcel.
+   *
+   */
+  readonly items?: DeliveryItem[]
+  /**
+   *
+   */
+  readonly parcels?: ParcelDraft[]
+  /**
+   *
+   */
+  readonly address?: AddressDraft
+  /**
+   *	Custom Fields for the Transaction.
+   *
+   */
+  readonly custom?: CustomFieldsDraft
+}
 export interface DeliveryItem {
   /**
-   *	Platform-generated unique identifier of the DeliveryItem.
+   *	Unique identifier of the DeliveryItem.
    *
    */
   readonly id: string
@@ -303,6 +328,7 @@ export interface DeliveryItem {
 export interface DiscountedLineItemPriceDraft {
   /**
    *	Draft type that stores amounts in cent precision for the specified currency.
+   *
    *	For storing money values in fractions of the minor unit in a currency, use [HighPrecisionMoneyDraft](ctp:api:type:HighPrecisionMoneyDraft) instead.
    *
    *
@@ -376,13 +402,19 @@ export interface LineItemImportDraft {
    */
   readonly custom?: CustomFieldsDraft
   /**
+   *	Inventory mode specific to the line item only, valid for the entire `quantity` of the line item.
+   *	Set only if inventory mode should be different from the `inventoryMode` specified on the [OrderImportDraft](ctp:api:type:OrderImportDraft).
+   *
+   */
+  readonly inventoryMode?: InventoryMode
+  /**
    *
    */
   readonly shippingDetails?: ItemShippingDetailsDraft
 }
 export interface Order extends BaseResource {
   /**
-   *	Platform-generated unique identifier of the Order.
+   *	Unique identifier of the Order.
    *
    */
   readonly id: string
@@ -523,17 +555,21 @@ export interface Order extends BaseResource {
    */
   readonly discountCodes?: DiscountCodeInfo[]
   /**
-   *	The sequence number of the last order message produced by changes to this order.
-   *	`0` means, that no messages were created yet.
-   *
+   *	Internal-only field.
+   *	@deprecated
    */
-  readonly lastMessageSequenceNumber: number
+  readonly lastMessageSequenceNumber?: number
   /**
    *	Set when this order was created from a cart.
    *	The cart will have the state `Ordered`.
    *
    */
   readonly cart?: CartReference
+  /**
+   *	Set when this order was created from a quote.
+   *
+   */
+  readonly quote?: QuoteReference
   /**
    *
    */
@@ -577,7 +613,7 @@ export interface Order extends BaseResource {
 }
 export interface OrderFromCartDraft {
   /**
-   *	Platform-generated unique identifier of the Cart from which you can create an Order.
+   *	Unique identifier of the Cart from which you can create an Order.
    *	@deprecated
    */
   readonly id?: string
@@ -624,6 +660,45 @@ export interface OrderFromCartDraft {
    *
    */
   readonly custom?: CustomFieldsDraft
+}
+export interface OrderFromQuoteDraft {
+  /**
+   *	ResourceIdentifier to the Quote from which this order is created. If the quote has `QuoteState` in `Accepted`, `Declined` or `Withdrawn` then the order creation will fail. The creation will also if the `Quote` has expired (`validTo` check).
+   *
+   */
+  readonly quote: QuoteResourceIdentifier
+  /**
+   *	The `version` of the [Quote](ctp:api:type:quote) from which an Order is created.
+   *
+   *
+   */
+  readonly version: number
+  /**
+   *	String that uniquely identifies an order.
+   *	It can be used to create more human-readable (in contrast to ID) identifier for the order.
+   *	It should be unique across a project.
+   *	Once it's set it cannot be changed.
+   *	For easier use on Get, Update and Delete actions we suggest assigning order numbers that match the regular expression `[a-z0-9_\-]{2,36}`.
+   *
+   */
+  readonly orderNumber?: string
+  /**
+   *
+   */
+  readonly paymentState?: PaymentState
+  /**
+   *
+   */
+  readonly shipmentState?: ShipmentState
+  /**
+   *	Order will be created with `Open` status by default.
+   *
+   */
+  readonly orderState?: OrderState
+  /**
+   *
+   */
+  readonly state?: StateResourceIdentifier
 }
 export interface OrderImportDraft {
   /**
@@ -760,6 +835,8 @@ export interface OrderPagedQueryResponse {
    */
   readonly total?: number
   /**
+   *	Number of [elements skipped](/../api/general-concepts#offset).
+   *
    *
    */
   readonly offset: number
@@ -784,13 +861,13 @@ export interface OrderReference {
 export interface OrderResourceIdentifier {
   readonly typeId: 'order'
   /**
-   *	Unique ID of the referenced resource. Either `id` or `key` is required.
+   *	Unique identifier of the referenced resource. Required if `key` is absent.
    *
    *
    */
   readonly id?: string
   /**
-   *	Unique key of the referenced resource. Either `id` or `key` is required.
+   *	User-defined unique identifier of the referenced resource. Required if `id` is absent.
    *
    *
    */
@@ -889,7 +966,7 @@ export type OrderUpdateAction =
   | OrderUpdateSyncInfoAction
 export interface Parcel {
   /**
-   *	Platform-generated unique identifier of the Parcel.
+   *	Unique identifier of the Parcel.
    *
    */
   readonly id: string
@@ -975,8 +1052,8 @@ export interface ProductVariantImportDraft {
    */
   readonly sku?: string
   /**
-   *	The prices of the variant.
-   *	The prices should not contain two prices for the same price scope (same currency, country and customer group).
+   *	The [EmbeddedPrices](ctp:api:type:EmbeddedPrice) of the variant.
+   *	The prices should not contain two prices for the same price scope (same currency, country, customer group, channel, valid from and valid until).
    *	If this property is defined, then it will override the `prices` property from the original product variant, otherwise `prices` property from the original product variant would be copied in the resulting order.
    *
    */
@@ -1028,7 +1105,7 @@ export type ReturnItem = CustomLineItemReturnItem | LineItemReturnItem
 export interface CustomLineItemReturnItem {
   readonly type: 'CustomLineItemReturnItem'
   /**
-   *	Platform-generated unique identifier of the ReturnItem.
+   *	Unique identifier of the ReturnItem.
    *
    */
   readonly id: string
@@ -1069,7 +1146,7 @@ export interface CustomLineItemReturnItem {
 export interface LineItemReturnItem {
   readonly type: 'LineItemReturnItem'
   /**
-   *	Platform-generated unique identifier of the ReturnItem.
+   *	Unique identifier of the ReturnItem.
    *
    */
   readonly id: string
@@ -1168,7 +1245,7 @@ export interface ShippingInfoImportDraft {
    *	Deliveries are compilations of information on how the articles are being delivered to the customers.
    *
    */
-  readonly deliveries?: Delivery[]
+  readonly deliveries?: DeliveryDraft[]
   /**
    *
    */
@@ -1198,6 +1275,7 @@ export interface SyncInfo {
 export interface TaxedItemPriceDraft {
   /**
    *	Draft type that stores amounts in cent precision for the specified currency.
+   *
    *	For storing money values in fractions of the minor unit in a currency, use [HighPrecisionMoneyDraft](ctp:api:type:HighPrecisionMoneyDraft) instead.
    *
    *
@@ -1205,6 +1283,7 @@ export interface TaxedItemPriceDraft {
   readonly totalNet: Money
   /**
    *	Draft type that stores amounts in cent precision for the specified currency.
+   *
    *	For storing money values in fractions of the minor unit in a currency, use [HighPrecisionMoneyDraft](ctp:api:type:HighPrecisionMoneyDraft) instead.
    *
    *
@@ -1285,7 +1364,7 @@ export interface OrderAddParcelToDeliveryAction {
 export interface OrderAddPaymentAction {
   readonly action: 'addPayment'
   /**
-   *	[ResourceIdentifier](/../api/types#resourceidentifier) to a [Payment](ctp:api:type:Payment).
+   *	[ResourceIdentifier](ctp:api:type:ResourceIdentifier) to a [Payment](ctp:api:type:Payment).
    *
    *
    */
@@ -1373,7 +1452,7 @@ export interface OrderRemoveParcelFromDeliveryAction {
 export interface OrderRemovePaymentAction {
   readonly action: 'removePayment'
   /**
-   *	[ResourceIdentifier](/../api/types#resourceidentifier) to a [Payment](ctp:api:type:Payment).
+   *	[ResourceIdentifier](ctp:api:type:ResourceIdentifier) to a [Payment](ctp:api:type:Payment).
    *
    *
    */
@@ -1916,6 +1995,8 @@ export interface OrderSetShippingAddressCustomTypeAction {
 export interface OrderSetStoreAction {
   readonly action: 'setStore'
   /**
+   *	[ResourceIdentifier](/../api/types#resourceidentifier) to a [Store](ctp:api:type:Store).
+   *
    *
    */
   readonly store?: StoreResourceIdentifier
@@ -1931,13 +2012,13 @@ export interface OrderTransitionCustomLineItemStateAction {
    */
   readonly quantity: number
   /**
-   *	[ResourceIdentifier](/../api/types#resourceidentifier) to a [State](ctp:api:type:State).
+   *	[ResourceIdentifier](ctp:api:type:ResourceIdentifier) to a [State](ctp:api:type:State).
    *
    *
    */
   readonly fromState: StateResourceIdentifier
   /**
-   *	[ResourceIdentifier](/../api/types#resourceidentifier) to a [State](ctp:api:type:State).
+   *	[ResourceIdentifier](ctp:api:type:ResourceIdentifier) to a [State](ctp:api:type:State).
    *
    *
    */
@@ -1958,13 +2039,13 @@ export interface OrderTransitionLineItemStateAction {
    */
   readonly quantity: number
   /**
-   *	[ResourceIdentifier](/../api/types#resourceidentifier) to a [State](ctp:api:type:State).
+   *	[ResourceIdentifier](ctp:api:type:ResourceIdentifier) to a [State](ctp:api:type:State).
    *
    *
    */
   readonly fromState: StateResourceIdentifier
   /**
-   *	[ResourceIdentifier](/../api/types#resourceidentifier) to a [State](ctp:api:type:State).
+   *	[ResourceIdentifier](ctp:api:type:ResourceIdentifier) to a [State](ctp:api:type:State).
    *
    *
    */
@@ -1977,7 +2058,7 @@ export interface OrderTransitionLineItemStateAction {
 export interface OrderTransitionStateAction {
   readonly action: 'transitionState'
   /**
-   *	[ResourceIdentifier](/../api/types#resourceidentifier) to a [State](ctp:api:type:State).
+   *	[ResourceIdentifier](ctp:api:type:ResourceIdentifier) to a [State](ctp:api:type:State).
    *
    *
    */
@@ -1997,7 +2078,7 @@ export interface OrderUpdateItemShippingAddressAction {
 export interface OrderUpdateSyncInfoAction {
   readonly action: 'updateSyncInfo'
   /**
-   *	[ResourceIdentifier](/../api/types#resourceidentifier) to a [Channel](ctp:api:type:Channel).
+   *	[ResourceIdentifier](ctp:api:type:ResourceIdentifier) to a [Channel](ctp:api:type:Channel).
    *
    *
    */

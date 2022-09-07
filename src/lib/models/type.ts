@@ -279,6 +279,7 @@ export type ResourceTypeId =
   | 'payment-interface-interaction'
   | 'product-price'
   | 'product-selection'
+  | 'quote'
   | 'review'
   | 'shipping-method'
   | 'shopping-list'
@@ -287,7 +288,7 @@ export type ResourceTypeId =
   | 'transaction'
 export interface Type extends BaseResource {
   /**
-   *	Platform-generated unique identifier of the Type.
+   *	Unique identifier of the Type.
    *
    */
   readonly id: string
@@ -391,7 +392,7 @@ export interface TypePagedQueryResponse {
    */
   readonly limit: number
   /**
-   *	Offset supplied by the client or server default. It is the number of elements skipped, not a page number.
+   *	Number of [elements skipped](/../api/general-concepts#offset).
    *
    *
    */
@@ -420,13 +421,13 @@ export interface TypePagedQueryResponse {
   readonly results: Type[]
 }
 /**
- *	[Reference](/../api/types#reference) to a [Type](ctp:api:type:Type).
+ *	[Reference](ctp:api:type:Reference) to a [Type](ctp:api:type:Type).
  *
  */
 export interface TypeReference {
   readonly typeId: 'type'
   /**
-   *	Platform-generated unique identifier of the referenced [Type](ctp:api:type:Type).
+   *	Unique identifier of the referenced [Type](ctp:api:type:Type).
    *
    *
    */
@@ -440,13 +441,13 @@ export interface TypeReference {
   readonly obj?: Type
 }
 /**
- *	[ResourceIdentifier](/../api/types#resourceidentifier) of a [Type](ctp:api:type:Type).
+ *	[ResourceIdentifier](ctp:api:type:ResourceIdentifier) of a [Type](ctp:api:type:Type).
  *
  */
 export interface TypeResourceIdentifier {
   readonly typeId: 'type'
   /**
-   *	Platform-generated unique identifier of the referenced [Type](ctp:api:type:Type). Either `id` or `key` is required.
+   *	Unique identifier of the referenced [Type](ctp:api:type:Type). Either `id` or `key` is required.
    *
    *
    */
@@ -484,7 +485,6 @@ export type TypeUpdateAction =
   | TypeAddLocalizedEnumValueAction
   | TypeChangeEnumValueLabelAction
   | TypeChangeEnumValueOrderAction
-  | TypeChangeFieldDefinitionLabelAction
   | TypeChangeFieldDefinitionOrderAction
   | TypeChangeInputHintAction
   | TypeChangeKeyAction
@@ -580,22 +580,6 @@ export interface TypeChangeEnumValueOrderAction {
    */
   readonly keys: string[]
 }
-export interface TypeChangeFieldDefinitionLabelAction {
-  readonly action: 'changeFieldDefinitionLabel'
-  /**
-   *	`name` of the [FieldDefinition](ctp:api:type:FieldDefinition) to update.
-   *
-   *
-   */
-  readonly fieldName: string
-  /**
-   *	New value to set.
-   *	Must not be empty.
-   *
-   *
-   */
-  readonly label: LocalizedString
-}
 export interface TypeChangeFieldDefinitionOrderAction {
   readonly action: 'changeFieldDefinitionOrder'
   /**
@@ -644,12 +628,14 @@ export interface TypeChangeLabelAction {
    */
   readonly fieldName: string
   /**
+   *	JSON object where the keys are of type [Locale](ctp:api:type:Locale), and the values are the strings used for the corresponding language.
+   *
    *
    */
   readonly label: LocalizedString
 }
 /**
- *	Changes the `label` of a [LocalizedEnumValue](ctp:api:type:CustomFieldLocalizedEnumValue) of an [LocalizedEnumType](ctp:api:type:CustomFieldLocalizedEnumType) FieldDefinition.
+ *	Changes the `label` of a [LocalizedEnumValue](ctp:api:type:CustomFieldLocalizedEnumValue) of a [LocalizedEnumType](ctp:api:type:CustomFieldLocalizedEnumType) FieldDefinition.
  *
  */
 export interface TypeChangeLocalizedEnumValueLabelAction {

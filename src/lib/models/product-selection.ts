@@ -14,6 +14,13 @@ export interface AssignedProductReference {
    *
    */
   readonly product: ProductReference
+  /**
+   *	The Variants of the Product that are included, or excluded, from the Product Selection.
+   *	In absence of this field, all Variants are deemed to be included.
+   *
+   *
+   */
+  readonly variantSelection?: ProductVariantSelection
 }
 export interface AssignedProductSelection {
   /**
@@ -21,6 +28,11 @@ export interface AssignedProductSelection {
    *
    */
   readonly productSelection: ProductSelectionReference
+  /**
+   *	Selects which Variants of the newly added Product will be included, or excluded, from the Product Selection.
+   *
+   */
+  readonly variantSelection?: ProductVariantSelection
 }
 /**
  *	[PagedQueryResult](/general-concepts#pagedqueryresult) containing an array of [AssignedProductSelection](ctp:api:type:AssignedProductSelection).
@@ -34,8 +46,7 @@ export interface AssignedProductSelectionPagedQueryResponse {
    */
   readonly limit: number
   /**
-   *	Offset supplied by the client or the server default.
-   *	It is the number of elements skipped, not a page number.
+   *	Number of [elements skipped](/../api/general-concepts#offset).
    *
    *
    */
@@ -57,29 +68,30 @@ export interface AssignedProductSelectionPagedQueryResponse {
    */
   readonly total?: number
   /**
-   *	References to Product Selection that are assigned to the Product.
+   *	References to ProductSelection that are assigned to the Product.
    *
    */
   readonly results: AssignedProductSelection[]
 }
 export interface ProductSelection extends BaseResource {
   /**
-   *	Platform-generated unique identifier of the Product Selection.
+   *	Unique identifier of the ProductSelection.
+   *
    *
    */
   readonly id: string
   /**
-   *	Current version of the Product Selection.
+   *	Current version of the ProductSelection.
    *
    */
   readonly version: number
   /**
-   *	Date and time (UTC) the Product Selection was initially created.
+   *	Date and time (UTC) the ProductSelection was initially created.
    *
    */
   readonly createdAt: string
   /**
-   *	Date and time (UTC) the Product Selection was last updated.
+   *	Date and time (UTC) the ProductSelection was last updated.
    *
    */
   readonly lastModifiedAt: string
@@ -94,37 +106,38 @@ export interface ProductSelection extends BaseResource {
    */
   readonly createdBy?: CreatedBy
   /**
-   *	User-defined unique identifier of the Product Selection.
+   *	User-defined unique identifier of the ProductSelection.
+   *
    *
    */
   readonly key?: string
   /**
-   *	Name of the Product Selection.
+   *	Name of the ProductSelection.
    *
    */
   readonly name: LocalizedString
   /**
-   *	Number of Products that are currently assigned to this Product Selection.
+   *	Number of Products that are currently assigned to this ProductSelection.
    *
    */
   readonly productCount: number
   /**
-   *	Specifies in which way the Products are assigned to the Product Selection. Currently, the only way of doing this is to specify each Product individually. Hence, the type is fixed to `individual` for now, but we have plans to add other types in the future.
+   *	Specifies in which way the Products are assigned to the ProductSelection. Currently, the only way of doing this is to specify each Product individually. Hence, the type is fixed to `individual` for now, but we have plans to add other types in the future.
    *
    */
   readonly type: ProductSelectionTypeEnum
   /**
-   *	Custom Fields of this Product Selection.
+   *	Custom Fields of this ProductSelection.
    *
    */
   readonly custom?: CustomFields
 }
 /**
- *	Specifies which Product is assigned to which Product Selection.
+ *	Specifies which Product is assigned to which ProductSelection.
  */
 export interface ProductSelectionAssignment {
   /**
-   *	Reference to a Product that is assigned to the Product Selection.
+   *	Reference to a Product that is assigned to the ProductSelection.
    *
    */
   readonly product: ProductReference
@@ -133,20 +146,25 @@ export interface ProductSelectionAssignment {
    *
    */
   readonly productSelection: ProductSelectionReference
+  /**
+   *	Selects which Variants of the newly added Product will be included, or excluded, from the Product Selection.
+   *
+   */
+  readonly variantSelection?: ProductVariantSelection
 }
 export interface ProductSelectionDraft {
   /**
-   *	User-defined unique identifier for the Product Selection.
+   *	User-defined unique identifier for the ProductSelection.
    *
    */
   readonly key?: string
   /**
-   *	Name of the Product Selection. Not checked for uniqueness, but distinct names are recommended.
+   *	Name of the ProductSelection. Not checked for uniqueness, but distinct names are recommended.
    *
    */
   readonly name: LocalizedString
   /**
-   *	Custom Fields of this Product Selection.
+   *	Custom Fields of this ProductSelection.
    *
    */
   readonly custom?: CustomFieldsDraft
@@ -163,8 +181,7 @@ export interface ProductSelectionPagedQueryResponse {
    */
   readonly limit: number
   /**
-   *	Offset supplied by the client or the server default.
-   *	It is the number of elements skipped, not a page number.
+   *	Number of [elements skipped](/../api/general-concepts#offset).
    *
    *
    */
@@ -186,7 +203,7 @@ export interface ProductSelectionPagedQueryResponse {
    */
   readonly total?: number
   /**
-   *	The Product Selections matching the query.
+   *	[ProductSelections](ctp:api:type:ProductSelection) matching the query.
    *
    *
    */
@@ -204,8 +221,7 @@ export interface ProductSelectionProductPagedQueryResponse {
    */
   readonly limit: number
   /**
-   *	Offset supplied by the client or the server default.
-   *	It is the number of elements skipped, not a page number.
+   *	Number of [elements skipped](/../api/general-concepts#offset).
    *
    *
    */
@@ -227,37 +243,38 @@ export interface ProductSelectionProductPagedQueryResponse {
    */
   readonly total?: number
   /**
-   *	References to Products that are assigned to the Product Selection.
+   *	References to Products that are assigned to the ProductSelection.
    *
    */
   readonly results: AssignedProductReference[]
 }
 /**
- *	[Reference](/../api/types#reference) to a [ProductSelection](ctp:api:type:ProductSelection).
+ *	[Reference](ctp:api:type:Reference) to a [ProductSelection](ctp:api:type:ProductSelection).
  *
  */
 export interface ProductSelectionReference {
   readonly typeId: 'product-selection'
   /**
-   *	Platform-generated unique identifier of the referenced [ProductSelection](ctp:api:type:ProductSelection).
+   *	Unique identifier of the referenced [ProductSelection](ctp:api:type:ProductSelection).
    *
    *
    */
   readonly id: string
   /**
-   *	Contains the representation of the expanded Product Selection. Only present in responses to requests with [Reference Expansion](/../api/general-concepts#reference-expansion) for Product Selections.
+   *	Contains the representation of the expanded ProductSelection. Only present in responses to requests with [Reference Expansion](/../api/general-concepts#reference-expansion) for ProductSelections.
+   *
    *
    */
   readonly obj?: ProductSelection
 }
 /**
- *	[ResourceIdentifier](/../api/types#resourceidentifier) to a [ProductSelection](ctp:api:type:ProductSelection).
+ *	[ResourceIdentifier](ctp:api:type:ResourceIdentifier) to a [ProductSelection](ctp:api:type:ProductSelection).
  *
  */
 export interface ProductSelectionResourceIdentifier {
   readonly typeId: 'product-selection'
   /**
-   *	Platform-generated unique identifier of the referenced [ProductSelection](ctp:api:type:ProductSelection). Either `id` or `key` is required.
+   *	Unique identifier of the referenced [ProductSelection](ctp:api:type:ProductSelection). Either `id` or `key` is required.
    *
    *
    */
@@ -273,7 +290,7 @@ export type ProductSelectionType = IndividualProductSelectionType
 export interface IndividualProductSelectionType {
   readonly type: 'individual'
   /**
-   *	The name of the Product Selection which is recommended to be unique.
+   *	The name of the ProductSelection which is recommended to be unique.
    *
    */
   readonly name: LocalizedString
@@ -300,6 +317,39 @@ export type ProductSelectionUpdateAction =
   | ProductSelectionSetCustomFieldAction
   | ProductSelectionSetCustomTypeAction
   | ProductSelectionSetKeyAction
+  | ProductSelectionSetVariantSelectionAction
+/**
+ *	Polymorphic base type for Product Variant Selections. The actual type is determined by the `type` field.
+ *
+ */
+export type ProductVariantSelection = ProductVariantSelectionExclusion | ProductVariantSelectionInclusion
+/**
+ *	All Product Variants except the explicitly stated SKUs are part of the Product Selection.
+ *
+ */
+export interface ProductVariantSelectionExclusion {
+  readonly type: 'exclusion'
+  /**
+   *	Non-empty array of SKUs representing Product Variants to be excluded from the Product Selection.
+   *
+   *
+   */
+  readonly skus: string[]
+}
+/**
+ *	Only Product Variants with explicitly stated SKUs are part of the Product Selection.
+ *
+ */
+export interface ProductVariantSelectionInclusion {
+  readonly type: 'inclusion'
+  /**
+   *	Non-empty array of SKUs representing Product Variants to be included into the Product Selection.
+   *
+   *
+   */
+  readonly skus: string[]
+}
+export type ProductVariantSelectionTypeEnum = 'exclusion' | 'inclusion'
 /**
  *	[PagedQueryResult](/general-concepts#pagedqueryresult) containing an array of [ProductSelectionAssignment](ctp:api:type:ProductSelectionAssignment).
  *
@@ -312,8 +362,7 @@ export interface ProductsInStorePagedQueryResponse {
    */
   readonly limit: number
   /**
-   *	Offset supplied by the client or the server default.
-   *	It is the number of elements skipped, not a page number.
+   *	Number of [elements skipped](/../api/general-concepts#offset).
    *
    *
    */
@@ -335,11 +384,17 @@ export interface ProductsInStorePagedQueryResponse {
    */
   readonly total?: number
   /**
-   *	Product Selection Assignments.
+   *	ProductSelectionAssignments matching the query.
    *
    */
   readonly results: ProductSelectionAssignment[]
 }
+/**
+ *	Adds a Product to the Product Selection.
+ *	If the given Product is already assigned to the Product Selection with the same Variant Selection nothing happens
+ *	but if the existing Assignment has a different Variant Selection [ProductPresentWithDifferentVariantSelection](/errors#product-selections) is raised.'
+ *
+ */
 export interface ProductSelectionAddProductAction {
   readonly action: 'addProduct'
   /**
@@ -347,11 +402,18 @@ export interface ProductSelectionAddProductAction {
    *
    */
   readonly product: ProductResourceIdentifier
+  /**
+   *	Selects which Variants of the newly added Product will be included, or excluded, from the Product Selection.
+   *	If not supplied all Variants are deemed to be included.
+   *
+   *
+   */
+  readonly variantSelection?: ProductVariantSelection
 }
 export interface ProductSelectionChangeNameAction {
   readonly action: 'changeName'
   /**
-   *	The new name to be set for the Product Selection.
+   *	The new name to be set for the ProductSelection.
    *
    */
   readonly name: LocalizedString
@@ -404,4 +466,24 @@ export interface ProductSelectionSetKeyAction {
    *
    */
   readonly key?: string
+}
+/**
+ *	Updates the Product Variant Selection of an existing [Product Selection Assignment](ctp:api:type:ProductSelectionAssignment).
+ *	If the given Product is not assigned to the Product Selection [ProductAssignmentMissing](/errors#product-selections) error is raised.
+ *
+ */
+export interface ProductSelectionSetVariantSelectionAction {
+  readonly action: 'setVariantSelection'
+  /**
+   *	ResourceIdentifier to Product
+   *
+   */
+  readonly product: ProductResourceIdentifier
+  /**
+   *	Determines which Variants of the previously added Product are to be included in, or excluded from, the Product Selection.
+   *	Leave it empty to unset an existing Variant Selection.
+   *
+   *
+   */
+  readonly variantSelection?: ProductVariantSelection
 }
