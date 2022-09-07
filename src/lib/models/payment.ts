@@ -63,6 +63,28 @@ export interface Payment extends BaseResource {
    */
   readonly amountPlanned: TypedMoney
   /**
+   *	Base polymorphic read-only Money type which is stored in cent precision or high precision. The actual type is determined by the `type` field.
+   *
+   *
+   */
+  readonly amountAuthorized?: TypedMoney
+  /**
+   *
+   */
+  readonly authorizedUntil?: string
+  /**
+   *	Base polymorphic read-only Money type which is stored in cent precision or high precision. The actual type is determined by the `type` field.
+   *
+   *
+   */
+  readonly amountPaid?: TypedMoney
+  /**
+   *	Base polymorphic read-only Money type which is stored in cent precision or high precision. The actual type is determined by the `type` field.
+   *
+   *
+   */
+  readonly amountRefunded?: TypedMoney
+  /**
    *
    */
   readonly paymentMethodInfo: PaymentMethodInfo
