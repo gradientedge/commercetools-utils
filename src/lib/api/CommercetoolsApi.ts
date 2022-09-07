@@ -75,6 +75,12 @@ import type {
   Type,
 } from '../models'
 import { Status } from '@tshttp/status'
+import {
+  StandalonePrice,
+  StandalonePriceDraft,
+  StandalonePricePagedQueryResponse,
+  StandalonePriceUpdate,
+} from '../models/standalone-price'
 
 export interface FetchOptions<T = any> {
   /**
@@ -2109,6 +2115,119 @@ export class CommercetoolsApi {
       ...this.extractCommonRequestOptions(options),
       path: '/states',
       method: 'GET',
+    })
+  }
+
+  /**
+   * Get a standalone price given it's id
+   * https://docs.commercetools.com/api/projects/standalone-prices#get-standaloneprice-by-id
+   */
+  getStandalonePriceById(options: CommonRequestOptions & { id: string }): Promise<StandalonePrice> {
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/standalone-prices/${options.id}`,
+      method: 'GET',
+    })
+  }
+
+  /**
+   * Get a standalone price given it's key
+   * https://docs.commercetools.com/api/projects/standalone-prices#get-standaloneprice-by-key
+   */
+  getStandalonePriceByKey(options: CommonRequestOptions & { key: string }): Promise<StandalonePrice> {
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/standalone-prices/key=${options.key}`,
+      method: 'GET',
+    })
+  }
+
+  /**
+   * Query standalone prices
+   * https://docs.commercetools.com/api/projects/standalone-prices#query-standaloneprices
+   */
+  queryStandalonePrices(options?: CommonRequestOptions): Promise<StandalonePricePagedQueryResponse> {
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: '/standalone-prices',
+      method: 'GET',
+    })
+  }
+
+  /**
+   * Create a standalone price object:
+   * https://docs.commercetools.com/api/projects/standalone-prices#create-standaloneprice
+   */
+  createStandalonePrice(options: CommonRequestOptions & { data: StandalonePriceDraft }): Promise<StandalonePrice> {
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: '/standalone-prices',
+      method: 'POST',
+      data: options.data,
+    })
+  }
+
+  /**
+   * Update a standalone price object by id:
+   * https://docs.commercetools.com/api/projects/standalone-prices#update-standaloneprice-by-id
+   */
+  updateStandalonePriceById(
+    options: CommonRequestOptions & { id: string; data: StandalonePriceUpdate },
+  ): Promise<StandalonePrice> {
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/standalone-prices/${options.id}`,
+      method: 'POST',
+      data: options.data,
+    })
+  }
+
+  /**
+   * Update a standalone price object by key:
+   * https://docs.commercetools.com/api/projects/standalone-prices#update-standaloneprice-by-key
+   */
+  updateStandalonePriceByKey(
+    options: CommonRequestOptions & { key: string; data: StandalonePriceUpdate },
+  ): Promise<StandalonePrice> {
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/standalone-prices/key=${options.key}`,
+      method: 'POST',
+      data: options.data,
+    })
+  }
+
+  /**
+   * Delete a standalone price object by id:
+   * https://docs.commercetools.com/api/projects/standalone-prices#delete-standaloneprice-by-id
+   */
+  deleteStandalonePriceById(options: CommonRequestOptions & { id: string; version: number }): Promise<StandalonePrice> {
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/standalone-prices/${options.id}`,
+      method: 'DELETE',
+      params: {
+        ...options.params,
+        version: options.version,
+      },
+    })
+  }
+
+  /**
+   * Delete a standalone price object by key:
+   * https://docs.commercetools.com/api/projects/standalone-prices#delete-standaloneprice-by-key
+   */
+  deleteStandalonePriceByKey(
+    options: CommonRequestOptions & { key: string; version: number },
+  ): Promise<StandalonePrice> {
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/standalone-prices/key=${options.key}`,
+      method: 'DELETE',
+      params: {
+        ...options.params,
+        version: options.version,
+      },
     })
   }
 
