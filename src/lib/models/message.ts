@@ -5,6 +5,7 @@
  */
 
 import {
+  CustomLineItem,
   DiscountCodeState,
   DiscountedLineItemPriceForQuantity,
   ItemShippingDetails,
@@ -49,8 +50,12 @@ import {
 import { OrderEditApplied, OrderEditReference } from './order-edit'
 import { Payment, PaymentReference, Transaction, TransactionState } from './payment'
 import { ProductProjection, ProductReference, ProductVariant } from './product'
-import { ProductSelectionType } from './product-selection'
+import { ProductSelectionType, ProductVariantSelection } from './product-selection'
+import { QuoteState } from './quote'
+import { QuoteRequestState } from './quote-request'
 import { Review } from './review'
+import { StagedQuoteState } from './staged-quote'
+import { StandalonePrice } from './standalone-price'
 import { StateReference } from './state'
 import { ProductSelectionSetting, StoreKeyReference } from './store'
 import { CustomFields } from './type'
@@ -99,7 +104,10 @@ export type Message =
   | LineItemStateTransitionMessage
   | OrderBillingAddressSetMessage
   | OrderCreatedMessage
+  | OrderCustomLineItemAddedMessage
   | OrderCustomLineItemDiscountSetMessage
+  | OrderCustomLineItemQuantityChangedMessage
+  | OrderCustomLineItemRemovedMessage
   | OrderCustomerEmailSetMessage
   | OrderCustomerGroupSetMessage
   | OrderCustomerSetMessage
@@ -150,21 +158,39 @@ export type Message =
   | ProductSelectionDeletedMessage
   | ProductSelectionProductAddedMessage
   | ProductSelectionProductRemovedMessage
+  | ProductSelectionVariantSelectionChangedMessage
   | ProductSlugChangedMessage
   | ProductStateTransitionMessage
   | ProductUnpublishedMessage
   | ProductVariantAddedMessage
   | ProductVariantDeletedMessage
+  | QuoteCreatedMessage
+  | QuoteDeletedMessage
+  | QuoteRequestCreatedMessage
+  | QuoteRequestDeletedMessage
+  | QuoteRequestStateChangedMessage
+  | QuoteStateChangedMessage
   | ReviewCreatedMessage
   | ReviewRatingSetMessage
   | ReviewStateTransitionMessage
+  | StagedQuoteCreatedMessage
+  | StagedQuoteDeletedMessage
+  | StagedQuoteSellerCommentSetMessage
+  | StagedQuoteStateChangedMessage
+  | StagedQuoteValidToSetMessage
+  | StandalonePriceCreatedMessage
+  | StandalonePriceDeletedMessage
+  | StandalonePriceDiscountSetMessage
+  | StandalonePriceExternalDiscountSetMessage
+  | StandalonePriceValueChangedMessage
   | StoreCreatedMessage
   | StoreDeletedMessage
+  | StoreDistributionChannelsChangedMessage
   | StoreProductSelectionsChangedMessage
 export interface CategoryCreatedMessage {
   readonly type: 'CategoryCreated'
   /**
-   *	Platform-generated unique identifier of the Message.
+   *	Unique identifier of the Message.
    *
    */
   readonly id: string
@@ -197,6 +223,8 @@ export interface CategoryCreatedMessage {
    */
   readonly sequenceNumber: number
   /**
+   *	A Reference represents a loose reference to another resource in the same Project identified by its `id`. The `typeId` indicates the type of the referenced resource. Each resource type has its corresponding Reference type, like [ChannelReference](ctp:api:type:ChannelReference).  A referenced resource can be embedded through [Reference Expansion](/general-concepts#reference-expansion). The expanded reference is the value of an additional `obj` field then.
+   *
    *
    */
   readonly resource: Reference
@@ -216,7 +244,7 @@ export interface CategoryCreatedMessage {
 export interface CategorySlugChangedMessage {
   readonly type: 'CategorySlugChanged'
   /**
-   *	Platform-generated unique identifier of the Message.
+   *	Unique identifier of the Message.
    *
    */
   readonly id: string
@@ -249,6 +277,8 @@ export interface CategorySlugChangedMessage {
    */
   readonly sequenceNumber: number
   /**
+   *	A Reference represents a loose reference to another resource in the same Project identified by its `id`. The `typeId` indicates the type of the referenced resource. Each resource type has its corresponding Reference type, like [ChannelReference](ctp:api:type:ChannelReference).  A referenced resource can be embedded through [Reference Expansion](/general-concepts#reference-expansion). The expanded reference is the value of an additional `obj` field then.
+   *
    *
    */
   readonly resource: Reference
@@ -261,10 +291,14 @@ export interface CategorySlugChangedMessage {
    */
   readonly resourceUserProvidedIdentifiers?: UserProvidedIdentifiers
   /**
+   *	JSON object where the keys are of type [Locale](ctp:api:type:Locale), and the values are the strings used for the corresponding language.
+   *
    *
    */
   readonly slug: LocalizedString
   /**
+   *	JSON object where the keys are of type [Locale](ctp:api:type:Locale), and the values are the strings used for the corresponding language.
+   *
    *
    */
   readonly oldSlug?: LocalizedString
@@ -272,7 +306,7 @@ export interface CategorySlugChangedMessage {
 export interface CustomerAddressAddedMessage {
   readonly type: 'CustomerAddressAdded'
   /**
-   *	Platform-generated unique identifier of the Message.
+   *	Unique identifier of the Message.
    *
    */
   readonly id: string
@@ -305,6 +339,8 @@ export interface CustomerAddressAddedMessage {
    */
   readonly sequenceNumber: number
   /**
+   *	A Reference represents a loose reference to another resource in the same Project identified by its `id`. The `typeId` indicates the type of the referenced resource. Each resource type has its corresponding Reference type, like [ChannelReference](ctp:api:type:ChannelReference).  A referenced resource can be embedded through [Reference Expansion](/general-concepts#reference-expansion). The expanded reference is the value of an additional `obj` field then.
+   *
    *
    */
   readonly resource: Reference
@@ -324,7 +360,7 @@ export interface CustomerAddressAddedMessage {
 export interface CustomerAddressChangedMessage {
   readonly type: 'CustomerAddressChanged'
   /**
-   *	Platform-generated unique identifier of the Message.
+   *	Unique identifier of the Message.
    *
    */
   readonly id: string
@@ -357,6 +393,8 @@ export interface CustomerAddressChangedMessage {
    */
   readonly sequenceNumber: number
   /**
+   *	A Reference represents a loose reference to another resource in the same Project identified by its `id`. The `typeId` indicates the type of the referenced resource. Each resource type has its corresponding Reference type, like [ChannelReference](ctp:api:type:ChannelReference).  A referenced resource can be embedded through [Reference Expansion](/general-concepts#reference-expansion). The expanded reference is the value of an additional `obj` field then.
+   *
    *
    */
   readonly resource: Reference
@@ -376,7 +414,7 @@ export interface CustomerAddressChangedMessage {
 export interface CustomerAddressRemovedMessage {
   readonly type: 'CustomerAddressRemoved'
   /**
-   *	Platform-generated unique identifier of the Message.
+   *	Unique identifier of the Message.
    *
    */
   readonly id: string
@@ -409,6 +447,8 @@ export interface CustomerAddressRemovedMessage {
    */
   readonly sequenceNumber: number
   /**
+   *	A Reference represents a loose reference to another resource in the same Project identified by its `id`. The `typeId` indicates the type of the referenced resource. Each resource type has its corresponding Reference type, like [ChannelReference](ctp:api:type:ChannelReference).  A referenced resource can be embedded through [Reference Expansion](/general-concepts#reference-expansion). The expanded reference is the value of an additional `obj` field then.
+   *
    *
    */
   readonly resource: Reference
@@ -428,7 +468,7 @@ export interface CustomerAddressRemovedMessage {
 export interface CustomerCompanyNameSetMessage {
   readonly type: 'CustomerCompanyNameSet'
   /**
-   *	Platform-generated unique identifier of the Message.
+   *	Unique identifier of the Message.
    *
    */
   readonly id: string
@@ -461,6 +501,8 @@ export interface CustomerCompanyNameSetMessage {
    */
   readonly sequenceNumber: number
   /**
+   *	A Reference represents a loose reference to another resource in the same Project identified by its `id`. The `typeId` indicates the type of the referenced resource. Each resource type has its corresponding Reference type, like [ChannelReference](ctp:api:type:ChannelReference).  A referenced resource can be embedded through [Reference Expansion](/general-concepts#reference-expansion). The expanded reference is the value of an additional `obj` field then.
+   *
    *
    */
   readonly resource: Reference
@@ -480,7 +522,7 @@ export interface CustomerCompanyNameSetMessage {
 export interface CustomerCreatedMessage {
   readonly type: 'CustomerCreated'
   /**
-   *	Platform-generated unique identifier of the Message.
+   *	Unique identifier of the Message.
    *
    */
   readonly id: string
@@ -513,6 +555,8 @@ export interface CustomerCreatedMessage {
    */
   readonly sequenceNumber: number
   /**
+   *	A Reference represents a loose reference to another resource in the same Project identified by its `id`. The `typeId` indicates the type of the referenced resource. Each resource type has its corresponding Reference type, like [ChannelReference](ctp:api:type:ChannelReference).  A referenced resource can be embedded through [Reference Expansion](/general-concepts#reference-expansion). The expanded reference is the value of an additional `obj` field then.
+   *
    *
    */
   readonly resource: Reference
@@ -532,7 +576,7 @@ export interface CustomerCreatedMessage {
 export interface CustomerDateOfBirthSetMessage {
   readonly type: 'CustomerDateOfBirthSet'
   /**
-   *	Platform-generated unique identifier of the Message.
+   *	Unique identifier of the Message.
    *
    */
   readonly id: string
@@ -565,6 +609,8 @@ export interface CustomerDateOfBirthSetMessage {
    */
   readonly sequenceNumber: number
   /**
+   *	A Reference represents a loose reference to another resource in the same Project identified by its `id`. The `typeId` indicates the type of the referenced resource. Each resource type has its corresponding Reference type, like [ChannelReference](ctp:api:type:ChannelReference).  A referenced resource can be embedded through [Reference Expansion](/general-concepts#reference-expansion). The expanded reference is the value of an additional `obj` field then.
+   *
    *
    */
   readonly resource: Reference
@@ -584,7 +630,7 @@ export interface CustomerDateOfBirthSetMessage {
 export interface CustomerDeletedMessage {
   readonly type: 'CustomerDeleted'
   /**
-   *	Platform-generated unique identifier of the Message.
+   *	Unique identifier of the Message.
    *
    */
   readonly id: string
@@ -617,6 +663,8 @@ export interface CustomerDeletedMessage {
    */
   readonly sequenceNumber: number
   /**
+   *	A Reference represents a loose reference to another resource in the same Project identified by its `id`. The `typeId` indicates the type of the referenced resource. Each resource type has its corresponding Reference type, like [ChannelReference](ctp:api:type:ChannelReference).  A referenced resource can be embedded through [Reference Expansion](/general-concepts#reference-expansion). The expanded reference is the value of an additional `obj` field then.
+   *
    *
    */
   readonly resource: Reference
@@ -632,7 +680,7 @@ export interface CustomerDeletedMessage {
 export interface CustomerEmailChangedMessage {
   readonly type: 'CustomerEmailChanged'
   /**
-   *	Platform-generated unique identifier of the Message.
+   *	Unique identifier of the Message.
    *
    */
   readonly id: string
@@ -665,6 +713,8 @@ export interface CustomerEmailChangedMessage {
    */
   readonly sequenceNumber: number
   /**
+   *	A Reference represents a loose reference to another resource in the same Project identified by its `id`. The `typeId` indicates the type of the referenced resource. Each resource type has its corresponding Reference type, like [ChannelReference](ctp:api:type:ChannelReference).  A referenced resource can be embedded through [Reference Expansion](/general-concepts#reference-expansion). The expanded reference is the value of an additional `obj` field then.
+   *
    *
    */
   readonly resource: Reference
@@ -684,7 +734,7 @@ export interface CustomerEmailChangedMessage {
 export interface CustomerEmailVerifiedMessage {
   readonly type: 'CustomerEmailVerified'
   /**
-   *	Platform-generated unique identifier of the Message.
+   *	Unique identifier of the Message.
    *
    */
   readonly id: string
@@ -717,6 +767,8 @@ export interface CustomerEmailVerifiedMessage {
    */
   readonly sequenceNumber: number
   /**
+   *	A Reference represents a loose reference to another resource in the same Project identified by its `id`. The `typeId` indicates the type of the referenced resource. Each resource type has its corresponding Reference type, like [ChannelReference](ctp:api:type:ChannelReference).  A referenced resource can be embedded through [Reference Expansion](/general-concepts#reference-expansion). The expanded reference is the value of an additional `obj` field then.
+   *
    *
    */
   readonly resource: Reference
@@ -732,7 +784,7 @@ export interface CustomerEmailVerifiedMessage {
 export interface CustomerFirstNameSetMessage {
   readonly type: 'CustomerFirstNameSet'
   /**
-   *	Platform-generated unique identifier of the Message.
+   *	Unique identifier of the Message.
    *
    */
   readonly id: string
@@ -765,6 +817,8 @@ export interface CustomerFirstNameSetMessage {
    */
   readonly sequenceNumber: number
   /**
+   *	A Reference represents a loose reference to another resource in the same Project identified by its `id`. The `typeId` indicates the type of the referenced resource. Each resource type has its corresponding Reference type, like [ChannelReference](ctp:api:type:ChannelReference).  A referenced resource can be embedded through [Reference Expansion](/general-concepts#reference-expansion). The expanded reference is the value of an additional `obj` field then.
+   *
    *
    */
   readonly resource: Reference
@@ -784,7 +838,7 @@ export interface CustomerFirstNameSetMessage {
 export interface CustomerGroupSetMessage {
   readonly type: 'CustomerGroupSet'
   /**
-   *	Platform-generated unique identifier of the Message.
+   *	Unique identifier of the Message.
    *
    */
   readonly id: string
@@ -817,6 +871,8 @@ export interface CustomerGroupSetMessage {
    */
   readonly sequenceNumber: number
   /**
+   *	A Reference represents a loose reference to another resource in the same Project identified by its `id`. The `typeId` indicates the type of the referenced resource. Each resource type has its corresponding Reference type, like [ChannelReference](ctp:api:type:ChannelReference).  A referenced resource can be embedded through [Reference Expansion](/general-concepts#reference-expansion). The expanded reference is the value of an additional `obj` field then.
+   *
    *
    */
   readonly resource: Reference
@@ -829,7 +885,7 @@ export interface CustomerGroupSetMessage {
    */
   readonly resourceUserProvidedIdentifiers?: UserProvidedIdentifiers
   /**
-   *	[Reference](/../api/types#reference) to a [CustomerGroup](ctp:api:type:CustomerGroup).
+   *	[Reference](ctp:api:type:Reference) to a [CustomerGroup](ctp:api:type:CustomerGroup).
    *
    *
    */
@@ -838,7 +894,7 @@ export interface CustomerGroupSetMessage {
 export interface CustomerLastNameSetMessage {
   readonly type: 'CustomerLastNameSet'
   /**
-   *	Platform-generated unique identifier of the Message.
+   *	Unique identifier of the Message.
    *
    */
   readonly id: string
@@ -871,6 +927,8 @@ export interface CustomerLastNameSetMessage {
    */
   readonly sequenceNumber: number
   /**
+   *	A Reference represents a loose reference to another resource in the same Project identified by its `id`. The `typeId` indicates the type of the referenced resource. Each resource type has its corresponding Reference type, like [ChannelReference](ctp:api:type:ChannelReference).  A referenced resource can be embedded through [Reference Expansion](/general-concepts#reference-expansion). The expanded reference is the value of an additional `obj` field then.
+   *
    *
    */
   readonly resource: Reference
@@ -890,7 +948,7 @@ export interface CustomerLastNameSetMessage {
 export interface CustomerPasswordUpdatedMessage {
   readonly type: 'CustomerPasswordUpdated'
   /**
-   *	Platform-generated unique identifier of the Message.
+   *	Unique identifier of the Message.
    *
    */
   readonly id: string
@@ -923,6 +981,8 @@ export interface CustomerPasswordUpdatedMessage {
    */
   readonly sequenceNumber: number
   /**
+   *	A Reference represents a loose reference to another resource in the same Project identified by its `id`. The `typeId` indicates the type of the referenced resource. Each resource type has its corresponding Reference type, like [ChannelReference](ctp:api:type:ChannelReference).  A referenced resource can be embedded through [Reference Expansion](/general-concepts#reference-expansion). The expanded reference is the value of an additional `obj` field then.
+   *
    *
    */
   readonly resource: Reference
@@ -943,7 +1003,7 @@ export interface CustomerPasswordUpdatedMessage {
 export interface CustomerTitleSetMessage {
   readonly type: 'CustomerTitleSet'
   /**
-   *	Platform-generated unique identifier of the Message.
+   *	Unique identifier of the Message.
    *
    */
   readonly id: string
@@ -976,6 +1036,8 @@ export interface CustomerTitleSetMessage {
    */
   readonly sequenceNumber: number
   /**
+   *	A Reference represents a loose reference to another resource in the same Project identified by its `id`. The `typeId` indicates the type of the referenced resource. Each resource type has its corresponding Reference type, like [ChannelReference](ctp:api:type:ChannelReference).  A referenced resource can be embedded through [Reference Expansion](/general-concepts#reference-expansion). The expanded reference is the value of an additional `obj` field then.
+   *
    *
    */
   readonly resource: Reference
@@ -995,7 +1057,7 @@ export interface CustomerTitleSetMessage {
 export interface InventoryEntryCreatedMessage {
   readonly type: 'InventoryEntryCreated'
   /**
-   *	Platform-generated unique identifier of the Message.
+   *	Unique identifier of the Message.
    *
    */
   readonly id: string
@@ -1028,6 +1090,8 @@ export interface InventoryEntryCreatedMessage {
    */
   readonly sequenceNumber: number
   /**
+   *	A Reference represents a loose reference to another resource in the same Project identified by its `id`. The `typeId` indicates the type of the referenced resource. Each resource type has its corresponding Reference type, like [ChannelReference](ctp:api:type:ChannelReference).  A referenced resource can be embedded through [Reference Expansion](/general-concepts#reference-expansion). The expanded reference is the value of an additional `obj` field then.
+   *
    *
    */
   readonly resource: Reference
@@ -1047,7 +1111,7 @@ export interface InventoryEntryCreatedMessage {
 export interface InventoryEntryDeletedMessage {
   readonly type: 'InventoryEntryDeleted'
   /**
-   *	Platform-generated unique identifier of the Message.
+   *	Unique identifier of the Message.
    *
    */
   readonly id: string
@@ -1080,6 +1144,8 @@ export interface InventoryEntryDeletedMessage {
    */
   readonly sequenceNumber: number
   /**
+   *	A Reference represents a loose reference to another resource in the same Project identified by its `id`. The `typeId` indicates the type of the referenced resource. Each resource type has its corresponding Reference type, like [ChannelReference](ctp:api:type:ChannelReference).  A referenced resource can be embedded through [Reference Expansion](/general-concepts#reference-expansion). The expanded reference is the value of an additional `obj` field then.
+   *
    *
    */
   readonly resource: Reference
@@ -1096,7 +1162,7 @@ export interface InventoryEntryDeletedMessage {
    */
   readonly sku: string
   /**
-   *	[Reference](/../api/types#reference) to a [Channel](ctp:api:type:Channel).
+   *	[Reference](ctp:api:type:Reference) to a [Channel](ctp:api:type:Channel).
    *
    *
    */
@@ -1105,7 +1171,7 @@ export interface InventoryEntryDeletedMessage {
 export interface InventoryEntryQuantitySetMessage {
   readonly type: 'InventoryEntryQuantitySet'
   /**
-   *	Platform-generated unique identifier of the Message.
+   *	Unique identifier of the Message.
    *
    */
   readonly id: string
@@ -1138,6 +1204,8 @@ export interface InventoryEntryQuantitySetMessage {
    */
   readonly sequenceNumber: number
   /**
+   *	A Reference represents a loose reference to another resource in the same Project identified by its `id`. The `typeId` indicates the type of the referenced resource. Each resource type has its corresponding Reference type, like [ChannelReference](ctp:api:type:ChannelReference).  A referenced resource can be embedded through [Reference Expansion](/general-concepts#reference-expansion). The expanded reference is the value of an additional `obj` field then.
+   *
    *
    */
   readonly resource: Reference
@@ -1166,7 +1234,7 @@ export interface InventoryEntryQuantitySetMessage {
    */
   readonly newAvailableQuantity: number
   /**
-   *	[Reference](/../api/types#reference) to a [Channel](ctp:api:type:Channel).
+   *	[Reference](ctp:api:type:Reference) to a [Channel](ctp:api:type:Channel).
    *
    *
    */
@@ -1188,6 +1256,8 @@ export interface MessagePagedQueryResponse {
    */
   readonly total?: number
   /**
+   *	Number of [elements skipped](/../api/general-concepts#offset).
+   *
    *
    */
   readonly offset: number
@@ -1241,7 +1311,10 @@ export type OrderMessage =
   | LineItemStateTransitionMessage
   | OrderBillingAddressSetMessage
   | OrderCreatedMessage
+  | OrderCustomLineItemAddedMessage
   | OrderCustomLineItemDiscountSetMessage
+  | OrderCustomLineItemQuantityChangedMessage
+  | OrderCustomLineItemRemovedMessage
   | OrderCustomerEmailSetMessage
   | OrderCustomerGroupSetMessage
   | OrderCustomerSetMessage
@@ -1274,7 +1347,7 @@ export type OrderMessage =
 export interface CustomLineItemStateTransitionMessage {
   readonly type: 'CustomLineItemStateTransition'
   /**
-   *	Platform-generated unique identifier of the Message.
+   *	Unique identifier of the Message.
    *
    */
   readonly id: string
@@ -1307,6 +1380,8 @@ export interface CustomLineItemStateTransitionMessage {
    */
   readonly sequenceNumber: number
   /**
+   *	A Reference represents a loose reference to another resource in the same Project identified by its `id`. The `typeId` indicates the type of the referenced resource. Each resource type has its corresponding Reference type, like [ChannelReference](ctp:api:type:ChannelReference).  A referenced resource can be embedded through [Reference Expansion](/general-concepts#reference-expansion). The expanded reference is the value of an additional `obj` field then.
+   *
    *
    */
   readonly resource: Reference
@@ -1331,13 +1406,13 @@ export interface CustomLineItemStateTransitionMessage {
    */
   readonly quantity: number
   /**
-   *	[Reference](/../api/types#reference) to a [State](ctp:api:type:State).
+   *	[Reference](ctp:api:type:Reference) to a [State](ctp:api:type:State).
    *
    *
    */
   readonly fromState: StateReference
   /**
-   *	[Reference](/../api/types#reference) to a [State](ctp:api:type:State).
+   *	[Reference](ctp:api:type:Reference) to a [State](ctp:api:type:State).
    *
    *
    */
@@ -1346,7 +1421,7 @@ export interface CustomLineItemStateTransitionMessage {
 export interface DeliveryAddedMessage {
   readonly type: 'DeliveryAdded'
   /**
-   *	Platform-generated unique identifier of the Message.
+   *	Unique identifier of the Message.
    *
    */
   readonly id: string
@@ -1379,6 +1454,8 @@ export interface DeliveryAddedMessage {
    */
   readonly sequenceNumber: number
   /**
+   *	A Reference represents a loose reference to another resource in the same Project identified by its `id`. The `typeId` indicates the type of the referenced resource. Each resource type has its corresponding Reference type, like [ChannelReference](ctp:api:type:ChannelReference).  A referenced resource can be embedded through [Reference Expansion](/general-concepts#reference-expansion). The expanded reference is the value of an additional `obj` field then.
+   *
    *
    */
   readonly resource: Reference
@@ -1398,7 +1475,7 @@ export interface DeliveryAddedMessage {
 export interface DeliveryAddressSetMessage {
   readonly type: 'DeliveryAddressSet'
   /**
-   *	Platform-generated unique identifier of the Message.
+   *	Unique identifier of the Message.
    *
    */
   readonly id: string
@@ -1431,6 +1508,8 @@ export interface DeliveryAddressSetMessage {
    */
   readonly sequenceNumber: number
   /**
+   *	A Reference represents a loose reference to another resource in the same Project identified by its `id`. The `typeId` indicates the type of the referenced resource. Each resource type has its corresponding Reference type, like [ChannelReference](ctp:api:type:ChannelReference).  A referenced resource can be embedded through [Reference Expansion](/general-concepts#reference-expansion). The expanded reference is the value of an additional `obj` field then.
+   *
    *
    */
   readonly resource: Reference
@@ -1458,7 +1537,7 @@ export interface DeliveryAddressSetMessage {
 export interface DeliveryItemsUpdatedMessage {
   readonly type: 'DeliveryItemsUpdated'
   /**
-   *	Platform-generated unique identifier of the Message.
+   *	Unique identifier of the Message.
    *
    */
   readonly id: string
@@ -1491,6 +1570,8 @@ export interface DeliveryItemsUpdatedMessage {
    */
   readonly sequenceNumber: number
   /**
+   *	A Reference represents a loose reference to another resource in the same Project identified by its `id`. The `typeId` indicates the type of the referenced resource. Each resource type has its corresponding Reference type, like [ChannelReference](ctp:api:type:ChannelReference).  A referenced resource can be embedded through [Reference Expansion](/general-concepts#reference-expansion). The expanded reference is the value of an additional `obj` field then.
+   *
    *
    */
   readonly resource: Reference
@@ -1518,7 +1599,7 @@ export interface DeliveryItemsUpdatedMessage {
 export interface DeliveryRemovedMessage {
   readonly type: 'DeliveryRemoved'
   /**
-   *	Platform-generated unique identifier of the Message.
+   *	Unique identifier of the Message.
    *
    */
   readonly id: string
@@ -1551,6 +1632,8 @@ export interface DeliveryRemovedMessage {
    */
   readonly sequenceNumber: number
   /**
+   *	A Reference represents a loose reference to another resource in the same Project identified by its `id`. The `typeId` indicates the type of the referenced resource. Each resource type has its corresponding Reference type, like [ChannelReference](ctp:api:type:ChannelReference).  A referenced resource can be embedded through [Reference Expansion](/general-concepts#reference-expansion). The expanded reference is the value of an additional `obj` field then.
+   *
    *
    */
   readonly resource: Reference
@@ -1570,7 +1653,7 @@ export interface DeliveryRemovedMessage {
 export interface LineItemStateTransitionMessage {
   readonly type: 'LineItemStateTransition'
   /**
-   *	Platform-generated unique identifier of the Message.
+   *	Unique identifier of the Message.
    *
    */
   readonly id: string
@@ -1603,6 +1686,8 @@ export interface LineItemStateTransitionMessage {
    */
   readonly sequenceNumber: number
   /**
+   *	A Reference represents a loose reference to another resource in the same Project identified by its `id`. The `typeId` indicates the type of the referenced resource. Each resource type has its corresponding Reference type, like [ChannelReference](ctp:api:type:ChannelReference).  A referenced resource can be embedded through [Reference Expansion](/general-concepts#reference-expansion). The expanded reference is the value of an additional `obj` field then.
+   *
    *
    */
   readonly resource: Reference
@@ -1627,13 +1712,13 @@ export interface LineItemStateTransitionMessage {
    */
   readonly quantity: number
   /**
-   *	[Reference](/../api/types#reference) to a [State](ctp:api:type:State).
+   *	[Reference](ctp:api:type:Reference) to a [State](ctp:api:type:State).
    *
    *
    */
   readonly fromState: StateReference
   /**
-   *	[Reference](/../api/types#reference) to a [State](ctp:api:type:State).
+   *	[Reference](ctp:api:type:Reference) to a [State](ctp:api:type:State).
    *
    *
    */
@@ -1642,7 +1727,7 @@ export interface LineItemStateTransitionMessage {
 export interface OrderBillingAddressSetMessage {
   readonly type: 'OrderBillingAddressSet'
   /**
-   *	Platform-generated unique identifier of the Message.
+   *	Unique identifier of the Message.
    *
    */
   readonly id: string
@@ -1675,6 +1760,8 @@ export interface OrderBillingAddressSetMessage {
    */
   readonly sequenceNumber: number
   /**
+   *	A Reference represents a loose reference to another resource in the same Project identified by its `id`. The `typeId` indicates the type of the referenced resource. Each resource type has its corresponding Reference type, like [ChannelReference](ctp:api:type:ChannelReference).  A referenced resource can be embedded through [Reference Expansion](/general-concepts#reference-expansion). The expanded reference is the value of an additional `obj` field then.
+   *
    *
    */
   readonly resource: Reference
@@ -1698,7 +1785,7 @@ export interface OrderBillingAddressSetMessage {
 export interface OrderCreatedMessage {
   readonly type: 'OrderCreated'
   /**
-   *	Platform-generated unique identifier of the Message.
+   *	Unique identifier of the Message.
    *
    */
   readonly id: string
@@ -1731,6 +1818,8 @@ export interface OrderCreatedMessage {
    */
   readonly sequenceNumber: number
   /**
+   *	A Reference represents a loose reference to another resource in the same Project identified by its `id`. The `typeId` indicates the type of the referenced resource. Each resource type has its corresponding Reference type, like [ChannelReference](ctp:api:type:ChannelReference).  A referenced resource can be embedded through [Reference Expansion](/general-concepts#reference-expansion). The expanded reference is the value of an additional `obj` field then.
+   *
    *
    */
   readonly resource: Reference
@@ -1747,10 +1836,10 @@ export interface OrderCreatedMessage {
    */
   readonly order: Order
 }
-export interface OrderCustomLineItemDiscountSetMessage {
-  readonly type: 'OrderCustomLineItemDiscountSet'
+export interface OrderCustomLineItemAddedMessage {
+  readonly type: 'OrderCustomLineItemAdded'
   /**
-   *	Platform-generated unique identifier of the Message.
+   *	Unique identifier of the Message.
    *
    */
   readonly id: string
@@ -1783,6 +1872,62 @@ export interface OrderCustomLineItemDiscountSetMessage {
    */
   readonly sequenceNumber: number
   /**
+   *	A Reference represents a loose reference to another resource in the same Project identified by its `id`. The `typeId` indicates the type of the referenced resource. Each resource type has its corresponding Reference type, like [ChannelReference](ctp:api:type:ChannelReference).  A referenced resource can be embedded through [Reference Expansion](/general-concepts#reference-expansion). The expanded reference is the value of an additional `obj` field then.
+   *
+   *
+   */
+  readonly resource: Reference
+  /**
+   *
+   */
+  readonly resourceVersion: number
+  /**
+   *
+   */
+  readonly resourceUserProvidedIdentifiers?: UserProvidedIdentifiers
+  /**
+   *
+   */
+  readonly customLineItem: CustomLineItem
+}
+export interface OrderCustomLineItemDiscountSetMessage {
+  readonly type: 'OrderCustomLineItemDiscountSet'
+  /**
+   *	Unique identifier of the Message.
+   *
+   */
+  readonly id: string
+  /**
+   *
+   */
+  readonly version: number
+  /**
+   *
+   */
+  readonly createdAt: string
+  /**
+   *
+   */
+  readonly lastModifiedAt: string
+  /**
+   *	Present on resources created after 1 February 2019 except for [events not tracked](/client-logging#events-tracked).
+   *
+   *
+   */
+  readonly lastModifiedBy?: LastModifiedBy
+  /**
+   *	Present on resources created after 1 February 2019 except for [events not tracked](/client-logging#events-tracked).
+   *
+   *
+   */
+  readonly createdBy?: CreatedBy
+  /**
+   *
+   */
+  readonly sequenceNumber: number
+  /**
+   *	A Reference represents a loose reference to another resource in the same Project identified by its `id`. The `typeId` indicates the type of the referenced resource. Each resource type has its corresponding Reference type, like [ChannelReference](ctp:api:type:ChannelReference).  A referenced resource can be embedded through [Reference Expansion](/general-concepts#reference-expansion). The expanded reference is the value of an additional `obj` field then.
+   *
    *
    */
   readonly resource: Reference
@@ -1807,10 +1952,10 @@ export interface OrderCustomLineItemDiscountSetMessage {
    */
   readonly taxedPrice?: TaxedItemPrice
 }
-export interface OrderCustomerEmailSetMessage {
-  readonly type: 'OrderCustomerEmailSet'
+export interface OrderCustomLineItemQuantityChangedMessage {
+  readonly type: 'OrderCustomLineItemQuantityChanged'
   /**
-   *	Platform-generated unique identifier of the Message.
+   *	Unique identifier of the Message.
    *
    */
   readonly id: string
@@ -1843,6 +1988,128 @@ export interface OrderCustomerEmailSetMessage {
    */
   readonly sequenceNumber: number
   /**
+   *	A Reference represents a loose reference to another resource in the same Project identified by its `id`. The `typeId` indicates the type of the referenced resource. Each resource type has its corresponding Reference type, like [ChannelReference](ctp:api:type:ChannelReference).  A referenced resource can be embedded through [Reference Expansion](/general-concepts#reference-expansion). The expanded reference is the value of an additional `obj` field then.
+   *
+   *
+   */
+  readonly resource: Reference
+  /**
+   *
+   */
+  readonly resourceVersion: number
+  /**
+   *
+   */
+  readonly resourceUserProvidedIdentifiers?: UserProvidedIdentifiers
+  /**
+   *
+   */
+  readonly customLineItemId: string
+  /**
+   *
+   */
+  readonly quantity: number
+  /**
+   *
+   */
+  readonly oldQuantity: number
+}
+export interface OrderCustomLineItemRemovedMessage {
+  readonly type: 'OrderCustomLineItemRemoved'
+  /**
+   *	Unique identifier of the Message.
+   *
+   */
+  readonly id: string
+  /**
+   *
+   */
+  readonly version: number
+  /**
+   *
+   */
+  readonly createdAt: string
+  /**
+   *
+   */
+  readonly lastModifiedAt: string
+  /**
+   *	Present on resources created after 1 February 2019 except for [events not tracked](/client-logging#events-tracked).
+   *
+   *
+   */
+  readonly lastModifiedBy?: LastModifiedBy
+  /**
+   *	Present on resources created after 1 February 2019 except for [events not tracked](/client-logging#events-tracked).
+   *
+   *
+   */
+  readonly createdBy?: CreatedBy
+  /**
+   *
+   */
+  readonly sequenceNumber: number
+  /**
+   *	A Reference represents a loose reference to another resource in the same Project identified by its `id`. The `typeId` indicates the type of the referenced resource. Each resource type has its corresponding Reference type, like [ChannelReference](ctp:api:type:ChannelReference).  A referenced resource can be embedded through [Reference Expansion](/general-concepts#reference-expansion). The expanded reference is the value of an additional `obj` field then.
+   *
+   *
+   */
+  readonly resource: Reference
+  /**
+   *
+   */
+  readonly resourceVersion: number
+  /**
+   *
+   */
+  readonly resourceUserProvidedIdentifiers?: UserProvidedIdentifiers
+  /**
+   *
+   */
+  readonly customLineItemId: string
+  /**
+   *
+   */
+  readonly customLineItem: CustomLineItem
+}
+export interface OrderCustomerEmailSetMessage {
+  readonly type: 'OrderCustomerEmailSet'
+  /**
+   *	Unique identifier of the Message.
+   *
+   */
+  readonly id: string
+  /**
+   *
+   */
+  readonly version: number
+  /**
+   *
+   */
+  readonly createdAt: string
+  /**
+   *
+   */
+  readonly lastModifiedAt: string
+  /**
+   *	Present on resources created after 1 February 2019 except for [events not tracked](/client-logging#events-tracked).
+   *
+   *
+   */
+  readonly lastModifiedBy?: LastModifiedBy
+  /**
+   *	Present on resources created after 1 February 2019 except for [events not tracked](/client-logging#events-tracked).
+   *
+   *
+   */
+  readonly createdBy?: CreatedBy
+  /**
+   *
+   */
+  readonly sequenceNumber: number
+  /**
+   *	A Reference represents a loose reference to another resource in the same Project identified by its `id`. The `typeId` indicates the type of the referenced resource. Each resource type has its corresponding Reference type, like [ChannelReference](ctp:api:type:ChannelReference).  A referenced resource can be embedded through [Reference Expansion](/general-concepts#reference-expansion). The expanded reference is the value of an additional `obj` field then.
+   *
    *
    */
   readonly resource: Reference
@@ -1866,7 +2133,7 @@ export interface OrderCustomerEmailSetMessage {
 export interface OrderCustomerGroupSetMessage {
   readonly type: 'OrderCustomerGroupSet'
   /**
-   *	Platform-generated unique identifier of the Message.
+   *	Unique identifier of the Message.
    *
    */
   readonly id: string
@@ -1899,6 +2166,8 @@ export interface OrderCustomerGroupSetMessage {
    */
   readonly sequenceNumber: number
   /**
+   *	A Reference represents a loose reference to another resource in the same Project identified by its `id`. The `typeId` indicates the type of the referenced resource. Each resource type has its corresponding Reference type, like [ChannelReference](ctp:api:type:ChannelReference).  A referenced resource can be embedded through [Reference Expansion](/general-concepts#reference-expansion). The expanded reference is the value of an additional `obj` field then.
+   *
    *
    */
   readonly resource: Reference
@@ -1911,13 +2180,13 @@ export interface OrderCustomerGroupSetMessage {
    */
   readonly resourceUserProvidedIdentifiers?: UserProvidedIdentifiers
   /**
-   *	[Reference](/../api/types#reference) to a [CustomerGroup](ctp:api:type:CustomerGroup).
+   *	[Reference](ctp:api:type:Reference) to a [CustomerGroup](ctp:api:type:CustomerGroup).
    *
    *
    */
   readonly customerGroup?: CustomerGroupReference
   /**
-   *	[Reference](/../api/types#reference) to a [CustomerGroup](ctp:api:type:CustomerGroup).
+   *	[Reference](ctp:api:type:Reference) to a [CustomerGroup](ctp:api:type:CustomerGroup).
    *
    *
    */
@@ -1926,7 +2195,7 @@ export interface OrderCustomerGroupSetMessage {
 export interface OrderCustomerSetMessage {
   readonly type: 'OrderCustomerSet'
   /**
-   *	Platform-generated unique identifier of the Message.
+   *	Unique identifier of the Message.
    *
    */
   readonly id: string
@@ -1959,6 +2228,8 @@ export interface OrderCustomerSetMessage {
    */
   readonly sequenceNumber: number
   /**
+   *	A Reference represents a loose reference to another resource in the same Project identified by its `id`. The `typeId` indicates the type of the referenced resource. Each resource type has its corresponding Reference type, like [ChannelReference](ctp:api:type:ChannelReference).  A referenced resource can be embedded through [Reference Expansion](/general-concepts#reference-expansion). The expanded reference is the value of an additional `obj` field then.
+   *
    *
    */
   readonly resource: Reference
@@ -1971,25 +2242,25 @@ export interface OrderCustomerSetMessage {
    */
   readonly resourceUserProvidedIdentifiers?: UserProvidedIdentifiers
   /**
-   *	[Reference](/../api/types#reference) to a [Customer](ctp:api:type:Customer).
+   *	[Reference](ctp:api:type:Reference) to a [Customer](ctp:api:type:Customer).
    *
    *
    */
   readonly customer?: CustomerReference
   /**
-   *	[Reference](/../api/types#reference) to a [CustomerGroup](ctp:api:type:CustomerGroup).
+   *	[Reference](ctp:api:type:Reference) to a [CustomerGroup](ctp:api:type:CustomerGroup).
    *
    *
    */
   readonly customerGroup?: CustomerGroupReference
   /**
-   *	[Reference](/../api/types#reference) to a [Customer](ctp:api:type:Customer).
+   *	[Reference](ctp:api:type:Reference) to a [Customer](ctp:api:type:Customer).
    *
    *
    */
   readonly oldCustomer?: CustomerReference
   /**
-   *	[Reference](/../api/types#reference) to a [CustomerGroup](ctp:api:type:CustomerGroup).
+   *	[Reference](ctp:api:type:Reference) to a [CustomerGroup](ctp:api:type:CustomerGroup).
    *
    *
    */
@@ -1998,7 +2269,7 @@ export interface OrderCustomerSetMessage {
 export interface OrderDeletedMessage {
   readonly type: 'OrderDeleted'
   /**
-   *	Platform-generated unique identifier of the Message.
+   *	Unique identifier of the Message.
    *
    */
   readonly id: string
@@ -2031,6 +2302,8 @@ export interface OrderDeletedMessage {
    */
   readonly sequenceNumber: number
   /**
+   *	A Reference represents a loose reference to another resource in the same Project identified by its `id`. The `typeId` indicates the type of the referenced resource. Each resource type has its corresponding Reference type, like [ChannelReference](ctp:api:type:ChannelReference).  A referenced resource can be embedded through [Reference Expansion](/general-concepts#reference-expansion). The expanded reference is the value of an additional `obj` field then.
+   *
    *
    */
   readonly resource: Reference
@@ -2050,7 +2323,7 @@ export interface OrderDeletedMessage {
 export interface OrderDiscountCodeAddedMessage {
   readonly type: 'OrderDiscountCodeAdded'
   /**
-   *	Platform-generated unique identifier of the Message.
+   *	Unique identifier of the Message.
    *
    */
   readonly id: string
@@ -2083,6 +2356,8 @@ export interface OrderDiscountCodeAddedMessage {
    */
   readonly sequenceNumber: number
   /**
+   *	A Reference represents a loose reference to another resource in the same Project identified by its `id`. The `typeId` indicates the type of the referenced resource. Each resource type has its corresponding Reference type, like [ChannelReference](ctp:api:type:ChannelReference).  A referenced resource can be embedded through [Reference Expansion](/general-concepts#reference-expansion). The expanded reference is the value of an additional `obj` field then.
+   *
    *
    */
   readonly resource: Reference
@@ -2095,7 +2370,7 @@ export interface OrderDiscountCodeAddedMessage {
    */
   readonly resourceUserProvidedIdentifiers?: UserProvidedIdentifiers
   /**
-   *	[Reference](/../api/types#reference) to a [DiscountCode](ctp:api:type:DiscountCode).
+   *	[Reference](ctp:api:type:Reference) to a [DiscountCode](ctp:api:type:DiscountCode).
    *
    *
    */
@@ -2104,7 +2379,7 @@ export interface OrderDiscountCodeAddedMessage {
 export interface OrderDiscountCodeRemovedMessage {
   readonly type: 'OrderDiscountCodeRemoved'
   /**
-   *	Platform-generated unique identifier of the Message.
+   *	Unique identifier of the Message.
    *
    */
   readonly id: string
@@ -2137,6 +2412,8 @@ export interface OrderDiscountCodeRemovedMessage {
    */
   readonly sequenceNumber: number
   /**
+   *	A Reference represents a loose reference to another resource in the same Project identified by its `id`. The `typeId` indicates the type of the referenced resource. Each resource type has its corresponding Reference type, like [ChannelReference](ctp:api:type:ChannelReference).  A referenced resource can be embedded through [Reference Expansion](/general-concepts#reference-expansion). The expanded reference is the value of an additional `obj` field then.
+   *
    *
    */
   readonly resource: Reference
@@ -2149,7 +2426,7 @@ export interface OrderDiscountCodeRemovedMessage {
    */
   readonly resourceUserProvidedIdentifiers?: UserProvidedIdentifiers
   /**
-   *	[Reference](/../api/types#reference) to a [DiscountCode](ctp:api:type:DiscountCode).
+   *	[Reference](ctp:api:type:Reference) to a [DiscountCode](ctp:api:type:DiscountCode).
    *
    *
    */
@@ -2158,7 +2435,7 @@ export interface OrderDiscountCodeRemovedMessage {
 export interface OrderDiscountCodeStateSetMessage {
   readonly type: 'OrderDiscountCodeStateSet'
   /**
-   *	Platform-generated unique identifier of the Message.
+   *	Unique identifier of the Message.
    *
    */
   readonly id: string
@@ -2191,6 +2468,8 @@ export interface OrderDiscountCodeStateSetMessage {
    */
   readonly sequenceNumber: number
   /**
+   *	A Reference represents a loose reference to another resource in the same Project identified by its `id`. The `typeId` indicates the type of the referenced resource. Each resource type has its corresponding Reference type, like [ChannelReference](ctp:api:type:ChannelReference).  A referenced resource can be embedded through [Reference Expansion](/general-concepts#reference-expansion). The expanded reference is the value of an additional `obj` field then.
+   *
    *
    */
   readonly resource: Reference
@@ -2203,7 +2482,7 @@ export interface OrderDiscountCodeStateSetMessage {
    */
   readonly resourceUserProvidedIdentifiers?: UserProvidedIdentifiers
   /**
-   *	[Reference](/../api/types#reference) to a [DiscountCode](ctp:api:type:DiscountCode).
+   *	[Reference](ctp:api:type:Reference) to a [DiscountCode](ctp:api:type:DiscountCode).
    *
    *
    */
@@ -2220,7 +2499,7 @@ export interface OrderDiscountCodeStateSetMessage {
 export interface OrderEditAppliedMessage {
   readonly type: 'OrderEditApplied'
   /**
-   *	Platform-generated unique identifier of the Message.
+   *	Unique identifier of the Message.
    *
    */
   readonly id: string
@@ -2253,6 +2532,8 @@ export interface OrderEditAppliedMessage {
    */
   readonly sequenceNumber: number
   /**
+   *	A Reference represents a loose reference to another resource in the same Project identified by its `id`. The `typeId` indicates the type of the referenced resource. Each resource type has its corresponding Reference type, like [ChannelReference](ctp:api:type:ChannelReference).  A referenced resource can be embedded through [Reference Expansion](/general-concepts#reference-expansion). The expanded reference is the value of an additional `obj` field then.
+   *
    *
    */
   readonly resource: Reference
@@ -2265,7 +2546,7 @@ export interface OrderEditAppliedMessage {
    */
   readonly resourceUserProvidedIdentifiers?: UserProvidedIdentifiers
   /**
-   *	[Reference](/../api/types#reference) to a [OrderEdit](ctp:api:type:OrderEdit).
+   *	[Reference](ctp:api:type:Reference) to an [OrderEdit](ctp:api:type:OrderEdit).
    *
    *
    */
@@ -2278,7 +2559,7 @@ export interface OrderEditAppliedMessage {
 export interface OrderImportedMessage {
   readonly type: 'OrderImported'
   /**
-   *	Platform-generated unique identifier of the Message.
+   *	Unique identifier of the Message.
    *
    */
   readonly id: string
@@ -2311,6 +2592,8 @@ export interface OrderImportedMessage {
    */
   readonly sequenceNumber: number
   /**
+   *	A Reference represents a loose reference to another resource in the same Project identified by its `id`. The `typeId` indicates the type of the referenced resource. Each resource type has its corresponding Reference type, like [ChannelReference](ctp:api:type:ChannelReference).  A referenced resource can be embedded through [Reference Expansion](/general-concepts#reference-expansion). The expanded reference is the value of an additional `obj` field then.
+   *
    *
    */
   readonly resource: Reference
@@ -2330,7 +2613,7 @@ export interface OrderImportedMessage {
 export interface OrderLineItemAddedMessage {
   readonly type: 'OrderLineItemAdded'
   /**
-   *	Platform-generated unique identifier of the Message.
+   *	Unique identifier of the Message.
    *
    */
   readonly id: string
@@ -2363,6 +2646,8 @@ export interface OrderLineItemAddedMessage {
    */
   readonly sequenceNumber: number
   /**
+   *	A Reference represents a loose reference to another resource in the same Project identified by its `id`. The `typeId` indicates the type of the referenced resource. Each resource type has its corresponding Reference type, like [ChannelReference](ctp:api:type:ChannelReference).  A referenced resource can be embedded through [Reference Expansion](/general-concepts#reference-expansion). The expanded reference is the value of an additional `obj` field then.
+   *
    *
    */
   readonly resource: Reference
@@ -2386,7 +2671,7 @@ export interface OrderLineItemAddedMessage {
 export interface OrderLineItemDiscountSetMessage {
   readonly type: 'OrderLineItemDiscountSet'
   /**
-   *	Platform-generated unique identifier of the Message.
+   *	Unique identifier of the Message.
    *
    */
   readonly id: string
@@ -2419,6 +2704,8 @@ export interface OrderLineItemDiscountSetMessage {
    */
   readonly sequenceNumber: number
   /**
+   *	A Reference represents a loose reference to another resource in the same Project identified by its `id`. The `typeId` indicates the type of the referenced resource. Each resource type has its corresponding Reference type, like [ChannelReference](ctp:api:type:ChannelReference).  A referenced resource can be embedded through [Reference Expansion](/general-concepts#reference-expansion). The expanded reference is the value of an additional `obj` field then.
+   *
    *
    */
   readonly resource: Reference
@@ -2440,6 +2727,7 @@ export interface OrderLineItemDiscountSetMessage {
   readonly discountedPricePerQuantity: DiscountedLineItemPriceForQuantity[]
   /**
    *	Draft type that stores amounts in cent precision for the specified currency.
+   *
    *	For storing money values in fractions of the minor unit in a currency, use [HighPrecisionMoneyDraft](ctp:api:type:HighPrecisionMoneyDraft) instead.
    *
    *
@@ -2453,7 +2741,7 @@ export interface OrderLineItemDiscountSetMessage {
 export interface OrderLineItemDistributionChannelSetMessage {
   readonly type: 'OrderLineItemDistributionChannelSet'
   /**
-   *	Platform-generated unique identifier of the Message.
+   *	Unique identifier of the Message.
    *
    */
   readonly id: string
@@ -2486,6 +2774,8 @@ export interface OrderLineItemDistributionChannelSetMessage {
    */
   readonly sequenceNumber: number
   /**
+   *	A Reference represents a loose reference to another resource in the same Project identified by its `id`. The `typeId` indicates the type of the referenced resource. Each resource type has its corresponding Reference type, like [ChannelReference](ctp:api:type:ChannelReference).  A referenced resource can be embedded through [Reference Expansion](/general-concepts#reference-expansion). The expanded reference is the value of an additional `obj` field then.
+   *
    *
    */
   readonly resource: Reference
@@ -2502,7 +2792,7 @@ export interface OrderLineItemDistributionChannelSetMessage {
    */
   readonly lineItemId: string
   /**
-   *	[Reference](/../api/types#reference) to a [Channel](ctp:api:type:Channel).
+   *	[Reference](ctp:api:type:Reference) to a [Channel](ctp:api:type:Channel).
    *
    *
    */
@@ -2511,7 +2801,7 @@ export interface OrderLineItemDistributionChannelSetMessage {
 export interface OrderLineItemRemovedMessage {
   readonly type: 'OrderLineItemRemoved'
   /**
-   *	Platform-generated unique identifier of the Message.
+   *	Unique identifier of the Message.
    *
    */
   readonly id: string
@@ -2544,6 +2834,8 @@ export interface OrderLineItemRemovedMessage {
    */
   readonly sequenceNumber: number
   /**
+   *	A Reference represents a loose reference to another resource in the same Project identified by its `id`. The `typeId` indicates the type of the referenced resource. Each resource type has its corresponding Reference type, like [ChannelReference](ctp:api:type:ChannelReference).  A referenced resource can be embedded through [Reference Expansion](/general-concepts#reference-expansion). The expanded reference is the value of an additional `obj` field then.
+   *
    *
    */
   readonly resource: Reference
@@ -2593,7 +2885,7 @@ export interface OrderLineItemRemovedMessage {
 export interface OrderPaymentAddedMessage {
   readonly type: 'OrderPaymentAdded'
   /**
-   *	Platform-generated unique identifier of the Message.
+   *	Unique identifier of the Message.
    *
    */
   readonly id: string
@@ -2626,6 +2918,8 @@ export interface OrderPaymentAddedMessage {
    */
   readonly sequenceNumber: number
   /**
+   *	A Reference represents a loose reference to another resource in the same Project identified by its `id`. The `typeId` indicates the type of the referenced resource. Each resource type has its corresponding Reference type, like [ChannelReference](ctp:api:type:ChannelReference).  A referenced resource can be embedded through [Reference Expansion](/general-concepts#reference-expansion). The expanded reference is the value of an additional `obj` field then.
+   *
    *
    */
   readonly resource: Reference
@@ -2638,7 +2932,7 @@ export interface OrderPaymentAddedMessage {
    */
   readonly resourceUserProvidedIdentifiers?: UserProvidedIdentifiers
   /**
-   *	[Reference](/../api/types#reference) to a [Payment](ctp:api:type:Payment).
+   *	[Reference](ctp:api:type:Reference) to a [Payment](ctp:api:type:Payment).
    *
    *
    */
@@ -2647,7 +2941,7 @@ export interface OrderPaymentAddedMessage {
 export interface OrderPaymentStateChangedMessage {
   readonly type: 'OrderPaymentStateChanged'
   /**
-   *	Platform-generated unique identifier of the Message.
+   *	Unique identifier of the Message.
    *
    */
   readonly id: string
@@ -2680,6 +2974,8 @@ export interface OrderPaymentStateChangedMessage {
    */
   readonly sequenceNumber: number
   /**
+   *	A Reference represents a loose reference to another resource in the same Project identified by its `id`. The `typeId` indicates the type of the referenced resource. Each resource type has its corresponding Reference type, like [ChannelReference](ctp:api:type:ChannelReference).  A referenced resource can be embedded through [Reference Expansion](/general-concepts#reference-expansion). The expanded reference is the value of an additional `obj` field then.
+   *
    *
    */
   readonly resource: Reference
@@ -2703,7 +2999,7 @@ export interface OrderPaymentStateChangedMessage {
 export interface OrderReturnInfoAddedMessage {
   readonly type: 'ReturnInfoAdded'
   /**
-   *	Platform-generated unique identifier of the Message.
+   *	Unique identifier of the Message.
    *
    */
   readonly id: string
@@ -2736,6 +3032,8 @@ export interface OrderReturnInfoAddedMessage {
    */
   readonly sequenceNumber: number
   /**
+   *	A Reference represents a loose reference to another resource in the same Project identified by its `id`. The `typeId` indicates the type of the referenced resource. Each resource type has its corresponding Reference type, like [ChannelReference](ctp:api:type:ChannelReference).  A referenced resource can be embedded through [Reference Expansion](/general-concepts#reference-expansion). The expanded reference is the value of an additional `obj` field then.
+   *
    *
    */
   readonly resource: Reference
@@ -2755,7 +3053,7 @@ export interface OrderReturnInfoAddedMessage {
 export interface OrderReturnInfoSetMessage {
   readonly type: 'ReturnInfoSet'
   /**
-   *	Platform-generated unique identifier of the Message.
+   *	Unique identifier of the Message.
    *
    */
   readonly id: string
@@ -2788,6 +3086,8 @@ export interface OrderReturnInfoSetMessage {
    */
   readonly sequenceNumber: number
   /**
+   *	A Reference represents a loose reference to another resource in the same Project identified by its `id`. The `typeId` indicates the type of the referenced resource. Each resource type has its corresponding Reference type, like [ChannelReference](ctp:api:type:ChannelReference).  A referenced resource can be embedded through [Reference Expansion](/general-concepts#reference-expansion). The expanded reference is the value of an additional `obj` field then.
+   *
    *
    */
   readonly resource: Reference
@@ -2807,7 +3107,7 @@ export interface OrderReturnInfoSetMessage {
 export interface OrderReturnShipmentStateChangedMessage {
   readonly type: 'OrderReturnShipmentStateChanged'
   /**
-   *	Platform-generated unique identifier of the Message.
+   *	Unique identifier of the Message.
    *
    */
   readonly id: string
@@ -2840,6 +3140,8 @@ export interface OrderReturnShipmentStateChangedMessage {
    */
   readonly sequenceNumber: number
   /**
+   *	A Reference represents a loose reference to another resource in the same Project identified by its `id`. The `typeId` indicates the type of the referenced resource. Each resource type has its corresponding Reference type, like [ChannelReference](ctp:api:type:ChannelReference).  A referenced resource can be embedded through [Reference Expansion](/general-concepts#reference-expansion). The expanded reference is the value of an additional `obj` field then.
+   *
    *
    */
   readonly resource: Reference
@@ -2863,7 +3165,7 @@ export interface OrderReturnShipmentStateChangedMessage {
 export interface OrderShipmentStateChangedMessage {
   readonly type: 'OrderShipmentStateChanged'
   /**
-   *	Platform-generated unique identifier of the Message.
+   *	Unique identifier of the Message.
    *
    */
   readonly id: string
@@ -2896,6 +3198,8 @@ export interface OrderShipmentStateChangedMessage {
    */
   readonly sequenceNumber: number
   /**
+   *	A Reference represents a loose reference to another resource in the same Project identified by its `id`. The `typeId` indicates the type of the referenced resource. Each resource type has its corresponding Reference type, like [ChannelReference](ctp:api:type:ChannelReference).  A referenced resource can be embedded through [Reference Expansion](/general-concepts#reference-expansion). The expanded reference is the value of an additional `obj` field then.
+   *
    *
    */
   readonly resource: Reference
@@ -2919,7 +3223,7 @@ export interface OrderShipmentStateChangedMessage {
 export interface OrderShippingAddressSetMessage {
   readonly type: 'OrderShippingAddressSet'
   /**
-   *	Platform-generated unique identifier of the Message.
+   *	Unique identifier of the Message.
    *
    */
   readonly id: string
@@ -2952,6 +3256,8 @@ export interface OrderShippingAddressSetMessage {
    */
   readonly sequenceNumber: number
   /**
+   *	A Reference represents a loose reference to another resource in the same Project identified by its `id`. The `typeId` indicates the type of the referenced resource. Each resource type has its corresponding Reference type, like [ChannelReference](ctp:api:type:ChannelReference).  A referenced resource can be embedded through [Reference Expansion](/general-concepts#reference-expansion). The expanded reference is the value of an additional `obj` field then.
+   *
    *
    */
   readonly resource: Reference
@@ -2975,7 +3281,7 @@ export interface OrderShippingAddressSetMessage {
 export interface OrderShippingInfoSetMessage {
   readonly type: 'OrderShippingInfoSet'
   /**
-   *	Platform-generated unique identifier of the Message.
+   *	Unique identifier of the Message.
    *
    */
   readonly id: string
@@ -3008,6 +3314,8 @@ export interface OrderShippingInfoSetMessage {
    */
   readonly sequenceNumber: number
   /**
+   *	A Reference represents a loose reference to another resource in the same Project identified by its `id`. The `typeId` indicates the type of the referenced resource. Each resource type has its corresponding Reference type, like [ChannelReference](ctp:api:type:ChannelReference).  A referenced resource can be embedded through [Reference Expansion](/general-concepts#reference-expansion). The expanded reference is the value of an additional `obj` field then.
+   *
    *
    */
   readonly resource: Reference
@@ -3031,7 +3339,7 @@ export interface OrderShippingInfoSetMessage {
 export interface OrderShippingRateInputSetMessage {
   readonly type: 'OrderShippingRateInputSet'
   /**
-   *	Platform-generated unique identifier of the Message.
+   *	Unique identifier of the Message.
    *
    */
   readonly id: string
@@ -3064,6 +3372,8 @@ export interface OrderShippingRateInputSetMessage {
    */
   readonly sequenceNumber: number
   /**
+   *	A Reference represents a loose reference to another resource in the same Project identified by its `id`. The `typeId` indicates the type of the referenced resource. Each resource type has its corresponding Reference type, like [ChannelReference](ctp:api:type:ChannelReference).  A referenced resource can be embedded through [Reference Expansion](/general-concepts#reference-expansion). The expanded reference is the value of an additional `obj` field then.
+   *
    *
    */
   readonly resource: Reference
@@ -3087,7 +3397,7 @@ export interface OrderShippingRateInputSetMessage {
 export interface OrderStateChangedMessage {
   readonly type: 'OrderStateChanged'
   /**
-   *	Platform-generated unique identifier of the Message.
+   *	Unique identifier of the Message.
    *
    */
   readonly id: string
@@ -3120,6 +3430,8 @@ export interface OrderStateChangedMessage {
    */
   readonly sequenceNumber: number
   /**
+   *	A Reference represents a loose reference to another resource in the same Project identified by its `id`. The `typeId` indicates the type of the referenced resource. Each resource type has its corresponding Reference type, like [ChannelReference](ctp:api:type:ChannelReference).  A referenced resource can be embedded through [Reference Expansion](/general-concepts#reference-expansion). The expanded reference is the value of an additional `obj` field then.
+   *
    *
    */
   readonly resource: Reference
@@ -3143,7 +3455,7 @@ export interface OrderStateChangedMessage {
 export interface OrderStateTransitionMessage {
   readonly type: 'OrderStateTransition'
   /**
-   *	Platform-generated unique identifier of the Message.
+   *	Unique identifier of the Message.
    *
    */
   readonly id: string
@@ -3176,6 +3488,8 @@ export interface OrderStateTransitionMessage {
    */
   readonly sequenceNumber: number
   /**
+   *	A Reference represents a loose reference to another resource in the same Project identified by its `id`. The `typeId` indicates the type of the referenced resource. Each resource type has its corresponding Reference type, like [ChannelReference](ctp:api:type:ChannelReference).  A referenced resource can be embedded through [Reference Expansion](/general-concepts#reference-expansion). The expanded reference is the value of an additional `obj` field then.
+   *
    *
    */
   readonly resource: Reference
@@ -3188,13 +3502,13 @@ export interface OrderStateTransitionMessage {
    */
   readonly resourceUserProvidedIdentifiers?: UserProvidedIdentifiers
   /**
-   *	[Reference](/../api/types#reference) to a [State](ctp:api:type:State).
+   *	[Reference](ctp:api:type:Reference) to a [State](ctp:api:type:State).
    *
    *
    */
   readonly state: StateReference
   /**
-   *	[Reference](/../api/types#reference) to a [State](ctp:api:type:State).
+   *	[Reference](ctp:api:type:Reference) to a [State](ctp:api:type:State).
    *
    *
    */
@@ -3207,7 +3521,7 @@ export interface OrderStateTransitionMessage {
 export interface OrderStoreSetMessage {
   readonly type: 'OrderStoreSet'
   /**
-   *	Platform-generated unique identifier of the Message.
+   *	Unique identifier of the Message.
    *
    */
   readonly id: string
@@ -3240,6 +3554,8 @@ export interface OrderStoreSetMessage {
    */
   readonly sequenceNumber: number
   /**
+   *	A Reference represents a loose reference to another resource in the same Project identified by its `id`. The `typeId` indicates the type of the referenced resource. Each resource type has its corresponding Reference type, like [ChannelReference](ctp:api:type:ChannelReference).  A referenced resource can be embedded through [Reference Expansion](/general-concepts#reference-expansion). The expanded reference is the value of an additional `obj` field then.
+   *
    *
    */
   readonly resource: Reference
@@ -3252,6 +3568,8 @@ export interface OrderStoreSetMessage {
    */
   readonly resourceUserProvidedIdentifiers?: UserProvidedIdentifiers
   /**
+   *	[Reference](/../api/types#reference) to a [Store](ctp:api:type:Store) by its key.
+   *
    *
    */
   readonly store: StoreKeyReference
@@ -3259,7 +3577,7 @@ export interface OrderStoreSetMessage {
 export interface ParcelAddedToDeliveryMessage {
   readonly type: 'ParcelAddedToDelivery'
   /**
-   *	Platform-generated unique identifier of the Message.
+   *	Unique identifier of the Message.
    *
    */
   readonly id: string
@@ -3292,6 +3610,8 @@ export interface ParcelAddedToDeliveryMessage {
    */
   readonly sequenceNumber: number
   /**
+   *	A Reference represents a loose reference to another resource in the same Project identified by its `id`. The `typeId` indicates the type of the referenced resource. Each resource type has its corresponding Reference type, like [ChannelReference](ctp:api:type:ChannelReference).  A referenced resource can be embedded through [Reference Expansion](/general-concepts#reference-expansion). The expanded reference is the value of an additional `obj` field then.
+   *
    *
    */
   readonly resource: Reference
@@ -3315,7 +3635,7 @@ export interface ParcelAddedToDeliveryMessage {
 export interface ParcelItemsUpdatedMessage {
   readonly type: 'ParcelItemsUpdated'
   /**
-   *	Platform-generated unique identifier of the Message.
+   *	Unique identifier of the Message.
    *
    */
   readonly id: string
@@ -3348,6 +3668,8 @@ export interface ParcelItemsUpdatedMessage {
    */
   readonly sequenceNumber: number
   /**
+   *	A Reference represents a loose reference to another resource in the same Project identified by its `id`. The `typeId` indicates the type of the referenced resource. Each resource type has its corresponding Reference type, like [ChannelReference](ctp:api:type:ChannelReference).  A referenced resource can be embedded through [Reference Expansion](/general-concepts#reference-expansion). The expanded reference is the value of an additional `obj` field then.
+   *
    *
    */
   readonly resource: Reference
@@ -3379,7 +3701,7 @@ export interface ParcelItemsUpdatedMessage {
 export interface ParcelMeasurementsUpdatedMessage {
   readonly type: 'ParcelMeasurementsUpdated'
   /**
-   *	Platform-generated unique identifier of the Message.
+   *	Unique identifier of the Message.
    *
    */
   readonly id: string
@@ -3412,6 +3734,8 @@ export interface ParcelMeasurementsUpdatedMessage {
    */
   readonly sequenceNumber: number
   /**
+   *	A Reference represents a loose reference to another resource in the same Project identified by its `id`. The `typeId` indicates the type of the referenced resource. Each resource type has its corresponding Reference type, like [ChannelReference](ctp:api:type:ChannelReference).  A referenced resource can be embedded through [Reference Expansion](/general-concepts#reference-expansion). The expanded reference is the value of an additional `obj` field then.
+   *
    *
    */
   readonly resource: Reference
@@ -3439,7 +3763,7 @@ export interface ParcelMeasurementsUpdatedMessage {
 export interface ParcelRemovedFromDeliveryMessage {
   readonly type: 'ParcelRemovedFromDelivery'
   /**
-   *	Platform-generated unique identifier of the Message.
+   *	Unique identifier of the Message.
    *
    */
   readonly id: string
@@ -3472,6 +3796,8 @@ export interface ParcelRemovedFromDeliveryMessage {
    */
   readonly sequenceNumber: number
   /**
+   *	A Reference represents a loose reference to another resource in the same Project identified by its `id`. The `typeId` indicates the type of the referenced resource. Each resource type has its corresponding Reference type, like [ChannelReference](ctp:api:type:ChannelReference).  A referenced resource can be embedded through [Reference Expansion](/general-concepts#reference-expansion). The expanded reference is the value of an additional `obj` field then.
+   *
    *
    */
   readonly resource: Reference
@@ -3495,7 +3821,7 @@ export interface ParcelRemovedFromDeliveryMessage {
 export interface ParcelTrackingDataUpdatedMessage {
   readonly type: 'ParcelTrackingDataUpdated'
   /**
-   *	Platform-generated unique identifier of the Message.
+   *	Unique identifier of the Message.
    *
    */
   readonly id: string
@@ -3528,6 +3854,8 @@ export interface ParcelTrackingDataUpdatedMessage {
    */
   readonly sequenceNumber: number
   /**
+   *	A Reference represents a loose reference to another resource in the same Project identified by its `id`. The `typeId` indicates the type of the referenced resource. Each resource type has its corresponding Reference type, like [ChannelReference](ctp:api:type:ChannelReference).  A referenced resource can be embedded through [Reference Expansion](/general-concepts#reference-expansion). The expanded reference is the value of an additional `obj` field then.
+   *
    *
    */
   readonly resource: Reference
@@ -3555,7 +3883,7 @@ export interface ParcelTrackingDataUpdatedMessage {
 export interface PaymentCreatedMessage {
   readonly type: 'PaymentCreated'
   /**
-   *	Platform-generated unique identifier of the Message.
+   *	Unique identifier of the Message.
    *
    */
   readonly id: string
@@ -3588,6 +3916,8 @@ export interface PaymentCreatedMessage {
    */
   readonly sequenceNumber: number
   /**
+   *	A Reference represents a loose reference to another resource in the same Project identified by its `id`. The `typeId` indicates the type of the referenced resource. Each resource type has its corresponding Reference type, like [ChannelReference](ctp:api:type:ChannelReference).  A referenced resource can be embedded through [Reference Expansion](/general-concepts#reference-expansion). The expanded reference is the value of an additional `obj` field then.
+   *
    *
    */
   readonly resource: Reference
@@ -3607,7 +3937,7 @@ export interface PaymentCreatedMessage {
 export interface PaymentInteractionAddedMessage {
   readonly type: 'PaymentInteractionAdded'
   /**
-   *	Platform-generated unique identifier of the Message.
+   *	Unique identifier of the Message.
    *
    */
   readonly id: string
@@ -3640,6 +3970,8 @@ export interface PaymentInteractionAddedMessage {
    */
   readonly sequenceNumber: number
   /**
+   *	A Reference represents a loose reference to another resource in the same Project identified by its `id`. The `typeId` indicates the type of the referenced resource. Each resource type has its corresponding Reference type, like [ChannelReference](ctp:api:type:ChannelReference).  A referenced resource can be embedded through [Reference Expansion](/general-concepts#reference-expansion). The expanded reference is the value of an additional `obj` field then.
+   *
    *
    */
   readonly resource: Reference
@@ -3661,7 +3993,7 @@ export interface PaymentInteractionAddedMessage {
 export interface PaymentStatusInterfaceCodeSetMessage {
   readonly type: 'PaymentStatusInterfaceCodeSet'
   /**
-   *	Platform-generated unique identifier of the Message.
+   *	Unique identifier of the Message.
    *
    */
   readonly id: string
@@ -3694,6 +4026,8 @@ export interface PaymentStatusInterfaceCodeSetMessage {
    */
   readonly sequenceNumber: number
   /**
+   *	A Reference represents a loose reference to another resource in the same Project identified by its `id`. The `typeId` indicates the type of the referenced resource. Each resource type has its corresponding Reference type, like [ChannelReference](ctp:api:type:ChannelReference).  A referenced resource can be embedded through [Reference Expansion](/general-concepts#reference-expansion). The expanded reference is the value of an additional `obj` field then.
+   *
    *
    */
   readonly resource: Reference
@@ -3717,7 +4051,7 @@ export interface PaymentStatusInterfaceCodeSetMessage {
 export interface PaymentStatusStateTransitionMessage {
   readonly type: 'PaymentStatusStateTransition'
   /**
-   *	Platform-generated unique identifier of the Message.
+   *	Unique identifier of the Message.
    *
    */
   readonly id: string
@@ -3750,6 +4084,8 @@ export interface PaymentStatusStateTransitionMessage {
    */
   readonly sequenceNumber: number
   /**
+   *	A Reference represents a loose reference to another resource in the same Project identified by its `id`. The `typeId` indicates the type of the referenced resource. Each resource type has its corresponding Reference type, like [ChannelReference](ctp:api:type:ChannelReference).  A referenced resource can be embedded through [Reference Expansion](/general-concepts#reference-expansion). The expanded reference is the value of an additional `obj` field then.
+   *
    *
    */
   readonly resource: Reference
@@ -3762,7 +4098,7 @@ export interface PaymentStatusStateTransitionMessage {
    */
   readonly resourceUserProvidedIdentifiers?: UserProvidedIdentifiers
   /**
-   *	[Reference](/../api/types#reference) to a [State](ctp:api:type:State).
+   *	[Reference](ctp:api:type:Reference) to a [State](ctp:api:type:State).
    *
    *
    */
@@ -3775,7 +4111,7 @@ export interface PaymentStatusStateTransitionMessage {
 export interface PaymentTransactionAddedMessage {
   readonly type: 'PaymentTransactionAdded'
   /**
-   *	Platform-generated unique identifier of the Message.
+   *	Unique identifier of the Message.
    *
    */
   readonly id: string
@@ -3808,6 +4144,8 @@ export interface PaymentTransactionAddedMessage {
    */
   readonly sequenceNumber: number
   /**
+   *	A Reference represents a loose reference to another resource in the same Project identified by its `id`. The `typeId` indicates the type of the referenced resource. Each resource type has its corresponding Reference type, like [ChannelReference](ctp:api:type:ChannelReference).  A referenced resource can be embedded through [Reference Expansion](/general-concepts#reference-expansion). The expanded reference is the value of an additional `obj` field then.
+   *
    *
    */
   readonly resource: Reference
@@ -3827,7 +4165,7 @@ export interface PaymentTransactionAddedMessage {
 export interface PaymentTransactionStateChangedMessage {
   readonly type: 'PaymentTransactionStateChanged'
   /**
-   *	Platform-generated unique identifier of the Message.
+   *	Unique identifier of the Message.
    *
    */
   readonly id: string
@@ -3860,6 +4198,8 @@ export interface PaymentTransactionStateChangedMessage {
    */
   readonly sequenceNumber: number
   /**
+   *	A Reference represents a loose reference to another resource in the same Project identified by its `id`. The `typeId` indicates the type of the referenced resource. Each resource type has its corresponding Reference type, like [ChannelReference](ctp:api:type:ChannelReference).  A referenced resource can be embedded through [Reference Expansion](/general-concepts#reference-expansion). The expanded reference is the value of an additional `obj` field then.
+   *
    *
    */
   readonly resource: Reference
@@ -3883,7 +4223,7 @@ export interface PaymentTransactionStateChangedMessage {
 export interface ProductAddedToCategoryMessage {
   readonly type: 'ProductAddedToCategory'
   /**
-   *	Platform-generated unique identifier of the Message.
+   *	Unique identifier of the Message.
    *
    */
   readonly id: string
@@ -3916,6 +4256,8 @@ export interface ProductAddedToCategoryMessage {
    */
   readonly sequenceNumber: number
   /**
+   *	A Reference represents a loose reference to another resource in the same Project identified by its `id`. The `typeId` indicates the type of the referenced resource. Each resource type has its corresponding Reference type, like [ChannelReference](ctp:api:type:ChannelReference).  A referenced resource can be embedded through [Reference Expansion](/general-concepts#reference-expansion). The expanded reference is the value of an additional `obj` field then.
+   *
    *
    */
   readonly resource: Reference
@@ -3928,7 +4270,7 @@ export interface ProductAddedToCategoryMessage {
    */
   readonly resourceUserProvidedIdentifiers?: UserProvidedIdentifiers
   /**
-   *	[Reference](/../api/types#reference) to a [Category](ctp:api:type:Category).
+   *	[Reference](ctp:api:type:Reference) to a [Category](ctp:api:type:Category).
    *
    *
    */
@@ -3941,7 +4283,7 @@ export interface ProductAddedToCategoryMessage {
 export interface ProductCreatedMessage {
   readonly type: 'ProductCreated'
   /**
-   *	Platform-generated unique identifier of the Message.
+   *	Unique identifier of the Message.
    *
    */
   readonly id: string
@@ -3974,6 +4316,8 @@ export interface ProductCreatedMessage {
    */
   readonly sequenceNumber: number
   /**
+   *	A Reference represents a loose reference to another resource in the same Project identified by its `id`. The `typeId` indicates the type of the referenced resource. Each resource type has its corresponding Reference type, like [ChannelReference](ctp:api:type:ChannelReference).  A referenced resource can be embedded through [Reference Expansion](/general-concepts#reference-expansion). The expanded reference is the value of an additional `obj` field then.
+   *
    *
    */
   readonly resource: Reference
@@ -3993,7 +4337,7 @@ export interface ProductCreatedMessage {
 export interface ProductDeletedMessage {
   readonly type: 'ProductDeleted'
   /**
-   *	Platform-generated unique identifier of the Message.
+   *	Unique identifier of the Message.
    *
    */
   readonly id: string
@@ -4026,6 +4370,8 @@ export interface ProductDeletedMessage {
    */
   readonly sequenceNumber: number
   /**
+   *	A Reference represents a loose reference to another resource in the same Project identified by its `id`. The `typeId` indicates the type of the referenced resource. Each resource type has its corresponding Reference type, like [ChannelReference](ctp:api:type:ChannelReference).  A referenced resource can be embedded through [Reference Expansion](/general-concepts#reference-expansion). The expanded reference is the value of an additional `obj` field then.
+   *
    *
    */
   readonly resource: Reference
@@ -4049,7 +4395,7 @@ export interface ProductDeletedMessage {
 export interface ProductImageAddedMessage {
   readonly type: 'ProductImageAdded'
   /**
-   *	Platform-generated unique identifier of the Message.
+   *	Unique identifier of the Message.
    *
    */
   readonly id: string
@@ -4082,6 +4428,8 @@ export interface ProductImageAddedMessage {
    */
   readonly sequenceNumber: number
   /**
+   *	A Reference represents a loose reference to another resource in the same Project identified by its `id`. The `typeId` indicates the type of the referenced resource. Each resource type has its corresponding Reference type, like [ChannelReference](ctp:api:type:ChannelReference).  A referenced resource can be embedded through [Reference Expansion](/general-concepts#reference-expansion). The expanded reference is the value of an additional `obj` field then.
+   *
    *
    */
   readonly resource: Reference
@@ -4109,7 +4457,7 @@ export interface ProductImageAddedMessage {
 export interface ProductPriceDiscountsSetMessage {
   readonly type: 'ProductPriceDiscountsSet'
   /**
-   *	Platform-generated unique identifier of the Message.
+   *	Unique identifier of the Message.
    *
    */
   readonly id: string
@@ -4142,6 +4490,8 @@ export interface ProductPriceDiscountsSetMessage {
    */
   readonly sequenceNumber: number
   /**
+   *	A Reference represents a loose reference to another resource in the same Project identified by its `id`. The `typeId` indicates the type of the referenced resource. Each resource type has its corresponding Reference type, like [ChannelReference](ctp:api:type:ChannelReference).  A referenced resource can be embedded through [Reference Expansion](/general-concepts#reference-expansion). The expanded reference is the value of an additional `obj` field then.
+   *
    *
    */
   readonly resource: Reference
@@ -4187,7 +4537,7 @@ export interface ProductPriceDiscountsSetUpdatedPrice {
 export interface ProductPriceExternalDiscountSetMessage {
   readonly type: 'ProductPriceExternalDiscountSet'
   /**
-   *	Platform-generated unique identifier of the Message.
+   *	Unique identifier of the Message.
    *
    */
   readonly id: string
@@ -4220,6 +4570,8 @@ export interface ProductPriceExternalDiscountSetMessage {
    */
   readonly sequenceNumber: number
   /**
+   *	A Reference represents a loose reference to another resource in the same Project identified by its `id`. The `typeId` indicates the type of the referenced resource. Each resource type has its corresponding Reference type, like [ChannelReference](ctp:api:type:ChannelReference).  A referenced resource can be embedded through [Reference Expansion](/general-concepts#reference-expansion). The expanded reference is the value of an additional `obj` field then.
+   *
    *
    */
   readonly resource: Reference
@@ -4259,7 +4611,7 @@ export interface ProductPriceExternalDiscountSetMessage {
 export interface ProductPublishedMessage {
   readonly type: 'ProductPublished'
   /**
-   *	Platform-generated unique identifier of the Message.
+   *	Unique identifier of the Message.
    *
    */
   readonly id: string
@@ -4292,6 +4644,8 @@ export interface ProductPublishedMessage {
    */
   readonly sequenceNumber: number
   /**
+   *	A Reference represents a loose reference to another resource in the same Project identified by its `id`. The `typeId` indicates the type of the referenced resource. Each resource type has its corresponding Reference type, like [ChannelReference](ctp:api:type:ChannelReference).  A referenced resource can be embedded through [Reference Expansion](/general-concepts#reference-expansion). The expanded reference is the value of an additional `obj` field then.
+   *
    *
    */
   readonly resource: Reference
@@ -4319,7 +4673,7 @@ export interface ProductPublishedMessage {
 export interface ProductRemovedFromCategoryMessage {
   readonly type: 'ProductRemovedFromCategory'
   /**
-   *	Platform-generated unique identifier of the Message.
+   *	Unique identifier of the Message.
    *
    */
   readonly id: string
@@ -4352,6 +4706,8 @@ export interface ProductRemovedFromCategoryMessage {
    */
   readonly sequenceNumber: number
   /**
+   *	A Reference represents a loose reference to another resource in the same Project identified by its `id`. The `typeId` indicates the type of the referenced resource. Each resource type has its corresponding Reference type, like [ChannelReference](ctp:api:type:ChannelReference).  A referenced resource can be embedded through [Reference Expansion](/general-concepts#reference-expansion). The expanded reference is the value of an additional `obj` field then.
+   *
    *
    */
   readonly resource: Reference
@@ -4364,7 +4720,7 @@ export interface ProductRemovedFromCategoryMessage {
    */
   readonly resourceUserProvidedIdentifiers?: UserProvidedIdentifiers
   /**
-   *	[Reference](/../api/types#reference) to a [Category](ctp:api:type:Category).
+   *	[Reference](ctp:api:type:Reference) to a [Category](ctp:api:type:Category).
    *
    *
    */
@@ -4377,7 +4733,7 @@ export interface ProductRemovedFromCategoryMessage {
 export interface ProductRevertedStagedChangesMessage {
   readonly type: 'ProductRevertedStagedChanges'
   /**
-   *	Platform-generated unique identifier of the Message.
+   *	Unique identifier of the Message.
    *
    */
   readonly id: string
@@ -4410,6 +4766,8 @@ export interface ProductRevertedStagedChangesMessage {
    */
   readonly sequenceNumber: number
   /**
+   *	A Reference represents a loose reference to another resource in the same Project identified by its `id`. The `typeId` indicates the type of the referenced resource. Each resource type has its corresponding Reference type, like [ChannelReference](ctp:api:type:ChannelReference).  A referenced resource can be embedded through [Reference Expansion](/general-concepts#reference-expansion). The expanded reference is the value of an additional `obj` field then.
+   *
    *
    */
   readonly resource: Reference
@@ -4429,7 +4787,7 @@ export interface ProductRevertedStagedChangesMessage {
 export interface ProductSelectionCreatedMessage {
   readonly type: 'ProductSelectionCreated'
   /**
-   *	Platform-generated unique identifier of the Message.
+   *	Unique identifier of the Message.
    *
    */
   readonly id: string
@@ -4462,6 +4820,8 @@ export interface ProductSelectionCreatedMessage {
    */
   readonly sequenceNumber: number
   /**
+   *	A Reference represents a loose reference to another resource in the same Project identified by its `id`. The `typeId` indicates the type of the referenced resource. Each resource type has its corresponding Reference type, like [ChannelReference](ctp:api:type:ChannelReference).  A referenced resource can be embedded through [Reference Expansion](/general-concepts#reference-expansion). The expanded reference is the value of an additional `obj` field then.
+   *
    *
    */
   readonly resource: Reference
@@ -4481,7 +4841,7 @@ export interface ProductSelectionCreatedMessage {
 export interface ProductSelectionDeletedMessage {
   readonly type: 'ProductSelectionDeleted'
   /**
-   *	Platform-generated unique identifier of the Message.
+   *	Unique identifier of the Message.
    *
    */
   readonly id: string
@@ -4514,6 +4874,8 @@ export interface ProductSelectionDeletedMessage {
    */
   readonly sequenceNumber: number
   /**
+   *	A Reference represents a loose reference to another resource in the same Project identified by its `id`. The `typeId` indicates the type of the referenced resource. Each resource type has its corresponding Reference type, like [ChannelReference](ctp:api:type:ChannelReference).  A referenced resource can be embedded through [Reference Expansion](/general-concepts#reference-expansion). The expanded reference is the value of an additional `obj` field then.
+   *
    *
    */
   readonly resource: Reference
@@ -4526,6 +4888,8 @@ export interface ProductSelectionDeletedMessage {
    */
   readonly resourceUserProvidedIdentifiers?: UserProvidedIdentifiers
   /**
+   *	JSON object where the keys are of type [Locale](ctp:api:type:Locale), and the values are the strings used for the corresponding language.
+   *
    *
    */
   readonly name: LocalizedString
@@ -4533,7 +4897,7 @@ export interface ProductSelectionDeletedMessage {
 export interface ProductSelectionProductAddedMessage {
   readonly type: 'ProductSelectionProductAdded'
   /**
-   *	Platform-generated unique identifier of the Message.
+   *	Unique identifier of the Message.
    *
    */
   readonly id: string
@@ -4566,6 +4930,8 @@ export interface ProductSelectionProductAddedMessage {
    */
   readonly sequenceNumber: number
   /**
+   *	A Reference represents a loose reference to another resource in the same Project identified by its `id`. The `typeId` indicates the type of the referenced resource. Each resource type has its corresponding Reference type, like [ChannelReference](ctp:api:type:ChannelReference).  A referenced resource can be embedded through [Reference Expansion](/general-concepts#reference-expansion). The expanded reference is the value of an additional `obj` field then.
+   *
    *
    */
   readonly resource: Reference
@@ -4578,16 +4944,22 @@ export interface ProductSelectionProductAddedMessage {
    */
   readonly resourceUserProvidedIdentifiers?: UserProvidedIdentifiers
   /**
-   *	[Reference](/../api/types#reference) to a [Product](ctp:api:type:Product).
+   *	[Reference](ctp:api:type:Reference) to a [Product](ctp:api:type:Product).
    *
    *
    */
   readonly product: ProductReference
+  /**
+   *	Polymorphic base type for Product Variant Selections. The actual type is determined by the `type` field.
+   *
+   *
+   */
+  readonly variantSelection?: ProductVariantSelection
 }
 export interface ProductSelectionProductRemovedMessage {
   readonly type: 'ProductSelectionProductRemoved'
   /**
-   *	Platform-generated unique identifier of the Message.
+   *	Unique identifier of the Message.
    *
    */
   readonly id: string
@@ -4620,6 +4992,8 @@ export interface ProductSelectionProductRemovedMessage {
    */
   readonly sequenceNumber: number
   /**
+   *	A Reference represents a loose reference to another resource in the same Project identified by its `id`. The `typeId` indicates the type of the referenced resource. Each resource type has its corresponding Reference type, like [ChannelReference](ctp:api:type:ChannelReference).  A referenced resource can be embedded through [Reference Expansion](/general-concepts#reference-expansion). The expanded reference is the value of an additional `obj` field then.
+   *
    *
    */
   readonly resource: Reference
@@ -4632,16 +5006,16 @@ export interface ProductSelectionProductRemovedMessage {
    */
   readonly resourceUserProvidedIdentifiers?: UserProvidedIdentifiers
   /**
-   *	[Reference](/../api/types#reference) to a [Product](ctp:api:type:Product).
+   *	[Reference](ctp:api:type:Reference) to a [Product](ctp:api:type:Product).
    *
    *
    */
   readonly product: ProductReference
 }
-export interface ProductSlugChangedMessage {
-  readonly type: 'ProductSlugChanged'
+export interface ProductSelectionVariantSelectionChangedMessage {
+  readonly type: 'ProductSelectionVariantSelectionChanged'
   /**
-   *	Platform-generated unique identifier of the Message.
+   *	Unique identifier of the Message.
    *
    */
   readonly id: string
@@ -4674,6 +5048,8 @@ export interface ProductSlugChangedMessage {
    */
   readonly sequenceNumber: number
   /**
+   *	A Reference represents a loose reference to another resource in the same Project identified by its `id`. The `typeId` indicates the type of the referenced resource. Each resource type has its corresponding Reference type, like [ChannelReference](ctp:api:type:ChannelReference).  A referenced resource can be embedded through [Reference Expansion](/general-concepts#reference-expansion). The expanded reference is the value of an additional `obj` field then.
+   *
    *
    */
   readonly resource: Reference
@@ -4686,10 +5062,80 @@ export interface ProductSlugChangedMessage {
    */
   readonly resourceUserProvidedIdentifiers?: UserProvidedIdentifiers
   /**
+   *	[Reference](ctp:api:type:Reference) to a [Product](ctp:api:type:Product).
+   *
+   *
+   */
+  readonly product: ProductReference
+  /**
+   *	The former Product Variant Selection if any.
+   *
+   */
+  readonly oldVariantSelection?: ProductVariantSelection
+  /**
+   *	The updated Product Variant Selection if any.
+   *
+   */
+  readonly newVariantSelection?: ProductVariantSelection
+}
+export interface ProductSlugChangedMessage {
+  readonly type: 'ProductSlugChanged'
+  /**
+   *	Unique identifier of the Message.
+   *
+   */
+  readonly id: string
+  /**
+   *
+   */
+  readonly version: number
+  /**
+   *
+   */
+  readonly createdAt: string
+  /**
+   *
+   */
+  readonly lastModifiedAt: string
+  /**
+   *	Present on resources created after 1 February 2019 except for [events not tracked](/client-logging#events-tracked).
+   *
+   *
+   */
+  readonly lastModifiedBy?: LastModifiedBy
+  /**
+   *	Present on resources created after 1 February 2019 except for [events not tracked](/client-logging#events-tracked).
+   *
+   *
+   */
+  readonly createdBy?: CreatedBy
+  /**
+   *
+   */
+  readonly sequenceNumber: number
+  /**
+   *	A Reference represents a loose reference to another resource in the same Project identified by its `id`. The `typeId` indicates the type of the referenced resource. Each resource type has its corresponding Reference type, like [ChannelReference](ctp:api:type:ChannelReference).  A referenced resource can be embedded through [Reference Expansion](/general-concepts#reference-expansion). The expanded reference is the value of an additional `obj` field then.
+   *
+   *
+   */
+  readonly resource: Reference
+  /**
+   *
+   */
+  readonly resourceVersion: number
+  /**
+   *
+   */
+  readonly resourceUserProvidedIdentifiers?: UserProvidedIdentifiers
+  /**
+   *	JSON object where the keys are of type [Locale](ctp:api:type:Locale), and the values are the strings used for the corresponding language.
+   *
    *
    */
   readonly slug: LocalizedString
   /**
+   *	JSON object where the keys are of type [Locale](ctp:api:type:Locale), and the values are the strings used for the corresponding language.
+   *
    *
    */
   readonly oldSlug?: LocalizedString
@@ -4697,7 +5143,7 @@ export interface ProductSlugChangedMessage {
 export interface ProductStateTransitionMessage {
   readonly type: 'ProductStateTransition'
   /**
-   *	Platform-generated unique identifier of the Message.
+   *	Unique identifier of the Message.
    *
    */
   readonly id: string
@@ -4730,6 +5176,8 @@ export interface ProductStateTransitionMessage {
    */
   readonly sequenceNumber: number
   /**
+   *	A Reference represents a loose reference to another resource in the same Project identified by its `id`. The `typeId` indicates the type of the referenced resource. Each resource type has its corresponding Reference type, like [ChannelReference](ctp:api:type:ChannelReference).  A referenced resource can be embedded through [Reference Expansion](/general-concepts#reference-expansion). The expanded reference is the value of an additional `obj` field then.
+   *
    *
    */
   readonly resource: Reference
@@ -4742,7 +5190,7 @@ export interface ProductStateTransitionMessage {
    */
   readonly resourceUserProvidedIdentifiers?: UserProvidedIdentifiers
   /**
-   *	[Reference](/../api/types#reference) to a [State](ctp:api:type:State).
+   *	[Reference](ctp:api:type:Reference) to a [State](ctp:api:type:State).
    *
    *
    */
@@ -4755,7 +5203,7 @@ export interface ProductStateTransitionMessage {
 export interface ProductUnpublishedMessage {
   readonly type: 'ProductUnpublished'
   /**
-   *	Platform-generated unique identifier of the Message.
+   *	Unique identifier of the Message.
    *
    */
   readonly id: string
@@ -4788,6 +5236,8 @@ export interface ProductUnpublishedMessage {
    */
   readonly sequenceNumber: number
   /**
+   *	A Reference represents a loose reference to another resource in the same Project identified by its `id`. The `typeId` indicates the type of the referenced resource. Each resource type has its corresponding Reference type, like [ChannelReference](ctp:api:type:ChannelReference).  A referenced resource can be embedded through [Reference Expansion](/general-concepts#reference-expansion). The expanded reference is the value of an additional `obj` field then.
+   *
    *
    */
   readonly resource: Reference
@@ -4803,7 +5253,7 @@ export interface ProductUnpublishedMessage {
 export interface ProductVariantAddedMessage {
   readonly type: 'ProductVariantAdded'
   /**
-   *	Platform-generated unique identifier of the Message.
+   *	Unique identifier of the Message.
    *
    */
   readonly id: string
@@ -4836,6 +5286,8 @@ export interface ProductVariantAddedMessage {
    */
   readonly sequenceNumber: number
   /**
+   *	A Reference represents a loose reference to another resource in the same Project identified by its `id`. The `typeId` indicates the type of the referenced resource. Each resource type has its corresponding Reference type, like [ChannelReference](ctp:api:type:ChannelReference).  A referenced resource can be embedded through [Reference Expansion](/general-concepts#reference-expansion). The expanded reference is the value of an additional `obj` field then.
+   *
    *
    */
   readonly resource: Reference
@@ -4859,7 +5311,7 @@ export interface ProductVariantAddedMessage {
 export interface ProductVariantDeletedMessage {
   readonly type: 'ProductVariantDeleted'
   /**
-   *	Platform-generated unique identifier of the Message.
+   *	Unique identifier of the Message.
    *
    */
   readonly id: string
@@ -4892,6 +5344,8 @@ export interface ProductVariantDeletedMessage {
    */
   readonly sequenceNumber: number
   /**
+   *	A Reference represents a loose reference to another resource in the same Project identified by its `id`. The `typeId` indicates the type of the referenced resource. Each resource type has its corresponding Reference type, like [ChannelReference](ctp:api:type:ChannelReference).  A referenced resource can be embedded through [Reference Expansion](/general-concepts#reference-expansion). The expanded reference is the value of an additional `obj` field then.
+   *
    *
    */
   readonly resource: Reference
@@ -4912,10 +5366,10 @@ export interface ProductVariantDeletedMessage {
    */
   readonly removedImageUrls: string[]
 }
-export interface ReviewCreatedMessage {
-  readonly type: 'ReviewCreated'
+export interface QuoteCreatedMessage {
+  readonly type: 'QuoteCreated'
   /**
-   *	Platform-generated unique identifier of the Message.
+   *	Unique identifier of the Message.
    *
    */
   readonly id: string
@@ -4948,6 +5402,332 @@ export interface ReviewCreatedMessage {
    */
   readonly sequenceNumber: number
   /**
+   *	A Reference represents a loose reference to another resource in the same Project identified by its `id`. The `typeId` indicates the type of the referenced resource. Each resource type has its corresponding Reference type, like [ChannelReference](ctp:api:type:ChannelReference).  A referenced resource can be embedded through [Reference Expansion](/general-concepts#reference-expansion). The expanded reference is the value of an additional `obj` field then.
+   *
+   *
+   */
+  readonly resource: Reference
+  /**
+   *
+   */
+  readonly resourceVersion: number
+  /**
+   *
+   */
+  readonly resourceUserProvidedIdentifiers?: UserProvidedIdentifiers
+}
+export interface QuoteDeletedMessage {
+  readonly type: 'QuoteDeleted'
+  /**
+   *	Unique identifier of the Message.
+   *
+   */
+  readonly id: string
+  /**
+   *
+   */
+  readonly version: number
+  /**
+   *
+   */
+  readonly createdAt: string
+  /**
+   *
+   */
+  readonly lastModifiedAt: string
+  /**
+   *	Present on resources created after 1 February 2019 except for [events not tracked](/client-logging#events-tracked).
+   *
+   *
+   */
+  readonly lastModifiedBy?: LastModifiedBy
+  /**
+   *	Present on resources created after 1 February 2019 except for [events not tracked](/client-logging#events-tracked).
+   *
+   *
+   */
+  readonly createdBy?: CreatedBy
+  /**
+   *
+   */
+  readonly sequenceNumber: number
+  /**
+   *	A Reference represents a loose reference to another resource in the same Project identified by its `id`. The `typeId` indicates the type of the referenced resource. Each resource type has its corresponding Reference type, like [ChannelReference](ctp:api:type:ChannelReference).  A referenced resource can be embedded through [Reference Expansion](/general-concepts#reference-expansion). The expanded reference is the value of an additional `obj` field then.
+   *
+   *
+   */
+  readonly resource: Reference
+  /**
+   *
+   */
+  readonly resourceVersion: number
+  /**
+   *
+   */
+  readonly resourceUserProvidedIdentifiers?: UserProvidedIdentifiers
+}
+export interface QuoteRequestCreatedMessage {
+  readonly type: 'QuoteRequestCreated'
+  /**
+   *	Unique identifier of the Message.
+   *
+   */
+  readonly id: string
+  /**
+   *
+   */
+  readonly version: number
+  /**
+   *
+   */
+  readonly createdAt: string
+  /**
+   *
+   */
+  readonly lastModifiedAt: string
+  /**
+   *	Present on resources created after 1 February 2019 except for [events not tracked](/client-logging#events-tracked).
+   *
+   *
+   */
+  readonly lastModifiedBy?: LastModifiedBy
+  /**
+   *	Present on resources created after 1 February 2019 except for [events not tracked](/client-logging#events-tracked).
+   *
+   *
+   */
+  readonly createdBy?: CreatedBy
+  /**
+   *
+   */
+  readonly sequenceNumber: number
+  /**
+   *	A Reference represents a loose reference to another resource in the same Project identified by its `id`. The `typeId` indicates the type of the referenced resource. Each resource type has its corresponding Reference type, like [ChannelReference](ctp:api:type:ChannelReference).  A referenced resource can be embedded through [Reference Expansion](/general-concepts#reference-expansion). The expanded reference is the value of an additional `obj` field then.
+   *
+   *
+   */
+  readonly resource: Reference
+  /**
+   *
+   */
+  readonly resourceVersion: number
+  /**
+   *
+   */
+  readonly resourceUserProvidedIdentifiers?: UserProvidedIdentifiers
+}
+export interface QuoteRequestDeletedMessage {
+  readonly type: 'QuoteRequestDeleted'
+  /**
+   *	Unique identifier of the Message.
+   *
+   */
+  readonly id: string
+  /**
+   *
+   */
+  readonly version: number
+  /**
+   *
+   */
+  readonly createdAt: string
+  /**
+   *
+   */
+  readonly lastModifiedAt: string
+  /**
+   *	Present on resources created after 1 February 2019 except for [events not tracked](/client-logging#events-tracked).
+   *
+   *
+   */
+  readonly lastModifiedBy?: LastModifiedBy
+  /**
+   *	Present on resources created after 1 February 2019 except for [events not tracked](/client-logging#events-tracked).
+   *
+   *
+   */
+  readonly createdBy?: CreatedBy
+  /**
+   *
+   */
+  readonly sequenceNumber: number
+  /**
+   *	A Reference represents a loose reference to another resource in the same Project identified by its `id`. The `typeId` indicates the type of the referenced resource. Each resource type has its corresponding Reference type, like [ChannelReference](ctp:api:type:ChannelReference).  A referenced resource can be embedded through [Reference Expansion](/general-concepts#reference-expansion). The expanded reference is the value of an additional `obj` field then.
+   *
+   *
+   */
+  readonly resource: Reference
+  /**
+   *
+   */
+  readonly resourceVersion: number
+  /**
+   *
+   */
+  readonly resourceUserProvidedIdentifiers?: UserProvidedIdentifiers
+}
+export interface QuoteRequestStateChangedMessage {
+  readonly type: 'QuoteRequestStateChanged'
+  /**
+   *	Unique identifier of the Message.
+   *
+   */
+  readonly id: string
+  /**
+   *
+   */
+  readonly version: number
+  /**
+   *
+   */
+  readonly createdAt: string
+  /**
+   *
+   */
+  readonly lastModifiedAt: string
+  /**
+   *	Present on resources created after 1 February 2019 except for [events not tracked](/client-logging#events-tracked).
+   *
+   *
+   */
+  readonly lastModifiedBy?: LastModifiedBy
+  /**
+   *	Present on resources created after 1 February 2019 except for [events not tracked](/client-logging#events-tracked).
+   *
+   *
+   */
+  readonly createdBy?: CreatedBy
+  /**
+   *
+   */
+  readonly sequenceNumber: number
+  /**
+   *	A Reference represents a loose reference to another resource in the same Project identified by its `id`. The `typeId` indicates the type of the referenced resource. Each resource type has its corresponding Reference type, like [ChannelReference](ctp:api:type:ChannelReference).  A referenced resource can be embedded through [Reference Expansion](/general-concepts#reference-expansion). The expanded reference is the value of an additional `obj` field then.
+   *
+   *
+   */
+  readonly resource: Reference
+  /**
+   *
+   */
+  readonly resourceVersion: number
+  /**
+   *
+   */
+  readonly resourceUserProvidedIdentifiers?: UserProvidedIdentifiers
+  /**
+   *	Predefined states tracking the status of the Quote Request in the negotiation process.
+   *
+   *
+   */
+  readonly quoteRequestState: QuoteRequestState
+  /**
+   *	Predefined states tracking the status of the Quote Request in the negotiation process.
+   *
+   *
+   */
+  readonly oldQuoteRequestState: QuoteRequestState
+}
+export interface QuoteStateChangedMessage {
+  readonly type: 'QuoteStateChanged'
+  /**
+   *	Unique identifier of the Message.
+   *
+   */
+  readonly id: string
+  /**
+   *
+   */
+  readonly version: number
+  /**
+   *
+   */
+  readonly createdAt: string
+  /**
+   *
+   */
+  readonly lastModifiedAt: string
+  /**
+   *	Present on resources created after 1 February 2019 except for [events not tracked](/client-logging#events-tracked).
+   *
+   *
+   */
+  readonly lastModifiedBy?: LastModifiedBy
+  /**
+   *	Present on resources created after 1 February 2019 except for [events not tracked](/client-logging#events-tracked).
+   *
+   *
+   */
+  readonly createdBy?: CreatedBy
+  /**
+   *
+   */
+  readonly sequenceNumber: number
+  /**
+   *	A Reference represents a loose reference to another resource in the same Project identified by its `id`. The `typeId` indicates the type of the referenced resource. Each resource type has its corresponding Reference type, like [ChannelReference](ctp:api:type:ChannelReference).  A referenced resource can be embedded through [Reference Expansion](/general-concepts#reference-expansion). The expanded reference is the value of an additional `obj` field then.
+   *
+   *
+   */
+  readonly resource: Reference
+  /**
+   *
+   */
+  readonly resourceVersion: number
+  /**
+   *
+   */
+  readonly resourceUserProvidedIdentifiers?: UserProvidedIdentifiers
+  /**
+   *	Predefined states tracking the status of the Quote.
+   *
+   *
+   */
+  readonly quoteState: QuoteState
+  /**
+   *	Predefined states tracking the status of the Quote.
+   *
+   *
+   */
+  readonly oldQuoteState: QuoteState
+}
+export interface ReviewCreatedMessage {
+  readonly type: 'ReviewCreated'
+  /**
+   *	Unique identifier of the Message.
+   *
+   */
+  readonly id: string
+  /**
+   *
+   */
+  readonly version: number
+  /**
+   *
+   */
+  readonly createdAt: string
+  /**
+   *
+   */
+  readonly lastModifiedAt: string
+  /**
+   *	Present on resources created after 1 February 2019 except for [events not tracked](/client-logging#events-tracked).
+   *
+   *
+   */
+  readonly lastModifiedBy?: LastModifiedBy
+  /**
+   *	Present on resources created after 1 February 2019 except for [events not tracked](/client-logging#events-tracked).
+   *
+   *
+   */
+  readonly createdBy?: CreatedBy
+  /**
+   *
+   */
+  readonly sequenceNumber: number
+  /**
+   *	A Reference represents a loose reference to another resource in the same Project identified by its `id`. The `typeId` indicates the type of the referenced resource. Each resource type has its corresponding Reference type, like [ChannelReference](ctp:api:type:ChannelReference).  A referenced resource can be embedded through [Reference Expansion](/general-concepts#reference-expansion). The expanded reference is the value of an additional `obj` field then.
+   *
    *
    */
   readonly resource: Reference
@@ -4967,7 +5747,7 @@ export interface ReviewCreatedMessage {
 export interface ReviewRatingSetMessage {
   readonly type: 'ReviewRatingSet'
   /**
-   *	Platform-generated unique identifier of the Message.
+   *	Unique identifier of the Message.
    *
    */
   readonly id: string
@@ -5000,6 +5780,8 @@ export interface ReviewRatingSetMessage {
    */
   readonly sequenceNumber: number
   /**
+   *	A Reference represents a loose reference to another resource in the same Project identified by its `id`. The `typeId` indicates the type of the referenced resource. Each resource type has its corresponding Reference type, like [ChannelReference](ctp:api:type:ChannelReference).  A referenced resource can be embedded through [Reference Expansion](/general-concepts#reference-expansion). The expanded reference is the value of an additional `obj` field then.
+   *
    *
    */
   readonly resource: Reference
@@ -5024,6 +5806,8 @@ export interface ReviewRatingSetMessage {
    */
   readonly includedInStatistics: boolean
   /**
+   *	A Reference represents a loose reference to another resource in the same Project identified by its `id`. The `typeId` indicates the type of the referenced resource. Each resource type has its corresponding Reference type, like [ChannelReference](ctp:api:type:ChannelReference).  A referenced resource can be embedded through [Reference Expansion](/general-concepts#reference-expansion). The expanded reference is the value of an additional `obj` field then.
+   *
    *
    */
   readonly target?: Reference
@@ -5031,7 +5815,7 @@ export interface ReviewRatingSetMessage {
 export interface ReviewStateTransitionMessage {
   readonly type: 'ReviewStateTransition'
   /**
-   *	Platform-generated unique identifier of the Message.
+   *	Unique identifier of the Message.
    *
    */
   readonly id: string
@@ -5064,6 +5848,8 @@ export interface ReviewStateTransitionMessage {
    */
   readonly sequenceNumber: number
   /**
+   *	A Reference represents a loose reference to another resource in the same Project identified by its `id`. The `typeId` indicates the type of the referenced resource. Each resource type has its corresponding Reference type, like [ChannelReference](ctp:api:type:ChannelReference).  A referenced resource can be embedded through [Reference Expansion](/general-concepts#reference-expansion). The expanded reference is the value of an additional `obj` field then.
+   *
    *
    */
   readonly resource: Reference
@@ -5076,13 +5862,13 @@ export interface ReviewStateTransitionMessage {
    */
   readonly resourceUserProvidedIdentifiers?: UserProvidedIdentifiers
   /**
-   *	[Reference](/../api/types#reference) to a [State](ctp:api:type:State).
+   *	[Reference](ctp:api:type:Reference) to a [State](ctp:api:type:State).
    *
    *
    */
   readonly oldState: StateReference
   /**
-   *	[Reference](/../api/types#reference) to a [State](ctp:api:type:State).
+   *	[Reference](ctp:api:type:Reference) to a [State](ctp:api:type:State).
    *
    *
    */
@@ -5096,6 +5882,8 @@ export interface ReviewStateTransitionMessage {
    */
   readonly newIncludedInStatistics: boolean
   /**
+   *	A Reference represents a loose reference to another resource in the same Project identified by its `id`. The `typeId` indicates the type of the referenced resource. Each resource type has its corresponding Reference type, like [ChannelReference](ctp:api:type:ChannelReference).  A referenced resource can be embedded through [Reference Expansion](/general-concepts#reference-expansion). The expanded reference is the value of an additional `obj` field then.
+   *
    *
    */
   readonly target: Reference
@@ -5104,10 +5892,10 @@ export interface ReviewStateTransitionMessage {
    */
   readonly force: boolean
 }
-export interface StoreCreatedMessage {
-  readonly type: 'StoreCreated'
+export interface StagedQuoteCreatedMessage {
+  readonly type: 'StagedQuoteCreated'
   /**
-   *	Platform-generated unique identifier of the Message.
+   *	Unique identifier of the Message.
    *
    */
   readonly id: string
@@ -5140,6 +5928,108 @@ export interface StoreCreatedMessage {
    */
   readonly sequenceNumber: number
   /**
+   *	A Reference represents a loose reference to another resource in the same Project identified by its `id`. The `typeId` indicates the type of the referenced resource. Each resource type has its corresponding Reference type, like [ChannelReference](ctp:api:type:ChannelReference).  A referenced resource can be embedded through [Reference Expansion](/general-concepts#reference-expansion). The expanded reference is the value of an additional `obj` field then.
+   *
+   *
+   */
+  readonly resource: Reference
+  /**
+   *
+   */
+  readonly resourceVersion: number
+  /**
+   *
+   */
+  readonly resourceUserProvidedIdentifiers?: UserProvidedIdentifiers
+}
+export interface StagedQuoteDeletedMessage {
+  readonly type: 'StagedQuoteDeleted'
+  /**
+   *	Unique identifier of the Message.
+   *
+   */
+  readonly id: string
+  /**
+   *
+   */
+  readonly version: number
+  /**
+   *
+   */
+  readonly createdAt: string
+  /**
+   *
+   */
+  readonly lastModifiedAt: string
+  /**
+   *	Present on resources created after 1 February 2019 except for [events not tracked](/client-logging#events-tracked).
+   *
+   *
+   */
+  readonly lastModifiedBy?: LastModifiedBy
+  /**
+   *	Present on resources created after 1 February 2019 except for [events not tracked](/client-logging#events-tracked).
+   *
+   *
+   */
+  readonly createdBy?: CreatedBy
+  /**
+   *
+   */
+  readonly sequenceNumber: number
+  /**
+   *	A Reference represents a loose reference to another resource in the same Project identified by its `id`. The `typeId` indicates the type of the referenced resource. Each resource type has its corresponding Reference type, like [ChannelReference](ctp:api:type:ChannelReference).  A referenced resource can be embedded through [Reference Expansion](/general-concepts#reference-expansion). The expanded reference is the value of an additional `obj` field then.
+   *
+   *
+   */
+  readonly resource: Reference
+  /**
+   *
+   */
+  readonly resourceVersion: number
+  /**
+   *
+   */
+  readonly resourceUserProvidedIdentifiers?: UserProvidedIdentifiers
+}
+export interface StagedQuoteSellerCommentSetMessage {
+  readonly type: 'StagedQuoteSellerCommentSet'
+  /**
+   *	Unique identifier of the Message.
+   *
+   */
+  readonly id: string
+  /**
+   *
+   */
+  readonly version: number
+  /**
+   *
+   */
+  readonly createdAt: string
+  /**
+   *
+   */
+  readonly lastModifiedAt: string
+  /**
+   *	Present on resources created after 1 February 2019 except for [events not tracked](/client-logging#events-tracked).
+   *
+   *
+   */
+  readonly lastModifiedBy?: LastModifiedBy
+  /**
+   *	Present on resources created after 1 February 2019 except for [events not tracked](/client-logging#events-tracked).
+   *
+   *
+   */
+  readonly createdBy?: CreatedBy
+  /**
+   *
+   */
+  readonly sequenceNumber: number
+  /**
+   *	A Reference represents a loose reference to another resource in the same Project identified by its `id`. The `typeId` indicates the type of the referenced resource. Each resource type has its corresponding Reference type, like [ChannelReference](ctp:api:type:ChannelReference).  A referenced resource can be embedded through [Reference Expansion](/general-concepts#reference-expansion). The expanded reference is the value of an additional `obj` field then.
+   *
    *
    */
   readonly resource: Reference
@@ -5152,6 +6042,472 @@ export interface StoreCreatedMessage {
    */
   readonly resourceUserProvidedIdentifiers?: UserProvidedIdentifiers
   /**
+   *
+   */
+  readonly sellerComment: string
+}
+export interface StagedQuoteStateChangedMessage {
+  readonly type: 'StagedQuoteStateChanged'
+  /**
+   *	Unique identifier of the Message.
+   *
+   */
+  readonly id: string
+  /**
+   *
+   */
+  readonly version: number
+  /**
+   *
+   */
+  readonly createdAt: string
+  /**
+   *
+   */
+  readonly lastModifiedAt: string
+  /**
+   *	Present on resources created after 1 February 2019 except for [events not tracked](/client-logging#events-tracked).
+   *
+   *
+   */
+  readonly lastModifiedBy?: LastModifiedBy
+  /**
+   *	Present on resources created after 1 February 2019 except for [events not tracked](/client-logging#events-tracked).
+   *
+   *
+   */
+  readonly createdBy?: CreatedBy
+  /**
+   *
+   */
+  readonly sequenceNumber: number
+  /**
+   *	A Reference represents a loose reference to another resource in the same Project identified by its `id`. The `typeId` indicates the type of the referenced resource. Each resource type has its corresponding Reference type, like [ChannelReference](ctp:api:type:ChannelReference).  A referenced resource can be embedded through [Reference Expansion](/general-concepts#reference-expansion). The expanded reference is the value of an additional `obj` field then.
+   *
+   *
+   */
+  readonly resource: Reference
+  /**
+   *
+   */
+  readonly resourceVersion: number
+  /**
+   *
+   */
+  readonly resourceUserProvidedIdentifiers?: UserProvidedIdentifiers
+  /**
+   *	Predefined states tracking the status of the Staged Quote.
+   *
+   *
+   */
+  readonly stagedQuoteState: StagedQuoteState
+  /**
+   *	Predefined states tracking the status of the Staged Quote.
+   *
+   *
+   */
+  readonly oldStagedQuoteState: StagedQuoteState
+}
+export interface StagedQuoteValidToSetMessage {
+  readonly type: 'StagedQuoteValidToSet'
+  /**
+   *	Unique identifier of the Message.
+   *
+   */
+  readonly id: string
+  /**
+   *
+   */
+  readonly version: number
+  /**
+   *
+   */
+  readonly createdAt: string
+  /**
+   *
+   */
+  readonly lastModifiedAt: string
+  /**
+   *	Present on resources created after 1 February 2019 except for [events not tracked](/client-logging#events-tracked).
+   *
+   *
+   */
+  readonly lastModifiedBy?: LastModifiedBy
+  /**
+   *	Present on resources created after 1 February 2019 except for [events not tracked](/client-logging#events-tracked).
+   *
+   *
+   */
+  readonly createdBy?: CreatedBy
+  /**
+   *
+   */
+  readonly sequenceNumber: number
+  /**
+   *	A Reference represents a loose reference to another resource in the same Project identified by its `id`. The `typeId` indicates the type of the referenced resource. Each resource type has its corresponding Reference type, like [ChannelReference](ctp:api:type:ChannelReference).  A referenced resource can be embedded through [Reference Expansion](/general-concepts#reference-expansion). The expanded reference is the value of an additional `obj` field then.
+   *
+   *
+   */
+  readonly resource: Reference
+  /**
+   *
+   */
+  readonly resourceVersion: number
+  /**
+   *
+   */
+  readonly resourceUserProvidedIdentifiers?: UserProvidedIdentifiers
+  /**
+   *
+   */
+  readonly validTo: string
+}
+/**
+ *	Generated after a successful [Create StandalonePrice](/../api/projects/standalone-prices#create-standaloneprice) request.
+ *
+ */
+export interface StandalonePriceCreatedMessage {
+  readonly type: 'StandalonePriceCreated'
+  /**
+   *	Unique identifier of the Message.
+   *
+   */
+  readonly id: string
+  /**
+   *
+   */
+  readonly version: number
+  /**
+   *
+   */
+  readonly createdAt: string
+  /**
+   *
+   */
+  readonly lastModifiedAt: string
+  /**
+   *	Present on resources created after 1 February 2019 except for [events not tracked](/client-logging#events-tracked).
+   *
+   *
+   */
+  readonly lastModifiedBy?: LastModifiedBy
+  /**
+   *	Present on resources created after 1 February 2019 except for [events not tracked](/client-logging#events-tracked).
+   *
+   *
+   */
+  readonly createdBy?: CreatedBy
+  /**
+   *
+   */
+  readonly sequenceNumber: number
+  /**
+   *	A Reference represents a loose reference to another resource in the same Project identified by its `id`. The `typeId` indicates the type of the referenced resource. Each resource type has its corresponding Reference type, like [ChannelReference](ctp:api:type:ChannelReference).  A referenced resource can be embedded through [Reference Expansion](/general-concepts#reference-expansion). The expanded reference is the value of an additional `obj` field then.
+   *
+   *
+   */
+  readonly resource: Reference
+  /**
+   *
+   */
+  readonly resourceVersion: number
+  /**
+   *
+   */
+  readonly resourceUserProvidedIdentifiers?: UserProvidedIdentifiers
+  /**
+   *	The Standalone Price as it was created.
+   *
+   *
+   */
+  readonly standalonePrice: StandalonePrice
+}
+/**
+ *	Generated after a successful [Delete StandalonePrice](/../api/projects/standalone-prices#delete-standaloneprice) request.
+ *
+ */
+export interface StandalonePriceDeletedMessage {
+  readonly type: 'StandalonePriceDeleted'
+  /**
+   *	Unique identifier of the Message.
+   *
+   */
+  readonly id: string
+  /**
+   *
+   */
+  readonly version: number
+  /**
+   *
+   */
+  readonly createdAt: string
+  /**
+   *
+   */
+  readonly lastModifiedAt: string
+  /**
+   *	Present on resources created after 1 February 2019 except for [events not tracked](/client-logging#events-tracked).
+   *
+   *
+   */
+  readonly lastModifiedBy?: LastModifiedBy
+  /**
+   *	Present on resources created after 1 February 2019 except for [events not tracked](/client-logging#events-tracked).
+   *
+   *
+   */
+  readonly createdBy?: CreatedBy
+  /**
+   *
+   */
+  readonly sequenceNumber: number
+  /**
+   *	A Reference represents a loose reference to another resource in the same Project identified by its `id`. The `typeId` indicates the type of the referenced resource. Each resource type has its corresponding Reference type, like [ChannelReference](ctp:api:type:ChannelReference).  A referenced resource can be embedded through [Reference Expansion](/general-concepts#reference-expansion). The expanded reference is the value of an additional `obj` field then.
+   *
+   *
+   */
+  readonly resource: Reference
+  /**
+   *
+   */
+  readonly resourceVersion: number
+  /**
+   *
+   */
+  readonly resourceUserProvidedIdentifiers?: UserProvidedIdentifiers
+}
+/**
+ *	Emitted when the affected StandalonePrice is updated based on a [Product Discount](ctp:api:type:ProductDiscount) being applied.
+ *
+ */
+export interface StandalonePriceDiscountSetMessage {
+  readonly type: 'StandalonePriceDiscountSet'
+  /**
+   *	Unique identifier of the Message.
+   *
+   */
+  readonly id: string
+  /**
+   *
+   */
+  readonly version: number
+  /**
+   *
+   */
+  readonly createdAt: string
+  /**
+   *
+   */
+  readonly lastModifiedAt: string
+  /**
+   *	Present on resources created after 1 February 2019 except for [events not tracked](/client-logging#events-tracked).
+   *
+   *
+   */
+  readonly lastModifiedBy?: LastModifiedBy
+  /**
+   *	Present on resources created after 1 February 2019 except for [events not tracked](/client-logging#events-tracked).
+   *
+   *
+   */
+  readonly createdBy?: CreatedBy
+  /**
+   *
+   */
+  readonly sequenceNumber: number
+  /**
+   *	A Reference represents a loose reference to another resource in the same Project identified by its `id`. The `typeId` indicates the type of the referenced resource. Each resource type has its corresponding Reference type, like [ChannelReference](ctp:api:type:ChannelReference).  A referenced resource can be embedded through [Reference Expansion](/general-concepts#reference-expansion). The expanded reference is the value of an additional `obj` field then.
+   *
+   *
+   */
+  readonly resource: Reference
+  /**
+   *
+   */
+  readonly resourceVersion: number
+  /**
+   *
+   */
+  readonly resourceUserProvidedIdentifiers?: UserProvidedIdentifiers
+  /**
+   *	The new `discounted` value of the updated StandalonePrice.
+   *
+   *
+   */
+  readonly discounted?: DiscountedPrice
+}
+/**
+ *	This Message is the result of the Standalone Price [SetDiscountedPrice](/../api/projects/standalone-prices#set-discounted-price) update action.
+ *
+ */
+export interface StandalonePriceExternalDiscountSetMessage {
+  readonly type: 'StandalonePriceExternalDiscountSet'
+  /**
+   *	Unique identifier of the Message.
+   *
+   */
+  readonly id: string
+  /**
+   *
+   */
+  readonly version: number
+  /**
+   *
+   */
+  readonly createdAt: string
+  /**
+   *
+   */
+  readonly lastModifiedAt: string
+  /**
+   *	Present on resources created after 1 February 2019 except for [events not tracked](/client-logging#events-tracked).
+   *
+   *
+   */
+  readonly lastModifiedBy?: LastModifiedBy
+  /**
+   *	Present on resources created after 1 February 2019 except for [events not tracked](/client-logging#events-tracked).
+   *
+   *
+   */
+  readonly createdBy?: CreatedBy
+  /**
+   *
+   */
+  readonly sequenceNumber: number
+  /**
+   *	A Reference represents a loose reference to another resource in the same Project identified by its `id`. The `typeId` indicates the type of the referenced resource. Each resource type has its corresponding Reference type, like [ChannelReference](ctp:api:type:ChannelReference).  A referenced resource can be embedded through [Reference Expansion](/general-concepts#reference-expansion). The expanded reference is the value of an additional `obj` field then.
+   *
+   *
+   */
+  readonly resource: Reference
+  /**
+   *
+   */
+  readonly resourceVersion: number
+  /**
+   *
+   */
+  readonly resourceUserProvidedIdentifiers?: UserProvidedIdentifiers
+  /**
+   *	The new `discounted` value of the updated StandalonePrice.
+   *
+   *
+   */
+  readonly discounted?: DiscountedPrice
+}
+/**
+ *	Generated after a successful [Change Value](ctp:api:types:StandalonePriceChangeValueAction) update action.
+ *
+ */
+export interface StandalonePriceValueChangedMessage {
+  readonly type: 'StandalonePriceValueChanged'
+  /**
+   *	Unique identifier of the Message.
+   *
+   */
+  readonly id: string
+  /**
+   *
+   */
+  readonly version: number
+  /**
+   *
+   */
+  readonly createdAt: string
+  /**
+   *
+   */
+  readonly lastModifiedAt: string
+  /**
+   *	Present on resources created after 1 February 2019 except for [events not tracked](/client-logging#events-tracked).
+   *
+   *
+   */
+  readonly lastModifiedBy?: LastModifiedBy
+  /**
+   *	Present on resources created after 1 February 2019 except for [events not tracked](/client-logging#events-tracked).
+   *
+   *
+   */
+  readonly createdBy?: CreatedBy
+  /**
+   *
+   */
+  readonly sequenceNumber: number
+  /**
+   *	A Reference represents a loose reference to another resource in the same Project identified by its `id`. The `typeId` indicates the type of the referenced resource. Each resource type has its corresponding Reference type, like [ChannelReference](ctp:api:type:ChannelReference).  A referenced resource can be embedded through [Reference Expansion](/general-concepts#reference-expansion). The expanded reference is the value of an additional `obj` field then.
+   *
+   *
+   */
+  readonly resource: Reference
+  /**
+   *
+   */
+  readonly resourceVersion: number
+  /**
+   *
+   */
+  readonly resourceUserProvidedIdentifiers?: UserProvidedIdentifiers
+  /**
+   *	The new value of the updated StandalonePrice.
+   *
+   *
+   */
+  readonly value: Money
+}
+export interface StoreCreatedMessage {
+  readonly type: 'StoreCreated'
+  /**
+   *	Unique identifier of the Message.
+   *
+   */
+  readonly id: string
+  /**
+   *
+   */
+  readonly version: number
+  /**
+   *
+   */
+  readonly createdAt: string
+  /**
+   *
+   */
+  readonly lastModifiedAt: string
+  /**
+   *	Present on resources created after 1 February 2019 except for [events not tracked](/client-logging#events-tracked).
+   *
+   *
+   */
+  readonly lastModifiedBy?: LastModifiedBy
+  /**
+   *	Present on resources created after 1 February 2019 except for [events not tracked](/client-logging#events-tracked).
+   *
+   *
+   */
+  readonly createdBy?: CreatedBy
+  /**
+   *
+   */
+  readonly sequenceNumber: number
+  /**
+   *	A Reference represents a loose reference to another resource in the same Project identified by its `id`. The `typeId` indicates the type of the referenced resource. Each resource type has its corresponding Reference type, like [ChannelReference](ctp:api:type:ChannelReference).  A referenced resource can be embedded through [Reference Expansion](/general-concepts#reference-expansion). The expanded reference is the value of an additional `obj` field then.
+   *
+   *
+   */
+  readonly resource: Reference
+  /**
+   *
+   */
+  readonly resourceVersion: number
+  /**
+   *
+   */
+  readonly resourceUserProvidedIdentifiers?: UserProvidedIdentifiers
+  /**
+   *	JSON object where the keys are of type [Locale](ctp:api:type:Locale), and the values are the strings used for the corresponding language.
+   *
    *
    */
   readonly name?: LocalizedString
@@ -5181,7 +6537,7 @@ export interface StoreCreatedMessage {
 export interface StoreDeletedMessage {
   readonly type: 'StoreDeleted'
   /**
-   *	Platform-generated unique identifier of the Message.
+   *	Unique identifier of the Message.
    *
    */
   readonly id: string
@@ -5214,6 +6570,8 @@ export interface StoreDeletedMessage {
    */
   readonly sequenceNumber: number
   /**
+   *	A Reference represents a loose reference to another resource in the same Project identified by its `id`. The `typeId` indicates the type of the referenced resource. Each resource type has its corresponding Reference type, like [ChannelReference](ctp:api:type:ChannelReference).  A referenced resource can be embedded through [Reference Expansion](/general-concepts#reference-expansion). The expanded reference is the value of an additional `obj` field then.
+   *
    *
    */
   readonly resource: Reference
@@ -5226,10 +6584,16 @@ export interface StoreDeletedMessage {
    */
   readonly resourceUserProvidedIdentifiers?: UserProvidedIdentifiers
 }
-export interface StoreProductSelectionsChangedMessage {
-  readonly type: 'StoreProductSelectionsChanged'
+/**
+ *	Generated after a successful [Add Distribution Channel](ctp:api:type:StoreAddDistributionChannelAction),
+ *	[Remove Distribution Channel](ctp:api:type:StoreRemoveDistributionChannelAction), or
+ *	[Set Distribution Channels](ctp:api:type:StoreSetDistributionChannelsAction) update action.
+ *
+ */
+export interface StoreDistributionChannelsChangedMessage {
+  readonly type: 'StoreDistributionChannelsChanged'
   /**
-   *	Platform-generated unique identifier of the Message.
+   *	Unique identifier of the Message.
    *
    */
   readonly id: string
@@ -5262,6 +6626,69 @@ export interface StoreProductSelectionsChangedMessage {
    */
   readonly sequenceNumber: number
   /**
+   *	A Reference represents a loose reference to another resource in the same Project identified by its `id`. The `typeId` indicates the type of the referenced resource. Each resource type has its corresponding Reference type, like [ChannelReference](ctp:api:type:ChannelReference).  A referenced resource can be embedded through [Reference Expansion](/general-concepts#reference-expansion). The expanded reference is the value of an additional `obj` field then.
+   *
+   *
+   */
+  readonly resource: Reference
+  /**
+   *
+   */
+  readonly resourceVersion: number
+  /**
+   *
+   */
+  readonly resourceUserProvidedIdentifiers?: UserProvidedIdentifiers
+  /**
+   *	The product distribution channels that have been added.
+   *
+   */
+  readonly addedDistributionChannels: ChannelReference[]
+  /**
+   *	The product distribution channels that have been removed.
+   *
+   *
+   */
+  readonly removedDistributionChannels: ChannelReference[]
+}
+export interface StoreProductSelectionsChangedMessage {
+  readonly type: 'StoreProductSelectionsChanged'
+  /**
+   *	Unique identifier of the Message.
+   *
+   */
+  readonly id: string
+  /**
+   *
+   */
+  readonly version: number
+  /**
+   *
+   */
+  readonly createdAt: string
+  /**
+   *
+   */
+  readonly lastModifiedAt: string
+  /**
+   *	Present on resources created after 1 February 2019 except for [events not tracked](/client-logging#events-tracked).
+   *
+   *
+   */
+  readonly lastModifiedBy?: LastModifiedBy
+  /**
+   *	Present on resources created after 1 February 2019 except for [events not tracked](/client-logging#events-tracked).
+   *
+   *
+   */
+  readonly createdBy?: CreatedBy
+  /**
+   *
+   */
+  readonly sequenceNumber: number
+  /**
+   *	A Reference represents a loose reference to another resource in the same Project identified by its `id`. The `typeId` indicates the type of the referenced resource. Each resource type has its corresponding Reference type, like [ChannelReference](ctp:api:type:ChannelReference).  A referenced resource can be embedded through [Reference Expansion](/general-concepts#reference-expansion). The expanded reference is the value of an additional `obj` field then.
+   *
    *
    */
   readonly resource: Reference
@@ -5309,6 +6736,8 @@ export interface UserProvidedIdentifiers {
    */
   readonly sku?: string
   /**
+   *	JSON object where the keys are of type [Locale](ctp:api:type:Locale), and the values are the strings used for the corresponding language.
+   *
    *
    */
   readonly slug?: LocalizedString
@@ -5347,7 +6776,10 @@ export type MessagePayload =
   | LineItemStateTransitionMessagePayload
   | OrderBillingAddressSetMessagePayload
   | OrderCreatedMessagePayload
+  | OrderCustomLineItemAddedMessagePayload
   | OrderCustomLineItemDiscountSetMessagePayload
+  | OrderCustomLineItemQuantityChangedMessagePayload
+  | OrderCustomLineItemRemovedMessagePayload
   | OrderCustomerEmailSetMessagePayload
   | OrderCustomerGroupSetMessagePayload
   | OrderCustomerSetMessagePayload
@@ -5398,17 +6830,35 @@ export type MessagePayload =
   | ProductSelectionDeletedMessagePayload
   | ProductSelectionProductAddedMessagePayload
   | ProductSelectionProductRemovedMessagePayload
+  | ProductSelectionVariantSelectionChangedMessagePayload
   | ProductSlugChangedMessagePayload
   | ProductStateTransitionMessagePayload
   | ProductUnpublishedMessagePayload
   | ProductVariantAddedMessagePayload
   | ProductVariantDeletedMessagePayload
+  | QuoteCreatedMessagePayload
+  | QuoteDeletedMessagePayload
+  | QuoteRequestCreatedMessagePayload
+  | QuoteRequestDeletedMessagePayload
+  | QuoteRequestStateChangedMessagePayload
+  | QuoteStateChangedMessagePayload
   | ReviewCreatedMessagePayload
   | ReviewRatingSetMessagePayload
   | ReviewStateTransitionMessagePayload
   | ShoppingListStoreSetMessagePayload
+  | StagedQuoteCreatedMessagePayload
+  | StagedQuoteDeletedMessagePayload
+  | StagedQuoteSellerCommentSetMessagePayload
+  | StagedQuoteStateChangedMessagePayload
+  | StagedQuoteValidToSetMessagePayload
+  | StandalonePriceCreatedMessagePayload
+  | StandalonePriceDeletedMessagePayload
+  | StandalonePriceDiscountSetMessagePayload
+  | StandalonePriceExternalDiscountSetMessagePayload
+  | StandalonePriceValueChangedMessagePayload
   | StoreCreatedMessagePayload
   | StoreDeletedMessagePayload
+  | StoreDistributionChannelsChangedMessagePayload
   | StoreProductSelectionsChangedMessagePayload
 export interface CategoryCreatedMessagePayload {
   readonly type: 'CategoryCreated'
@@ -5420,10 +6870,14 @@ export interface CategoryCreatedMessagePayload {
 export interface CategorySlugChangedMessagePayload {
   readonly type: 'CategorySlugChanged'
   /**
+   *	JSON object where the keys are of type [Locale](ctp:api:type:Locale), and the values are the strings used for the corresponding language.
+   *
    *
    */
   readonly slug: LocalizedString
   /**
+   *	JSON object where the keys are of type [Locale](ctp:api:type:Locale), and the values are the strings used for the corresponding language.
+   *
    *
    */
   readonly oldSlug?: LocalizedString
@@ -5493,7 +6947,7 @@ export interface CustomerFirstNameSetMessagePayload {
 export interface CustomerGroupSetMessagePayload {
   readonly type: 'CustomerGroupSet'
   /**
-   *	[Reference](/../api/types#reference) to a [CustomerGroup](ctp:api:type:CustomerGroup).
+   *	[Reference](ctp:api:type:Reference) to a [CustomerGroup](ctp:api:type:CustomerGroup).
    *
    *
    */
@@ -5535,7 +6989,7 @@ export interface InventoryEntryDeletedMessagePayload {
    */
   readonly sku: string
   /**
-   *	[Reference](/../api/types#reference) to a [Channel](ctp:api:type:Channel).
+   *	[Reference](ctp:api:type:Reference) to a [Channel](ctp:api:type:Channel).
    *
    *
    */
@@ -5560,7 +7014,7 @@ export interface InventoryEntryQuantitySetMessagePayload {
    */
   readonly newAvailableQuantity: number
   /**
-   *	[Reference](/../api/types#reference) to a [Channel](ctp:api:type:Channel).
+   *	[Reference](ctp:api:type:Reference) to a [Channel](ctp:api:type:Channel).
    *
    *
    */
@@ -5575,7 +7029,10 @@ export type OrderMessagePayload =
   | LineItemStateTransitionMessagePayload
   | OrderBillingAddressSetMessagePayload
   | OrderCreatedMessagePayload
+  | OrderCustomLineItemAddedMessagePayload
   | OrderCustomLineItemDiscountSetMessagePayload
+  | OrderCustomLineItemQuantityChangedMessagePayload
+  | OrderCustomLineItemRemovedMessagePayload
   | OrderCustomerEmailSetMessagePayload
   | OrderCustomerGroupSetMessagePayload
   | OrderCustomerSetMessagePayload
@@ -5620,13 +7077,13 @@ export interface CustomLineItemStateTransitionMessagePayload {
    */
   readonly quantity: number
   /**
-   *	[Reference](/../api/types#reference) to a [State](ctp:api:type:State).
+   *	[Reference](ctp:api:type:Reference) to a [State](ctp:api:type:State).
    *
    *
    */
   readonly fromState: StateReference
   /**
-   *	[Reference](/../api/types#reference) to a [State](ctp:api:type:State).
+   *	[Reference](ctp:api:type:Reference) to a [State](ctp:api:type:State).
    *
    *
    */
@@ -5691,13 +7148,13 @@ export interface LineItemStateTransitionMessagePayload {
    */
   readonly quantity: number
   /**
-   *	[Reference](/../api/types#reference) to a [State](ctp:api:type:State).
+   *	[Reference](ctp:api:type:Reference) to a [State](ctp:api:type:State).
    *
    *
    */
   readonly fromState: StateReference
   /**
-   *	[Reference](/../api/types#reference) to a [State](ctp:api:type:State).
+   *	[Reference](ctp:api:type:Reference) to a [State](ctp:api:type:State).
    *
    *
    */
@@ -5721,6 +7178,13 @@ export interface OrderCreatedMessagePayload {
    */
   readonly order: Order
 }
+export interface OrderCustomLineItemAddedMessagePayload {
+  readonly type: 'OrderCustomLineItemAdded'
+  /**
+   *
+   */
+  readonly customLineItem: CustomLineItem
+}
 export interface OrderCustomLineItemDiscountSetMessagePayload {
   readonly type: 'OrderCustomLineItemDiscountSet'
   /**
@@ -5736,6 +7200,32 @@ export interface OrderCustomLineItemDiscountSetMessagePayload {
    */
   readonly taxedPrice?: TaxedItemPrice
 }
+export interface OrderCustomLineItemQuantityChangedMessagePayload {
+  readonly type: 'OrderCustomLineItemQuantityChanged'
+  /**
+   *
+   */
+  readonly customLineItemId: string
+  /**
+   *
+   */
+  readonly quantity: number
+  /**
+   *
+   */
+  readonly oldQuantity: number
+}
+export interface OrderCustomLineItemRemovedMessagePayload {
+  readonly type: 'OrderCustomLineItemRemoved'
+  /**
+   *
+   */
+  readonly customLineItemId: string
+  /**
+   *
+   */
+  readonly customLineItem: CustomLineItem
+}
 export interface OrderCustomerEmailSetMessagePayload {
   readonly type: 'OrderCustomerEmailSet'
   /**
@@ -5750,13 +7240,13 @@ export interface OrderCustomerEmailSetMessagePayload {
 export interface OrderCustomerGroupSetMessagePayload {
   readonly type: 'OrderCustomerGroupSet'
   /**
-   *	[Reference](/../api/types#reference) to a [CustomerGroup](ctp:api:type:CustomerGroup).
+   *	[Reference](ctp:api:type:Reference) to a [CustomerGroup](ctp:api:type:CustomerGroup).
    *
    *
    */
   readonly customerGroup?: CustomerGroupReference
   /**
-   *	[Reference](/../api/types#reference) to a [CustomerGroup](ctp:api:type:CustomerGroup).
+   *	[Reference](ctp:api:type:Reference) to a [CustomerGroup](ctp:api:type:CustomerGroup).
    *
    *
    */
@@ -5765,25 +7255,25 @@ export interface OrderCustomerGroupSetMessagePayload {
 export interface OrderCustomerSetMessagePayload {
   readonly type: 'OrderCustomerSet'
   /**
-   *	[Reference](/../api/types#reference) to a [Customer](ctp:api:type:Customer).
+   *	[Reference](ctp:api:type:Reference) to a [Customer](ctp:api:type:Customer).
    *
    *
    */
   readonly customer?: CustomerReference
   /**
-   *	[Reference](/../api/types#reference) to a [CustomerGroup](ctp:api:type:CustomerGroup).
+   *	[Reference](ctp:api:type:Reference) to a [CustomerGroup](ctp:api:type:CustomerGroup).
    *
    *
    */
   readonly customerGroup?: CustomerGroupReference
   /**
-   *	[Reference](/../api/types#reference) to a [Customer](ctp:api:type:Customer).
+   *	[Reference](ctp:api:type:Reference) to a [Customer](ctp:api:type:Customer).
    *
    *
    */
   readonly oldCustomer?: CustomerReference
   /**
-   *	[Reference](/../api/types#reference) to a [CustomerGroup](ctp:api:type:CustomerGroup).
+   *	[Reference](ctp:api:type:Reference) to a [CustomerGroup](ctp:api:type:CustomerGroup).
    *
    *
    */
@@ -5799,7 +7289,7 @@ export interface OrderDeletedMessagePayload {
 export interface OrderDiscountCodeAddedMessagePayload {
   readonly type: 'OrderDiscountCodeAdded'
   /**
-   *	[Reference](/../api/types#reference) to a [DiscountCode](ctp:api:type:DiscountCode).
+   *	[Reference](ctp:api:type:Reference) to a [DiscountCode](ctp:api:type:DiscountCode).
    *
    *
    */
@@ -5808,7 +7298,7 @@ export interface OrderDiscountCodeAddedMessagePayload {
 export interface OrderDiscountCodeRemovedMessagePayload {
   readonly type: 'OrderDiscountCodeRemoved'
   /**
-   *	[Reference](/../api/types#reference) to a [DiscountCode](ctp:api:type:DiscountCode).
+   *	[Reference](ctp:api:type:Reference) to a [DiscountCode](ctp:api:type:DiscountCode).
    *
    *
    */
@@ -5817,7 +7307,7 @@ export interface OrderDiscountCodeRemovedMessagePayload {
 export interface OrderDiscountCodeStateSetMessagePayload {
   readonly type: 'OrderDiscountCodeStateSet'
   /**
-   *	[Reference](/../api/types#reference) to a [DiscountCode](ctp:api:type:DiscountCode).
+   *	[Reference](ctp:api:type:Reference) to a [DiscountCode](ctp:api:type:DiscountCode).
    *
    *
    */
@@ -5834,7 +7324,7 @@ export interface OrderDiscountCodeStateSetMessagePayload {
 export interface OrderEditAppliedMessagePayload {
   readonly type: 'OrderEditApplied'
   /**
-   *	[Reference](/../api/types#reference) to a [OrderEdit](ctp:api:type:OrderEdit).
+   *	[Reference](ctp:api:type:Reference) to an [OrderEdit](ctp:api:type:OrderEdit).
    *
    *
    */
@@ -5874,6 +7364,7 @@ export interface OrderLineItemDiscountSetMessagePayload {
   readonly discountedPricePerQuantity: DiscountedLineItemPriceForQuantity[]
   /**
    *	Draft type that stores amounts in cent precision for the specified currency.
+   *
    *	For storing money values in fractions of the minor unit in a currency, use [HighPrecisionMoneyDraft](ctp:api:type:HighPrecisionMoneyDraft) instead.
    *
    *
@@ -5891,7 +7382,7 @@ export interface OrderLineItemDistributionChannelSetMessagePayload {
    */
   readonly lineItemId: string
   /**
-   *	[Reference](/../api/types#reference) to a [Channel](ctp:api:type:Channel).
+   *	[Reference](ctp:api:type:Reference) to a [Channel](ctp:api:type:Channel).
    *
    *
    */
@@ -5937,7 +7428,7 @@ export interface OrderLineItemRemovedMessagePayload {
 export interface OrderPaymentAddedMessagePayload {
   readonly type: 'OrderPaymentAdded'
   /**
-   *	[Reference](/../api/types#reference) to a [Payment](ctp:api:type:Payment).
+   *	[Reference](ctp:api:type:Reference) to a [Payment](ctp:api:type:Payment).
    *
    *
    */
@@ -6037,13 +7528,13 @@ export interface OrderStateChangedMessagePayload {
 export interface OrderStateTransitionMessagePayload {
   readonly type: 'OrderStateTransition'
   /**
-   *	[Reference](/../api/types#reference) to a [State](ctp:api:type:State).
+   *	[Reference](ctp:api:type:Reference) to a [State](ctp:api:type:State).
    *
    *
    */
   readonly state: StateReference
   /**
-   *	[Reference](/../api/types#reference) to a [State](ctp:api:type:State).
+   *	[Reference](ctp:api:type:Reference) to a [State](ctp:api:type:State).
    *
    *
    */
@@ -6056,6 +7547,8 @@ export interface OrderStateTransitionMessagePayload {
 export interface OrderStoreSetMessagePayload {
   readonly type: 'OrderStoreSet'
   /**
+   *	[Reference](/../api/types#reference) to a [Store](ctp:api:type:Store) by its key.
+   *
    *
    */
   readonly store: StoreKeyReference
@@ -6161,7 +7654,7 @@ export interface PaymentStatusInterfaceCodeSetMessagePayload {
 export interface PaymentStatusStateTransitionMessagePayload {
   readonly type: 'PaymentStatusStateTransition'
   /**
-   *	[Reference](/../api/types#reference) to a [State](ctp:api:type:State).
+   *	[Reference](ctp:api:type:Reference) to a [State](ctp:api:type:State).
    *
    *
    */
@@ -6192,7 +7685,7 @@ export interface PaymentTransactionStateChangedMessagePayload {
 export interface ProductAddedToCategoryMessagePayload {
   readonly type: 'ProductAddedToCategory'
   /**
-   *	[Reference](/../api/types#reference) to a [Category](ctp:api:type:Category).
+   *	[Reference](ctp:api:type:Reference) to a [Category](ctp:api:type:Category).
    *
    *
    */
@@ -6287,7 +7780,7 @@ export interface ProductPublishedMessagePayload {
 export interface ProductRemovedFromCategoryMessagePayload {
   readonly type: 'ProductRemovedFromCategory'
   /**
-   *	[Reference](/../api/types#reference) to a [Category](ctp:api:type:Category).
+   *	[Reference](ctp:api:type:Reference) to a [Category](ctp:api:type:Category).
    *
    *
    */
@@ -6314,6 +7807,8 @@ export interface ProductSelectionCreatedMessagePayload {
 export interface ProductSelectionDeletedMessagePayload {
   readonly type: 'ProductSelectionDeleted'
   /**
+   *	JSON object where the keys are of type [Locale](ctp:api:type:Locale), and the values are the strings used for the corresponding language.
+   *
    *
    */
   readonly name: LocalizedString
@@ -6321,28 +7816,57 @@ export interface ProductSelectionDeletedMessagePayload {
 export interface ProductSelectionProductAddedMessagePayload {
   readonly type: 'ProductSelectionProductAdded'
   /**
-   *	[Reference](/../api/types#reference) to a [Product](ctp:api:type:Product).
+   *	[Reference](ctp:api:type:Reference) to a [Product](ctp:api:type:Product).
    *
    *
    */
   readonly product: ProductReference
+  /**
+   *	Polymorphic base type for Product Variant Selections. The actual type is determined by the `type` field.
+   *
+   *
+   */
+  readonly variantSelection?: ProductVariantSelection
 }
 export interface ProductSelectionProductRemovedMessagePayload {
   readonly type: 'ProductSelectionProductRemoved'
   /**
-   *	[Reference](/../api/types#reference) to a [Product](ctp:api:type:Product).
+   *	[Reference](ctp:api:type:Reference) to a [Product](ctp:api:type:Product).
    *
    *
    */
   readonly product: ProductReference
 }
+export interface ProductSelectionVariantSelectionChangedMessagePayload {
+  readonly type: 'ProductSelectionVariantSelectionChanged'
+  /**
+   *	[Reference](ctp:api:type:Reference) to a [Product](ctp:api:type:Product).
+   *
+   *
+   */
+  readonly product: ProductReference
+  /**
+   *	The former Product Variant Selection if any.
+   *
+   */
+  readonly oldVariantSelection?: ProductVariantSelection
+  /**
+   *	The updated Product Variant Selection if any.
+   *
+   */
+  readonly newVariantSelection?: ProductVariantSelection
+}
 export interface ProductSlugChangedMessagePayload {
   readonly type: 'ProductSlugChanged'
   /**
+   *	JSON object where the keys are of type [Locale](ctp:api:type:Locale), and the values are the strings used for the corresponding language.
+   *
    *
    */
   readonly slug: LocalizedString
   /**
+   *	JSON object where the keys are of type [Locale](ctp:api:type:Locale), and the values are the strings used for the corresponding language.
+   *
    *
    */
   readonly oldSlug?: LocalizedString
@@ -6350,7 +7874,7 @@ export interface ProductSlugChangedMessagePayload {
 export interface ProductStateTransitionMessagePayload {
   readonly type: 'ProductStateTransition'
   /**
-   *	[Reference](/../api/types#reference) to a [State](ctp:api:type:State).
+   *	[Reference](ctp:api:type:Reference) to a [State](ctp:api:type:State).
    *
    *
    */
@@ -6385,6 +7909,48 @@ export interface ProductVariantDeletedMessagePayload {
    */
   readonly removedImageUrls: string[]
 }
+export interface QuoteCreatedMessagePayload {
+  readonly type: 'QuoteCreated'
+}
+export interface QuoteDeletedMessagePayload {
+  readonly type: 'QuoteDeleted'
+}
+export interface QuoteRequestCreatedMessagePayload {
+  readonly type: 'QuoteRequestCreated'
+}
+export interface QuoteRequestDeletedMessagePayload {
+  readonly type: 'QuoteRequestDeleted'
+}
+export interface QuoteRequestStateChangedMessagePayload {
+  readonly type: 'QuoteRequestStateChanged'
+  /**
+   *	Predefined states tracking the status of the Quote Request in the negotiation process.
+   *
+   *
+   */
+  readonly quoteRequestState: QuoteRequestState
+  /**
+   *	Predefined states tracking the status of the Quote Request in the negotiation process.
+   *
+   *
+   */
+  readonly oldQuoteRequestState: QuoteRequestState
+}
+export interface QuoteStateChangedMessagePayload {
+  readonly type: 'QuoteStateChanged'
+  /**
+   *	Predefined states tracking the status of the Quote.
+   *
+   *
+   */
+  readonly quoteState: QuoteState
+  /**
+   *	Predefined states tracking the status of the Quote.
+   *
+   *
+   */
+  readonly oldQuoteState: QuoteState
+}
 export interface ReviewCreatedMessagePayload {
   readonly type: 'ReviewCreated'
   /**
@@ -6407,6 +7973,8 @@ export interface ReviewRatingSetMessagePayload {
    */
   readonly includedInStatistics: boolean
   /**
+   *	A Reference represents a loose reference to another resource in the same Project identified by its `id`. The `typeId` indicates the type of the referenced resource. Each resource type has its corresponding Reference type, like [ChannelReference](ctp:api:type:ChannelReference).  A referenced resource can be embedded through [Reference Expansion](/general-concepts#reference-expansion). The expanded reference is the value of an additional `obj` field then.
+   *
    *
    */
   readonly target?: Reference
@@ -6414,13 +7982,13 @@ export interface ReviewRatingSetMessagePayload {
 export interface ReviewStateTransitionMessagePayload {
   readonly type: 'ReviewStateTransition'
   /**
-   *	[Reference](/../api/types#reference) to a [State](ctp:api:type:State).
+   *	[Reference](ctp:api:type:Reference) to a [State](ctp:api:type:State).
    *
    *
    */
   readonly oldState: StateReference
   /**
-   *	[Reference](/../api/types#reference) to a [State](ctp:api:type:State).
+   *	[Reference](ctp:api:type:Reference) to a [State](ctp:api:type:State).
    *
    *
    */
@@ -6434,6 +8002,8 @@ export interface ReviewStateTransitionMessagePayload {
    */
   readonly newIncludedInStatistics: boolean
   /**
+   *	A Reference represents a loose reference to another resource in the same Project identified by its `id`. The `typeId` indicates the type of the referenced resource. Each resource type has its corresponding Reference type, like [ChannelReference](ctp:api:type:ChannelReference).  A referenced resource can be embedded through [Reference Expansion](/general-concepts#reference-expansion). The expanded reference is the value of an additional `obj` field then.
+   *
    *
    */
   readonly target: Reference
@@ -6445,13 +8015,111 @@ export interface ReviewStateTransitionMessagePayload {
 export interface ShoppingListStoreSetMessagePayload {
   readonly type: 'ShoppingListStoreSet'
   /**
+   *	[Reference](/../api/types#reference) to a [Store](ctp:api:type:Store) by its key.
+   *
    *
    */
   readonly store: StoreKeyReference
 }
+export interface StagedQuoteCreatedMessagePayload {
+  readonly type: 'StagedQuoteCreated'
+}
+export interface StagedQuoteDeletedMessagePayload {
+  readonly type: 'StagedQuoteDeleted'
+}
+export interface StagedQuoteSellerCommentSetMessagePayload {
+  readonly type: 'StagedQuoteSellerCommentSet'
+  /**
+   *
+   */
+  readonly sellerComment: string
+}
+export interface StagedQuoteStateChangedMessagePayload {
+  readonly type: 'StagedQuoteStateChanged'
+  /**
+   *	Predefined states tracking the status of the Staged Quote.
+   *
+   *
+   */
+  readonly stagedQuoteState: StagedQuoteState
+  /**
+   *	Predefined states tracking the status of the Staged Quote.
+   *
+   *
+   */
+  readonly oldStagedQuoteState: StagedQuoteState
+}
+export interface StagedQuoteValidToSetMessagePayload {
+  readonly type: 'StagedQuoteValidToSet'
+  /**
+   *
+   */
+  readonly validTo: string
+}
+/**
+ *	Generated after a successful [Create StandalonePrice](/../api/projects/standalone-prices#create-standaloneprice) request.
+ *
+ */
+export interface StandalonePriceCreatedMessagePayload {
+  readonly type: 'StandalonePriceCreated'
+  /**
+   *	The Standalone Price as it was created.
+   *
+   *
+   */
+  readonly standalonePrice: StandalonePrice
+}
+/**
+ *	Generated after a successful [Delete StandalonePrice](/../api/projects/standalone-prices#delete-standaloneprice) request.
+ *
+ */
+export interface StandalonePriceDeletedMessagePayload {
+  readonly type: 'StandalonePriceDeleted'
+}
+/**
+ *	Emitted when the affected StandalonePrice is updated based on a [Product Discount](ctp:api:type:ProductDiscount) being applied.
+ *
+ */
+export interface StandalonePriceDiscountSetMessagePayload {
+  readonly type: 'StandalonePriceDiscountSet'
+  /**
+   *	The new `discounted` value of the updated StandalonePrice.
+   *
+   *
+   */
+  readonly discounted?: DiscountedPrice
+}
+/**
+ *	This Message is the result of the Standalone Price [SetDiscountedPrice](/../api/projects/standalone-prices#set-discounted-price) update action.
+ *
+ */
+export interface StandalonePriceExternalDiscountSetMessagePayload {
+  readonly type: 'StandalonePriceExternalDiscountSet'
+  /**
+   *	The new `discounted` value of the updated StandalonePrice.
+   *
+   *
+   */
+  readonly discounted?: DiscountedPrice
+}
+/**
+ *	Generated after a successful [Change Value](ctp:api:types:StandalonePriceChangeValueAction) update action.
+ *
+ */
+export interface StandalonePriceValueChangedMessagePayload {
+  readonly type: 'StandalonePriceValueChanged'
+  /**
+   *	The new value of the updated StandalonePrice.
+   *
+   *
+   */
+  readonly value: Money
+}
 export interface StoreCreatedMessagePayload {
   readonly type: 'StoreCreated'
   /**
+   *	JSON object where the keys are of type [Locale](ctp:api:type:Locale), and the values are the strings used for the corresponding language.
+   *
    *
    */
   readonly name?: LocalizedString
@@ -6480,6 +8148,26 @@ export interface StoreCreatedMessagePayload {
 }
 export interface StoreDeletedMessagePayload {
   readonly type: 'StoreDeleted'
+}
+/**
+ *	Generated after a successful [Add Distribution Channel](ctp:api:type:StoreAddDistributionChannelAction),
+ *	[Remove Distribution Channel](ctp:api:type:StoreRemoveDistributionChannelAction), or
+ *	[Set Distribution Channels](ctp:api:type:StoreSetDistributionChannelsAction) update action.
+ *
+ */
+export interface StoreDistributionChannelsChangedMessagePayload {
+  readonly type: 'StoreDistributionChannelsChanged'
+  /**
+   *	The product distribution channels that have been added.
+   *
+   */
+  readonly addedDistributionChannels: ChannelReference[]
+  /**
+   *	The product distribution channels that have been removed.
+   *
+   *
+   */
+  readonly removedDistributionChannels: ChannelReference[]
 }
 export interface StoreProductSelectionsChangedMessagePayload {
   readonly type: 'StoreProductSelectionsChanged'

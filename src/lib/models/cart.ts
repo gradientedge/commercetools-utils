@@ -4,7 +4,7 @@
  * For more information about the commercetools platform APIs, visit https://docs.commercetools.com/.
  */
 
-import { CartDiscountReference, CartDiscountTarget, CartDiscountValue, CartDiscountValueDraft } from './cart-discount'
+import { CartDiscountReference, CartDiscountTarget, CartDiscountValue } from './cart-discount'
 import { ChannelReference, ChannelResourceIdentifier } from './channel'
 import {
   Address,
@@ -36,7 +36,7 @@ import { CustomFields, CustomFieldsDraft, FieldContainer, TypeResourceIdentifier
 
 export interface Cart extends BaseResource {
   /**
-   *	Platform-generated unique identifier of the Cart.
+   *	Unique identifier of the Cart.
    *
    */
   readonly id: string
@@ -158,14 +158,13 @@ export interface Cart extends BaseResource {
    */
   readonly shippingInfo?: ShippingInfo
   /**
-   * The DirectDiscounts that change the order price with external price reductions
-   *
-   */
-  readonly directDiscounts?: DirectDiscount[]
-  /**
    *
    */
   readonly discountCodes?: DiscountCodeInfo[]
+  /**
+   *
+   */
+  readonly directDiscounts?: DirectDiscount[]
   /**
    *
    */
@@ -347,7 +346,7 @@ export interface CartDraft {
    */
   readonly discountCodes?: string[]
 }
-export type CartOrigin = 'Customer' | 'Merchant'
+export type CartOrigin = 'Customer' | 'Merchant' | 'Quote'
 export interface CartPagedQueryResponse {
   /**
    *	Number of [results requested](/../api/general-concepts#limit).
@@ -364,6 +363,8 @@ export interface CartPagedQueryResponse {
    */
   readonly total?: number
   /**
+   *	Number of [elements skipped](/../api/general-concepts#offset).
+   *
    *
    */
   readonly offset: number
@@ -373,13 +374,13 @@ export interface CartPagedQueryResponse {
   readonly results: Cart[]
 }
 /**
- *	[Reference](/../api/types#reference) to a [Cart](ctp:api:type:Cart).
+ *	[Reference](ctp:api:type:Reference) to a [Cart](ctp:api:type:Cart).
  *
  */
 export interface CartReference {
   readonly typeId: 'cart'
   /**
-   *	Platform-generated unique identifier of the referenced [Cart](ctp:api:type:Cart).
+   *	Unique identifier of the referenced [Cart](ctp:api:type:Cart).
    *
    *
    */
@@ -392,13 +393,13 @@ export interface CartReference {
   readonly obj?: Cart
 }
 /**
- *	[ResourceIdentifier](/../api/types#resourceidentifier) to a [Cart](ctp:api:type:Cart).
+ *	[ResourceIdentifier](ctp:api:type:ResourceIdentifier) to a [Cart](ctp:api:type:Cart).
  *
  */
 export interface CartResourceIdentifier {
   readonly typeId: 'cart'
   /**
-   *	Platform-generated unique identifier of the referenced [Cart](ctp:api:type:Cart). Either `id` or `key` is required.
+   *	Unique identifier of the referenced [Cart](ctp:api:type:Cart). Either `id` or `key` is required.
    *
    *
    */
@@ -431,6 +432,7 @@ export type CartUpdateAction =
   | CartApplyDeltaToCustomLineItemShippingDetailsTargetsAction
   | CartApplyDeltaToLineItemShippingDetailsTargetsAction
   | CartChangeCustomLineItemMoneyAction
+  | CartChangeCustomLineItemPriceModeAction
   | CartChangeCustomLineItemQuantityAction
   | CartChangeLineItemQuantityAction
   | CartChangeTaxCalculationModeAction
@@ -486,7 +488,7 @@ export type CartUpdateAction =
   | CartUpdateItemShippingAddressAction
 export interface CustomLineItem {
   /**
-   *	Platform-generated unique identifier of the CustomLineItem.
+   *	Unique identifier of the CustomLineItem.
    *
    */
   readonly id: string
@@ -554,6 +556,13 @@ export interface CustomLineItem {
    *
    */
   readonly shippingDetails?: ItemShippingDetails
+  /**
+   *	Specifies whether Cart Discounts with a matching [CartDiscountCustomLineItemsTarget](ctp:api:type:CartDiscountCustomLineItemsTarget)
+   *	are applied to the Custom Line Item: `Standard` = yes, `External` = no.
+   *
+   *
+   */
+  readonly priceMode: CustomLineItemPriceMode
 }
 export interface CustomLineItemDraft {
   /**
@@ -595,30 +604,33 @@ export interface CustomLineItemDraft {
    */
   readonly shippingDetails?: ItemShippingDetailsDraft
 }
+export type CustomLineItemPriceMode = 'External' | 'Standard'
 export interface DirectDiscount {
   /**
-   * The unique ID of the DirectDiscount.
+   *	The unique ID of the cart discount.
+   *
    */
-  id: string
+  readonly id: string
   /**
-   * The value of the discount
+   *
    */
-  value: CartDiscountValue
+  readonly value: CartDiscountValue
   /**
-   * Optional - Empty when the value has type giftLineItem, otherwise a CartDiscountTarget is set.
-   * Defines which line item(s) are reduced in price
+   *	Empty when the `value` has type `giftLineItem`, otherwise a CartDiscountTarget is set.
+   *
    */
-  target?: CartDiscountTarget
+  readonly target?: CartDiscountTarget
 }
 export interface DirectDiscountDraft {
   /**
-   * The value of the direct discount
+   *
    */
-  value: CartDiscountValueDraft
+  readonly value: CartDiscountValue
   /**
-   * What parts of the cart benefit from it
+   *	Empty when the `value` has type `giftLineItem`, otherwise a CartDiscountTarget is set.
+   *
    */
-  target?: CartDiscountTarget
+  readonly target?: CartDiscountTarget
 }
 export interface DiscountCodeInfo {
   /**
@@ -766,7 +778,7 @@ export interface ItemShippingTarget {
 }
 export interface LineItem {
   /**
-   *	Platform-generated unique identifier of the LineItem.
+   *	Unique identifier of the LineItem.
    *
    */
   readonly id: string
@@ -804,8 +816,8 @@ export interface LineItem {
    */
   readonly variant: ProductVariant
   /**
-   *	The price of a line item is selected from the prices array of the product variant.
-   *	If the `variant` field hasn't been updated, the price may not correspond to a price in `variant.prices`.
+   *	The price of a line item is selected from the product variant according to the Product's [priceMode](ctp:api:type:Product) value.
+   *	If the `priceMode` is `Embedded` [ProductPriceMode](ctp:api:type:ProductPriceModeEnum) and the `variant` field hasn't been updated, the price may not correspond to a price in `variant.prices`.
    *
    */
   readonly price: Price
@@ -873,6 +885,12 @@ export interface LineItem {
    *
    */
   readonly custom?: CustomFields
+  /**
+   *	Inventory mode specific to the line item only, valid for the entire `quantity` of the line item.
+   *	Only present if inventory mode is different from the `inventoryMode` specified on the [Cart](ctp:api:type:Cart).
+   *
+   */
+  readonly inventoryMode?: InventoryMode
   /**
    *	Container for line item specific address(es).
    *
@@ -945,6 +963,12 @@ export interface LineItemDraft {
    *
    */
   readonly externalTotalPrice?: ExternalLineItemTotalPrice
+  /**
+   *	Inventory mode specific to the line item only, valid for the entire `quantity` of the line item.
+   *	Set only if inventory mode should be different from the `inventoryMode` specified on the [Cart](ctp:api:type:Cart).
+   *
+   */
+  readonly inventoryMode?: InventoryMode
   /**
    *	Container for line item specific address(es).
    *
@@ -1024,6 +1048,8 @@ export interface ClassificationShippingRateInput {
    */
   readonly key: string
   /**
+   *	JSON object where the keys are of type [Locale](ctp:api:type:Locale), and the values are the strings used for the corresponding language.
+   *
    *
    */
   readonly label: LocalizedString
@@ -1078,6 +1104,7 @@ export interface TaxPortionDraft {
   readonly rate: number
   /**
    *	Draft type that stores amounts in cent precision for the specified currency.
+   *
    *	For storing money values in fractions of the minor unit in a currency, use [HighPrecisionMoneyDraft](ctp:api:type:HighPrecisionMoneyDraft) instead.
    *
    *
@@ -1095,7 +1122,7 @@ export interface TaxedItemPrice {
    */
   readonly totalGross: TypedMoney
   /**
-   *	Platform-calculated value as subtraction of `totalGross` - `totalNet`.
+   *	Calculated automatically as the subtraction of `totalGross` - `totalNet`.
    *
    *
    */
@@ -1116,7 +1143,7 @@ export interface TaxedPrice {
    */
   readonly taxPortions: TaxPortion[]
   /**
-   *	Platform-calculated value as subtraction of `totalGross` - `totalNet`.
+   *	Calculated automatically as the subtraction of `totalGross` - `totalNet`.
    *
    *
    */
@@ -1125,6 +1152,7 @@ export interface TaxedPrice {
 export interface TaxedPriceDraft {
   /**
    *	Draft type that stores amounts in cent precision for the specified currency.
+   *
    *	For storing money values in fractions of the minor unit in a currency, use [HighPrecisionMoneyDraft](ctp:api:type:HighPrecisionMoneyDraft) instead.
    *
    *
@@ -1132,6 +1160,7 @@ export interface TaxedPriceDraft {
   readonly totalNet: Money
   /**
    *	Draft type that stores amounts in cent precision for the specified currency.
+   *
    *	For storing money values in fractions of the minor unit in a currency, use [HighPrecisionMoneyDraft](ctp:api:type:HighPrecisionMoneyDraft) instead.
    *
    *
@@ -1146,12 +1175,15 @@ export interface CartAddCustomLineItemAction {
   readonly action: 'addCustomLineItem'
   /**
    *	Draft type that stores amounts in cent precision for the specified currency.
+   *
    *	For storing money values in fractions of the minor unit in a currency, use [HighPrecisionMoneyDraft](ctp:api:type:HighPrecisionMoneyDraft) instead.
    *
    *
    */
   readonly money: Money
   /**
+   *	JSON object where the keys are of type [Locale](ctp:api:type:Locale), and the values are the strings used for the corresponding language.
+   *
    *
    */
   readonly name: LocalizedString
@@ -1164,7 +1196,7 @@ export interface CartAddCustomLineItemAction {
    */
   readonly slug: string
   /**
-   *	[ResourceIdentifier](/../api/types#resourceidentifier) to a [TaxCategory](ctp:api:type:TaxCategory).
+   *	[ResourceIdentifier](ctp:api:type:ResourceIdentifier) to a [TaxCategory](ctp:api:type:TaxCategory).
    *
    *
    */
@@ -1203,7 +1235,7 @@ export interface CartAddLineItemAction {
    */
   readonly custom?: CustomFieldsDraft
   /**
-   *	[ResourceIdentifier](/../api/types#resourceidentifier) to a [Channel](ctp:api:type:Channel).
+   *	[ResourceIdentifier](ctp:api:type:ResourceIdentifier) to a [Channel](ctp:api:type:Channel).
    *
    *
    */
@@ -1229,13 +1261,14 @@ export interface CartAddLineItemAction {
    */
   readonly quantity?: number
   /**
-   *	[ResourceIdentifier](/../api/types#resourceidentifier) to a [Channel](ctp:api:type:Channel).
+   *	[ResourceIdentifier](ctp:api:type:ResourceIdentifier) to a [Channel](ctp:api:type:Channel).
    *
    *
    */
   readonly supplyChannel?: ChannelResourceIdentifier
   /**
    *	Draft type that stores amounts in cent precision for the specified currency.
+   *
    *	For storing money values in fractions of the minor unit in a currency, use [HighPrecisionMoneyDraft](ctp:api:type:HighPrecisionMoneyDraft) instead.
    *
    *
@@ -1260,19 +1293,19 @@ export interface CartAddPaymentAction {
 export interface CartAddShoppingListAction {
   readonly action: 'addShoppingList'
   /**
-   *	[ResourceIdentifier](/../api/types#resourceidentifier) to a [ShoppingList](ctp:api:type:ShoppingList).
+   *	[ResourceIdentifier](ctp:api:type:ResourceIdentifier) to a [ShoppingList](ctp:api:type:ShoppingList).
    *
    *
    */
   readonly shoppingList: ShoppingListResourceIdentifier
   /**
-   *	[ResourceIdentifier](/../api/types#resourceidentifier) to a [Channel](ctp:api:type:Channel).
+   *	[ResourceIdentifier](ctp:api:type:ResourceIdentifier) to a [Channel](ctp:api:type:Channel).
    *
    *
    */
   readonly supplyChannel?: ChannelResourceIdentifier
   /**
-   *	[ResourceIdentifier](/../api/types#resourceidentifier) to a [Channel](ctp:api:type:Channel).
+   *	[ResourceIdentifier](ctp:api:type:ResourceIdentifier) to a [Channel](ctp:api:type:Channel).
    *
    *
    */
@@ -1308,11 +1341,27 @@ export interface CartChangeCustomLineItemMoneyAction {
   readonly customLineItemId: string
   /**
    *	Draft type that stores amounts in cent precision for the specified currency.
+   *
    *	For storing money values in fractions of the minor unit in a currency, use [HighPrecisionMoneyDraft](ctp:api:type:HighPrecisionMoneyDraft) instead.
    *
    *
    */
   readonly money: Money
+}
+export interface CartChangeCustomLineItemPriceModeAction {
+  readonly action: 'changeCustomLineItemPriceMode'
+  /**
+   *	ID of the Custom Line Item to be updated.
+   *
+   *
+   */
+  readonly customLineItemId: string
+  /**
+   *	New value to set.
+   *
+   *
+   */
+  readonly mode: CustomLineItemPriceMode
 }
 export interface CartChangeCustomLineItemQuantityAction {
   readonly action: 'changeCustomLineItemQuantity'
@@ -1337,6 +1386,7 @@ export interface CartChangeLineItemQuantityAction {
   readonly quantity: number
   /**
    *	Draft type that stores amounts in cent precision for the specified currency.
+   *
    *	For storing money values in fractions of the minor unit in a currency, use [HighPrecisionMoneyDraft](ctp:api:type:HighPrecisionMoneyDraft) instead.
    *
    *
@@ -1372,9 +1422,8 @@ export interface CartRecalculateAction {
   readonly action: 'recalculate'
   /**
    *	If set to `true`, the line item product data (`name`, `variant` and `productType`) will also be updated.
-   *	If set to `false`,
-   *	only the prices and tax rates of the line item will be updated.
-   *	The updated price of a line item may not correspond to a price in `variant.prices` anymore.
+   *	If set to `false`, only the prices and tax rates of the line item will be updated.
+   *	Notice that if the Product's [priceMode](ctp:api:type:Product) value is `Embedded` [ProductPriceMode](ctp:api:type:ProductPriceModeEnum), the updated price of a line item may not correspond to a price in `variant.prices` anymore.
    *
    */
   readonly updateProductData?: boolean
@@ -1389,7 +1438,7 @@ export interface CartRemoveCustomLineItemAction {
 export interface CartRemoveDiscountCodeAction {
   readonly action: 'removeDiscountCode'
   /**
-   *	[Reference](/../api/types#reference) to a [DiscountCode](ctp:api:type:DiscountCode).
+   *	[Reference](ctp:api:type:Reference) to a [DiscountCode](ctp:api:type:DiscountCode).
    *
    *
    */
@@ -1414,6 +1463,7 @@ export interface CartRemoveLineItemAction {
   readonly quantity?: number
   /**
    *	Draft type that stores amounts in cent precision for the specified currency.
+   *
    *	For storing money values in fractions of the minor unit in a currency, use [HighPrecisionMoneyDraft](ctp:api:type:HighPrecisionMoneyDraft) instead.
    *
    *
@@ -1498,7 +1548,7 @@ export interface CartSetCartTotalTaxAction {
 export interface CartSetCountryAction {
   readonly action: 'setCountry'
   /**
-   *	A two-digit country code as per [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2).
+   *	Two-digit country code as per [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2).
    *
    *
    */
@@ -1606,7 +1656,7 @@ export interface CartSetCustomShippingMethodAction {
    */
   readonly shippingRate: ShippingRateDraft
   /**
-   *	[ResourceIdentifier](/../api/types#resourceidentifier) to a [TaxCategory](ctp:api:type:TaxCategory).
+   *	[ResourceIdentifier](ctp:api:type:ResourceIdentifier) to a [TaxCategory](ctp:api:type:TaxCategory).
    *
    *
    */
@@ -1642,7 +1692,7 @@ export interface CartSetCustomerEmailAction {
 export interface CartSetCustomerGroupAction {
   readonly action: 'setCustomerGroup'
   /**
-   *	[ResourceIdentifier](/../api/types#resourceidentifier) to a [CustomerGroup](ctp:api:type:CustomerGroup).
+   *	[ResourceIdentifier](ctp:api:type:ResourceIdentifier) to a [CustomerGroup](ctp:api:type:CustomerGroup).
    *
    *
    */
@@ -1707,9 +1757,7 @@ export interface CartSetDeliveryAddressCustomTypeAction {
 export interface CartSetDirectDiscountsAction {
   readonly action: 'setDirectDiscounts'
   /**
-   * Adds DirectDiscounts to the Cart or Order. If not empty, the action replaces all existing DirectDiscounts. If empty,
-   * the action removes all existing DirectDiscounts and recalculates all affected prices on the cart or order.
-   * Adding DirectDiscounts is only possible if no DiscountCode has been applied to the Cart or Order.
+   *
    */
   readonly discounts: DirectDiscountDraft[]
 }
@@ -1809,7 +1857,7 @@ export interface CartSetLineItemDistributionChannelAction {
    */
   readonly lineItemId: string
   /**
-   *	[ResourceIdentifier](/../api/types#resourceidentifier) to a [Channel](ctp:api:type:Channel).
+   *	[ResourceIdentifier](ctp:api:type:ResourceIdentifier) to a [Channel](ctp:api:type:Channel).
    *
    *
    */
@@ -1823,6 +1871,7 @@ export interface CartSetLineItemPriceAction {
   readonly lineItemId: string
   /**
    *	Draft type that stores amounts in cent precision for the specified currency.
+   *
    *	For storing money values in fractions of the minor unit in a currency, use [HighPrecisionMoneyDraft](ctp:api:type:HighPrecisionMoneyDraft) instead.
    *
    *
@@ -1847,7 +1896,7 @@ export interface CartSetLineItemSupplyChannelAction {
    */
   readonly lineItemId: string
   /**
-   *	[ResourceIdentifier](/../api/types#resourceidentifier) to a [Channel](ctp:api:type:Channel).
+   *	[ResourceIdentifier](ctp:api:type:ResourceIdentifier) to a [Channel](ctp:api:type:Channel).
    *
    *
    */
@@ -1936,7 +1985,7 @@ export interface CartSetShippingAddressCustomTypeAction {
 export interface CartSetShippingMethodAction {
   readonly action: 'setShippingMethod'
   /**
-   *	[ResourceIdentifier](/../api/types#resourceidentifier) to a [ShippingMethod](ctp:api:type:ShippingMethod).
+   *	[ResourceIdentifier](ctp:api:type:ResourceIdentifier) to a [ShippingMethod](ctp:api:type:ShippingMethod).
    *
    *
    */

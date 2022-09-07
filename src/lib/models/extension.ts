@@ -8,7 +8,7 @@ import { BaseResource, CreatedBy, LastModifiedBy, Reference } from './common'
 
 export interface Extension extends BaseResource {
   /**
-   *	Platform-generated unique identifier of the Extension.
+   *	Unique identifier of the Extension.
    *
    *
    */
@@ -50,7 +50,7 @@ export interface Extension extends BaseResource {
    */
   readonly key?: string
   /**
-   *	Information necessary for the commercetools Platform to call the Extension.
+   *	The configuration for the Extension, including its type, location and authentication details.
    *
    *
    */
@@ -62,7 +62,7 @@ export interface Extension extends BaseResource {
    */
   readonly triggers: ExtensionTrigger[]
   /**
-   *	Maximum time (in milliseconds) the commercetools Platform waits for a response from the Extension.
+   *	Maximum time (in milliseconds) that the Extension can respond within.
    *	If no timeout is provided, the default value is used for all types of Extensions.
    *	The maximum value is 10000 ms (10 seconds) for `payment` Extensions and 2000 ms (2 seconds) for all other Extensions.
    *
@@ -124,12 +124,12 @@ export interface ExtensionDraft {
    */
   readonly triggers: ExtensionTrigger[]
   /**
-   *	Maximum time (in milliseconds) the commercetools Platform waits for a response from the Extension.
+   *	Maximum time (in milliseconds) the Extension can respond within.
    *	If no timeout is provided, the default value is used for all types of Extensions.
    *	The maximum value is 10000 ms (10 seconds) for `payment` Extensions and 2000 ms (2 seconds) for all other Extensions.
    *
    *	This limit can be increased per Project after we review the performance impact.
-   *	Please contact our support via the [support portal](https://support.commercetools.com) and provide the Region, Project key, and use case.
+   *	Please contact our support via the [Support Portal](https://support.commercetools.com) and provide the Region, Project key, and use case.
    *
    *
    */
@@ -161,7 +161,7 @@ export interface ExtensionPagedQueryResponse {
    */
   readonly limit: number
   /**
-   *	Offset supplied by the client or server default. It is the number of elements skipped, not a page number.
+   *	Number of [elements skipped](/../api/general-concepts#offset).
    *
    *
    */
@@ -193,10 +193,17 @@ export interface ExtensionPagedQueryResponse {
  *	Extensions are available for:
  *
  */
-export type ExtensionResourceTypeId = 'cart' | 'customer' | 'order' | 'payment'
+export type ExtensionResourceTypeId =
+  | 'cart'
+  | 'customer'
+  | 'order'
+  | 'payment'
+  | 'quote'
+  | 'quote-request'
+  | 'staged-quote'
 export interface ExtensionTrigger {
   /**
-   *	`cart`, `order`, `payment`, and `customer` are supported.
+   *	`cart`, `order`, `payment`, `customer`, `quote-request`, `staged-quote`, and `quote` are supported.
    *
    *
    */
@@ -207,6 +214,12 @@ export interface ExtensionTrigger {
    *
    */
   readonly actions: ExtensionAction[]
+  /**
+   *	Valid [predicate](/../api/predicates/query) that controls the conditions under which the API Extension is called. The Extension is not triggered when the specified condition is not fulfilled.
+   *
+   *
+   */
+  readonly condition?: string
 }
 export interface ExtensionUpdate {
   /**
@@ -263,7 +276,7 @@ export interface AuthorizationHeaderAuthentication {
   readonly headerValue: string
 }
 /**
- *	To protect your Azure Function, set its `authLevel` to `function` and provide the functions key. The commercetools Platform will set the `x-functions-key` header. For more information, see the [Azure Functions documentation](https://docs.microsoft.com/en-us/azure/azure-functions/functions-bindings-http-webhook#keys).
+ *	To protect your Azure Function, set its `authLevel` to `function` and provide the function's key to be used inside the `x-functions-key` header. For more information, see the [Azure Functions documentation](https://docs.microsoft.com/en-us/azure/azure-functions/functions-bindings-http-webhook#keys).
  *
  *	To protect the secret key from being exposed, remove the code parameter and secret key from the URL. For example, use `https://foo.azurewebsites.net/api/bar` instead of
  *	`https://foo.azurewebsites.net/api/bar?code=secret`.

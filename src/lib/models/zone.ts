@@ -23,7 +23,7 @@ export interface Location {
 }
 export interface Zone extends BaseResource {
   /**
-   *	Platform-generated unique identifier of the Zone.
+   *	Unique identifier of the Zone.
    *
    */
   readonly id: string
@@ -112,8 +112,7 @@ export interface ZonePagedQueryResponse {
    */
   readonly limit: number
   /**
-   *	Offset supplied by the client or the server default.
-   *	It is the number of elements skipped, not a page number.
+   *	Number of [elements skipped](/../api/general-concepts#offset).
    *
    *
    */
@@ -142,13 +141,13 @@ export interface ZonePagedQueryResponse {
   readonly results: Zone[]
 }
 /**
- *	[Reference](/../api/types#reference) to a [Zone](ctp:api:type:Zone).
+ *	[Reference](ctp:api:type:Reference) to a [Zone](ctp:api:type:Zone).
  *
  */
 export interface ZoneReference {
   readonly typeId: 'zone'
   /**
-   *	Platform-generated unique identifier of the referenced [Zone](ctp:api:type:Zone).
+   *	Unique identifier of the referenced [Zone](ctp:api:type:Zone).
    *
    *
    */
@@ -161,13 +160,13 @@ export interface ZoneReference {
   readonly obj?: Zone
 }
 /**
- *	[ResourceIdentifier](/../api/types#resourceidentifier) to a [Zone](ctp:api:type:Zone).
+ *	[ResourceIdentifier](ctp:api:type:ResourceIdentifier) to a [Zone](ctp:api:type:Zone).
  *
  */
 export interface ZoneResourceIdentifier {
   readonly typeId: 'zone'
   /**
-   *	Platform-generated unique identifier of the referenced [Zone](ctp:api:type:Zone). Either `id` or `key` is required.
+   *	Unique identifier of the referenced [Zone](ctp:api:type:Zone). Either `id` or `key` is required.
    *
    *
    */

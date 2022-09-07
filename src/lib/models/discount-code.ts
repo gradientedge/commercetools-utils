@@ -10,104 +10,125 @@ import { CustomFields, CustomFieldsDraft, FieldContainer, TypeResourceIdentifier
 
 export interface DiscountCode extends BaseResource {
   /**
-   *	Platform-generated unique identifier of the DiscountCode.
+   *	Unique identifier of the DiscountCode.
+   *
    *
    */
   readonly id: string
   /**
+   *	Current version of the DiscountCode.
+   *
    *
    */
   readonly version: number
   /**
+   *	Date and time (UTC) the DiscountCode was initially created.
+   *
    *
    */
   readonly createdAt: string
   /**
+   *	Date and time (UTC) the DiscountCode was last updated.
+   *
    *
    */
   readonly lastModifiedAt: string
   /**
-   *	Present on resources created after 1 February 2019 except for [events not tracked](/client-logging#events-tracked).
+   *	Present on resources created after 1 February 2019 except for [events not tracked](/../api/client-logging#events-tracked).
    *
    *
    */
   readonly lastModifiedBy?: LastModifiedBy
   /**
-   *	Present on resources created after 1 February 2019 except for [events not tracked](/client-logging#events-tracked).
+   *	Present on resources created after 1 February 2019 except for [events not tracked](/../api/client-logging#events-tracked).
    *
    *
    */
   readonly createdBy?: CreatedBy
   /**
+   *	Name of the DiscountCode.
+   *
    *
    */
   readonly name?: LocalizedString
   /**
+   *	Description of the DiscountCode.
+   *
    *
    */
   readonly description?: LocalizedString
   /**
-   *	User-defined unique identifier of the DiscountCode.
-   *	It is [added to a Cart](/../api/projects/carts#add-discountcode) to enable the related CartDiscounts in that Cart.
+   *	User-defined unique identifier of the DiscountCode [added to the Cart](/../api/projects/carts#add-discountcode) to apply the related [CartDiscounts](ctp:api:type:CartDiscount).
+   *
    *
    */
   readonly code: string
   /**
-   *	The referenced matching cart discounts can be applied to the cart once the DiscountCode is added.
+   *	Reference to CartDiscounts that can be applied to the Cart once the DiscountCode is applied.
+   *
    *
    */
   readonly cartDiscounts: CartDiscountReference[]
   /**
-   *	The discount code can only be applied to carts that match this predicate.
+   *	DiscountCode can only be applied to Carts that match this predicate.
+   *
    *
    */
   readonly cartPredicate?: string
   /**
+   *	Indicates if the DiscountCode is active and can be applied to the Cart.
+   *
    *
    */
   readonly isActive: boolean
   /**
-   *	The platform will generate this array from the cart predicate.
+   *	Array generated from the Cart predicate.
    *	It contains the references of all the resources that are addressed in the predicate.
+   *
    *
    */
   readonly references: Reference[]
   /**
-   *	The discount code can only be applied `maxApplications` times.
+   *	Number of times the DiscountCode can be applied.
+   *	DiscountCode application is counted at the time of Order creation or edit. However, Order cancellation or deletion does not decrement the count.
+   *
    *
    */
   readonly maxApplications?: number
   /**
-   *	The discount code can only be applied `maxApplicationsPerCustomer` times per customer.
+   *	Number of times the DiscountCode can be applied per Customer (anonymous Carts are not supported).
+   *	DiscountCode application is counted at the time of Order creation or edit. However, Order cancellation or deletion does not decrement the count.
+   *
    *
    */
   readonly maxApplicationsPerCustomer?: number
   /**
+   *	Custom Fields of the DiscountCode.
+   *
    *
    */
   readonly custom?: CustomFields
   /**
-   *	The groups to which this discount code belong.
+   *	Groups to which the DiscountCode belongs to.
+   *
    *
    */
   readonly groups: string[]
   /**
-   *	The time from which the discount can be applied on a cart.
-   *	Before that time the code is invalid.
+   *	Date and time (UTC) from which the DiscountCode is effective.
+   *
    *
    */
   readonly validFrom?: string
   /**
-   *	The time until the discount can be applied on a cart.
-   *	After that time the code is invalid.
+   *	Date and time (UTC) until which the DiscountCode is effective.
+   *
    *
    */
   readonly validUntil?: string
   /**
-   *	Used for the internal platform only and registers the reservation of use of a discount code.
-   *	Its value is managed by the platform.
-   *	It can change at any time due to internal and external factors.
-   *	It should not be used in customer logic.
+   *	Used and managed by the API and must not be used in customer logic.
+   *	The value can change at any time due to internal and external factors.
    *
    *
    */
@@ -115,64 +136,83 @@ export interface DiscountCode extends BaseResource {
 }
 export interface DiscountCodeDraft {
   /**
+   *	Name of the DiscountCode.
+   *
    *
    */
   readonly name?: LocalizedString
   /**
+   *	Description of the DiscountCode.
+   *
    *
    */
   readonly description?: LocalizedString
   /**
-   *	User-defined unique identifier for the DiscountCode.
-   *	[Add it to a Cart](/../api/projects/carts#add-discountcode) to enable the related CartDiscounts in that Cart.
+   *	User-defined unique identifier for the DiscountCode that can be [added to the Cart](/../api/projects/carts#add-discountcode) to apply the related [CartDiscounts](ctp:api:type:CartDiscount).
+   *	It cannot be modified after the DiscountCode is created.
+   *
    *
    */
   readonly code: string
   /**
-   *	The referenced matching cart discounts can be applied to the cart once the discount code is added.
-   *	The number of cart discounts in a discount code is limited to **10**.
+   *	Specify what CartDiscounts the API applies when you add the DiscountCode to the Cart.
+   *
    *
    */
   readonly cartDiscounts: CartDiscountResourceIdentifier[]
   /**
-   *	The discount code can only be applied to carts that match this predicate.
+   *	DiscountCode can only be applied to Carts that match this predicate.
+   *
    *
    */
   readonly cartPredicate?: string
   /**
+   *	Only active DiscountCodes can be applied to the Cart.
+   *
    *
    */
   readonly isActive?: boolean
   /**
+   *	Number of times the DiscountCode can be applied.
+   *
    *
    */
   readonly maxApplications?: number
   /**
+   *	Number of times the DiscountCode can be applied per Customer.
+   *
    *
    */
   readonly maxApplicationsPerCustomer?: number
   /**
+   *	Custom Fields for the DiscountCode.
+   *
    *
    */
   readonly custom?: CustomFieldsDraft
   /**
-   *	The groups to which this discount code shall belong to.
+   *	Groups to which the DiscountCode will belong to.
+   *
    *
    */
   readonly groups?: string[]
   /**
-   *	The time from which the discount can be applied on a cart.
-   *	Before that time the code is invalid.
+   *	Date and time (UTC) from which the DiscountCode is effective. Must be earlier than `validUntil`.
+   *
    *
    */
   readonly validFrom?: string
   /**
-   *	The time until the discount can be applied on a cart.
-   *	After that time the code is invalid.
+   *	Date and time (UTC) until which the DiscountCode is effective. Must be later than `validFrom`.
+   *
    *
    */
   readonly validUntil?: string
 }
+/**
+ *	[PagedQueryResult](/../api/general-concepts#pagedqueryresult) with `results` containing an array of [DiscountCode](ctp:api:type:DiscountCode).
+ *
+ */
 export interface DiscountCodePagedQueryResponse {
   /**
    *	Number of [results requested](/../api/general-concepts#limit).
@@ -181,30 +221,42 @@ export interface DiscountCodePagedQueryResponse {
    */
   readonly limit: number
   /**
+   *	Number of [elements skipped](/../api/general-concepts#offset).
    *
-   */
-  readonly count: number
-  /**
-   *
-   */
-  readonly total?: number
-  /**
    *
    */
   readonly offset: number
   /**
+   *	Actual number of results returned.
+   *
+   *
+   */
+  readonly count: number
+  /**
+   *	Total number of results matching the query.
+   *	This number is an estimation that is not [strongly consistent](/../api/general-concepts#strong-consistency).
+   *	This field is returned by default.
+   *	For improved performance, calculating this field can be deactivated by using the query parameter `withTotal=false`.
+   *	When the results are filtered with a [Query Predicate](/../api/predicates/query), `total` is subject to a [limit](/../api/limits#queries).
+   *
+   *
+   */
+  readonly total?: number
+  /**
+   *	[DiscountCodes](ctp:api:type:DiscountCode) matching the query.
+   *
    *
    */
   readonly results: DiscountCode[]
 }
 /**
- *	[Reference](/../api/types#reference) to a [DiscountCode](ctp:api:type:DiscountCode).
+ *	[Reference](ctp:api:type:Reference) to a [DiscountCode](ctp:api:type:DiscountCode).
  *
  */
 export interface DiscountCodeReference {
   readonly typeId: 'discount-code'
   /**
-   *	Platform-generated unique identifier of the referenced [DiscountCode](ctp:api:type:DiscountCode).
+   *	Unique identifier of the referenced [DiscountCode](ctp:api:type:DiscountCode).
    *
    *
    */
@@ -217,13 +269,13 @@ export interface DiscountCodeReference {
   readonly obj?: DiscountCode
 }
 /**
- *	[ResourceIdentifier](/../api/types#resourceidentifier) to a [DiscountCode](ctp:api:type:DiscountCode).
+ *	[ResourceIdentifier](ctp:api:type:ResourceIdentifier) to a [DiscountCode](ctp:api:type:DiscountCode).
  *
  */
 export interface DiscountCodeResourceIdentifier {
   readonly typeId: 'discount-code'
   /**
-   *	Platform-generated unique identifier of the referenced [DiscountCode](ctp:api:type:DiscountCode). Either `id` or `key` is required.
+   *	Unique identifier of the referenced [DiscountCode](ctp:api:type:DiscountCode). Either `id` or `key` is required.
    *
    *
    */
@@ -237,10 +289,15 @@ export interface DiscountCodeResourceIdentifier {
 }
 export interface DiscountCodeUpdate {
   /**
+   *	Expected version of the DiscountCode on which the changes should be applied.
+   *	If the expected version does not match the actual version, a [409 Conflict](/../api/errors#409-conflict) will be returned.
+   *
    *
    */
   readonly version: number
   /**
+   *	Update actions to be performed on the DiscountCode.
+   *
    *
    */
   readonly actions: DiscountCodeUpdateAction[]
@@ -262,6 +319,8 @@ export type DiscountCodeUpdateAction =
 export interface DiscountCodeChangeCartDiscountsAction {
   readonly action: 'changeCartDiscounts'
   /**
+   *	New value to set.
+   *
    *
    */
   readonly cartDiscounts: CartDiscountResourceIdentifier[]
@@ -269,8 +328,8 @@ export interface DiscountCodeChangeCartDiscountsAction {
 export interface DiscountCodeChangeGroupsAction {
   readonly action: 'changeGroups'
   /**
-   *	The groups to which this discount code shall belong to.
-   *	Use empty array to remove the code from all groups.
+   *	New value to set. An empty array removes the DiscountCode from all groups.
+   *
    *
    */
   readonly groups: string[]
@@ -278,6 +337,8 @@ export interface DiscountCodeChangeGroupsAction {
 export interface DiscountCodeChangeIsActiveAction {
   readonly action: 'changeIsActive'
   /**
+   *	New value to set. Set to `true` to activate the DiscountCode for all matching Discounts.
+   *
    *
    */
   readonly isActive: boolean
@@ -285,7 +346,7 @@ export interface DiscountCodeChangeIsActiveAction {
 export interface DiscountCodeSetCartPredicateAction {
   readonly action: 'setCartPredicate'
   /**
-   *	If the `cartPredicate` parameter is not included, the field will be emptied.
+   *	Value to set. If empty, any existing value will be removed.
    *
    */
   readonly cartPredicate?: string
@@ -326,7 +387,7 @@ export interface DiscountCodeSetCustomTypeAction {
 export interface DiscountCodeSetDescriptionAction {
   readonly action: 'setDescription'
   /**
-   *	If the `description` parameter is not included, the field will be emptied.
+   *	Value to set. If empty, any existing value will be removed.
    *
    */
   readonly description?: LocalizedString
@@ -334,7 +395,8 @@ export interface DiscountCodeSetDescriptionAction {
 export interface DiscountCodeSetMaxApplicationsAction {
   readonly action: 'setMaxApplications'
   /**
-   *	If the `maxApplications` parameter is not included, the field will be emptied.
+   *	Value to set. If empty, any existing value will be removed.
+   *
    *
    */
   readonly maxApplications?: number
@@ -342,7 +404,8 @@ export interface DiscountCodeSetMaxApplicationsAction {
 export interface DiscountCodeSetMaxApplicationsPerCustomerAction {
   readonly action: 'setMaxApplicationsPerCustomer'
   /**
-   *	If the `maxApplicationsPerCustomer` parameter is not included, the field will be emptied.
+   *	Value to set. If empty, any existing value will be removed.
+   *
    *
    */
   readonly maxApplicationsPerCustomer?: number
@@ -350,7 +413,7 @@ export interface DiscountCodeSetMaxApplicationsPerCustomerAction {
 export interface DiscountCodeSetNameAction {
   readonly action: 'setName'
   /**
-   *	If the `name` parameter is not included, the field will be emptied.
+   *	Value to set. If empty, any existing value will be removed.
    *
    */
   readonly name?: LocalizedString
@@ -358,7 +421,8 @@ export interface DiscountCodeSetNameAction {
 export interface DiscountCodeSetValidFromAction {
   readonly action: 'setValidFrom'
   /**
-   *	If absent, the field with the value is removed in case a value was set before.
+   *	Value to set that must be earlier than `validUntil`. If empty, any existing value will be removed.
+   *
    *
    */
   readonly validFrom?: string
@@ -366,12 +430,14 @@ export interface DiscountCodeSetValidFromAction {
 export interface DiscountCodeSetValidFromAndUntilAction {
   readonly action: 'setValidFromAndUntil'
   /**
-   *	If absent, the field with the value is removed in case a value was set before.
+   *	Value to set that must be earlier than `validUntil`. If empty, any existing value will be removed.
+   *
    *
    */
   readonly validFrom?: string
   /**
-   *	If absent, the field with the value is removed in case a value was set before.
+   *	Value to set that must be later than `validFrom`. If empty, any existing value will be removed.
+   *
    *
    */
   readonly validUntil?: string
@@ -379,7 +445,8 @@ export interface DiscountCodeSetValidFromAndUntilAction {
 export interface DiscountCodeSetValidUntilAction {
   readonly action: 'setValidUntil'
   /**
-   *	If absent, the field with the value is removed in case a value was set before.
+   *	Value to set that must be later than `validFrom`. If empty, any existing value will be removed.
+   *
    *
    */
   readonly validUntil?: string

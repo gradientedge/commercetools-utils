@@ -6,6 +6,7 @@
 
 import {
   CartReference,
+  CartResourceIdentifier,
   DiscountCodeInfo,
   ExternalLineItemTotalPrice,
   ExternalTaxRateDraft,
@@ -88,6 +89,8 @@ export interface MyCartDraft {
    */
   readonly itemShippingAddresses?: BaseAddress[]
   /**
+   *	[Reference](/../api/types#reference) to a [Store](ctp:api:type:Store) by its key.
+   *
    *
    */
   readonly store?: StoreKeyReference
@@ -283,7 +286,7 @@ export interface MyLineItemDraft {
 }
 export interface MyOrderFromCartDraft {
   /**
-   *	Platform-generated unique identifier of the Cart from which the Platform creates an Order.
+   *	Unique identifier of the Cart that initiates an Order creation.
    *
    */
   readonly id: string
@@ -294,7 +297,7 @@ export interface MyOrderFromCartDraft {
 }
 export interface MyPayment {
   /**
-   *	Platform-generated unique identifier of the MyPayment.
+   *	Unique identifier of the MyPayment.
    *
    */
   readonly id: string
@@ -371,6 +374,8 @@ export interface MyPaymentPagedQueryResponse {
    */
   readonly total?: number
   /**
+   *	Number of [elements skipped](/../api/general-concepts#offset).
+   *
    *
    */
   readonly offset: number
@@ -397,6 +402,36 @@ export type MyPaymentUpdateAction =
   | MyPaymentSetMethodInfoMethodAction
   | MyPaymentSetMethodInfoNameAction
   | MyPaymentSetTransactionCustomFieldAction
+export interface MyQuoteRequestDraft {
+  /**
+   *	ResourceIdentifier to the Cart from which this quote request is created.
+   *
+   */
+  readonly cart: CartResourceIdentifier
+  /**
+   *	Current version of the Cart.
+   *
+   *
+   */
+  readonly version: number
+  /**
+   *	Text message included in the request.
+   *
+   *
+   */
+  readonly comment: string
+}
+export interface MyQuoteRequestUpdate {
+  /**
+   *
+   */
+  readonly version: number
+  /**
+   *
+   */
+  readonly actions: MyQuoteRequestUpdateAction[]
+}
+export type MyQuoteRequestUpdateAction = MyQuoteRequestCancelAction
 export interface MyShoppingListDraft {
   /**
    *
@@ -519,7 +554,7 @@ export interface MyCartAddLineItemAction {
    */
   readonly custom?: CustomFieldsDraft
   /**
-   *	[ResourceIdentifier](/../api/types#resourceidentifier) to a [Channel](ctp:api:type:Channel).
+   *	[ResourceIdentifier](ctp:api:type:ResourceIdentifier) to a [Channel](ctp:api:type:Channel).
    *
    *
    */
@@ -545,13 +580,14 @@ export interface MyCartAddLineItemAction {
    */
   readonly quantity?: number
   /**
-   *	[ResourceIdentifier](/../api/types#resourceidentifier) to a [Channel](ctp:api:type:Channel).
+   *	[ResourceIdentifier](ctp:api:type:ResourceIdentifier) to a [Channel](ctp:api:type:Channel).
    *
    *
    */
   readonly supplyChannel?: ChannelResourceIdentifier
   /**
    *	Draft type that stores amounts in cent precision for the specified currency.
+   *
    *	For storing money values in fractions of the minor unit in a currency, use [HighPrecisionMoneyDraft](ctp:api:type:HighPrecisionMoneyDraft) instead.
    *
    *
@@ -573,7 +609,7 @@ export interface MyCartAddLineItemAction {
 export interface MyCartAddPaymentAction {
   readonly action: 'addPayment'
   /**
-   *	[ResourceIdentifier](/../api/types#resourceidentifier) to a [Payment](ctp:api:type:Payment).
+   *	[ResourceIdentifier](ctp:api:type:ResourceIdentifier) to a [Payment](ctp:api:type:Payment).
    *
    *
    */
@@ -602,6 +638,7 @@ export interface MyCartChangeLineItemQuantityAction {
   readonly quantity: number
   /**
    *	Draft type that stores amounts in cent precision for the specified currency.
+   *
    *	For storing money values in fractions of the minor unit in a currency, use [HighPrecisionMoneyDraft](ctp:api:type:HighPrecisionMoneyDraft) instead.
    *
    *
@@ -629,7 +666,7 @@ export interface MyCartRecalculateAction {
 export interface MyCartRemoveDiscountCodeAction {
   readonly action: 'removeDiscountCode'
   /**
-   *	[Reference](/../api/types#reference) to a [DiscountCode](ctp:api:type:DiscountCode).
+   *	[Reference](ctp:api:type:Reference) to a [DiscountCode](ctp:api:type:DiscountCode).
    *
    *
    */
@@ -654,6 +691,7 @@ export interface MyCartRemoveLineItemAction {
   readonly quantity?: number
   /**
    *	Draft type that stores amounts in cent precision for the specified currency.
+   *
    *	For storing money values in fractions of the minor unit in a currency, use [HighPrecisionMoneyDraft](ctp:api:type:HighPrecisionMoneyDraft) instead.
    *
    *
@@ -671,7 +709,7 @@ export interface MyCartRemoveLineItemAction {
 export interface MyCartRemovePaymentAction {
   readonly action: 'removePayment'
   /**
-   *	[ResourceIdentifier](/../api/types#resourceidentifier) to a [Payment](ctp:api:type:Payment).
+   *	[ResourceIdentifier](ctp:api:type:ResourceIdentifier) to a [Payment](ctp:api:type:Payment).
    *
    *
    */
@@ -687,7 +725,7 @@ export interface MyCartSetBillingAddressAction {
 export interface MyCartSetCountryAction {
   readonly action: 'setCountry'
   /**
-   *	A two-digit country code as per [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2).
+   *	Two-digit country code as per [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2).
    *
    *
    */
@@ -788,7 +826,7 @@ export interface MyCartSetLineItemDistributionChannelAction {
    */
   readonly lineItemId: string
   /**
-   *	[ResourceIdentifier](/../api/types#resourceidentifier) to a [Channel](ctp:api:type:Channel).
+   *	[ResourceIdentifier](ctp:api:type:ResourceIdentifier) to a [Channel](ctp:api:type:Channel).
    *
    *
    */
@@ -812,7 +850,7 @@ export interface MyCartSetLineItemSupplyChannelAction {
    */
   readonly lineItemId: string
   /**
-   *	[ResourceIdentifier](/../api/types#resourceidentifier) to a [Channel](ctp:api:type:Channel).
+   *	[ResourceIdentifier](ctp:api:type:ResourceIdentifier) to a [Channel](ctp:api:type:Channel).
    *
    *
    */
@@ -835,7 +873,7 @@ export interface MyCartSetShippingAddressAction {
 export interface MyCartSetShippingMethodAction {
   readonly action: 'setShippingMethod'
   /**
-   *	[ResourceIdentifier](/../api/types#resourceidentifier) to a [ShippingMethod](ctp:api:type:ShippingMethod).
+   *	[ResourceIdentifier](ctp:api:type:ResourceIdentifier) to a [ShippingMethod](ctp:api:type:ShippingMethod).
    *
    *
    */
@@ -1065,6 +1103,7 @@ export interface MyPaymentChangeAmountPlannedAction {
   readonly action: 'changeAmountPlanned'
   /**
    *	Draft type that stores amounts in cent precision for the specified currency.
+   *
    *	For storing money values in fractions of the minor unit in a currency, use [HighPrecisionMoneyDraft](ctp:api:type:HighPrecisionMoneyDraft) instead.
    *
    *
@@ -1105,6 +1144,8 @@ export interface MyPaymentSetMethodInfoMethodAction {
 export interface MyPaymentSetMethodInfoNameAction {
   readonly action: 'setMethodInfoName'
   /**
+   *	JSON object where the keys are of type [Locale](ctp:api:type:Locale), and the values are the strings used for the corresponding language.
+   *
    *
    */
   readonly name?: LocalizedString
@@ -1125,6 +1166,13 @@ export interface MyPaymentSetTransactionCustomFieldAction {
    *
    */
   readonly value?: any
+}
+/**
+ *	Transitions the `quoteRequestState` of the Quote Request to `Cancelled`. Can only be used when the Quote Request is in state `Submitted`.
+ *
+ */
+export interface MyQuoteRequestCancelAction {
+  readonly action: 'cancelQuoteRequest'
 }
 export interface MyShoppingListAddLineItemAction {
   readonly action: 'addLineItem'
@@ -1158,10 +1206,14 @@ export interface MyShoppingListAddLineItemAction {
 export interface MyShoppingListAddTextLineItemAction {
   readonly action: 'addTextLineItem'
   /**
+   *	JSON object where the keys are of type [Locale](ctp:api:type:Locale), and the values are the strings used for the corresponding language.
+   *
    *
    */
   readonly name: LocalizedString
   /**
+   *	JSON object where the keys are of type [Locale](ctp:api:type:Locale), and the values are the strings used for the corresponding language.
+   *
    *
    */
   readonly description?: LocalizedString
@@ -1201,6 +1253,8 @@ export interface MyShoppingListChangeLineItemsOrderAction {
 export interface MyShoppingListChangeNameAction {
   readonly action: 'changeName'
   /**
+   *	JSON object where the keys are of type [Locale](ctp:api:type:Locale), and the values are the strings used for the corresponding language.
+   *
    *
    */
   readonly name: LocalizedString
@@ -1212,6 +1266,8 @@ export interface MyShoppingListChangeTextLineItemNameAction {
    */
   readonly textLineItemId: string
   /**
+   *	JSON object where the keys are of type [Locale](ctp:api:type:Locale), and the values are the strings used for the corresponding language.
+   *
    *
    */
   readonly name: LocalizedString
@@ -1299,6 +1355,8 @@ export interface MyShoppingListSetDeleteDaysAfterLastModificationAction {
 export interface MyShoppingListSetDescriptionAction {
   readonly action: 'setDescription'
   /**
+   *	JSON object where the keys are of type [Locale](ctp:api:type:Locale), and the values are the strings used for the corresponding language.
+   *
    *
    */
   readonly description?: LocalizedString
@@ -1392,6 +1450,8 @@ export interface MyShoppingListSetTextLineItemDescriptionAction {
    */
   readonly textLineItemId: string
   /**
+   *	JSON object where the keys are of type [Locale](ctp:api:type:Locale), and the values are the strings used for the corresponding language.
+   *
    *
    */
   readonly description?: LocalizedString

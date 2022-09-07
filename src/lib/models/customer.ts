@@ -14,7 +14,7 @@ export type AnonymousCartSignInMode = 'MergeWithExistingCustomerCart' | 'UseAsNe
 export type AuthenticationMode = 'ExternalAuth' | 'Password'
 export interface Customer extends BaseResource {
   /**
-   *	Platform-generated unique identifier of the Customer.
+   *	Unique identifier of the Customer.
    *
    */
   readonly id: string
@@ -159,7 +159,7 @@ export interface Customer extends BaseResource {
 }
 export interface CustomerChangePassword {
   /**
-   *	Platform-generated unique identifier of the Customer.
+   *	Unique identifier of the Customer.
    *
    */
   readonly id: string
@@ -178,7 +178,7 @@ export interface CustomerChangePassword {
 }
 export interface CustomerCreateEmailToken {
   /**
-   *	Platform-generated unique identifier of the email token.
+   *	Unique identifier of the email token.
    *
    */
   readonly id: string
@@ -333,7 +333,7 @@ export interface CustomerDraft {
    */
   readonly stores?: StoreResourceIdentifier[]
   /**
-   *	Defines whether a password is required for the Customer that is used for platform-internal authentication.
+   *	Defines whether a password field is a required field for the Customer.
    *
    */
   readonly authenticationMode?: AuthenticationMode
@@ -364,6 +364,8 @@ export interface CustomerPagedQueryResponse {
    */
   readonly total?: number
   /**
+   *	Number of [elements skipped](/../api/general-concepts#offset).
+   *
    *
    */
   readonly offset: number
@@ -373,13 +375,13 @@ export interface CustomerPagedQueryResponse {
   readonly results: Customer[]
 }
 /**
- *	[Reference](/../api/types#reference) to a [Customer](ctp:api:type:Customer).
+ *	[Reference](ctp:api:type:Reference) to a [Customer](ctp:api:type:Customer).
  *
  */
 export interface CustomerReference {
   readonly typeId: 'customer'
   /**
-   *	Platform-generated unique identifier of the referenced [Customer](ctp:api:type:Customer).
+   *	Unique identifier of the referenced [Customer](ctp:api:type:Customer).
    *
    *
    */
@@ -406,13 +408,13 @@ export interface CustomerResetPassword {
   readonly version?: number
 }
 /**
- *	[ResourceIdentifier](/../api/types#resourceidentifier) to a [Customer](ctp:api:type:Customer).
+ *	[ResourceIdentifier](ctp:api:type:ResourceIdentifier) to a [Customer](ctp:api:type:Customer).
  *
  */
 export interface CustomerResourceIdentifier {
   readonly typeId: 'customer'
   /**
-   *	Platform-generated unique identifier of the referenced [Customer](ctp:api:type:Customer). Either `id` or `key` is required.
+   *	Unique identifier of the referenced [Customer](ctp:api:type:Customer). Either `id` or `key` is required.
    *
    *
    */
@@ -450,7 +452,7 @@ export interface CustomerSignin {
    */
   readonly anonymousCartId?: string
   /**
-   *	[ResourceIdentifier](/../api/types#resourceidentifier) to a [Cart](ctp:api:type:Cart).
+   *	[ResourceIdentifier](ctp:api:type:ResourceIdentifier) to a [Cart](ctp:api:type:Cart).
    *
    *
    */
@@ -470,7 +472,7 @@ export interface CustomerSignin {
 }
 export interface CustomerToken {
   /**
-   *	Platform-generated unique identifier of the CustomerToken.
+   *	Unique identifier of the CustomerToken.
    *
    */
   readonly id: string
@@ -561,6 +563,24 @@ export interface MyCustomerResetPassword {
    */
   readonly newPassword: string
 }
+export interface MyCustomerSignin {
+  /**
+   *
+   */
+  readonly email: string
+  /**
+   *
+   */
+  readonly password: string
+  /**
+   *
+   */
+  readonly activeCartSignInMode?: AnonymousCartSignInMode
+  /**
+   *
+   */
+  readonly updateProductData?: boolean
+}
 export interface CustomerAddAddressAction {
   readonly action: 'addAddress'
   /**
@@ -593,6 +613,8 @@ export interface CustomerAddShippingAddressIdAction {
 export interface CustomerAddStoreAction {
   readonly action: 'addStore'
   /**
+   *	[ResourceIdentifier](/../api/types#resourceidentifier) to a [Store](ctp:api:type:Store).
+   *
    *
    */
   readonly store: StoreResourceIdentifier
@@ -655,6 +677,8 @@ export interface CustomerRemoveShippingAddressIdAction {
 export interface CustomerRemoveStoreAction {
   readonly action: 'removeStore'
   /**
+   *	[ResourceIdentifier](/../api/types#resourceidentifier) to a [Store](ctp:api:type:Store).
+   *
    *
    */
   readonly store: StoreResourceIdentifier

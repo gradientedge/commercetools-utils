@@ -152,7 +152,6 @@ export type ProjectUpdateAction =
   | ProjectChangeCurrenciesAction
   | ProjectChangeLanguagesAction
   | ProjectChangeMessagesConfigurationAction
-  | ProjectChangeMessagesEnabledAction
   | ProjectChangeNameAction
   | ProjectChangeOrderSearchStatusAction
   | ProjectChangeProductSearchIndexingEnabledAction
@@ -199,6 +198,12 @@ export interface SearchIndexingConfigurationValues {
   readonly lastModifiedBy?: LastModifiedBy
 }
 export type ShippingRateInputType = CartClassificationType | CartScoreType | CartValueType
+/**
+ *	Used when the ShippingRate maps to an abstract Cart categorization expressed by strings (for example, `Light`, `Medium`, or `Heavy`).
+ *	Only keys defined in the `values` array can be used to create a tier or to set a value of the `shippingRateInput` on the [Cart](ctp:api:type:Cart).
+ *	Keys must be unique.
+ *
+ */
 export interface CartClassificationType {
   readonly type: 'CartClassification'
   /**
@@ -207,9 +212,19 @@ export interface CartClassificationType {
    */
   readonly values: CustomFieldLocalizedEnumValue[]
 }
+/**
+ *	Used when the ShippingRate maps to an abstract Cart categorization expressed by integers (such as shipping scores or weight ranges).
+ *
+ */
 export interface CartScoreType {
   readonly type: 'CartScore'
 }
+/**
+ *	Used when the ShippingRate maps to the sum of [LineItem](ctp:api:type:LineItem) Prices.
+ *	The value of the Cart is used to select a tier.
+ *	If chosen, it is not possible to set a value for the `shippingRateInput` on the [Cart](ctp:api:type:Cart).
+ *
+ */
 export interface CartValueType {
   readonly type: 'CartValue'
 }
@@ -277,13 +292,6 @@ export interface ProjectChangeMessagesConfigurationAction {
    *
    */
   readonly messagesConfiguration: MessagesConfigurationDraft
-}
-export interface ProjectChangeMessagesEnabledAction {
-  readonly action: 'changeMessagesEnabled'
-  /**
-   *
-   */
-  readonly messagesEnabled: boolean
 }
 export interface ProjectChangeNameAction {
   readonly action: 'changeName'
