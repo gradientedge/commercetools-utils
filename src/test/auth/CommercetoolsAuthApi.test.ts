@@ -215,6 +215,7 @@ describe('CommercetoolsAuthApi', () => {
         expect(e).toBeInstanceOf(CommercetoolsError)
         expect(e.data?.[0]).toBeInstanceOf(CommercetoolsError)
         expect(e.data?.[0].data).toEqual({
+          code: 'ERR_BAD_RESPONSE',
           request: {
             data: {
               token: 'my-access-token',
@@ -262,6 +263,7 @@ describe('CommercetoolsAuthApi', () => {
         expect(e).toBeInstanceOf(CommercetoolsError)
         expect(e.data?.[0]).toBeInstanceOf(CommercetoolsError)
         expect(e.data?.[0].data).toEqual({
+          code: 'ERR_BAD_RESPONSE',
           request: {
             data: {
               token: 'my-access-token',
@@ -287,6 +289,7 @@ describe('CommercetoolsAuthApi', () => {
         })
         expect(e.data?.[1]).toBeInstanceOf(CommercetoolsError)
         expect(e.data?.[1].data).toEqual({
+          code: 'ERR_BAD_RESPONSE',
           request: {
             data: {
               token: 'my-refresh-token',
@@ -469,6 +472,7 @@ describe('CommercetoolsAuthApi', () => {
       } catch (error: any) {
         expect(error?.toJSON()).toEqual({
           data: {
+            code: 'ERR_BAD_RESPONSE',
             request: {
               data: {
                 grant_type: 'password',

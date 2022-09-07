@@ -76,7 +76,7 @@ import type {
 } from '../models'
 import { Status } from '@tshttp/status'
 
-export interface FetchOptions<T = Record<string, any>> {
+export interface FetchOptions<T = any> {
   /**
    * Path of the REST endpoint
    *
