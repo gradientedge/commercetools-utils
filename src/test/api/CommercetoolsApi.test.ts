@@ -3193,6 +3193,7 @@ describe('CommercetoolsApi', () => {
         } catch (error: any) {
           expect(error?.toJSON()).toEqual({
             data: {
+              code: 'ERR_BAD_RESPONSE',
               request: {
                 headers: {
                   Accept: 'application/json, text/plain, */*',
@@ -3243,6 +3244,7 @@ describe('CommercetoolsApi', () => {
         } catch (error: any) {
           expect(error?.toJSON()).toEqual({
             data: {
+              code: 'ERR_BAD_RESPONSE',
               request: {
                 data: {
                   email: 'test@test.com',
