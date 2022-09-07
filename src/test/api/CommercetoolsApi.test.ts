@@ -2775,6 +2775,155 @@ describe('CommercetoolsApi', () => {
     })
   })
 
+  describe('Standalone prices', () => {
+    describe('getStandalonePriceById', () => {
+      it('should make a GET request to the correct endpoint', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com')
+          .get('/test-project-key/standalone-prices/my-standalone-price-id')
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const product = await api.getStandalonePriceById({ id: 'my-standalone-price-id' })
+
+        expect(product).toEqual({ success: true })
+      })
+    })
+
+    describe('getStandalonePriceByKey', () => {
+      it('should make a GET request to the correct endpoint', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com')
+          .get('/test-project-key/standalone-prices/key=my-standalone-price-key')
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const product = await api.getStandalonePriceByKey({ key: 'my-standalone-price-key' })
+
+        expect(product).toEqual({ success: true })
+      })
+    })
+
+    describe('queryStandalonePrices', () => {
+      it('should make a GET request to the correct endpoint when no parameters are passed', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com', {
+          encodedQueryParams: true,
+        })
+          .get('/test-project-key/standalone-prices')
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const product = await api.queryStandalonePrices()
+
+        expect(product).toEqual({ success: true })
+      })
+
+      it('should make a GET request to the correct endpoint with the passed in parameters in the querystring', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com', {
+          encodedQueryParams: true,
+        })
+          .get('/test-project-key/standalone-prices?where=name(en%3D%22test%22)')
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const product = await api.queryStandalonePrices({
+          params: {
+            where: 'name(en="test")',
+          },
+        })
+
+        expect(product).toEqual({ success: true })
+      })
+    })
+
+    describe('createStandalonePrice', () => {
+      it('should make a POST request to the correct endpoint with all expected data and params', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com')
+          .post('/test-project-key/standalone-prices', {
+            key: 'test',
+            sku: 'test-sku',
+            value: {
+              centAmount: 1000,
+              currencyCode: 'GBP',
+            },
+          })
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const product = await api.createStandalonePrice({
+          data: {
+            key: 'test',
+            sku: 'test-sku',
+            value: {
+              centAmount: 1000,
+              currencyCode: 'GBP',
+            },
+          },
+        })
+
+        expect(product).toEqual({ success: true })
+      })
+    })
+
+    describe('updateStandalonePriceById', () => {
+      it('should make a POST request to the correct endpoint with all expected data and params', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com')
+          .post('/test-project-key/standalone-prices/my-standalone-price-id', { version: 1, actions: [] })
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const category = await api.updateStandalonePriceById({
+          id: 'my-standalone-price-id',
+          data: { version: 1, actions: [] },
+        })
+
+        expect(category).toEqual({ success: true })
+      })
+    })
+
+    describe('updateStandalonePriceByKey', () => {
+      it('should make a POST request to the correct endpoint with all expected data and params', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com')
+          .post('/test-project-key/standalone-prices/key=my-standalone-price-key', { version: 1, actions: [] })
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const category = await api.updateStandalonePriceByKey({
+          key: 'my-standalone-price-key',
+          data: { version: 1, actions: [] },
+        })
+
+        expect(category).toEqual({ success: true })
+      })
+    })
+
+    describe('deleteStandalonePriceById', () => {
+      it('should make a DELETE request to the correct endpoint with all expected data and params', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com')
+          .delete('/test-project-key/standalone-prices/my-standalone-price-id')
+          .query({ version: 3 })
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const category = await api.deleteStandalonePriceById({ id: 'my-standalone-price-id', version: 3 })
+
+        expect(category).toEqual({ success: true })
+      })
+    })
+
+    describe('deleteStandalonePriceByKey', () => {
+      it('should make a DELETE request to the correct endpoint with all expected data and params', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com')
+          .delete('/test-project-key/standalone-prices/key=my-standalone-price-key')
+          .query({ version: 4 })
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const category = await api.deleteStandalonePriceByKey({ key: 'my-standalone-price-key', version: 4 })
+
+        expect(category).toEqual({ success: true })
+      })
+    })
+  })
+
   describe('graphql', () => {
     it('should call the /graphql endpoint with the data passed in, using the client access token', async () => {
       nock('https://api.europe-west1.gcp.commercetools.com', {
