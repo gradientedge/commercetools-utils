@@ -43,4 +43,31 @@ export interface CommercetoolsBaseConfig {
    * identify the source of incoming requests.
    */
   systemIdentifier?: string
+
+  /**
+   * If provided, this function will be called just before every
+   * call to commercetools. If this function is asynchronous, it
+   * will not be waited on.
+   */
+  logFn?: Logger
+}
+
+/**
+ * Logger function interface
+ *
+ * Note that we do not expect an asynchronous function. If an asynchronous
+ * function is passed in, it will not be waited on.
+ */
+export interface Logger {
+  (options: LoggerParams): any
+}
+
+/**
+ * Structure of the object passed in to the logger function
+ */
+export interface LoggerParams {
+  url: string
+  params: any
+  method: string
+  headers?: Record<string, string | number | boolean>
 }

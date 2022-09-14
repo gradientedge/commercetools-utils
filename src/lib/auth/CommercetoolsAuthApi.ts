@@ -10,10 +10,21 @@ import { CommercetoolsError } from '../'
 import { scopeArrayToRequestString } from './scopes'
 import { REGION_URLS } from './constants'
 import { base64EncodeForBasicAuth } from './utils'
-import { RegionEndpoints } from '../types'
-import axios, { Method } from 'axios'
+import { Logger, RegionEndpoints } from '../types'
+import axios, { AxiosInstance, Method } from 'axios'
 import { DEFAULT_REQUEST_TIMEOUT_MS } from '../constants'
 import { buildUserAgent } from '../utils'
+
+/**
+ * The config options passed in to the {@see HttpsAgent.Agent} used
+ * with the axios instance that we create.
+ */
+const DEFAULT_HTTPS_AGENT_CONFIG = {
+  keepAlive: true,
+  maxSockets: 32,
+  maxFreeSockets: 10,
+  timeout: 60000,
+}
 
 /**
  * Provides an easy to use set of methods for communicating with the commercetools
@@ -39,10 +50,56 @@ export class CommercetoolsAuthApi {
    */
   private readonly userAgent: string
 
+  /**
+   * axios instance
+   */
+  private readonly axios: AxiosInstance
+
   constructor(config: CommercetoolsAuthApiConfig) {
     this.config = config
     this.endpoints = REGION_URLS[this.config.region]
     this.userAgent = buildUserAgent(this.config.systemIdentifier)
+    this.axios = this.createAxiosInstance({ logFn: config.logFn })
+  }
+
+  /**
+   * Define the base axios instance that forms the foundation
+   * of all axios calls made by the {@see request} method.
+   */
+  createAxiosInstance(options?: { logFn?: Logger | null | undefined }) {
+    let agent
+    try {
+      if (process.env.GECTU_IS_BROWSER !== '1') {
+        if (this.config.httpsAgent) {
+          agent = this.config.httpsAgent
+        } else {
+          const https = require('https')
+          agent = new https.Agent(DEFAULT_HTTPS_AGENT_CONFIG)
+        }
+      }
+    } catch (e) {}
+
+    const instance = axios.create({
+      timeout: this.config.timeoutMs || DEFAULT_REQUEST_TIMEOUT_MS,
+      httpsAgent: agent,
+    })
+    if (options?.logFn) {
+      instance.interceptors.request.use((config) => {
+        if (options.logFn) {
+          options.logFn({
+            url: config.url ?? '',
+            method: config.method as string,
+            params: config.params,
+            headers: config.headers,
+          })
+        }
+        return config
+      })
+    }
+    if (process.env.GECTU_IS_BROWSER !== '1') {
+      instance.defaults.headers.common['User-Agent'] = this.userAgent
+    }
+    return instance
   }
 
   /**
@@ -153,7 +210,7 @@ export class CommercetoolsAuthApi {
       headers['User-Agent'] = this.userAgent
     }
     try {
-      const response = await axios({
+      const response = await this.axios({
         ...options,
         headers,
         timeout: this.config.timeoutMs || DEFAULT_REQUEST_TIMEOUT_MS,

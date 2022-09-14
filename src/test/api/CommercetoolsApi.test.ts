@@ -1,7 +1,7 @@
 import nock from 'nock'
 import { CommercetoolsApi, CommercetoolsApiConfig, CommercetoolsError, Region } from '../../lib'
 import { CommercetoolsGrantResponse } from '../../lib/auth/types'
-import type { CustomerUpdateAction, ProductDraft, ProductUpdateAction } from '../../lib/models'
+import type { CustomerUpdateAction, ProductDraft, ProductUpdateAction } from '../../lib'
 import * as https from 'https'
 
 const defaultConfig: CommercetoolsApiConfig = {
@@ -3060,6 +3060,19 @@ describe('CommercetoolsApi', () => {
       const result = api.createAxiosInstance()
 
       expect(result.defaults.httpsAgent).toBeUndefined()
+    })
+
+    it('should set a request interceptor if a logger function is passed in', async () => {
+      nock('https://api.europe-west1.gcp.commercetools.com')
+        .get('/test-project-key/stores/my-store-id')
+        .reply(200, { success: true })
+      const mockLogFn = jest.fn()
+      const api = new CommercetoolsApi({ ...defaultConfig, logFn: mockLogFn })
+
+      await api.getStoreById({ id: 'my-store-id' })
+
+      // Once for the auth login, once to get the store
+      expect(mockLogFn).toHaveBeenCalledTimes(2)
     })
   })
 
