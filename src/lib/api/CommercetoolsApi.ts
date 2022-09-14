@@ -500,6 +500,18 @@ export class CommercetoolsApi {
   }
 
   /**
+   * Get channel by key:
+   * https://docs.commercetools.com/api/projects/channels#get-channel-by-key
+   */
+  getChannelByKey(options: CommonRequestOptions & { key: string }): Promise<Channel> {
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/channels/key=${options.key}`,
+      method: 'GET',
+    })
+  }
+
+  /**
    * Get an category by id or key. Either the id or the key must be provided.
    */
   getCategory(options: CommonRequestOptions & { id?: string; key?: string }): Promise<Category> {
