@@ -4,7 +4,7 @@ import { CommercetoolsApiConfig, CommercetoolsRetryConfig } from './types'
 import { CommercetoolsAuth, OrderFromCartDraft, PaymentDraft } from '../'
 import { CommercetoolsError } from '../error'
 import { REGION_URLS } from '../auth/constants'
-import { RegionEndpoints } from '../types'
+import { Logger, RegionEndpoints } from '../types'
 import { DEFAULT_REQUEST_TIMEOUT_MS } from '../constants'
 import { buildUserAgent, calculateDelay } from '../utils'
 import type {
@@ -280,7 +280,7 @@ export class CommercetoolsApi {
     this.auth = new CommercetoolsAuth(config)
     this.endpoints = REGION_URLS[this.config.region]
     this.userAgent = buildUserAgent(this.config.systemIdentifier)
-    this.axios = this.createAxiosInstance()
+    this.axios = this.createAxiosInstance({ logFn: config.logFn })
     this.retry = config.retry || DEFAULT_RETRY_CONFIG
   }
 
@@ -288,7 +288,7 @@ export class CommercetoolsApi {
    * Define the base axios instance that forms the foundation
    * of all axios calls made by the {@see request} method.
    */
-  createAxiosInstance() {
+  createAxiosInstance(options?: { logFn?: Logger | null | undefined }) {
     let agent
     try {
       if (process.env.GECTU_IS_BROWSER !== '1') {
@@ -308,6 +308,19 @@ export class CommercetoolsApi {
       },
       httpsAgent: agent,
     })
+    if (options?.logFn) {
+      instance.interceptors.request.use((config) => {
+        if (options.logFn) {
+          options.logFn({
+            url: config.url ?? '',
+            method: config.method as string,
+            params: config.params,
+            headers: config.headers,
+          })
+        }
+        return config
+      })
+    }
     if (process.env.GECTU_IS_BROWSER !== '1') {
       instance.defaults.headers.common['User-Agent'] = this.userAgent
     }
