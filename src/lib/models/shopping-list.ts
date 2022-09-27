@@ -194,6 +194,8 @@ export interface ShoppingListLineItem {
    */
   readonly quantity: number
   /**
+   *	A concrete sellable good for which inventory can be tracked. Product Variants are generally mapped to specific SKUs.
+   *
    *
    */
   readonly variant?: ProductVariant

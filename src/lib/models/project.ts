@@ -207,7 +207,7 @@ export type ShippingRateInputType = CartClassificationType | CartScoreType | Car
 export interface CartClassificationType {
   readonly type: 'CartClassification'
   /**
-   *	The classification items that can be used for specifiying any [ShippingRatePriceTier](ctp:api:type:ShippingRatePriceTier).
+   *	The classification items that can be used for specifying any [ShippingRatePriceTier](ctp:api:type:ShippingRatePriceTier).
    *
    */
   readonly values: CustomFieldLocalizedEnumValue[]
