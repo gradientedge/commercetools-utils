@@ -229,7 +229,15 @@ export type StateRoleEnum = 'Return' | 'ReviewIncludedInStatistics'
  *	Resource or object type the State can be assigned to.
  *
  */
-export type StateTypeEnum = 'LineItemState' | 'OrderState' | 'PaymentState' | 'ProductState' | 'ReviewState'
+export type StateTypeEnum =
+  | 'LineItemState'
+  | 'OrderState'
+  | 'PaymentState'
+  | 'ProductState'
+  | 'QuoteRequestState'
+  | 'QuoteState'
+  | 'ReviewState'
+  | 'StagedQuoteState'
 export interface StateUpdate {
   /**
    *	Expected version of the State on which the changes should be applied. If the expected version does not match the actual version, a [409 Conflict](/../api/errors#409-conflict) will be returned.

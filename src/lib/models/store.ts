@@ -137,13 +137,13 @@ export interface StoreDraft {
    */
   readonly languages?: string[]
   /**
-   *	ResourceIdentifier to a Channel with `ProductDistribution` [ChannelRoleEnum](ctp:api:type:ChannelRoleEnum).
+   *	ResourceIdentifier of a Channel with `ProductDistribution` [ChannelRoleEnum](ctp:api:type:ChannelRoleEnum).
    *
    *
    */
   readonly distributionChannels?: ChannelResourceIdentifier[]
   /**
-   *	ResourceIdentifier to a Channel with `InventorySupply` [ChannelRoleEnum](ctp:api:type:ChannelRoleEnum).
+   *	ResourceIdentifier of a Channel with `InventorySupply` [ChannelRoleEnum](ctp:api:type:ChannelRoleEnum).
    *
    *
    */
@@ -285,7 +285,7 @@ export type StoreUpdateAction =
   | StoreSetProductSelectionsAction
   | StoreSetSupplyChannelsAction
 /**
- *	This update action produces the [StoreDistributionChannelsChangedMessage](ctp:api:type:StoreDistributionChannelsChangedMessage).
+ *	This update action produces the [StoreDistributionChannelsChanged](ctp:api:type:StoreDistributionChannelsChangedMessage) Message.
  *	It has no effect if a given distribution channel is already present in a Store.
  *
  */
@@ -349,7 +349,7 @@ export interface StoreChangeProductSelectionAction {
   readonly active?: boolean
 }
 /**
- *	This update action produces the [StoreDistributionChannelsChangedMessage](ctp:api:type:StoreDistributionChannelsChangedMessage).
+ *	This update action produces the [StoreDistributionChannelsChanged](ctp:api:type:StoreDistributionChannelsChangedMessage) Message.
  *
  */
 export interface StoreRemoveDistributionChannelAction {
@@ -417,7 +417,7 @@ export interface StoreSetCustomTypeAction {
   readonly fields?: FieldContainer
 }
 /**
- *	This update action produces the [StoreDistributionChannelsChangedMessage](ctp:api:type:StoreDistributionChannelsChangedMessage).
+ *	This update action produces the [StoreDistributionChannelsChanged](ctp:api:type:StoreDistributionChannelsChangedMessage) Message.
  *
  */
 export interface StoreSetDistributionChannelsAction {
@@ -431,6 +431,10 @@ export interface StoreSetDistributionChannelsAction {
    */
   readonly distributionChannels?: ChannelResourceIdentifier[]
 }
+/**
+ *	This update action produces the [StoreLanguagesChanged](ctp:api:type:StoreLanguagesChangedMessage) Message.
+ *
+ */
 export interface StoreSetLanguagesAction {
   readonly action: 'setLanguages'
   /**
@@ -441,6 +445,10 @@ export interface StoreSetLanguagesAction {
    */
   readonly languages?: string[]
 }
+/**
+ *	This update action produces the [StoreNameSet](ctp:api:type:StoreNameSetMessage) Message.
+ *
+ */
 export interface StoreSetNameAction {
   readonly action: 'setName'
   /**
