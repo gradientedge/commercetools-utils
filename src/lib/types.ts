@@ -70,4 +70,5 @@ export interface LoggerParams {
   params: any
   method: string
   headers?: Record<string, string | number | boolean>
+  data?: any
 }

@@ -322,6 +322,7 @@ export class CommercetoolsApi {
             method: config.method as string,
             params: config.params,
             headers: config.headers,
+            data: config.data,
           })
         }
         return config
@@ -2281,6 +2282,7 @@ export class CommercetoolsApi {
 
     do {
       if (retryCount > 0) {
+        requestConfig.headers['X-Retry-Count'] = retryCount
         const delay = calculateDelay(retryCount, retryConfig)
         await new Promise((resolve) => setTimeout(resolve, delay))
       }
