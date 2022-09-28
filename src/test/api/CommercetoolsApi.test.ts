@@ -3196,6 +3196,7 @@ describe('CommercetoolsApi', () => {
             .reply(500)
           const scope2 = nock('https://api.europe-west1.gcp.commercetools.com')
             .get('/test-project-key/products/key=my-product-key')
+            .matchHeader('X-Retry-Count', '1')
             .reply(200, { success: true })
           const api = new CommercetoolsApi({
             ...defaultConfig,
@@ -3221,9 +3222,11 @@ describe('CommercetoolsApi', () => {
             .reply(500)
           const scope2 = nock('https://api.europe-west1.gcp.commercetools.com')
             .get('/test-project-key/products/key=my-product-key')
+            .matchHeader('X-Retry-Count', '1')
             .reply(500)
           const scope3 = nock('https://api.europe-west1.gcp.commercetools.com')
             .get('/test-project-key/products/key=my-product-key')
+            .matchHeader('X-Retry-Count', '2')
             .reply(200, { success: true })
           const api = new CommercetoolsApi({
             ...defaultConfig,
@@ -3250,6 +3253,7 @@ describe('CommercetoolsApi', () => {
             .reply(500)
           const scope2 = nock('https://api.europe-west1.gcp.commercetools.com')
             .get('/test-project-key/products/key=my-product-key')
+            .matchHeader('X-Retry-Count', '1')
             .reply(200, { success: true })
 
           const api = new CommercetoolsApi({
@@ -3316,12 +3320,15 @@ describe('CommercetoolsApi', () => {
             .reply(500)
           const scope2 = nock('https://api.europe-west1.gcp.commercetools.com')
             .get('/test-project-key/products/key=my-product-key')
+            .matchHeader('X-Retry-Count', '1')
             .reply(500)
           const scope3 = nock('https://api.europe-west1.gcp.commercetools.com')
             .get('/test-project-key/products/key=my-product-key')
+            .matchHeader('X-Retry-Count', '2')
             .reply(500)
           const scope4 = nock('https://api.europe-west1.gcp.commercetools.com')
             .get('/test-project-key/products/key=my-product-key')
+            .matchHeader('X-Retry-Count', '3')
             .reply(200, { success: true })
 
           const api = new CommercetoolsApi({
