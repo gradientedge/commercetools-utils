@@ -322,6 +322,7 @@ export class CommercetoolsApi {
             method: config.method as string,
             params: config.params,
             headers: config.headers,
+            data: config.data,
           })
         }
         return config
