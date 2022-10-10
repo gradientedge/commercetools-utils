@@ -2428,6 +2428,24 @@ describe('CommercetoolsApi', () => {
         expect(order).toEqual({ success: true })
       })
     })
+
+    describe('queryTypes', () => {
+      it('should make a GET request to the correct endpoint', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com', {
+          reqheaders: {
+            authorization: 'Bearer test-access-token',
+          },
+        })
+          .get('/test-project-key/types')
+          .query({ limit: 10 })
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const order = await api.queryTypes({ params: { limit: 10 } })
+
+        expect(order).toEqual({ success: true })
+      })
+    })
   })
 
   describe('Discount Codes', () => {
