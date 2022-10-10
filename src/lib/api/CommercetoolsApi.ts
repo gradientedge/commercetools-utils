@@ -1,7 +1,7 @@
 import axios, { AxiosInstance } from 'axios'
 import qs from 'qs'
 import { CommercetoolsApiConfig, CommercetoolsRetryConfig } from './types'
-import { CommercetoolsAuth, OrderFromCartDraft, PaymentDraft } from '../'
+import { CommercetoolsAuth, OrderFromCartDraft, PaymentDraft, TypePagedQueryResponse } from '../'
 import { CommercetoolsError } from '../error'
 import { REGION_URLS } from '../auth/constants'
 import { Logger, RegionEndpoints } from '../types'
@@ -1818,6 +1818,18 @@ export class CommercetoolsApi {
     return this.request({
       ...this.extractCommonRequestOptions(options),
       path: `/types/key=${options.key}`,
+      method: 'GET',
+    })
+  }
+
+  /**
+   * Query types:
+   * https://docs.commercetools.com/api/projects/types#query-types
+   */
+  queryTypes(options: CommonRequestOptions): Promise<TypePagedQueryResponse> {
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/types`,
       method: 'GET',
     })
   }
