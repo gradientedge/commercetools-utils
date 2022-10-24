@@ -237,13 +237,32 @@ describe('CommercetoolsApi', () => {
     describe('getChannelByKey', () => {
       it('should make a GET request to the correct endpoint', async () => {
         nock('https://api.europe-west1.gcp.commercetools.com')
-          .get('/test-project-key/channels/key=my-channel-key')
-          .reply(200, { success: true })
+          .get('/test-project-key/channels')
+          .query({ limit: 1, where: 'key="my-channel-key"' })
+          .reply(200, {
+            count: 1,
+            results: [{ key: 'my-channel-key' }],
+          })
         const api = new CommercetoolsApi(defaultConfig)
 
         const channel = await api.getChannelByKey({ key: 'my-channel-key' })
 
-        expect(channel).toEqual({ success: true })
+        expect(channel).toEqual({ key: 'my-channel-key' })
+      })
+
+      it('should throw an error when the channel does not exist', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com')
+          .get('/test-project-key/channels')
+          .query({ limit: 1, where: 'key="my-channel-key"' })
+          .reply(200, {
+            count: 0,
+            results: [],
+          })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        await expect(api.getChannelByKey({ key: 'my-channel-key' })).rejects.toThrow(
+          'No channel found with key [my-channel-key]',
+        )
       })
     })
 
