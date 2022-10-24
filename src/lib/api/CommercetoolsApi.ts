@@ -504,12 +504,20 @@ export class CommercetoolsApi {
    * Get channel by key:
    * https://docs.commercetools.com/api/projects/channels#get-channel-by-key
    */
-  getChannelByKey(options: CommonRequestOptions & { key: string }): Promise<Channel> {
-    return this.request({
+  async getChannelByKey(options: CommonRequestOptions & { key: string }): Promise<Channel> {
+    const response = await this.request<any, ChannelPagedQueryResponse>({
       ...this.extractCommonRequestOptions(options),
-      path: `/channels/key=${options.key}`,
+      path: `/channels`,
       method: 'GET',
+      params: {
+        where: `key="${options.key}"`,
+        limit: 1,
+      },
     })
+    if (!response?.count) {
+      throw new CommercetoolsError(`No channel found with key [${options.key}]`, null, 404)
+    }
+    return response.results[0]
   }
 
   /**
