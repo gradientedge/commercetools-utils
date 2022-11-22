@@ -63,28 +63,6 @@ export interface Payment extends BaseResource {
    */
   readonly amountPlanned: TypedMoney
   /**
-   *	Base polymorphic read-only Money type which is stored in cent precision or high precision. The actual type is determined by the `type` field.
-   *
-   *
-   */
-  readonly amountAuthorized?: TypedMoney
-  /**
-   *
-   */
-  readonly authorizedUntil?: string
-  /**
-   *	Base polymorphic read-only Money type which is stored in cent precision or high precision. The actual type is determined by the `type` field.
-   *
-   *
-   */
-  readonly amountPaid?: TypedMoney
-  /**
-   *	Base polymorphic read-only Money type which is stored in cent precision or high precision. The actual type is determined by the `type` field.
-   *
-   *
-   */
-  readonly amountRefunded?: TypedMoney
-  /**
    *
    */
   readonly paymentMethodInfo: PaymentMethodInfo
@@ -143,34 +121,6 @@ export interface PaymentDraft {
    *
    */
   readonly amountPlanned: Money
-  /**
-   *	Draft type that stores amounts in cent precision for the specified currency.
-   *
-   *	For storing money values in fractions of the minor unit in a currency, use [HighPrecisionMoneyDraft](ctp:api:type:HighPrecisionMoneyDraft) instead.
-   *
-   *
-   */
-  readonly amountAuthorized?: Money
-  /**
-   *
-   */
-  readonly authorizedUntil?: string
-  /**
-   *	Draft type that stores amounts in cent precision for the specified currency.
-   *
-   *	For storing money values in fractions of the minor unit in a currency, use [HighPrecisionMoneyDraft](ctp:api:type:HighPrecisionMoneyDraft) instead.
-   *
-   *
-   */
-  readonly amountPaid?: Money
-  /**
-   *	Draft type that stores amounts in cent precision for the specified currency.
-   *
-   *	For storing money values in fractions of the minor unit in a currency, use [HighPrecisionMoneyDraft](ctp:api:type:HighPrecisionMoneyDraft) instead.
-   *
-   *
-   */
-  readonly amountRefunded?: Money
   /**
    *
    */
@@ -337,10 +287,7 @@ export type PaymentUpdateAction =
   | PaymentChangeTransactionInteractionIdAction
   | PaymentChangeTransactionStateAction
   | PaymentChangeTransactionTimestampAction
-  | PaymentSetAmountPaidAction
-  | PaymentSetAmountRefundedAction
   | PaymentSetAnonymousIdAction
-  | PaymentSetAuthorizationAction
   | PaymentSetCustomFieldAction
   | PaymentSetCustomTypeAction
   | PaymentSetCustomerAction
@@ -485,28 +432,6 @@ export interface PaymentChangeTransactionTimestampAction {
    */
   readonly timestamp: string
 }
-export interface PaymentSetAmountPaidAction {
-  readonly action: 'setAmountPaid'
-  /**
-   *	Draft type that stores amounts in cent precision for the specified currency.
-   *
-   *	For storing money values in fractions of the minor unit in a currency, use [HighPrecisionMoneyDraft](ctp:api:type:HighPrecisionMoneyDraft) instead.
-   *
-   *
-   */
-  readonly amount?: Money
-}
-export interface PaymentSetAmountRefundedAction {
-  readonly action: 'setAmountRefunded'
-  /**
-   *	Draft type that stores amounts in cent precision for the specified currency.
-   *
-   *	For storing money values in fractions of the minor unit in a currency, use [HighPrecisionMoneyDraft](ctp:api:type:HighPrecisionMoneyDraft) instead.
-   *
-   *
-   */
-  readonly amount?: Money
-}
 export interface PaymentSetAnonymousIdAction {
   readonly action: 'setAnonymousId'
   /**
@@ -515,21 +440,6 @@ export interface PaymentSetAnonymousIdAction {
    *
    */
   readonly anonymousId?: string
-}
-export interface PaymentSetAuthorizationAction {
-  readonly action: 'setAuthorization'
-  /**
-   *	Draft type that stores amounts in cent precision for the specified currency.
-   *
-   *	For storing money values in fractions of the minor unit in a currency, use [HighPrecisionMoneyDraft](ctp:api:type:HighPrecisionMoneyDraft) instead.
-   *
-   *
-   */
-  readonly amount?: Money
-  /**
-   *
-   */
-  readonly until?: string
 }
 export interface PaymentSetCustomFieldAction {
   readonly action: 'setCustomField'
