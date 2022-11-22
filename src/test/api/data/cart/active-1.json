@@ -1,10 +1,10 @@
 {
   "type": "Cart",
   "id": "20a8f975-b075-4fa7-9a01-c9487154adff",
-  "version": 4,
+  "version": 5,
   "lastMessageSequenceNumber": 1,
   "createdAt": "2021-03-09T13:08:56.074Z",
-  "lastModifiedAt": "2021-03-09T13:08:56.074Z",
+  "lastModifiedAt": "2022-11-22T13:08:56.074Z",
   "lastModifiedBy": {
     "clientId": "LSxMG_vL5uJu3deOe_42exHm",
     "isPlatformClient": false,
