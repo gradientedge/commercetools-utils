@@ -83,7 +83,7 @@ export class CommercetoolsAuth {
    * requests need to wait on an existing client grant request to complete
    * before they can start to be processed.
    */
-  private grantPromise: Promise<any> = Promise.resolve()
+  private grantPromise: Promise<any> | null = null
 
   /**
    * The {@see CommercetoolsAuthApi} handles the actual sending of the request
@@ -115,24 +115,30 @@ export class CommercetoolsAuth {
    * locally and then return that cached version up until it needs to be renewed.
    */
   public async getClientGrant(): Promise<CommercetoolsGrant> {
-    await this.grantPromise
+    if (this.grantPromise) {
+      return this.grantPromise
+    }
 
     if (this.grant && !this.grant.expiresWithin(this.config.refreshIfWithinSecs)) {
       return this.grant
     }
 
-    this.grantPromise = this.api.getClientGrant(this.config.clientScopes)
-    this.grant = new CommercetoolsGrant(await this.grantPromise)
-
-    return this.grant
+    this.grantPromise = this.api
+      .getClientGrant(this.config.clientScopes)
+      .then((grant) => {
+        this.grant = new CommercetoolsGrant(grant)
+        return this.grant
+      })
+      .finally(() => {
+        this.grantPromise = null
+      })
+    return this.grantPromise
   }
 
   /**
    * Refresh the customer's grant given a refresh token
    */
   public async refreshCustomerGrant(refreshToken: string): Promise<CommercetoolsGrant> {
-    await this.getClientGrant()
-
     const data = await this.api.refreshGrant(refreshToken)
     return new CommercetoolsGrant({ ...data, refresh_token: refreshToken })
   }
