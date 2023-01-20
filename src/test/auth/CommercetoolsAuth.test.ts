@@ -156,6 +156,31 @@ describe('CommercetoolsAuth', () => {
       })
       clock.uninstall()
     })
+
+    it('should wait on a single promise when two requests are made at the same time', async () => {
+      const clock = FakeTimers.install({ now: new Date('2020-01-01T09:35:23.000') })
+      const auth = new CommercetoolsAuth(defaultConfig)
+      const scope1 = nockGetClientGrant()
+
+      const [token1, token2] = await Promise.all([auth.getClientGrant(), auth.getClientGrant()])
+
+      scope1.isDone()
+      expect(token1).toEqual({
+        accessToken: 'test-access-token',
+        scopes: ['scope1', 'scope2', 'scope3'],
+        expiresIn: 172800,
+        expiresAt: new Date(1578044123000),
+        customerId: '123456',
+      })
+      expect(token2).toEqual({
+        accessToken: 'test-access-token',
+        scopes: ['scope1', 'scope2', 'scope3'],
+        expiresIn: 172800,
+        expiresAt: new Date(1578044123000),
+        customerId: '123456',
+      })
+      clock.uninstall()
+    })
   })
 
   describe('refreshCustomerGrant', () => {
