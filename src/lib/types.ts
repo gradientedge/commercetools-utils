@@ -66,9 +66,18 @@ export interface Logger {
  * Structure of the object passed in to the logger function
  */
 export interface LoggerParams {
-  url: string
-  params: any
-  method: string
-  headers?: Record<string, string | number | boolean>
-  data?: any
+  request: {
+    url: string
+    method: string
+    params?: Record<string, string | number | boolean>
+    headers?: Record<string, string | number | boolean>
+    data?: any
+  }
+  response: {
+    code?: string | undefined
+    message?: string | undefined
+    status?: number
+    headers?: Record<string, string | number | boolean>
+    data?: any
+  }
 }

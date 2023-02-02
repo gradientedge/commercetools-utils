@@ -3,6 +3,7 @@ import { CommercetoolsApi, CommercetoolsApiConfig, CommercetoolsError, Region } 
 import { CommercetoolsGrantResponse } from '../../lib/auth/types'
 import type { CustomerUpdateAction, ProductDraft, ProductUpdateAction } from '../../lib'
 import * as https from 'https'
+import { Status } from '@tshttp/status'
 
 const defaultConfig: CommercetoolsApiConfig = {
   projectKey: 'test-project-key',
@@ -3112,7 +3113,7 @@ describe('CommercetoolsApi', () => {
       expect(result.defaults.httpsAgent).toBeUndefined()
     })
 
-    it('should set a request interceptor if a logger function is passed in', async () => {
+    it('should set a response interceptor if a logger function is passed in', async () => {
       nock('https://api.europe-west1.gcp.commercetools.com')
         .get('/test-project-key/stores/my-store-id')
         .reply(200, { success: true })
@@ -3121,8 +3122,127 @@ describe('CommercetoolsApi', () => {
 
       await api.getStoreById({ id: 'my-store-id' })
 
-      // Once for the auth login, once to get the store
       expect(mockLogFn).toHaveBeenCalledTimes(2)
+    })
+
+    it('should send the correct data to the response interceptor in the event of an HTTP error', async () => {
+      nock('https://api.europe-west1.gcp.commercetools.com')
+        .get('/test-project-key/stores/my-store-id')
+        .reply(400, { success: false })
+      const mockLogFn = jest.fn()
+      const api = new CommercetoolsApi({ ...defaultConfig, logFn: mockLogFn })
+
+      await expect(api.getStoreById({ id: 'my-store-id' })).rejects.toThrow('Request failed with status code 400')
+
+      expect(mockLogFn).toHaveBeenCalledTimes(2) // Auth login + get store call
+      expect(mockLogFn).toHaveBeenNthCalledWith(1, {
+        request: {
+          data: 'grant_type=client_credentials&scope=defaultClientScope1%3Atest-project-key',
+          headers: {
+            accept: 'application/json, text/plain, */*',
+            authorization: 'Basic dGVzdC1jbGllbnQtaWQ6dGVzdC1jbGllbnQtc2VjcmV0',
+            'content-length': 74,
+            'content-type': 'application/x-www-form-urlencoded',
+            host: 'auth.europe-west1.gcp.commercetools.com',
+            'user-agent': '@gradientedge/commercetools-utils',
+          },
+          method: 'post',
+          url: 'https://auth.europe-west1.gcp.commercetools.com/oauth/token',
+        },
+        response: {
+          data: {
+            access_token: 'test-access-token',
+            expires_in: 172800,
+            refresh_token: 'test-refresh-token',
+            scope: 'scope1:test-project-key scope2:test-project-key scope3:test-project-key customer_id:123456',
+          },
+          headers: {
+            'content-type': 'application/json',
+          },
+          status: 200,
+        },
+      })
+      expect(mockLogFn).toHaveBeenNthCalledWith(2, {
+        request: {
+          url: 'https://api.europe-west1.gcp.commercetools.com/test-project-key/stores/my-store-id',
+          method: 'get',
+          headers: {
+            accept: 'application/json, text/plain, */*',
+            authorization: 'Bearer test-access-token',
+            host: 'api.europe-west1.gcp.commercetools.com',
+            'user-agent': '@gradientedge/commercetools-utils',
+          },
+        },
+        response: {
+          code: 'ERR_BAD_REQUEST',
+          status: 400,
+          data: {
+            success: false,
+          },
+          headers: {
+            'content-type': 'application/json',
+          },
+        },
+      })
+    })
+
+    it('should log a retryable error request/response followed by a successful request/response', async () => {
+      nock('https://api.europe-west1.gcp.commercetools.com')
+        .get('/test-project-key/stores/my-store-id')
+        .reply(Status.GatewayTimeout, { success: false })
+      nock('https://api.europe-west1.gcp.commercetools.com')
+        .get('/test-project-key/stores/my-store-id')
+        .reply(200, { success: true })
+      const mockLogFn = jest.fn()
+      const api = new CommercetoolsApi({ ...defaultConfig, retry: { maxRetries: 1, delayMs: 1 }, logFn: mockLogFn })
+
+      await api.getStoreById({ id: 'my-store-id' })
+
+      expect(mockLogFn).toHaveBeenCalledTimes(3) // Auth login + get store call
+      expect(mockLogFn).toHaveBeenNthCalledWith(2, {
+        request: {
+          url: 'https://api.europe-west1.gcp.commercetools.com/test-project-key/stores/my-store-id',
+          method: 'get',
+          headers: {
+            accept: 'application/json, text/plain, */*',
+            authorization: 'Bearer test-access-token',
+            host: 'api.europe-west1.gcp.commercetools.com',
+            'user-agent': '@gradientedge/commercetools-utils',
+          },
+        },
+        response: {
+          code: 'ERR_BAD_RESPONSE',
+          status: 504,
+          data: {
+            success: false,
+          },
+          headers: {
+            'content-type': 'application/json',
+          },
+        },
+      })
+      expect(mockLogFn).toHaveBeenNthCalledWith(3, {
+        request: {
+          url: 'https://api.europe-west1.gcp.commercetools.com/test-project-key/stores/my-store-id',
+          method: 'get',
+          headers: {
+            accept: 'application/json, text/plain, */*',
+            authorization: 'Bearer test-access-token',
+            host: 'api.europe-west1.gcp.commercetools.com',
+            'user-agent': '@gradientedge/commercetools-utils',
+            'x-retry-count': 1,
+          },
+        },
+        response: {
+          status: 200,
+          data: {
+            success: true,
+          },
+          headers: {
+            'content-type': 'application/json',
+          },
+        },
+      })
     })
   })
 
