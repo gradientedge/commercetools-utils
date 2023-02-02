@@ -66,6 +66,10 @@ import type {
   ProductUpdate,
   ShippingMethod,
   ShippingMethodPagedQueryResponse,
+  StandalonePrice,
+  StandalonePriceDraft,
+  StandalonePricePagedQueryResponse,
+  StandalonePriceUpdate,
   State,
   StatePagedQueryResponse,
   Store,
@@ -75,12 +79,7 @@ import type {
   Type,
 } from '../models'
 import { Status } from '@tshttp/status'
-import {
-  StandalonePrice,
-  StandalonePriceDraft,
-  StandalonePricePagedQueryResponse,
-  StandalonePriceUpdate,
-} from '../models/standalone-price'
+import { applyLoggerInterceptor } from '../axios/interceptors/logger'
 
 export interface FetchOptions<T = any> {
   /**
@@ -315,18 +314,7 @@ export class CommercetoolsApi {
       httpsAgent: agent,
     })
     if (options?.logFn) {
-      instance.interceptors.request.use((config) => {
-        if (options.logFn) {
-          options.logFn({
-            url: config.url ?? '',
-            method: config.method as string,
-            params: config.params,
-            headers: config.headers,
-            data: config.data,
-          })
-        }
-        return config
-      })
+      applyLoggerInterceptor(instance, options.logFn)
     }
     if (process.env.GECTU_IS_BROWSER !== '1') {
       instance.defaults.headers.common['User-Agent'] = this.userAgent

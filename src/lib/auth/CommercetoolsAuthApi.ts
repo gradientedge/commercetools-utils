@@ -14,6 +14,7 @@ import { Logger, RegionEndpoints } from '../types'
 import axios, { AxiosInstance, Method } from 'axios'
 import { DEFAULT_REQUEST_TIMEOUT_MS } from '../constants'
 import { buildUserAgent } from '../utils'
+import { applyLoggerInterceptor } from '../axios/interceptors/logger'
 
 /**
  * The config options passed in to the {@see HttpsAgent.Agent} used
@@ -84,17 +85,7 @@ export class CommercetoolsAuthApi {
       httpsAgent: agent,
     })
     if (options?.logFn) {
-      instance.interceptors.request.use((config) => {
-        if (options.logFn) {
-          options.logFn({
-            url: config.url ?? '',
-            method: config.method as string,
-            params: config.params,
-            headers: config.headers,
-          })
-        }
-        return config
-      })
+      applyLoggerInterceptor(instance, options.logFn)
     }
     if (process.env.GECTU_IS_BROWSER !== '1') {
       instance.defaults.headers.common['User-Agent'] = this.userAgent
