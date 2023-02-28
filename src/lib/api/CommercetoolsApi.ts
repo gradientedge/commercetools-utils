@@ -1,7 +1,13 @@
 import axios, { AxiosInstance } from 'axios'
 import qs from 'qs'
 import { CommercetoolsApiConfig, CommercetoolsRetryConfig } from './types'
-import { CommercetoolsAuth, OrderFromCartDraft, PaymentDraft, TypePagedQueryResponse } from '../'
+import {
+  CommercetoolsAuth,
+  OrderFromCartDraft,
+  PaymentDraft,
+  ProductTypePagedQueryResponse,
+  TypePagedQueryResponse,
+} from '../'
 import { CommercetoolsError } from '../error'
 import { REGION_URLS } from '../auth/constants'
 import { Logger, RegionEndpoints } from '../types'
@@ -1790,6 +1796,18 @@ export class CommercetoolsApi {
     return this.request({
       ...this.extractCommonRequestOptions(options),
       path: `/product-types/key=${options.key}`,
+      method: 'GET',
+    })
+  }
+
+  /**
+   * Query product types:
+   * https://docs.commercetools.com/api/projects/productTypes#query-producttypes
+   */
+  queryProductTypes(options: CommonRequestOptions): Promise<ProductTypePagedQueryResponse> {
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/product-types`,
       method: 'GET',
     })
   }

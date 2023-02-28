@@ -2412,6 +2412,24 @@ describe('CommercetoolsApi', () => {
         expect(order).toEqual({ success: true })
       })
     })
+
+    describe('queryProductTypes', () => {
+      it('should make a GET request to the correct endpoint', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com', {
+          reqheaders: {
+            authorization: 'Bearer test-access-token',
+          },
+        })
+          .get('/test-project-key/product-types')
+          .query({ where: 'name="test"' })
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const order = await api.queryProductTypes({ params: { where: 'name="test"' } })
+
+        expect(order).toEqual({ success: true })
+      })
+    })
   })
 
   describe('Types', () => {
