@@ -9,7 +9,7 @@ import { CommercetoolsError } from '../error'
  *
  * @param {string} input The string that you want to format as a key
  */
-export function formatAsKey(input: unknown) {
+export function formatAsKey(input: unknown): string {
   let output = ''
 
   if (typeof input !== 'string') {

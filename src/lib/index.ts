@@ -1,7 +1,7 @@
 export * from './error'
 export * from './auth'
 export * from './api'
-export { Region, RegionEndpoints, Logger, LoggerParams } from './types'
+export { Region, RegionEndpoints, CommercetoolsRequest, CommercetoolsRequestResponse } from './types'
 export * from './utils'
 
 export * from './models'

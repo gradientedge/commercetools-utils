@@ -2,6 +2,7 @@ import nock from 'nock'
 import { CommercetoolsError, Region } from '../../lib'
 import { CommercetoolsAuthApi } from '../../lib/auth/CommercetoolsAuthApi'
 import { CommercetoolsGrantResponse } from '../../lib/auth/types'
+import assert = require('assert')
 
 const defaultConfig = {
   projectKey: 'test-project-key',
@@ -222,14 +223,16 @@ describe('CommercetoolsAuthApi', () => {
               token_type_hint: 'access_token',
             },
             headers: {
-              Accept: 'application/json, text/plain, */*',
-              Authorization: '********',
-              'Content-Length': 50,
-              'Content-Type': 'application/x-www-form-urlencoded',
-              'User-Agent': '@gradientedge/commercetools-utils',
+              accept: 'application/json, text/plain, */*',
+              'accept-encoding': 'gzip, compress, deflate, br',
+              authorization: '********',
+              'content-length': '50',
+              'content-type': 'application/x-www-form-urlencoded',
+              'user-agent': '@gradientedge/commercetools-utils',
             },
             method: 'post',
             url: 'https://auth.us-east-2.aws.commercetools.com/oauth/token/revoke',
+            params: undefined,
           },
           response: {
             data: {},
@@ -270,14 +273,16 @@ describe('CommercetoolsAuthApi', () => {
               token_type_hint: 'access_token',
             },
             headers: {
-              Accept: 'application/json, text/plain, */*',
-              Authorization: '********',
-              'Content-Length': 50,
-              'Content-Type': 'application/x-www-form-urlencoded',
-              'User-Agent': '@gradientedge/commercetools-utils',
+              accept: 'application/json, text/plain, */*',
+              'accept-encoding': 'gzip, compress, deflate, br',
+              authorization: '********',
+              'content-length': '50',
+              'content-type': 'application/x-www-form-urlencoded',
+              'user-agent': '@gradientedge/commercetools-utils',
             },
             method: 'post',
             url: 'https://auth.us-east-2.aws.commercetools.com/oauth/token/revoke',
+            params: undefined,
           },
           response: {
             data: {},
@@ -296,11 +301,12 @@ describe('CommercetoolsAuthApi', () => {
               token_type_hint: 'refresh_token',
             },
             headers: {
-              Accept: 'application/json, text/plain, */*',
-              Authorization: '********',
-              'Content-Length': 52,
-              'Content-Type': 'application/x-www-form-urlencoded',
-              'User-Agent': '@gradientedge/commercetools-utils',
+              accept: 'application/json, text/plain, */*',
+              'accept-encoding': 'gzip, compress, deflate, br',
+              authorization: '********',
+              'content-length': '52',
+              'content-type': 'application/x-www-form-urlencoded',
+              'user-agent': '@gradientedge/commercetools-utils',
             },
             method: 'post',
             url: 'https://auth.us-east-2.aws.commercetools.com/oauth/token/revoke',
@@ -403,9 +409,9 @@ describe('CommercetoolsAuthApi', () => {
             code: 'ECONNABORTED',
             request: {
               headers: {
-                Authorization: '********',
-                'Content-Type': 'application/x-www-form-urlencoded',
-                'User-Agent': '@gradientedge/commercetools-utils',
+                authorization: '********',
+                'content-type': 'application/x-www-form-urlencoded',
+                'user-agent': '@gradientedge/commercetools-utils',
               },
               method: 'post',
               url: 'https://auth.us-east-2.aws.commercetools.com/oauth/token',
@@ -417,7 +423,7 @@ describe('CommercetoolsAuthApi', () => {
         return
       }
 
-      fail('auth.getClientGrant should have thrown due to timeout')
+      assert.fail('auth.getClientGrant should have thrown due to timeout')
     })
   })
 
@@ -481,18 +487,19 @@ describe('CommercetoolsAuthApi', () => {
                 username: 'jimmy@gradientedge.com',
               },
               headers: {
-                Accept: 'application/json, text/plain, */*',
-                Authorization: '********',
-                'Content-Length': 128,
-                'Content-Type': 'application/x-www-form-urlencoded',
-                'User-Agent': '@gradientedge/commercetools-utils',
+                accept: 'application/json, text/plain, */*',
+                'accept-encoding': 'gzip, compress, deflate, br',
+                authorization: '********',
+                'content-length': '128',
+                'content-type': 'application/x-www-form-urlencoded',
+                'user-agent': '@gradientedge/commercetools-utils',
               },
               method: 'post',
               url: 'https://auth.us-east-2.aws.commercetools.com/oauth/test-project-key/customers/token',
+              params: undefined,
             },
             response: {
               data: '',
-              headers: {},
               status: 500,
             },
           },

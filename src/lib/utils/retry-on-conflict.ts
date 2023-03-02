@@ -23,7 +23,7 @@ export interface RetryOnConflictParams<T = any> {
    * with a status code of 409. These errors should **not** be swallowed by the
    * code in this function.
    */
-  executeFn: (...args: any) => Promise<T>
+  executeFn: (attemptNo: number) => Promise<T>
   /**
    * The number of milliseconds to wait before retrying a failed request.
    * This will be increased exponentially {@see CommercetoolsApi.calculateDelay}.

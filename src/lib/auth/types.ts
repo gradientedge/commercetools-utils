@@ -1,4 +1,4 @@
-import { CommercetoolsBaseConfig, Logger, Region } from '../types'
+import { CommercetoolsBaseConfig } from '../types'
 import https from 'https'
 
 /**
@@ -7,28 +7,15 @@ import https from 'https'
 export interface CommercetoolsAuthConfig extends CommercetoolsBaseConfig {
   refreshIfWithinSecs?: number
   customerScopes?: string[]
+  clientScopes: string[]
 }
 
 /**
  * Configuration for {@see CommercetoolsAuthApi}
  */
-export interface CommercetoolsAuthApiConfig {
-  projectKey: string
-  clientId: string
-  clientSecret: string
-  region: Region
-  timeoutMs?: number
-  systemIdentifier?: string
-  storeKey?: string
-
+export interface CommercetoolsAuthApiConfig extends CommercetoolsBaseConfig {
+  clientScopes?: string[] | undefined
   httpsAgent?: https.Agent
-
-  /**
-   * If provided, this function will be called just before every
-   * call to commercetools. If this function is asynchronous, it
-   * will not be waited on.
-   */
-  logFn?: Logger
 }
 
 /**

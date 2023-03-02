@@ -6,26 +6,12 @@ import {
   LogoutOptions,
   RevokeTokenOptions,
 } from './types'
-import { CommercetoolsError } from '../'
+import { CommercetoolsError, CommercetoolsRequest } from '../'
 import { scopeArrayToRequestString } from './scopes'
 import { REGION_URLS } from './constants'
 import { base64EncodeForBasicAuth } from './utils'
-import { Logger, RegionEndpoints } from '../types'
-import axios, { AxiosInstance, Method } from 'axios'
-import { DEFAULT_REQUEST_TIMEOUT_MS } from '../constants'
-import { buildUserAgent } from '../utils'
-import { applyLoggerInterceptor } from '../axios/interceptors/logger'
-
-/**
- * The config options passed in to the {@see HttpsAgent.Agent} used
- * with the axios instance that we create.
- */
-const DEFAULT_HTTPS_AGENT_CONFIG = {
-  keepAlive: true,
-  maxSockets: 32,
-  maxFreeSockets: 10,
-  timeout: 60000,
-}
+import { RegionEndpoints, RequestExecutor } from '../types'
+import { getRequestExecutor } from '../request/request-executor'
 
 /**
  * Provides an easy to use set of methods for communicating with the commercetools
@@ -46,51 +32,18 @@ export class CommercetoolsAuthApi {
   public readonly endpoints: RegionEndpoints
 
   /**
-   * The string that's sent over in the `User-Agent` header
-   * when a request is made to commercetools.
+   * The request executor that's responsible for making the request to commercetools
    */
-  private readonly userAgent: string
-
-  /**
-   * axios instance
-   */
-  private readonly axios: AxiosInstance
+  private readonly requestExecutor: RequestExecutor
 
   constructor(config: CommercetoolsAuthApiConfig) {
     this.config = config
     this.endpoints = REGION_URLS[this.config.region]
-    this.userAgent = buildUserAgent(this.config.systemIdentifier)
-    this.axios = this.createAxiosInstance({ logFn: config.logFn })
-  }
-
-  /**
-   * Define the base axios instance that forms the foundation
-   * of all axios calls made by the {@see request} method.
-   */
-  createAxiosInstance(options?: { logFn?: Logger | null | undefined }) {
-    let agent
-    try {
-      if (process.env.GECTU_IS_BROWSER !== '1') {
-        if (this.config.httpsAgent) {
-          agent = this.config.httpsAgent
-        } else {
-          const https = require('https')
-          agent = new https.Agent(DEFAULT_HTTPS_AGENT_CONFIG)
-        }
-      }
-    } catch (e) {}
-
-    const instance = axios.create({
-      timeout: this.config.timeoutMs || DEFAULT_REQUEST_TIMEOUT_MS,
-      httpsAgent: agent,
+    this.requestExecutor = getRequestExecutor({
+      timeoutMs: config.timeoutMs,
+      httpsAgent: config.httpsAgent,
+      systemIdentifier: config.systemIdentifier,
     })
-    if (options?.logFn) {
-      applyLoggerInterceptor(instance, options.logFn)
-    }
-    if (process.env.GECTU_IS_BROWSER !== '1') {
-      instance.defaults.headers.common['User-Agent'] = this.userAgent
-    }
-    return instance
   }
 
   /**
@@ -148,7 +101,7 @@ export class CommercetoolsAuthApi {
    * This is a convenience mechanism which makes 2 calls to the `revokeToken` method under
    * the hood (in parallel). One with the access token and one with the refresh token.
    */
-  public async logout(options: LogoutOptions) {
+  public async logout(options: LogoutOptions): Promise<void> {
     const settlements = await Promise.allSettled([
       this.revokeToken({ tokenType: 'access_token', tokenValue: options.accessToken }),
       this.revokeToken({ tokenType: 'refresh_token', tokenValue: options.refreshToken }),
@@ -188,37 +141,47 @@ export class CommercetoolsAuthApi {
    * Construct and send a request to the commercetools auth endpoint.
    */
   public async post(path: string, body: Record<string, any>): Promise<CommercetoolsGrantResponse> {
-    const options = {
-      url: `${this.endpoints.auth}/oauth${path}`,
-      method: 'POST' as Method,
-      data: new URLSearchParams(body).toString(),
-    }
-    const headers: any = {
+    return await this.requestExecutor(this.getRequestOptions({ path, body }))
+  }
+
+  /**
+   * Generate request options. These are then fed in to axios when
+   * making the request to commercetools.
+   */
+  getRequestOptions(options: {
+    path: string
+    correlationId?: string | undefined
+    body: Record<string, any>
+  }): CommercetoolsRequest {
+    const url = `${this.endpoints.auth}/oauth${options.path}`
+    let data: any | undefined
+
+    const headers: Record<string, string> = {
       Authorization: `Basic ${base64EncodeForBasicAuth(this.config.clientId, this.config.clientSecret)}`,
       'Content-Type': 'application/x-www-form-urlencoded',
     }
-    if (process.env.GECTU_IS_BROWSER !== '1') {
-      headers['User-Agent'] = this.userAgent
+
+    if (options.correlationId && options.correlationId !== '') {
+      headers['X-Correlation-ID'] = options.correlationId
+      delete options.correlationId
     }
-    try {
-      const response = await this.axios({
-        ...options,
-        headers,
-        timeout: this.config.timeoutMs || DEFAULT_REQUEST_TIMEOUT_MS,
-      })
-      return response.data
-    } catch (error: any) {
-      if (error.isAxiosError) {
-        throw CommercetoolsError.fromAxiosError(error)
-      }
-      throw error
+
+    if (options.body) {
+      data = new URLSearchParams(options.body).toString()
+    }
+
+    return {
+      method: 'POST',
+      data,
+      url,
+      headers,
     }
   }
 
   /**
    * Applies the store key to a given path
    */
-  applyStore(path: string, storeKey: string | undefined | null) {
+  applyStore(path: string, storeKey: string | undefined | null): string {
     if (typeof storeKey === 'string' && storeKey !== '') {
       return `/in-store/key=${storeKey}${path}`
     } else if (this.config.storeKey) {

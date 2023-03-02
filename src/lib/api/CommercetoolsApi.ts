@@ -1,5 +1,3 @@
-import axios, { AxiosInstance } from 'axios'
-import qs from 'qs'
 import { CommercetoolsApiConfig, CommercetoolsRetryConfig } from './types'
 import {
   CommercetoolsAuth,
@@ -10,9 +8,7 @@ import {
 } from '../'
 import { CommercetoolsError } from '../error'
 import { REGION_URLS } from '../auth/constants'
-import { Logger, RegionEndpoints } from '../types'
-import { DEFAULT_REQUEST_TIMEOUT_MS } from '../constants'
-import { buildUserAgent, calculateDelay } from '../utils'
+import { CommercetoolsRequest, RegionEndpoints, RequestExecutor } from '../types'
 import type {
   Cart,
   CartDiscount,
@@ -63,11 +59,11 @@ import type {
   ProductDraft,
   ProductProjection,
   ProductProjectionPagedQueryResponse,
-  ProductsInStorePagedQueryResponse,
   ProductSelection,
   ProductSelectionDraft,
   ProductSelectionPagedQueryResponse,
   ProductSelectionUpdateAction,
+  ProductsInStorePagedQueryResponse,
   ProductType,
   ProductUpdate,
   ShippingMethod,
@@ -84,8 +80,7 @@ import type {
   StoreUpdate,
   Type,
 } from '../models'
-import { Status } from '@tshttp/status'
-import { applyLoggerInterceptor } from '../axios/interceptors/logger'
+import { getRequestExecutor } from '../request/request-executor'
 
 export interface FetchOptions<T = any> {
   /**
@@ -185,36 +180,6 @@ export interface FetchOptions<T = any> {
 }
 
 /**
- * Default retry configuration - equates to no retying at all
- */
-const DEFAULT_RETRY_CONFIG: CommercetoolsRetryConfig = {
-  maxRetries: 0,
-  delayMs: 0,
-}
-
-/**
- * List of status codes which are allowed to retry
- */
-const RETRYABLE_STATUS_CODES: number[] = [
-  Status.InternalServerError,
-  Status.NotImplemented,
-  Status.BadGateway,
-  Status.ServiceUnavailable,
-  Status.GatewayTimeout,
-]
-
-/**
- * The config options passed in to the {@see HttpsAgent.Agent} used
- * with the axios instance that we create.
- */
-const DEFAULT_HTTPS_AGENT_CONFIG = {
-  keepAlive: true,
-  maxSockets: 32,
-  maxFreeSockets: 10,
-  timeout: 60000,
-}
-
-/**
  * Options that are available to all requests.
  */
 export interface CommonRequestOptions {
@@ -269,63 +234,20 @@ export class CommercetoolsApi {
   public readonly endpoints: RegionEndpoints
 
   /**
-   * The string that's sent over in the `User-Agent` header
-   * when a request is made to commercetools.
+   * The request executor that's responsible for making the request to commercetools
    */
-  private readonly userAgent: string
-
-  /**
-   * axios instance
-   */
-  private readonly axios: AxiosInstance
-
-  /**
-   * The default retry configuration for the instance. This can be overridden
-   * on a method by method basis.
-   */
-  private readonly retry: CommercetoolsRetryConfig
+  private readonly requestExecutor: RequestExecutor
 
   constructor(config: CommercetoolsApiConfig) {
     CommercetoolsApi.validateConfig(config)
     this.config = config
     this.auth = new CommercetoolsAuth(config)
     this.endpoints = REGION_URLS[this.config.region]
-    this.userAgent = buildUserAgent(this.config.systemIdentifier)
-    this.axios = this.createAxiosInstance({ logFn: config.logFn })
-    this.retry = config.retry || DEFAULT_RETRY_CONFIG
-  }
-
-  /**
-   * Define the base axios instance that forms the foundation
-   * of all axios calls made by the {@see request} method.
-   */
-  createAxiosInstance(options?: { logFn?: Logger | null | undefined }) {
-    let agent
-    try {
-      if (process.env.GECTU_IS_BROWSER !== '1') {
-        if (this.config.httpsAgent) {
-          agent = this.config.httpsAgent
-        } else {
-          const https = require('https')
-          agent = new https.Agent(DEFAULT_HTTPS_AGENT_CONFIG)
-        }
-      }
-    } catch (e) {}
-
-    const instance = axios.create({
-      timeout: this.config.timeoutMs || DEFAULT_REQUEST_TIMEOUT_MS,
-      paramsSerializer: function (params: any) {
-        return qs.stringify(params, { arrayFormat: 'repeat' })
-      },
-      httpsAgent: agent,
+    this.requestExecutor = getRequestExecutor({
+      timeoutMs: config.timeoutMs,
+      httpsAgent: config.httpsAgent,
+      systemIdentifier: config.systemIdentifier,
     })
-    if (options?.logFn) {
-      applyLoggerInterceptor(instance, options.logFn)
-    }
-    if (process.env.GECTU_IS_BROWSER !== '1') {
-      instance.defaults.headers.common['User-Agent'] = this.userAgent
-    }
-    return instance
   }
 
   /**
@@ -2301,95 +2223,45 @@ export class CommercetoolsApi {
    * Make the request to the commercetools REST API.
    */
   async request<T = any, R = any>(options: FetchOptions<T>): Promise<R> {
-    const requestConfig = await this.getRequestOptions(options)
-    const retryConfig = this.getRetryConfig(options.retry)
-    let retryCount = 0
-    let lastError: any
-
-    do {
-      if (retryCount > 0) {
-        requestConfig.headers['X-Retry-Count'] = retryCount
-        const delay = calculateDelay(retryCount, retryConfig)
-        await new Promise((resolve) => setTimeout(resolve, delay))
-      }
-      try {
-        const response = await this.axios(requestConfig)
-        return response.data
-      } catch (error) {
-        if (this.isRetryableError(error)) {
-          lastError = error
-        } else {
-          throw this.transformError(error)
-        }
-      }
-      retryCount++
-    } while (retryCount <= retryConfig.maxRetries)
-
-    throw this.transformError(lastError)
-  }
-
-  /**
-   * Get the {@see CommercetoolsRetryConfig} for this request.
-   * Uses the class instance's retry config and merges and additional
-   * config passed in via the request options.
-   */
-  getRetryConfig(methodRetryConfig?: CommercetoolsRetryConfig) {
-    return methodRetryConfig || this.retry
+    const requestOptions = await this.getRequestOptions(options)
+    return await this.requestExecutor(requestOptions)
   }
 
   /**
    * Generate request options. These are then fed in to axios when
    * making the request to commercetools.
    */
-  async getRequestOptions(options: FetchOptions) {
+  async getRequestOptions(options: FetchOptions): Promise<CommercetoolsRequest> {
+    let params: Record<string, any> | undefined
     let accessToken = options.accessToken
     const url = `${this.endpoints.api}/${this.config.projectKey}${options.path}`
-    const opts: any = { ...options }
-    opts.path && delete opts.path
-    opts.accessToken && delete opts.accessToken
 
     if (!accessToken) {
       const grant = await this.auth.getClientGrant()
       accessToken = grant.accessToken
     }
-    const headers = {
-      ...this.axios.defaults.headers,
+
+    const headers: Record<string, string> = {
+      ...options.headers,
       Authorization: `Bearer ${accessToken}`,
-      ...opts.headers,
     }
+
     if (typeof options.correlationId === 'string' && options.correlationId !== '') {
       headers['X-Correlation-ID'] = options.correlationId
       delete options.correlationId
     }
-    return { ...opts, url, headers }
-  }
 
-  /**
-   * Determine whether the given error means we should allow the request
-   * to be retried (assuming retry config is provided).
-   */
-  isRetryableError(error: any) {
-    // If the error isn't an axios error, then something serious
-    // went wrong. Probably a coding error in this package. We should
-    // never really hit this scenario.
-    if (!error.isAxiosError) {
-      return true
+    if (options.params && Object.keys(options.params).length) {
+      params = options.params
     }
-    // If axios makes a request successfully, the `request` property will
-    // be defined. Equally, if it received a response, the `response` property
-    // will be defined. If either is not defined then we assume there was
-    // a serious connectivity issue and allow the request to be retried.
-    if (!error.request || !error.response) {
-      return true
+
+    return {
+      method: options.method,
+      data: options.data,
+      url,
+      headers,
+      params,
     }
-    // Finally we only allow requests to be retried if the status code
-    // returned is in the given list
-    // @TODO - commercetools returns a 502 error when an extension returns
-    //    update actions that are not actionable by commercetools:
-    //    https://docs.commercetools.com/api/errors#502-extension-update-actions-failed
-    //    In this scenario, we should probably not retry the request as
-    //    this may result in successful update actions being re-run
-    return RETRYABLE_STATUS_CODES.includes(error.response.status)
   }
 
   /**
@@ -2409,24 +2281,13 @@ export class CommercetoolsApi {
   /**
    * Applies the store key to a given path
    */
-  applyStore(path: string, storeKey: string | undefined | null) {
+  applyStore(path: string, storeKey: string | undefined | null): string {
     if (typeof storeKey === 'string' && storeKey !== '') {
       return `/in-store/key=${storeKey}${path}`
     } else if (this.config.storeKey) {
       return `/in-store/key=${this.config.storeKey}${path}`
     }
     return path
-  }
-
-  /**
-   * Transform an unknown error in to a {@see CommercetoolsError}
-   * if the error we receive is from axios.
-   */
-  transformError(lastError: any) {
-    if (lastError.isAxiosError) {
-      return CommercetoolsError.fromAxiosError(lastError)
-    }
-    return lastError
   }
 
   /**
@@ -2439,7 +2300,7 @@ export class CommercetoolsApi {
    *   region: Region
    *   clientScopes: string[]
    */
-  public static validateConfig(config: any) {
+  public static validateConfig(config: any): void {
     const errors: string[] = []
     if (!config) {
       errors.push('The config object missing or empty')

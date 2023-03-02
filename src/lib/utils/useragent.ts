@@ -1,3 +1,5 @@
+import { USER_AGENT_PREFIX } from '../constants'
+
 /**
  * Build a string suitable for sending as the `User-Agent` HTTP header.
  * This should contain information that allows commercetools to easily
@@ -6,8 +8,8 @@
  * that uniquely identifies the application where this package is being
  * used.
  */
-export function buildUserAgent(systemIdentifier?: string) {
-  let userAgent = `@gradientedge/commercetools-utils`
+export function buildUserAgent(systemIdentifier?: string): string {
+  let userAgent = USER_AGENT_PREFIX
   if (systemIdentifier) {
     userAgent = `${userAgent} (${systemIdentifier})`
   }

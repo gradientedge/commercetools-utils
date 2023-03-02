@@ -80,7 +80,7 @@ export class CommercetoolsGrant {
    * seconds. This is useful when deciding if the expiry date/time is close
    * enough to warrant pro-active renewal, rather than waiting for expiry.
    */
-  public expiresWithin(refreshIfWithinSecs: number) {
+  public expiresWithin(refreshIfWithinSecs: number): boolean {
     const cutoff = new Date().getTime() + refreshIfWithinSecs * 1000
     return this.expiresAt.getTime() < cutoff
   }
