@@ -1,3 +1,5 @@
+import { CommercetoolsRetryConfig } from './api'
+
 /**
  * The commercetools region that your API client id/secret relate to.
  * This is used to determine the authentication endpoint.
@@ -28,14 +30,14 @@ export interface RegionEndpoints {
  * Provides a base configuration definition from which other class
  * specific configurations can be extended.
  */
-export interface CommercetoolsBaseConfig {
+export interface CommercetoolsBaseConfig extends CommercetoolsHooks {
   projectKey: string
   storeKey?: string
   clientId: string
   clientSecret: string
   region: Region
-  clientScopes: string[]
   timeoutMs?: number
+  retry?: Partial<CommercetoolsRetryConfig>
 
   /**
    * If provided, will be passed across to commercetools in the
@@ -43,41 +45,61 @@ export interface CommercetoolsBaseConfig {
    * identify the source of incoming requests.
    */
   systemIdentifier?: string
+}
+
+export interface CommercetoolsHooks {
+  /**
+   * If passed in, will be called before sending a request to commercetools.
+   * The {@see requestConfig} parameter can be manipulated if you wish to
+   * modify/add headers or any other request data.
+   */
+  onBeforeRequest?: (requestConfig: CommercetoolsRequest) => Promise<CommercetoolsRequest> | CommercetoolsRequest
 
   /**
-   * If provided, this function will be called just before every
-   * call to commercetools. If this function is asynchronous, it
-   * will not be waited on.
+   * If passed in, will be called once a request has been made and the
+   * response received (or error thrown).
    */
-  logFn?: Logger
+  onAfterResponse?: (response: CommercetoolsRequestResponse) => void
 }
 
 /**
- * Logger function interface
- *
- * Note that we do not expect an asynchronous function. If an asynchronous
- * function is passed in, it will not be waited on.
+ * Represents a request about to be made to commercetools
  */
-export interface Logger {
-  (options: LoggerParams): any
+export interface CommercetoolsRequest {
+  url: string
+  method: string
+  params?: Record<string, string | number | boolean>
+  headers: Record<string, string>
+  data?: any
 }
 
 /**
- * Structure of the object passed in to the logger function
+ * Represents the request and response for a request made to commercetools
  */
-export interface LoggerParams {
+export interface CommercetoolsRequestResponse {
   request: {
     url: string
     method: string
-    params?: Record<string, string | number | boolean>
-    headers?: Record<string, string | number | boolean>
+    params?: Record<string, string | number | boolean> | undefined
+    headers?: Record<string, string> | undefined
     data?: any
   }
   response: {
     code?: string | undefined
     message?: string | undefined
     status?: number
-    headers?: Record<string, string | number | boolean>
+    headers?: Record<string, string> | undefined
     data?: any
   }
+  stats: CommercetoolsRequestResponseStats
+}
+
+export interface CommercetoolsRequestResponseStats {
+  accumulativeDurationMs: number
+  durationMs: number
+  retries: number
+}
+
+export interface RequestExecutor<T = any> {
+  (options: CommercetoolsRequest): Promise<T>
 }

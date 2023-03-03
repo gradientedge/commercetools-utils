@@ -25,7 +25,7 @@ const defaultResponseToken: CommercetoolsGrantResponse = {
   expires_in: 172800,
 }
 
-function nockGetClientGrant(body = '') {
+function nockGetClientGrant(body = ''): nock.Scope {
   return nock('https://auth.us-east-2.aws.commercetools.com', {
     encodedQueryParams: true,
   })

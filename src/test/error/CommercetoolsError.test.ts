@@ -1,4 +1,5 @@
 import { CommercetoolsError } from '../../lib'
+import { AxiosRequestHeaders, InternalAxiosRequestConfig } from 'axios'
 
 describe('CommercetoolsError', () => {
   it('should return the expected string when stringified', async () => {
@@ -36,16 +37,16 @@ describe('CommercetoolsError', () => {
 
   describe('parseRequestData', () => {
     it("should return the data passed in if it isn't a non-zero length string", () => {
-      expect(CommercetoolsError.parseRequestData({})).toBeUndefined()
-      expect(CommercetoolsError.parseRequestData({ data: null })).toBeNull()
-      expect(CommercetoolsError.parseRequestData({ data: 123 })).toBe(123)
+      expect(CommercetoolsError.parseRequestData({} as InternalAxiosRequestConfig)).toBeUndefined()
+      expect(CommercetoolsError.parseRequestData({ data: null } as InternalAxiosRequestConfig)).toBeNull()
+      expect(CommercetoolsError.parseRequestData({ data: 123 } as InternalAxiosRequestConfig)).toBe(123)
     })
 
     it("should return the data passed in if it's a string but the Content-Type is missing", () => {
       expect(
         CommercetoolsError.parseRequestData({
           data: '{"test":1}',
-          headers: {},
+          headers: {} as AxiosRequestHeaders,
         }),
       ).toBe('{"test":1}')
     })
@@ -56,7 +57,7 @@ describe('CommercetoolsError', () => {
           data: '{"test":1}',
           headers: {
             'Content-Type': '',
-          },
+          } as AxiosRequestHeaders,
         }),
       ).toBe('{"test":1}')
     })
@@ -67,7 +68,7 @@ describe('CommercetoolsError', () => {
           data: '{"test":1}',
           headers: {
             'Content-Type': 'text/plain',
-          },
+          } as AxiosRequestHeaders,
         }),
       ).toBe('{"test":1}')
     })
@@ -78,7 +79,7 @@ describe('CommercetoolsError', () => {
           data: '{"test"///:1}',
           headers: {
             'Content-Type': 'application/json',
-          },
+          } as AxiosRequestHeaders,
         }),
       ).toBe('{"test"///:1}')
     })
@@ -89,7 +90,7 @@ describe('CommercetoolsError', () => {
           data: '{"test":1}',
           headers: {
             'Content-Type': 'application/json',
-          },
+          } as AxiosRequestHeaders,
         }),
       ).toEqual({ test: 1 })
     })
@@ -100,7 +101,7 @@ describe('CommercetoolsError', () => {
           data: null,
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
-          },
+          } as AxiosRequestHeaders,
         }),
       ).toBeNull()
     })
@@ -111,7 +112,7 @@ describe('CommercetoolsError', () => {
           data: 'single=1&double=2&double=3&novalue&blankvalue=',
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
-          },
+          } as AxiosRequestHeaders,
         }),
       ).toEqual({
         single: '1',

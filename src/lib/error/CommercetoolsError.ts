@@ -1,6 +1,6 @@
 import stringify from 'json-stringify-safe'
-import { AxiosError, AxiosRequestConfig } from 'axios'
-import { maskSensitiveHeaders, maskSensitiveInput } from '../utils'
+import { AxiosError, InternalAxiosRequestConfig } from 'axios'
+import { extractAxiosHeaders, maskSensitiveHeaders, maskSensitiveInput } from '../utils'
 
 /**
  * The error class thrown by any of the utility classes.
@@ -36,7 +36,7 @@ export class CommercetoolsError extends Error {
   /**
    * Utility for converting an AxiosError in to a CommercetoolsError.
    */
-  public static fromAxiosError(e: AxiosError) {
+  public static fromAxiosError(e: AxiosError): CommercetoolsError {
     return new CommercetoolsError(
       e.message,
       {
@@ -44,14 +44,14 @@ export class CommercetoolsError extends Error {
         request: {
           url: e.config?.url,
           method: e.config?.method,
-          headers: maskSensitiveHeaders(e.config?.headers),
+          headers: maskSensitiveHeaders(extractAxiosHeaders(e.config?.headers)),
           params: maskSensitiveInput(e.config?.params),
           data: maskSensitiveInput(this.parseRequestData(e.config)),
         },
         response: {
           status: e.response?.status,
           data: maskSensitiveInput(e.response?.data),
-          headers: e.response?.headers,
+          headers: extractAxiosHeaders(e.response?.headers),
         },
       },
       e.response?.status,
@@ -61,7 +61,10 @@ export class CommercetoolsError extends Error {
   /**
    * Parse the JSON string back in to an object for easier viewing
    */
-  public static parseRequestData(config: AxiosRequestConfig) {
+  public static parseRequestData(config: InternalAxiosRequestConfig | undefined): any {
+    if (!config) {
+      return null
+    }
     let data = config?.data
     if (typeof data === 'string' && data) {
       let contentType = ''
@@ -93,7 +96,7 @@ export class CommercetoolsError extends Error {
     return data
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return {
       status: this.status,
       message: this.message,
@@ -102,7 +105,7 @@ export class CommercetoolsError extends Error {
     }
   }
 
-  toString() {
+  toString(): string {
     return stringify(this.toJSON())
   }
 }

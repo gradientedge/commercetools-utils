@@ -1,4 +1,4 @@
-import { calculateDelay } from '../../lib/utils/calculate-delay'
+import { calculateDelay } from '../../../lib/utils/calculate-delay'
 
 describe('calculateDelay', () => {
   it('should return zero if the retry count is zero', () => {

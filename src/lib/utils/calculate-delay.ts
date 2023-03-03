@@ -4,7 +4,7 @@ import { CommercetoolsRetryConfig } from '../api'
  * Calculate how long to delay before running the request.
  * For each retry attempt, we increase the time that we delay for.
  */
-export function calculateDelay(retryCount: number, retryConfig?: CommercetoolsRetryConfig) {
+export function calculateDelay(retryCount: number, retryConfig?: CommercetoolsRetryConfig): number {
   if (!retryConfig || retryCount === 0) {
     return 0
   }
