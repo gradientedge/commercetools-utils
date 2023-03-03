@@ -43,6 +43,9 @@ export class CommercetoolsAuthApi {
       timeoutMs: config.timeoutMs,
       httpsAgent: config.httpsAgent,
       systemIdentifier: config.systemIdentifier,
+      onBeforeRequest: config.onBeforeRequest,
+      onAfterResponse: config.onAfterResponse,
+      retry: config.retry,
     })
   }
 
