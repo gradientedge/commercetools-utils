@@ -332,7 +332,6 @@ describe('request', () => {
                 headers: {
                   accept: 'application/json, text/plain, */*',
                   'accept-encoding': 'gzip, compress, deflate, br',
-                  host: 'localhost',
                   'user-agent': '@gradientedge/commercetools-utils',
                 },
                 method: 'get',
@@ -414,7 +413,6 @@ describe('request', () => {
                 headers: {
                   accept: 'application/json, text/plain, */*',
                   'accept-encoding': 'gzip, compress, deflate, br',
-                  host: 'localhost',
                   'user-agent': '@gradientedge/commercetools-utils',
                   'x-retry-count': '1',
                 },
