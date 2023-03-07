@@ -11,7 +11,7 @@ export function convertAxiosResponse(
       url: response.config?.url ?? '',
       method: response.config?.method as string,
       params: response.config?.params,
-      headers: response.request?.headers,
+      headers: extractAxiosHeaders(response.config?.headers),
       data: response.config?.data,
     },
     response: {
