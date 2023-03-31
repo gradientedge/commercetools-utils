@@ -861,6 +861,31 @@ export class CommercetoolsApi {
   }
 
   /**
+   * Update a customer's cart with the given actions:
+   * https://docs.commercetools.com/api/projects/me-carts#update-cart
+   * https://docs.commercetools.com/api/projects/me-carts#update-actions
+   */
+  async updateMyCart(
+    options: CommonStoreEnabledRequestOptions & {
+      accessToken: string
+      cartId: string
+      cartVersion: number
+      actions: MyCartUpdateAction[]
+    },
+  ): Promise<Cart> {
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: this.applyStore(`/me/carts/${options.cartId}`, options.storeKey),
+      method: 'POST',
+      data: {
+        version: options.cartVersion,
+        actions: options.actions,
+      },
+      accessToken: options.accessToken,
+    })
+  }
+
+  /**
    * Delete the active cart This method uses {@see getMyActiveCart} to first
    * get the active cart, in order to find the cart id and version:
    * https://docs.commercetools.com/api/projects/me-carts#delete-a-cart

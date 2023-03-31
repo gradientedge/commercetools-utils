@@ -1297,6 +1297,32 @@ describe('CommercetoolsApi', () => {
         })
       })
 
+      describe('updateMyCart', () => {
+        it('should call the expected endpoint with the correct parameters', async () => {
+          nock('https://api.europe-west1.gcp.commercetools.com', {
+            encodedQueryParams: true,
+            reqheaders: {
+              authorization: 'Bearer my-access-token',
+            },
+          })
+            .post('/test-project-key/me/carts/123', {
+              version: 2,
+              actions: [{ action: 'setCountry', country: 'GB' }],
+            })
+            .reply(200, { test: true })
+          const api = new CommercetoolsApi(defaultConfig)
+
+          const result = await api.updateMyCart({
+            accessToken: 'my-access-token',
+            cartId: '123',
+            cartVersion: 2,
+            actions: [{ action: 'setCountry', country: 'GB' }],
+          })
+
+          expect(result).toEqual({ test: true })
+        })
+      })
+
       describe('updateMyActiveCart', () => {
         it('should call the expected endpoint with the correct parameters', async () => {
           nock('https://api.europe-west1.gcp.commercetools.com', {
