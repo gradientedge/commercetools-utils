@@ -18,11 +18,12 @@ export const DEFAULT_REQUEST_TIMEOUT_MS = 5000
 export const MAX_ITEMS_PER_QUERY = 500
 
 /**
- * Default retry configuration - equates to no retying at all
+ * Sane defaults for retry configuration
  */
 export const DEFAULT_RETRY_CONFIG: CommercetoolsRetryConfig = {
-  maxRetries: 0,
-  delayMs: 0,
+  maxRetries: 3,
+  delayMs: 50,
+  jitter: true,
 }
 
 /**
@@ -44,5 +45,5 @@ export const DEFAULT_HTTPS_AGENT_CONFIG = {
   keepAlive: true,
   maxSockets: 32,
   maxFreeSockets: 10,
-  timeout: 60000,
+  timeout: DEFAULT_REQUEST_TIMEOUT_MS,
 }

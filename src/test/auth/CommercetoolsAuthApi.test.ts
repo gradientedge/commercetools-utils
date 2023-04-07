@@ -10,6 +10,11 @@ const defaultConfig = {
   clientSecret: 'test-client-secret',
   region: Region.NORTH_AMERICA_AWS,
   timeoutMs: 1000,
+  retry: {
+    maxRetries: 0,
+    delayMs: 50,
+    jitter: false,
+  },
 }
 
 const defaultResponseToken: CommercetoolsGrantResponse = {
