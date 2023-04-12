@@ -1,6 +1,5 @@
-import { retryOnConflict } from '../../lib/utils/retry-on-conflict'
-import { CommercetoolsError } from '../../lib'
-import { calculateDelay } from '../../lib/utils/calculate-delay'
+import { retryOnConflict, CommercetoolsError } from '../../lib'
+import { calculateDelay } from '../../lib/utils/calculate-delay' // Do not alter this as it needs to match the jest.mock path
 import { mocked } from 'jest-mock'
 
 jest.mock('../../lib/utils/calculate-delay')
@@ -15,20 +14,23 @@ describe('retryOnConflict', () => {
     const mockExecuteFn = jest.fn()
     mockExecuteFn.mockRejectedValueOnce(error)
     mockExecuteFn.mockRejectedValueOnce(error)
-    mockExecuteFn.mockResolvedValue(true)
+    mockExecuteFn.mockRejectedValueOnce(error)
+    mockExecuteFn.mockResolvedValueOnce(true)
 
     const result = await retryOnConflict({
       executeFn: mockExecuteFn,
     })
 
     expect(result).toBe(true)
-    expect(mockExecuteFn).toBeCalledTimes(3)
+    expect(mockExecuteFn).toBeCalledTimes(4)
     expect(mockExecuteFn).toHaveBeenNthCalledWith(1, 1)
     expect(mockExecuteFn).toHaveBeenNthCalledWith(2, 2)
     expect(mockExecuteFn).toHaveBeenNthCalledWith(3, 3)
-    expect(calculateDelay).toBeCalledTimes(2)
-    expect(calculateDelay).toHaveBeenNthCalledWith(1, 1, { delayMs: 100, jitter: false, maxRetries: 3 })
-    expect(calculateDelay).toHaveBeenNthCalledWith(2, 2, { delayMs: 100, jitter: false, maxRetries: 3 })
+    expect(mockExecuteFn).toHaveBeenNthCalledWith(4, 4)
+    expect(calculateDelay).toBeCalledTimes(3)
+    expect(calculateDelay).toHaveBeenNthCalledWith(1, 1, { delayMs: 100, jitter: false })
+    expect(calculateDelay).toHaveBeenNthCalledWith(2, 2, { delayMs: 100, jitter: false })
+    expect(calculateDelay).toHaveBeenNthCalledWith(3, 3, { delayMs: 100, jitter: false })
   })
 
   it('should throw an error if a 409 status is still returned after the default 3 attempts', async () => {
@@ -42,13 +44,15 @@ describe('retryOnConflict', () => {
       }),
     ).rejects.toThrow(error)
 
-    expect(mockExecuteFn).toBeCalledTimes(3)
+    expect(mockExecuteFn).toBeCalledTimes(4)
     expect(mockExecuteFn).toHaveBeenNthCalledWith(1, 1)
     expect(mockExecuteFn).toHaveBeenNthCalledWith(2, 2)
     expect(mockExecuteFn).toHaveBeenNthCalledWith(3, 3)
-    expect(calculateDelay).toBeCalledTimes(2)
-    expect(calculateDelay).toHaveBeenNthCalledWith(1, 1, { delayMs: 100, jitter: false, maxRetries: 3 })
-    expect(calculateDelay).toHaveBeenNthCalledWith(2, 2, { delayMs: 100, jitter: false, maxRetries: 3 })
+    expect(mockExecuteFn).toHaveBeenNthCalledWith(4, 4)
+    expect(calculateDelay).toBeCalledTimes(3)
+    expect(calculateDelay).toHaveBeenNthCalledWith(1, 1, { delayMs: 100, jitter: false })
+    expect(calculateDelay).toHaveBeenNthCalledWith(2, 2, { delayMs: 100, jitter: false })
+    expect(calculateDelay).toHaveBeenNthCalledWith(3, 3, { delayMs: 100, jitter: false })
   })
 
   it('should retry 5 times when configuration dictates', async () => {
@@ -73,10 +77,10 @@ describe('retryOnConflict', () => {
     expect(mockExecuteFn).toHaveBeenNthCalledWith(4, 4)
     expect(mockExecuteFn).toHaveBeenNthCalledWith(5, 5)
     expect(calculateDelay).toBeCalledTimes(4)
-    expect(calculateDelay).toHaveBeenNthCalledWith(1, 1, { delayMs: 100, jitter: false, maxRetries: 5 })
-    expect(calculateDelay).toHaveBeenNthCalledWith(2, 2, { delayMs: 100, jitter: false, maxRetries: 5 })
-    expect(calculateDelay).toHaveBeenNthCalledWith(3, 3, { delayMs: 100, jitter: false, maxRetries: 5 })
-    expect(calculateDelay).toHaveBeenNthCalledWith(4, 4, { delayMs: 100, jitter: false, maxRetries: 5 })
+    expect(calculateDelay).toHaveBeenNthCalledWith(1, 1, { delayMs: 100, jitter: false })
+    expect(calculateDelay).toHaveBeenNthCalledWith(2, 2, { delayMs: 100, jitter: false })
+    expect(calculateDelay).toHaveBeenNthCalledWith(3, 3, { delayMs: 100, jitter: false })
+    expect(calculateDelay).toHaveBeenNthCalledWith(4, 4, { delayMs: 100, jitter: false })
   })
 
   it('should immediately throw an error if a non 409 error status is received', async () => {
@@ -114,6 +118,6 @@ describe('retryOnConflict', () => {
     expect(mockExecuteFn).toHaveBeenNthCalledWith(1, 1)
     expect(mockExecuteFn).toHaveBeenNthCalledWith(2, 2)
     expect(calculateDelay).toBeCalledTimes(1)
-    expect(calculateDelay).toHaveBeenCalledWith(1, { delayMs: 5, jitter: true, maxRetries: 2 })
+    expect(calculateDelay).toHaveBeenCalledWith(1, { delayMs: 5, jitter: true })
   })
 })

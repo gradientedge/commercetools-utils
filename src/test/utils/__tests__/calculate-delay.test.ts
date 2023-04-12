@@ -4,7 +4,6 @@ describe('calculateDelay', () => {
   it('should return zero if the retry count is zero', () => {
     const result = calculateDelay(1, {
       delayMs: 0,
-      maxRetries: 2,
     })
 
     expect(result).toBe(0)
@@ -15,7 +14,6 @@ describe('calculateDelay', () => {
       it('should delay by the value defined by the `delayMs` property on the first retry', () => {
         const result = calculateDelay(1, {
           delayMs: 50,
-          maxRetries: 2,
         })
 
         expect(result).toBe(50)
@@ -24,7 +22,6 @@ describe('calculateDelay', () => {
       it('should delay by 100 on the second retry', () => {
         const result = calculateDelay(2, {
           delayMs: 50,
-          maxRetries: 2,
         })
 
         expect(result).toBe(100)
@@ -33,7 +30,6 @@ describe('calculateDelay', () => {
       it('should delay by 200 on the third retry', () => {
         const result = calculateDelay(3, {
           delayMs: 50,
-          maxRetries: 3,
         })
 
         expect(result).toBe(200)
@@ -42,7 +38,6 @@ describe('calculateDelay', () => {
       it('should delay by 500 on the fourth retry', () => {
         const result = calculateDelay(4, {
           delayMs: 50,
-          maxRetries: 4,
         })
 
         expect(result).toBe(400)
@@ -67,7 +62,6 @@ describe('calculateDelay', () => {
         for (let i = 0; i < MAX_ITERATIONS; i++) {
           const result = calculateDelay(1, {
             delayMs: 50,
-            maxRetries: 5,
             jitter: true,
           })
           results.push(result)
@@ -87,7 +81,6 @@ describe('calculateDelay', () => {
         for (let i = 0; i < MAX_ITERATIONS; i++) {
           const result = calculateDelay(2, {
             delayMs: 50,
-            maxRetries: 5,
             jitter: true,
           })
           results.push(result)
@@ -106,7 +99,6 @@ describe('calculateDelay', () => {
         for (let i = 0; i < MAX_ITERATIONS; i++) {
           const result = calculateDelay(3, {
             delayMs: 50,
-            maxRetries: 5,
             jitter: true,
           })
           results.push(result)
@@ -125,7 +117,6 @@ describe('calculateDelay', () => {
         for (let i = 0; i < MAX_ITERATIONS; i++) {
           const result = calculateDelay(4, {
             delayMs: 50,
-            maxRetries: 5,
             jitter: true,
           })
           results.push(result)
