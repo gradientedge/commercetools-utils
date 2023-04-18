@@ -94,24 +94,30 @@ describe('CommercetoolsApi', () => {
     describe('getStoreById', () => {
       it('should make a GET request to the correct endpoint', async () => {
         nock('https://api.europe-west1.gcp.commercetools.com')
-          .get('/test-project-key/stores/my-store-id')
+          .get('/test-project-key/stores/spoof-path%2Fmy-store-id')
           .reply(200, { success: true })
         const api = new CommercetoolsApi(defaultConfig)
 
-        const product = await api.getStoreById({ id: 'my-store-id' })
+        const product = await api.getStoreById({ id: 'spoof-path/my-store-id' })
 
         expect(product).toEqual({ success: true })
+      })
+
+      it('should throw an error when an empty ID is being passed as a parameter', async () => {
+        const api = new CommercetoolsApi(defaultConfig)
+
+        await expect(() => api.getStoreById({ id: ' ' })).toThrow(`The string parameter 'id' cannot be empty`)
       })
     })
 
     describe('getStoreByKey', () => {
       it('should make a GET request to the correct endpoint', async () => {
         nock('https://api.europe-west1.gcp.commercetools.com')
-          .get('/test-project-key/stores/key=my-store-key')
+          .get('/test-project-key/stores/key=spoof-path%2Fmy-store-key')
           .reply(200, { success: true })
         const api = new CommercetoolsApi(defaultConfig)
 
-        const product = await api.getStoreByKey({ key: 'my-store-key' })
+        const product = await api.getStoreByKey({ key: 'spoof-path/my-store-key' })
 
         expect(product).toEqual({ success: true })
       })
@@ -165,24 +171,35 @@ describe('CommercetoolsApi', () => {
     describe('updateStoreById', () => {
       it('should make a POST request to the correct endpoint with all expected data and params', async () => {
         nock('https://api.europe-west1.gcp.commercetools.com')
-          .post('/test-project-key/stores/my-store-id', { version: 1, actions: [] })
+          .post('/test-project-key/stores/spoof-path%2Fmy-store-id', { version: 1, actions: [] })
           .reply(200, { success: true })
         const api = new CommercetoolsApi(defaultConfig)
 
-        const category = await api.updateStoreById({ id: 'my-store-id', data: { version: 1, actions: [] } })
+        const category = await api.updateStoreById({ id: 'spoof-path/my-store-id', data: { version: 1, actions: [] } })
 
         expect(category).toEqual({ success: true })
+      })
+
+      it('should throw an error when an empty ID is being passed as a parameter', async () => {
+        const api = new CommercetoolsApi(defaultConfig)
+
+        await expect(() => api.updateStoreById({ id: ' ', data: { version: 1, actions: [] } })).toThrow(
+          `The string parameter 'id' cannot be empty`,
+        )
       })
     })
 
     describe('updateStoreByKey', () => {
       it('should make a POST request to the correct endpoint with all expected data and params', async () => {
         nock('https://api.europe-west1.gcp.commercetools.com')
-          .post('/test-project-key/stores/key=my-store-key', { version: 1, actions: [] })
+          .post('/test-project-key/stores/key=spoof-path%2Fmy-store-key', { version: 1, actions: [] })
           .reply(200, { success: true })
         const api = new CommercetoolsApi(defaultConfig)
 
-        const category = await api.updateStoreByKey({ key: 'my-store-key', data: { version: 1, actions: [] } })
+        const category = await api.updateStoreByKey({
+          key: 'spoof-path/my-store-key',
+          data: { version: 1, actions: [] },
+        })
 
         expect(category).toEqual({ success: true })
       })
@@ -191,26 +208,34 @@ describe('CommercetoolsApi', () => {
     describe('deleteStoreById', () => {
       it('should make a DELETE request to the correct endpoint with all expected data and params', async () => {
         nock('https://api.europe-west1.gcp.commercetools.com')
-          .delete('/test-project-key/stores/my-store-id')
+          .delete('/test-project-key/stores/spoof-path%2Fmy-store-id')
           .query({ version: 3 })
           .reply(200, { success: true })
         const api = new CommercetoolsApi(defaultConfig)
 
-        const category = await api.deleteStoreById({ id: 'my-store-id', version: 3 })
+        const category = await api.deleteStoreById({ id: 'spoof-path/my-store-id', version: 3 })
 
         expect(category).toEqual({ success: true })
+      })
+
+      it('should throw an error when an empty ID is being passed as a parameter', async () => {
+        const api = new CommercetoolsApi(defaultConfig)
+
+        await expect(() => api.deleteStoreById({ id: ' ', version: 3 })).toThrow(
+          `The string parameter 'id' cannot be empty`,
+        )
       })
     })
 
     describe('deleteStoreByKey', () => {
       it('should make a DELETE request to the correct endpoint with all expected data and params', async () => {
         nock('https://api.europe-west1.gcp.commercetools.com')
-          .delete('/test-project-key/stores/key=my-store-key')
+          .delete('/test-project-key/stores/key=spoof-path%2Fmy-store-key')
           .query({ version: 4 })
           .reply(200, { success: true })
         const api = new CommercetoolsApi(defaultConfig)
 
-        const category = await api.deleteStoreByKey({ key: 'my-store-key', version: 4 })
+        const category = await api.deleteStoreByKey({ key: 'spoof-path/my-store-key', version: 4 })
 
         expect(category).toEqual({ success: true })
       })
@@ -223,13 +248,19 @@ describe('CommercetoolsApi', () => {
         nock('https://api.europe-west1.gcp.commercetools.com', {
           encodedQueryParams: true,
         })
-          .get('/test-project-key/channels/my-channel-id')
+          .get('/test-project-key/channels/spoof-path%2Fmy-channel-id')
           .reply(200, { success: true })
         const api = new CommercetoolsApi(defaultConfig)
 
-        const channel = await api.getChannelById({ id: 'my-channel-id' })
+        const channel = await api.getChannelById({ id: 'spoof-path/my-channel-id' })
 
         expect(channel).toEqual({ success: true })
+      })
+
+      it('should throw an error when an empty ID is being passed as a parameter', async () => {
+        const api = new CommercetoolsApi(defaultConfig)
+
+        await expect(() => api.getChannelById({ id: ' ' })).toThrow(`The string parameter 'id' cannot be empty`)
       })
     })
 
@@ -237,14 +268,14 @@ describe('CommercetoolsApi', () => {
       it('should make a GET request to the correct endpoint', async () => {
         nock('https://api.europe-west1.gcp.commercetools.com')
           .get('/test-project-key/channels')
-          .query({ limit: 1, where: 'key="my-channel-key"' })
+          .query({ limit: 1, where: 'key="spoof-path%2Fmy-channel-key"' })
           .reply(200, {
             count: 1,
             results: [{ key: 'my-channel-key' }],
           })
         const api = new CommercetoolsApi(defaultConfig)
 
-        const channel = await api.getChannelByKey({ key: 'my-channel-key' })
+        const channel = await api.getChannelByKey({ key: 'spoof-path/my-channel-key' })
 
         expect(channel).toEqual({ key: 'my-channel-key' })
       })
@@ -300,18 +331,64 @@ describe('CommercetoolsApi', () => {
   })
 
   describe('Categories', () => {
+    describe('getCategory', () => {
+      it('should throw an error when neither an ID or key value is provided', async () => {
+        const api = new CommercetoolsApi(defaultConfig)
+
+        await expect(() => api.getCategory({})).toThrow('Either an id, key or slug must be provided')
+      })
+
+      it('should make a GET request to the correct endpoint', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com', {
+          encodedQueryParams: true,
+        })
+          .get('/test-project-key/categories/spoof-path%2Fmy-category-id')
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const category = await api.getCategory({ id: 'spoof-path/my-category-id' })
+
+        expect(category).toEqual({ success: true })
+      })
+
+      it('should make a GET request to the correct endpoint', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com', {
+          encodedQueryParams: true,
+        })
+          .get('/test-project-key/categories/key=spoof-path%2Fmy-category-key')
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const category = await api.getCategory({ key: 'spoof-path/my-category-key' })
+
+        expect(category).toEqual({ success: true })
+      })
+
+      it('should throw an error when an empty ID is being passed as a parameter', async () => {
+        const api = new CommercetoolsApi(defaultConfig)
+
+        await expect(() => api.getCategory({ id: ' ' })).toThrow(`The string parameter 'id' cannot be empty`)
+      })
+    })
+
     describe('getCategoryById', () => {
       it('should make a GET request to the correct endpoint', async () => {
         nock('https://api.europe-west1.gcp.commercetools.com', {
           encodedQueryParams: true,
         })
-          .get('/test-project-key/categories/my-category-id')
+          .get('/test-project-key/categories/spoof-path%2Fmy-category-id')
           .reply(200, { success: true })
         const api = new CommercetoolsApi(defaultConfig)
 
-        const product = await api.getCategoryById({ id: 'my-category-id' })
+        const product = await api.getCategoryById({ id: 'spoof-path/my-category-id' })
 
         expect(product).toEqual({ success: true })
+      })
+
+      it('should throw an error when an empty ID is being passed as a parameter', async () => {
+        const api = new CommercetoolsApi(defaultConfig)
+
+        await expect(() => api.getCategoryById({ id: ' ' })).toThrow(`The string parameter 'id' cannot be empty`)
       })
     })
 
@@ -320,11 +397,11 @@ describe('CommercetoolsApi', () => {
         nock('https://api.europe-west1.gcp.commercetools.com', {
           encodedQueryParams: true,
         })
-          .get('/test-project-key/categories?where=slug(en%3D%22my-slug%22)')
+          .get('/test-project-key/categories?where=slug(en%3D%22spoof-path%2Fmy-slug%22)')
           .reply(200, singleItemResponse)
         const api = new CommercetoolsApi(defaultConfig)
 
-        const product = await api.getCategoryBySlug({ slug: 'my-slug', languageCode: 'en' })
+        const product = await api.getCategoryBySlug({ slug: 'spoof-path/my-slug', languageCode: 'en' })
 
         expect(product).toEqual(singleResultItem)
       })
@@ -333,11 +410,13 @@ describe('CommercetoolsApi', () => {
         nock('https://api.europe-west1.gcp.commercetools.com', {
           encodedQueryParams: true,
         })
-          .get('/test-project-key/categories?where=slug(en%3D%22my-slug%22%20or%20en-GB%3D%22my-slug%22)')
+          .get(
+            '/test-project-key/categories?where=slug(en%3D%22spoof-path%2Fmy-slug%22%20or%20en-GB%3D%22spoof-path%2Fmy-slug%22)',
+          )
           .reply(200, singleItemResponse)
         const api = new CommercetoolsApi(defaultConfig)
 
-        const product = await api.getCategoryBySlug({ slug: 'my-slug', languageCodes: ['en', 'en-GB'] })
+        const product = await api.getCategoryBySlug({ slug: 'spoof-path/my-slug', languageCodes: ['en', 'en-GB'] })
 
         expect(product).toEqual(singleResultItem)
       })
@@ -380,11 +459,11 @@ describe('CommercetoolsApi', () => {
     describe('getCategoryByKey', () => {
       it('should make a GET request to the correct endpoint', async () => {
         nock('https://api.europe-west1.gcp.commercetools.com')
-          .get('/test-project-key/categories/key=my-category-key')
+          .get('/test-project-key/categories/key=spoof-path%2Fmy-category-key')
           .reply(200, { success: true })
         const api = new CommercetoolsApi(defaultConfig)
 
-        const product = await api.getCategoryByKey({ key: 'my-category-key' })
+        const product = await api.getCategoryByKey({ key: 'spoof-path/my-category-key' })
 
         expect(product).toEqual({ success: true })
       })
@@ -499,24 +578,35 @@ describe('CommercetoolsApi', () => {
     describe('updateCategoryById', () => {
       it('should make a POST request to the correct endpoint with all expected data and params', async () => {
         nock('https://api.europe-west1.gcp.commercetools.com')
-          .post('/test-project-key/categories/my-cat-id', { version: 1, actions: [] })
+          .post('/test-project-key/categories/spoof-path%2Fmy-cat-id', { version: 1, actions: [] })
           .reply(200, { success: true })
         const api = new CommercetoolsApi(defaultConfig)
 
-        const category = await api.updateCategoryById({ id: 'my-cat-id', data: { version: 1, actions: [] } })
+        const category = await api.updateCategoryById({ id: 'spoof-path/my-cat-id', data: { version: 1, actions: [] } })
 
         expect(category).toEqual({ success: true })
+      })
+
+      it('should throw an error when an empty ID is being passed as a parameter', async () => {
+        const api = new CommercetoolsApi(defaultConfig)
+
+        await expect(() => api.updateCategoryById({ id: ' ', data: { version: 1, actions: [] } })).toThrow(
+          `The string parameter 'id' cannot be empty`,
+        )
       })
     })
 
     describe('updateCategoryByKey', () => {
       it('should make a POST request to the correct endpoint with all expected data and params', async () => {
         nock('https://api.europe-west1.gcp.commercetools.com')
-          .post('/test-project-key/categories/key=my-cat-key', { version: 1, actions: [] })
+          .post('/test-project-key/categories/key=spoof-path%2Fmy-cat-key', { version: 1, actions: [] })
           .reply(200, { success: true })
         const api = new CommercetoolsApi(defaultConfig)
 
-        const category = await api.updateCategoryByKey({ key: 'my-cat-key', data: { version: 1, actions: [] } })
+        const category = await api.updateCategoryByKey({
+          key: 'spoof-path/my-cat-key',
+          data: { version: 1, actions: [] },
+        })
 
         expect(category).toEqual({ success: true })
       })
@@ -525,12 +615,12 @@ describe('CommercetoolsApi', () => {
     describe('deleteCategoryByKey', () => {
       it('should make a DELETE request to the correct endpoint with all expected data and params', async () => {
         nock('https://api.europe-west1.gcp.commercetools.com')
-          .delete('/test-project-key/categories/my-cat-id')
+          .delete('/test-project-key/categories/spoof-path%2Fmy-cat-id')
           .query({ version: 3 })
           .reply(200, { success: true })
         const api = new CommercetoolsApi(defaultConfig)
 
-        const category = await api.deleteCategoryById({ id: 'my-cat-id', version: 3 })
+        const category = await api.deleteCategoryById({ id: 'spoof-path/my-cat-id', version: 3 })
 
         expect(category).toEqual({ success: true })
       })
@@ -539,26 +629,34 @@ describe('CommercetoolsApi', () => {
     describe('deleteCategoryById', () => {
       it('should make a DELETE request to the correct endpoint with all expected data and params', async () => {
         nock('https://api.europe-west1.gcp.commercetools.com')
-          .delete('/test-project-key/categories/my-cat-id')
+          .delete('/test-project-key/categories/spoof-path%2Fmy-cat-id')
           .query({ version: 1 })
           .reply(200, { success: true })
         const api = new CommercetoolsApi(defaultConfig)
 
-        const category = await api.deleteCategoryById({ id: 'my-cat-id', version: 1 })
+        const category = await api.deleteCategoryById({ id: 'spoof-path/my-cat-id', version: 1 })
 
         expect(category).toEqual({ success: true })
+      })
+
+      it('should throw an error when an empty ID is being passed as a parameter', async () => {
+        const api = new CommercetoolsApi(defaultConfig)
+
+        await expect(() => api.deleteCategoryById({ id: ' ', version: 1 })).toThrow(
+          `The string parameter 'id' cannot be empty`,
+        )
       })
     })
 
     describe('deleteCategoryByKey', () => {
       it('should make a DELETE request to the correct endpoint with all expected data and params', async () => {
         nock('https://api.europe-west1.gcp.commercetools.com')
-          .delete('/test-project-key/categories/key=my-cat-key')
+          .delete('/test-project-key/categories/key=spoof-path%2Fmy-cat-key')
           .query({ version: 4 })
           .reply(200, { success: true })
         const api = new CommercetoolsApi(defaultConfig)
 
-        const category = await api.deleteCategoryByKey({ key: 'my-cat-key', version: 4 })
+        const category = await api.deleteCategoryByKey({ key: 'spoof-path/my-cat-key', version: 4 })
 
         expect(category).toEqual({ success: true })
       })
@@ -569,24 +667,30 @@ describe('CommercetoolsApi', () => {
     describe('getProductById', () => {
       it('should make a GET request to the correct endpoint', async () => {
         nock('https://api.europe-west1.gcp.commercetools.com')
-          .get('/test-project-key/products/my-product-id')
+          .get('/test-project-key/products/spoof-path%2Fmy-product-id')
           .reply(200, { success: true })
         const api = new CommercetoolsApi(defaultConfig)
 
-        const product = await api.getProductById({ id: 'my-product-id' })
+        const product = await api.getProductById({ id: 'spoof-path/my-product-id' })
 
         expect(product).toEqual({ success: true })
+      })
+
+      it('should throw an error when an empty ID is being passed as a parameter', async () => {
+        const api = new CommercetoolsApi(defaultConfig)
+
+        await expect(() => api.getProductById({ id: ' ' })).toThrow(`The string parameter 'id' cannot be empty`)
       })
     })
 
     describe('getProductByKey', () => {
       it('should make a GET request to the correct endpoint', async () => {
         nock('https://api.europe-west1.gcp.commercetools.com')
-          .get('/test-project-key/products/key=my-product-key')
+          .get('/test-project-key/products/key=spoof-path%2Fmy-product-key')
           .reply(200, { success: true })
         const api = new CommercetoolsApi(defaultConfig)
 
-        const product = await api.getProductByKey({ key: 'my-product-key' })
+        const product = await api.getProductByKey({ key: 'spoof-path/my-product-key' })
 
         expect(product).toEqual({ success: true })
       })
@@ -597,11 +701,11 @@ describe('CommercetoolsApi', () => {
         nock('https://api.europe-west1.gcp.commercetools.com', {
           encodedQueryParams: true,
         })
-          .get('/test-project-key/product-projections/my-prod-guid')
+          .get('/test-project-key/product-projections/spoof-path%2Fmy-prod-guid')
           .reply(200, { success: true })
         const api = new CommercetoolsApi(defaultConfig)
 
-        const product = await api.getProductProjectionById({ id: 'my-prod-guid' })
+        const product = await api.getProductProjectionById({ id: 'spoof-path/my-prod-guid' })
 
         expect(product).toEqual({ success: true })
       })
@@ -618,6 +722,14 @@ describe('CommercetoolsApi', () => {
 
         expect(product).toEqual({ success: true })
       })
+
+      it('should throw an error when an empty ID is being passed as a parameter', async () => {
+        const api = new CommercetoolsApi(defaultConfig)
+
+        await expect(() => api.getProductProjectionById({ id: ' ', params: { staged: true } })).toThrow(
+          `The string parameter 'id' cannot be empty`,
+        )
+      })
     })
 
     describe('getProductProjectionByKey', () => {
@@ -625,11 +737,11 @@ describe('CommercetoolsApi', () => {
         nock('https://api.europe-west1.gcp.commercetools.com', {
           encodedQueryParams: true,
         })
-          .get('/test-project-key/product-projections/key=my-prod-key')
+          .get('/test-project-key/product-projections/key=spoof-path%2Fmy-prod-key')
           .reply(200, { success: true })
         const api = new CommercetoolsApi(defaultConfig)
 
-        const product = await api.getProductProjectionByKey({ key: 'my-prod-key' })
+        const product = await api.getProductProjectionByKey({ key: 'spoof-path/my-prod-key' })
 
         expect(product).toEqual({ success: true })
       })
@@ -780,26 +892,34 @@ describe('CommercetoolsApi', () => {
     describe('deleteProductById', () => {
       it('should make a DELETE request to the correct endpoint with all expected data and params', async () => {
         nock('https://api.europe-west1.gcp.commercetools.com')
-          .delete('/test-project-key/products/my-prod-id')
+          .delete('/test-project-key/products/spoof-path%2Fmy-prod-id')
           .query({ version: 2 })
           .reply(200, { success: true })
         const api = new CommercetoolsApi(defaultConfig)
 
-        const product = await api.deleteProductById({ id: 'my-prod-id', version: 2 })
+        const product = await api.deleteProductById({ id: 'spoof-path/my-prod-id', version: 2 })
 
         expect(product).toEqual({ success: true })
+      })
+
+      it('should throw an error when an empty ID is being passed as a parameter', async () => {
+        const api = new CommercetoolsApi(defaultConfig)
+
+        await expect(() => api.deleteProductById({ id: ' ', version: 2, unpublish: false })).rejects.toThrow(
+          `The string parameter 'id' cannot be empty`,
+        )
       })
     })
 
     describe('deleteProductByKey', () => {
       it('should make a DELETE request to the correct endpoint with all expected data and params', async () => {
         nock('https://api.europe-west1.gcp.commercetools.com')
-          .delete('/test-project-key/products/key=my-prod-key')
+          .delete('/test-project-key/products/key=spoof-path%2Fmy-prod-key')
           .query({ version: 3 })
           .reply(200, { success: true })
         const api = new CommercetoolsApi(defaultConfig)
 
-        const product = await api.deleteProductByKey({ key: 'my-prod-key', version: 3 })
+        const product = await api.deleteProductByKey({ key: 'spoof-path/my-prod-key', version: 3 })
 
         expect(product).toEqual({ success: true })
       })
@@ -823,11 +943,14 @@ describe('CommercetoolsApi', () => {
     describe('unpublishProductById', () => {
       it('should make a POST request to the correct endpoint with all expected data and params', async () => {
         nock('https://api.europe-west1.gcp.commercetools.com')
-          .post('/test-project-key/products/my-prod-id', { version: 2, actions: [{ action: 'unpublish' }] })
+          .post('/test-project-key/products/spoof-path%2Fmy-prod-id', {
+            version: 2,
+            actions: [{ action: 'unpublish' }],
+          })
           .reply(200, { success: true })
         const api = new CommercetoolsApi(defaultConfig)
 
-        const product = await api.unpublishProductById({ id: 'my-prod-id', version: 2 })
+        const product = await api.unpublishProductById({ id: 'spoof-path/my-prod-id', version: 2 })
 
         expect(product).toEqual({ success: true })
       })
@@ -846,16 +969,27 @@ describe('CommercetoolsApi', () => {
 
         expect(product).toEqual({ success: true })
       })
+
+      it('should throw an error when an empty ID is being passed as a parameter', async () => {
+        const api = new CommercetoolsApi(defaultConfig)
+
+        await expect(() => api.unpublishProductById({ id: ' ', version: 2 })).toThrow(
+          `The string parameter 'id' cannot be empty`,
+        )
+      })
     })
 
     describe('unpublishProductByKey', () => {
       it('should make a POST request to the correct endpoint with all expected data and params', async () => {
         nock('https://api.europe-west1.gcp.commercetools.com')
-          .post('/test-project-key/products/key=my-prod-key', { version: 3, actions: [{ action: 'unpublish' }] })
+          .post('/test-project-key/products/key=spoof-path%2Fmy-prod-key', {
+            version: 3,
+            actions: [{ action: 'unpublish' }],
+          })
           .reply(200, { success: true })
         const api = new CommercetoolsApi(defaultConfig)
 
-        const product = await api.unpublishProductByKey({ key: 'my-prod-key', version: 3 })
+        const product = await api.unpublishProductByKey({ key: 'spoof-path/my-prod-key', version: 3 })
 
         expect(product).toEqual({ success: true })
       })
@@ -864,24 +998,32 @@ describe('CommercetoolsApi', () => {
     describe('getProductSelectionById', () => {
       it('should make a GET request to the correct endpoint', async () => {
         nock('https://api.europe-west1.gcp.commercetools.com')
-          .get('/test-project-key/product-selections/my-product-selection-id')
+          .get('/test-project-key/product-selections/spoof-path%2Fmy-product-selection-id')
           .reply(200, { success: true })
         const api = new CommercetoolsApi(defaultConfig)
 
-        const product = await api.getProductSelectionById({ id: 'my-product-selection-id' })
+        const product = await api.getProductSelectionById({ id: 'spoof-path/my-product-selection-id' })
 
         expect(product).toEqual({ success: true })
+      })
+
+      it('should throw an error when an empty ID is being passed as a parameter', async () => {
+        const api = new CommercetoolsApi(defaultConfig)
+
+        await expect(() => api.getProductSelectionById({ id: ' ' })).toThrow(
+          `The string parameter 'id' cannot be empty`,
+        )
       })
     })
 
     describe('getProductSelectionByKey', () => {
       it('should make a GET request to the correct endpoint', async () => {
         nock('https://api.europe-west1.gcp.commercetools.com')
-          .get('/test-project-key/product-selections/key=my-product-selection-key')
+          .get('/test-project-key/product-selections/key=spoof-path%2Fmy-product-selection-key')
           .reply(200, { success: true })
         const api = new CommercetoolsApi(defaultConfig)
 
-        const product = await api.getProductSelectionByKey({ key: 'my-product-selection-key' })
+        const product = await api.getProductSelectionByKey({ key: 'spoof-path/my-product-selection-key' })
 
         expect(product).toEqual({ success: true })
       })
@@ -916,7 +1058,7 @@ describe('CommercetoolsApi', () => {
     describe('updateProductSelectionByKey', () => {
       it('should make a POST request to the correct endpoint', async () => {
         nock('https://api.europe-west1.gcp.commercetools.com')
-          .post('/test-project-key/product-selections/key=my-product-selection-key', {
+          .post('/test-project-key/product-selections/key=spoof-path%2Fmy-product-selection-key', {
             version: 3,
             actions: [
               {
@@ -929,7 +1071,7 @@ describe('CommercetoolsApi', () => {
         const api = new CommercetoolsApi(defaultConfig)
 
         const product = await api.updateProductSelectionByKey({
-          key: 'my-product-selection-key',
+          key: 'spoof-path/my-product-selection-key',
           version: 3,
           actions: [{ action: 'addProduct', product: { id: 'prod12345', typeId: 'product' } }],
         })
@@ -941,11 +1083,14 @@ describe('CommercetoolsApi', () => {
     describe('deleteProductSelectionByKey', () => {
       it('should make a DELETE request to the correct endpoint', async () => {
         nock('https://api.europe-west1.gcp.commercetools.com')
-          .delete('/test-project-key/product-selections/key=my-product-selection-key&version=5')
+          .delete('/test-project-key/product-selections/key=spoof-path%2Fmy-product-selection-key&version=5')
           .reply(200, { success: true })
         const api = new CommercetoolsApi(defaultConfig)
 
-        const product = await api.deleteProductSelectionByKey({ key: 'my-product-selection-key', version: 5 })
+        const product = await api.deleteProductSelectionByKey({
+          key: 'spoof-path/my-product-selection-key',
+          version: 5,
+        })
 
         expect(product).toEqual({ success: true })
       })
@@ -954,11 +1099,11 @@ describe('CommercetoolsApi', () => {
     describe('queryProductsInStore', () => {
       it('should make a GET request to the correct endpoint', async () => {
         nock('https://api.europe-west1.gcp.commercetools.com')
-          .get('/test-project-key/in-store/key=my-store-key/product-selection-assignments')
+          .get('/test-project-key/in-store/key=spoof-path%2Fmy-store-key/product-selection-assignments')
           .reply(200, { success: true })
         const api = new CommercetoolsApi(defaultConfig)
 
-        const product = await api.queryProductsInStore({ storeKey: 'my-store-key' })
+        const product = await api.queryProductsInStore({ storeKey: 'spoof-path/my-store-key' })
 
         expect(product).toEqual({ success: true })
       })
@@ -986,7 +1131,7 @@ describe('CommercetoolsApi', () => {
     describe('updateProductById', () => {
       it('should make a POST request to the correct endpoint with all expected data and params', async () => {
         nock('https://api.europe-west1.gcp.commercetools.com')
-          .post('/test-project-key/products/my-prod-id', { actions: [{ test: 1 }], version: 2 })
+          .post('/test-project-key/products/spoof-path%2Fmy-prod-id', { actions: [{ test: 1 }], version: 2 })
           .query({
             testParam: 1,
           })
@@ -994,7 +1139,7 @@ describe('CommercetoolsApi', () => {
         const api = new CommercetoolsApi(defaultConfig)
 
         const product = await api.updateProductById({
-          id: 'my-prod-id',
+          id: 'spoof-path/my-prod-id',
           data: {
             actions: [{ test: 1 }] as unknown as ProductUpdateAction[],
             version: 2,
@@ -1004,12 +1149,27 @@ describe('CommercetoolsApi', () => {
 
         expect(product).toEqual({ success: true })
       })
+
+      it('should throw an error when an empty ID is being passed as a parameter', async () => {
+        const api = new CommercetoolsApi(defaultConfig)
+
+        await expect(() =>
+          api.updateProductById({
+            id: ' ',
+            data: {
+              actions: [{ test: 1 }] as unknown as ProductUpdateAction[],
+              version: 2,
+            },
+            params: { testParam: 1 },
+          }),
+        ).toThrow(`The string parameter 'id' cannot be empty`)
+      })
     })
 
     describe('updateProductByKey', () => {
       it('should make a POST request to the correct endpoint with all expected data and params', async () => {
         nock('https://api.europe-west1.gcp.commercetools.com')
-          .post('/test-project-key/products/key=my-prod-key', { actions: [{ test: 1 }], version: 3 })
+          .post('/test-project-key/products/key=spoof-path%2Fmy-prod-key', { actions: [{ test: 1 }], version: 3 })
           .query({
             testParam: 1,
           })
@@ -1017,7 +1177,7 @@ describe('CommercetoolsApi', () => {
         const api = new CommercetoolsApi(defaultConfig)
 
         const product = await api.updateProductByKey({
-          key: 'my-prod-key',
+          key: 'spoof-path/my-prod-key',
           data: { actions: [{ test: 1 }] as unknown as ProductUpdateAction[], version: 3 },
           params: { testParam: 1 },
         })
@@ -1033,24 +1193,30 @@ describe('CommercetoolsApi', () => {
         nock('https://api.europe-west1.gcp.commercetools.com', {
           encodedQueryParams: true,
         })
-          .get('/test-project-key/customer-groups/my-customer-group-id')
+          .get('/test-project-key/customer-groups/spoof-path%2Fmy-customer-group-id')
           .reply(200, { success: true })
         const api = new CommercetoolsApi(defaultConfig)
 
-        const customerGroup = await api.getCustomerGroupById({ id: 'my-customer-group-id' })
+        const customerGroup = await api.getCustomerGroupById({ id: 'spoof-path/my-customer-group-id' })
 
         expect(customerGroup).toEqual({ success: true })
+      })
+
+      it('should throw an error when an empty ID is being passed as a parameter', async () => {
+        const api = new CommercetoolsApi(defaultConfig)
+
+        await expect(() => api.getCustomerGroupById({ id: ' ' })).toThrow(`The string parameter 'id' cannot be empty`)
       })
     })
 
     describe('getCustomerGroupByKey', () => {
       it('should make a GET request to the correct endpoint', async () => {
         nock('https://api.europe-west1.gcp.commercetools.com')
-          .get('/test-project-key/customer-groups/key=my-customer-group-key')
+          .get('/test-project-key/customer-groups/key=spoof-path%2Fmy-customer-group-key')
           .reply(200, { success: true })
         const api = new CommercetoolsApi(defaultConfig)
 
-        const customerGroup = await api.getCustomerGroupByKey({ key: 'my-customer-group-key' })
+        const customerGroup = await api.getCustomerGroupByKey({ key: 'spoof-path/my-customer-group-key' })
 
         expect(customerGroup).toEqual({ success: true })
       })
@@ -1102,44 +1268,38 @@ describe('CommercetoolsApi', () => {
     describe('updateCustomerGroupById', () => {
       it('should make a POST request to the correct endpoint with all expected data and params', async () => {
         nock('https://api.europe-west1.gcp.commercetools.com')
-          .post('/test-project-key/customer-groups/my-customer-group-id', { version: 1, actions: [] })
+          .post('/test-project-key/customer-groups/spoof-path%2Fmy-customer-group-id', { version: 1, actions: [] })
           .reply(200, { success: true })
         const api = new CommercetoolsApi(defaultConfig)
 
         const customerGroup = await api.updateCustomerGroupById({
-          id: 'my-customer-group-id',
+          id: 'spoof-path/my-customer-group-id',
           data: { version: 1, actions: [] },
         })
 
         expect(customerGroup).toEqual({ success: true })
+      })
+
+      it('should throw an error when an empty ID is being passed as a parameter', async () => {
+        const api = new CommercetoolsApi(defaultConfig)
+
+        await expect(() => api.updateCustomerGroupById({ id: ' ', data: { version: 1, actions: [] } })).toThrow(
+          `The string parameter 'id' cannot be empty`,
+        )
       })
     })
 
     describe('updateCustomerGroupByKey', () => {
       it('should make a POST request to the correct endpoint with all expected data and params', async () => {
         nock('https://api.europe-west1.gcp.commercetools.com')
-          .post('/test-project-key/customer-groups/key=my-customer-group-key', { version: 1, actions: [] })
+          .post('/test-project-key/customer-groups/key=spoof-path%2Fmy-customer-group-key', { version: 1, actions: [] })
           .reply(200, { success: true })
         const api = new CommercetoolsApi(defaultConfig)
 
         const customerGroup = await api.updateCustomerGroupByKey({
-          key: 'my-customer-group-key',
+          key: 'spoof-path/my-customer-group-key',
           data: { version: 1, actions: [] },
         })
-
-        expect(customerGroup).toEqual({ success: true })
-      })
-    })
-
-    describe('deleteCustomerGroupByKey', () => {
-      it('should make a DELETE request to the correct endpoint with all expected data and params', async () => {
-        nock('https://api.europe-west1.gcp.commercetools.com')
-          .delete('/test-project-key/customer-groups/my-customer-group-id')
-          .query({ version: 3 })
-          .reply(200, { success: true })
-        const api = new CommercetoolsApi(defaultConfig)
-
-        const customerGroup = await api.deleteCustomerGroupById({ id: 'my-customer-group-id', version: 3 })
 
         expect(customerGroup).toEqual({ success: true })
       })
@@ -1148,26 +1308,37 @@ describe('CommercetoolsApi', () => {
     describe('deleteCustomerGroupById', () => {
       it('should make a DELETE request to the correct endpoint with all expected data and params', async () => {
         nock('https://api.europe-west1.gcp.commercetools.com')
-          .delete('/test-project-key/customer-groups/my-customer-group-id')
+          .delete('/test-project-key/customer-groups/spoof-path%2Fmy-customer-group-id')
           .query({ version: 1 })
           .reply(200, { success: true })
         const api = new CommercetoolsApi(defaultConfig)
 
-        const customerGroup = await api.deleteCustomerGroupById({ id: 'my-customer-group-id', version: 1 })
+        const customerGroup = await api.deleteCustomerGroupById({ id: 'spoof-path/my-customer-group-id', version: 1 })
 
         expect(customerGroup).toEqual({ success: true })
+      })
+
+      it('should throw an error when an empty ID is being passed as a parameter', async () => {
+        const api = new CommercetoolsApi(defaultConfig)
+
+        await expect(() => api.deleteCustomerGroupById({ id: ' ', version: 1 })).toThrow(
+          `The string parameter 'id' cannot be empty`,
+        )
       })
     })
 
     describe('deleteCustomerGroupByKey', () => {
       it('should make a DELETE request to the correct endpoint with all expected data and params', async () => {
         nock('https://api.europe-west1.gcp.commercetools.com')
-          .delete('/test-project-key/customer-groups/key=my-customer-group-key')
+          .delete('/test-project-key/customer-groups/key=spoof-path%2Fmy-customer-group-key')
           .query({ version: 4 })
           .reply(200, { success: true })
         const api = new CommercetoolsApi(defaultConfig)
 
-        const customerGroup = await api.deleteCustomerGroupByKey({ key: 'my-customer-group-key', version: 4 })
+        const customerGroup = await api.deleteCustomerGroupByKey({
+          key: 'spoof-path/my-customer-group-key',
+          version: 4,
+        })
 
         expect(customerGroup).toEqual({ success: true })
       })
@@ -1201,13 +1372,24 @@ describe('CommercetoolsApi', () => {
               authorization: 'Bearer customer-access-token',
             },
           })
-            .get('/test-project-key/me/carts/my-cart-id')
+            .get('/test-project-key/me/carts/spoof-path%2Fmy-cart-id')
             .reply(200, { success: true })
           const api = new CommercetoolsApi(defaultConfig)
 
-          const response = await api.getMyCartById({ accessToken: 'customer-access-token', cartId: 'my-cart-id' })
+          const response = await api.getMyCartById({
+            accessToken: 'customer-access-token',
+            cartId: 'spoof-path/my-cart-id',
+          })
 
           expect(response).toEqual({ success: true })
+        })
+
+        it('should throw an error when an empty ID is being passed as a parameter', async () => {
+          const api = new CommercetoolsApi(defaultConfig)
+
+          await expect(() => api.getMyCartById({ accessToken: 'customer-access-token', cartId: ' ' })).rejects.toThrow(
+            `The string parameter 'cartId' cannot be empty`,
+          )
         })
       })
 
@@ -1281,19 +1463,27 @@ describe('CommercetoolsApi', () => {
               authorization: 'Bearer my-access-token',
             },
           })
-            .get('/test-project-key/me/carts/my-cart-id')
+            .get('/test-project-key/me/carts/spoof-path%2Fmy-cart-id')
             .reply(200, { id: '123', version: 2 })
           nock('https://api.europe-west1.gcp.commercetools.com', {
             reqheaders: {
               authorization: 'Bearer my-access-token',
             },
           })
-            .delete('/test-project-key/me/carts/my-cart-id')
+            .delete('/test-project-key/me/carts/spoof-path%2Fmy-cart-id')
             .query({ version: 2 })
             .reply(200, { success: true })
           const api = new CommercetoolsApi(defaultConfig)
 
-          await api.deleteMyCartById({ accessToken: 'my-access-token', cartId: 'my-cart-id' })
+          await api.deleteMyCartById({ accessToken: 'my-access-token', cartId: 'spoof-path/my-cart-id' })
+        })
+
+        it('should throw an error when an empty ID is being passed as a parameter', async () => {
+          const api = new CommercetoolsApi(defaultConfig)
+
+          await expect(() => api.deleteMyCartById({ accessToken: 'my-access-token', cartId: ' ' })).rejects.toThrow(
+            `The string parameter 'cartId' cannot be empty`,
+          )
         })
       })
 
@@ -1305,7 +1495,7 @@ describe('CommercetoolsApi', () => {
               authorization: 'Bearer my-access-token',
             },
           })
-            .post('/test-project-key/me/carts/123', {
+            .post('/test-project-key/me/carts/spoof-path%2F123', {
               version: 2,
               actions: [{ action: 'setCountry', country: 'GB' }],
             })
@@ -1314,12 +1504,25 @@ describe('CommercetoolsApi', () => {
 
           const result = await api.updateMyCart({
             accessToken: 'my-access-token',
-            cartId: '123',
+            cartId: 'spoof-path/123',
             cartVersion: 2,
             actions: [{ action: 'setCountry', country: 'GB' }],
           })
 
           expect(result).toEqual({ test: true })
+        })
+
+        it('should throw an error when an empty ID is being passed as a parameter', async () => {
+          const api = new CommercetoolsApi(defaultConfig)
+
+          await expect(() =>
+            api.updateMyCart({
+              accessToken: 'my-access-token',
+              cartId: ' ',
+              cartVersion: 2,
+              actions: [{ action: 'setCountry', country: 'GB' }],
+            }),
+          ).rejects.toThrow(`The string parameter 'cartId' cannot be empty`)
         })
       })
 
@@ -1385,11 +1588,17 @@ describe('CommercetoolsApi', () => {
               authorization: 'Bearer test-access-token',
             },
           })
-            .get('/test-project-key/carts/test-cart-id')
+            .get('/test-project-key/carts/spoof-path%2Ftest-cart-id')
             .reply(200, { success: true })
           const api = new CommercetoolsApi(defaultConfig)
 
-          await api.getCartById({ id: 'test-cart-id' })
+          await api.getCartById({ id: 'spoof-path/test-cart-id' })
+        })
+
+        it('should throw an error when an empty ID is being passed as a parameter', async () => {
+          const api = new CommercetoolsApi(defaultConfig)
+
+          await expect(() => api.getCartById({ id: ' ' })).toThrow(`The string parameter 'id' cannot be empty`)
         })
       })
 
@@ -1462,11 +1671,19 @@ describe('CommercetoolsApi', () => {
               authorization: 'Bearer test-access-token',
             },
           })
-            .post('/test-project-key/carts/test-cart-id', { version: 1, actions: [] })
+            .post('/test-project-key/carts/spoof-path%2Ftest-cart-id', { version: 1, actions: [] })
             .reply(200, { success: true })
           const api = new CommercetoolsApi(defaultConfig)
 
-          await api.updateCartById({ id: 'test-cart-id', version: 1, actions: [] })
+          await api.updateCartById({ id: 'spoof-path/test-cart-id', version: 1, actions: [] })
+        })
+
+        it('should throw an error when an empty ID is being passed as a parameter', async () => {
+          const api = new CommercetoolsApi(defaultConfig)
+
+          await expect(() => api.updateCartById({ id: ' ', version: 1, actions: [] })).rejects.toThrow(
+            `The string parameter 'id' cannot be empty`,
+          )
         })
       })
 
@@ -1477,12 +1694,20 @@ describe('CommercetoolsApi', () => {
               authorization: 'Bearer test-access-token',
             },
           })
-            .delete('/test-project-key/carts/test-cart-id')
+            .delete('/test-project-key/carts/spoof-path%2Ftest-cart-id')
             .query({ version: 1 })
             .reply(200, { success: true })
           const api = new CommercetoolsApi(defaultConfig)
 
-          await api.deleteCartById({ id: 'test-cart-id', version: 1 })
+          await api.deleteCartById({ id: 'spoof-path/test-cart-id', version: 1 })
+        })
+
+        it('should throw an error when an empty ID is being passed as a parameter', async () => {
+          const api = new CommercetoolsApi(defaultConfig)
+
+          await expect(() => api.deleteCartById({ id: ' ', version: 1 })).rejects.toThrow(
+            `The string parameter 'id' cannot be empty`,
+          )
         })
       })
     })
@@ -1584,13 +1809,21 @@ describe('CommercetoolsApi', () => {
             authorization: 'Bearer my-access-token',
           },
         })
-          .get('/test-project-key/me/orders/my-order-id')
+          .get('/test-project-key/me/orders/spoof-path%2Fmy-order-id')
           .reply(200, { success: true })
         const api = new CommercetoolsApi(defaultConfig)
 
-        const order = await api.getMyOrderById({ id: 'my-order-id', accessToken: 'my-access-token' })
+        const order = await api.getMyOrderById({ id: 'spoof-path/my-order-id', accessToken: 'my-access-token' })
 
         expect(order).toEqual({ success: true })
+      })
+
+      it('should throw an error when an empty ID is being passed as a parameter', async () => {
+        const api = new CommercetoolsApi(defaultConfig)
+
+        await expect(() => api.getMyOrderById({ id: ' ', accessToken: 'my-access-token' })).toThrow(
+          `The string parameter 'id' cannot be empty`,
+        )
       })
     })
 
@@ -1634,13 +1867,19 @@ describe('CommercetoolsApi', () => {
             authorization: 'Bearer test-access-token',
           },
         })
-          .get('/test-project-key/orders/test-order-id')
+          .get('/test-project-key/orders/spoof-path%2Ftest-order-id')
           .reply(200, { success: true })
         const api = new CommercetoolsApi(defaultConfig)
 
-        const order = await api.getOrderById({ id: 'test-order-id' })
+        const order = await api.getOrderById({ id: 'spoof-path/test-order-id' })
 
         expect(order).toEqual({ success: true })
+      })
+
+      it('should throw an error when an empty ID is being passed as a parameter', async () => {
+        const api = new CommercetoolsApi(defaultConfig)
+
+        await expect(() => api.getOrderById({ id: ' ' })).toThrow(`The string parameter 'id' cannot be empty`)
       })
     })
 
@@ -1651,11 +1890,11 @@ describe('CommercetoolsApi', () => {
             authorization: 'Bearer test-access-token',
           },
         })
-          .get('/test-project-key/orders/order-number=my-order-number')
+          .get('/test-project-key/orders/order-number=spoof-path%2Fmy-order-number')
           .reply(200, { success: true })
         const api = new CommercetoolsApi(defaultConfig)
 
-        const order = await api.getOrderByOrderNumber({ orderNumber: 'my-order-number' })
+        const order = await api.getOrderByOrderNumber({ orderNumber: 'spoof-path/my-order-number' })
 
         expect(order).toEqual({ success: true })
       })
@@ -1668,16 +1907,24 @@ describe('CommercetoolsApi', () => {
             authorization: 'Bearer test-access-token',
           },
         })
-          .post('/test-project-key/orders/test-order-id', {
+          .post('/test-project-key/orders/spoof-path%2Ftest-order-id', {
             version: 2,
             actions: [],
           })
           .reply(200, { success: true })
         const api = new CommercetoolsApi(defaultConfig)
 
-        const order = await api.updateOrderById({ id: 'test-order-id', data: { version: 2, actions: [] } })
+        const order = await api.updateOrderById({ id: 'spoof-path/test-order-id', data: { version: 2, actions: [] } })
 
         expect(order).toEqual({ success: true })
+      })
+
+      it('should throw an error when an empty ID is being passed as a parameter', async () => {
+        const api = new CommercetoolsApi(defaultConfig)
+
+        await expect(() => api.updateOrderById({ id: ' ', data: { version: 2, actions: [] } })).toThrow(
+          `The string parameter 'id' cannot be empty`,
+        )
       })
     })
 
@@ -1688,7 +1935,7 @@ describe('CommercetoolsApi', () => {
             authorization: 'Bearer test-access-token',
           },
         })
-          .post('/test-project-key/orders/order-number=test-order-num', {
+          .post('/test-project-key/orders/order-number=spoof-path%2Ftest-order-num', {
             version: 2,
             actions: [],
           })
@@ -1696,7 +1943,7 @@ describe('CommercetoolsApi', () => {
         const api = new CommercetoolsApi(defaultConfig)
 
         const order = await api.updateOrderByOrderNumber({
-          orderNumber: 'test-order-num',
+          orderNumber: 'spoof-path/test-order-num',
           data: { version: 2, actions: [] },
         })
 
@@ -1711,14 +1958,22 @@ describe('CommercetoolsApi', () => {
             authorization: 'Bearer test-access-token',
           },
         })
-          .delete('/test-project-key/orders/test-order-id')
+          .delete('/test-project-key/orders/spoof-path%2Ftest-order-id')
           .query({ version: 2 })
           .reply(200, { success: true })
         const api = new CommercetoolsApi(defaultConfig)
 
-        const order = await api.deleteOrderById({ id: 'test-order-id', version: 2 })
+        const order = await api.deleteOrderById({ id: 'spoof-path/test-order-id', version: 2 })
 
         expect(order).toEqual({ success: true })
+      })
+
+      it('should throw an error when an empty ID is being passed as a parameter', async () => {
+        const api = new CommercetoolsApi(defaultConfig)
+
+        await expect(() => api.deleteOrderById({ id: ' ', version: 2 })).toThrow(
+          `The string parameter 'id' cannot be empty`,
+        )
       })
     })
 
@@ -1729,12 +1984,12 @@ describe('CommercetoolsApi', () => {
             authorization: 'Bearer test-access-token',
           },
         })
-          .delete('/test-project-key/orders/order-number=test-order-num')
+          .delete('/test-project-key/orders/order-number=spoof-path%2Ftest-order-num')
           .query({ version: 2 })
           .reply(200, { success: true })
         const api = new CommercetoolsApi(defaultConfig)
 
-        const order = await api.deleteOrderByOrderNumber({ orderNo: 'test-order-num', version: 2 })
+        const order = await api.deleteOrderByOrderNumber({ orderNo: 'spoof-path/test-order-num', version: 2 })
 
         expect(order).toEqual({ success: true })
       })
@@ -1792,34 +2047,50 @@ describe('CommercetoolsApi', () => {
             authorization: 'Bearer test-access-token',
           },
         })
-          .delete('/test-project-key/payments/payment-id')
+          .delete('/test-project-key/payments/spoof-path%2Fpayment-id')
           .query({ version: 4 })
           .reply(200, { success: true })
         const api = new CommercetoolsApi(defaultConfig)
 
-        const response = await api.deletePaymentById({ id: 'payment-id', version: 4 })
+        const response = await api.deletePaymentById({ id: 'spoof-path/payment-id', version: 4 })
 
         expect(response).toEqual({ success: true })
       })
+
+      it('should throw an error when an empty ID is being passed as a parameter', async () => {
+        const api = new CommercetoolsApi(defaultConfig)
+
+        await expect(() => api.deletePaymentById({ id: ' ', version: 4 })).toThrow(
+          `The string parameter 'id' cannot be empty`,
+        )
+      })
     })
 
-    describe('updatePayment', () => {
+    describe('updatePaymentById', () => {
       it('should make a POST request to the correct endpoint with the given access token and payment data', async () => {
         nock('https://api.europe-west1.gcp.commercetools.com', {
           reqheaders: {
             authorization: 'Bearer test-access-token',
           },
         })
-          .post('/test-project-key/payments/payment-id', { version: 1, actions: [] })
+          .post('/test-project-key/payments/spoof-path%2Fpayment-id', { version: 1, actions: [] })
           .reply(200, { success: true })
         const api = new CommercetoolsApi(defaultConfig)
 
         const response = await api.updatePaymentById({
-          id: 'payment-id',
+          id: 'spoof-path/payment-id',
           data: { version: 1, actions: [] },
         })
 
         expect(response).toEqual({ success: true })
+      })
+
+      it('should throw an error when an empty ID is being passed as a parameter', async () => {
+        const api = new CommercetoolsApi(defaultConfig)
+
+        await expect(() => api.updatePaymentById({ id: ' ', data: { version: 1, actions: [] } })).toThrow(
+          `The string parameter 'id' cannot be empty`,
+        )
       })
     })
 
@@ -1830,15 +2101,21 @@ describe('CommercetoolsApi', () => {
             authorization: 'Bearer test-access-token',
           },
         })
-          .get('/test-project-key/payments/payment-id')
+          .get('/test-project-key/payments/spoof-path%2Fpayment-id')
           .reply(200, { success: true })
         const api = new CommercetoolsApi(defaultConfig)
 
         const response = await api.getPaymentById({
-          id: 'payment-id',
+          id: 'spoof-path/payment-id',
         })
 
         expect(response).toEqual({ success: true })
+      })
+
+      it('should throw an error when an empty ID is being passed as a parameter', async () => {
+        const api = new CommercetoolsApi(defaultConfig)
+
+        await expect(() => api.getPaymentById({ id: ' ' })).toThrow(`The string parameter 'id' cannot be empty`)
       })
     })
 
@@ -1891,17 +2168,25 @@ describe('CommercetoolsApi', () => {
             authorization: 'Bearer my-access-token',
           },
         })
-          .post('/test-project-key/me/payments/my-payment-id', { version: 1, actions: [] })
+          .post('/test-project-key/me/payments/spoof-path%2Fmy-payment-id', { version: 1, actions: [] })
           .reply(200, { success: true })
         const api = new CommercetoolsApi(defaultConfig)
 
         const response = await api.updateMyPaymentById({
           accessToken: 'my-access-token',
-          id: 'my-payment-id',
+          id: 'spoof-path/my-payment-id',
           data: { version: 1, actions: [] },
         })
 
         expect(response).toEqual({ success: true })
+      })
+
+      it('should throw an error when an empty ID is being passed as a parameter', async () => {
+        const api = new CommercetoolsApi(defaultConfig)
+
+        await expect(() =>
+          api.updateMyPaymentById({ accessToken: 'my-access-token', id: ' ', data: { version: 1, actions: [] } }),
+        ).toThrow(`The string parameter 'id' cannot be empty`)
       })
     })
 
@@ -1912,16 +2197,24 @@ describe('CommercetoolsApi', () => {
             authorization: 'Bearer my-access-token',
           },
         })
-          .get('/test-project-key/me/payments/my-payment-id')
+          .get('/test-project-key/me/payments/spoof-path%2Fmy-payment-id')
           .reply(200, { success: true })
         const api = new CommercetoolsApi(defaultConfig)
 
         const response = await api.getMyPaymentById({
           accessToken: 'my-access-token',
-          id: 'my-payment-id',
+          id: 'spoof-path/my-payment-id',
         })
 
         expect(response).toEqual({ success: true })
+      })
+
+      it('should throw an error when an empty ID is being passed as a parameter', async () => {
+        const api = new CommercetoolsApi(defaultConfig)
+
+        await expect(() => api.getMyPaymentById({ accessToken: 'my-access-token', id: ' ' })).toThrow(
+          `The string parameter 'id' cannot be empty`,
+        )
       })
     })
 
@@ -1955,17 +2248,25 @@ describe('CommercetoolsApi', () => {
             authorization: 'Bearer my-access-token',
           },
         })
-          .delete('/test-project-key/me/payments/my-payment-id?version=1')
+          .delete('/test-project-key/me/payments/spoof-path%2Fmy-payment-id?version=1')
           .reply(200, { success: true })
         const api = new CommercetoolsApi(defaultConfig)
 
         const response = await api.deleteMyPaymentById({
           accessToken: 'my-access-token',
-          id: 'my-payment-id',
+          id: 'spoof-path/my-payment-id',
           version: 1,
         })
 
         expect(response).toEqual({ success: true })
+      })
+
+      it('should throw an error when an empty ID is being passed as a parameter', async () => {
+        const api = new CommercetoolsApi(defaultConfig)
+
+        await expect(() => api.deleteMyPaymentById({ accessToken: 'my-access-token', id: ' ', version: 1 })).toThrow(
+          `The string parameter 'id' cannot be empty`,
+        )
       })
     })
   })
@@ -1985,6 +2286,12 @@ describe('CommercetoolsApi', () => {
         const order = await api.getCustomerById({ id: 'test-customer-id' })
 
         expect(order).toEqual({ success: true })
+      })
+
+      it('should throw an error when an empty ID is being passed as a parameter', async () => {
+        const api = new CommercetoolsApi(defaultConfig)
+
+        await expect(() => api.getCustomerById({ id: ' ' })).toThrow(`The string parameter 'id' cannot be empty`)
       })
     })
 
@@ -2172,7 +2479,7 @@ describe('CommercetoolsApi', () => {
     describe('updateCustomerById', () => {
       it('should make a POST request to the correct endpoint with all expected data and params', async () => {
         nock('https://api.europe-west1.gcp.commercetools.com')
-          .post('/test-project-key/customers/my-customer-id', { actions: [{ test: 1 }], version: 2 })
+          .post('/test-project-key/customers/spoof-path%2Fmy-customer-id', { actions: [{ test: 1 }], version: 2 })
           .query({
             testParam: 1,
           })
@@ -2180,7 +2487,7 @@ describe('CommercetoolsApi', () => {
         const api = new CommercetoolsApi(defaultConfig)
 
         const product = await api.updateCustomerById({
-          id: 'my-customer-id',
+          id: 'spoof-path/my-customer-id',
           data: {
             actions: [{ test: 1 }] as unknown as CustomerUpdateAction[],
             version: 2,
@@ -2190,12 +2497,27 @@ describe('CommercetoolsApi', () => {
 
         expect(product).toEqual({ success: true })
       })
+
+      it('should throw an error when an empty ID is being passed as a parameter', async () => {
+        const api = new CommercetoolsApi(defaultConfig)
+
+        await expect(() =>
+          api.updateCustomerById({
+            id: ' ',
+            data: {
+              actions: [{ test: 1 }] as unknown as CustomerUpdateAction[],
+              version: 2,
+            },
+            params: { testParam: 1 },
+          }),
+        ).toThrow(`The string parameter 'id' cannot be empty`)
+      })
     })
 
     describe('updateCustomerByKey', () => {
       it('should make a POST request to the correct endpoint with all expected data and params', async () => {
         nock('https://api.europe-west1.gcp.commercetools.com')
-          .post('/test-project-key/customers/key=my-customer-key', { actions: [{ test: 1 }], version: 3 })
+          .post('/test-project-key/customers/key=spoof-path%2Fmy-customer-key', { actions: [{ test: 1 }], version: 3 })
           .query({
             testParam: 1,
           })
@@ -2203,7 +2525,7 @@ describe('CommercetoolsApi', () => {
         const api = new CommercetoolsApi(defaultConfig)
 
         const product = await api.updateCustomerByKey({
-          key: 'my-customer-key',
+          key: 'spoof-path/my-customer-key',
           data: { actions: [{ test: 1 }] as unknown as CustomerUpdateAction[], version: 3 },
           params: { testParam: 1 },
         })
@@ -2219,17 +2541,25 @@ describe('CommercetoolsApi', () => {
             authorization: 'Bearer test-access-token',
           },
         })
-          .delete('/test-project-key/customers/customer-id')
+          .delete('/test-project-key/customers/spoof-path%2Fcustomer-id')
           .query({ version: 2 })
           .reply(200, { success: true })
         const api = new CommercetoolsApi(defaultConfig)
 
         const response = await api.deleteCustomerById({
-          id: 'customer-id',
+          id: 'spoof-path/customer-id',
           version: 2,
         })
 
         expect(response).toEqual({ success: true })
+      })
+
+      it('should throw an error when an empty ID is being passed as a parameter', async () => {
+        const api = new CommercetoolsApi(defaultConfig)
+
+        await expect(() => api.deleteCustomerById({ id: ' ', version: 2 })).toThrow(
+          `The string parameter 'id' cannot be empty`,
+        )
       })
     })
 
@@ -2240,13 +2570,13 @@ describe('CommercetoolsApi', () => {
             authorization: 'Bearer test-access-token',
           },
         })
-          .delete('/test-project-key/customers/key=customer-key')
+          .delete('/test-project-key/customers/key=spoof-path%2Fcustomer-key')
           .query({ version: 3 })
           .reply(200, { success: true })
         const api = new CommercetoolsApi(defaultConfig)
 
         const response = await api.deleteCustomerByKey({
-          key: 'customer-key',
+          key: 'spoof-path/customer-key',
           version: 3,
         })
 
@@ -2414,9 +2744,15 @@ describe('CommercetoolsApi', () => {
           .reply(200, { success: true })
         const api = new CommercetoolsApi(defaultConfig)
 
-        const order = await api.getProductTypeById({ id: 'my-product-type-id ' })
+        const order = await api.getProductTypeById({ id: 'my-product-type-id' })
 
         expect(order).toEqual({ success: true })
+      })
+
+      it('should throw an error when an empty ID is being passed as a parameter', async () => {
+        const api = new CommercetoolsApi(defaultConfig)
+
+        await expect(() => api.getProductTypeById({ id: ' ' })).toThrow(`The string parameter 'id' cannot be empty`)
       })
     })
 
@@ -2431,7 +2767,7 @@ describe('CommercetoolsApi', () => {
           .reply(200, { success: true })
         const api = new CommercetoolsApi(defaultConfig)
 
-        const order = await api.getProductTypeByKey({ key: 'my-product-type-key ' })
+        const order = await api.getProductTypeByKey({ key: 'my-product-type-key' })
 
         expect(order).toEqual({ success: true })
       })
@@ -2468,9 +2804,15 @@ describe('CommercetoolsApi', () => {
           .reply(200, { success: true })
         const api = new CommercetoolsApi(defaultConfig)
 
-        const order = await api.getTypeById({ id: 'my-type-id ' })
+        const order = await api.getTypeById({ id: 'my-type-id' })
 
         expect(order).toEqual({ success: true })
+      })
+
+      it('should throw an error when an empty ID is being passed as a parameter', async () => {
+        const api = new CommercetoolsApi(defaultConfig)
+
+        await expect(() => api.getTypeById({ id: ' ' })).toThrow(`The string parameter 'id' cannot be empty`)
       })
     })
 
@@ -2485,7 +2827,7 @@ describe('CommercetoolsApi', () => {
           .reply(200, { success: true })
         const api = new CommercetoolsApi(defaultConfig)
 
-        const order = await api.getTypeByKey({ key: 'my-type-key ' })
+        const order = await api.getTypeByKey({ key: 'my-type-key' })
 
         expect(order).toEqual({ success: true })
       })
@@ -2522,9 +2864,15 @@ describe('CommercetoolsApi', () => {
           .reply(200, { success: true })
         const api = new CommercetoolsApi(defaultConfig)
 
-        const order = await api.getDiscountCodeById({ id: 'my-discount-code-id ' })
+        const order = await api.getDiscountCodeById({ id: 'my-discount-code-id' })
 
         expect(order).toEqual({ success: true })
+      })
+
+      it('should throw an error when an empty ID is being passed as a parameter', async () => {
+        const api = new CommercetoolsApi(defaultConfig)
+
+        await expect(() => api.getDiscountCodeById({ id: ' ' })).toThrow(`The string parameter 'id' cannot be empty`)
       })
     })
   })
@@ -2541,9 +2889,15 @@ describe('CommercetoolsApi', () => {
           .reply(200, { success: true })
         const api = new CommercetoolsApi(defaultConfig)
 
-        const order = await api.getCartDiscountById({ id: 'my-cart-discount-id ' })
+        const order = await api.getCartDiscountById({ id: 'my-cart-discount-id' })
 
         expect(order).toEqual({ success: true })
+      })
+
+      it('should throw an error when an empty ID is being passed as a parameter', async () => {
+        const api = new CommercetoolsApi(defaultConfig)
+
+        await expect(() => api.getCartDiscountById({ id: ' ' })).toThrow(`The string parameter 'id' cannot be empty`)
       })
     })
 
@@ -2558,7 +2912,7 @@ describe('CommercetoolsApi', () => {
           .reply(200, { success: true })
         const api = new CommercetoolsApi(defaultConfig)
 
-        const order = await api.getCartDiscountByKey({ key: 'my-cart-discount-key ' })
+        const order = await api.getCartDiscountByKey({ key: 'my-cart-discount-key' })
 
         expect(order).toEqual({ success: true })
       })
@@ -2591,11 +2945,11 @@ describe('CommercetoolsApi', () => {
             authorization: 'Bearer test-access-token',
           },
         })
-          .get('/test-project-key/custom-objects/my-container/my-key')
+          .get('/test-project-key/custom-objects/spoof-path%2Fmy-container/spoof-path%2Fmy-key')
           .reply(200, { success: true })
         const api = new CommercetoolsApi(defaultConfig)
 
-        const order = await api.getCustomObject({ container: 'my-container', key: 'my-key' })
+        const order = await api.getCustomObject({ container: 'spoof-path/my-container', key: 'spoof-path/my-key' })
 
         expect(order).toEqual({ success: true })
       })
@@ -2608,13 +2962,19 @@ describe('CommercetoolsApi', () => {
             authorization: 'Bearer test-access-token',
           },
         })
-          .get('/test-project-key/custom-objects/my-custom-object-id')
+          .get('/test-project-key/custom-objects/spoof-path%2Fmy-custom-object-id')
           .reply(200, { success: true })
         const api = new CommercetoolsApi(defaultConfig)
 
-        const order = await api.getCustomObjectById({ id: 'my-custom-object-id' })
+        const order = await api.getCustomObjectById({ id: 'spoof-path/my-custom-object-id' })
 
         expect(order).toEqual({ success: true })
+      })
+
+      it('should throw an error when an empty ID is being passed as a parameter', async () => {
+        const api = new CommercetoolsApi(defaultConfig)
+
+        await expect(() => api.getCustomObjectById({ id: ' ' })).toThrow(`The string parameter 'id' cannot be empty`)
       })
     })
 
@@ -2644,11 +3004,11 @@ describe('CommercetoolsApi', () => {
             authorization: 'Bearer test-access-token',
           },
         })
-          .delete('/test-project-key/custom-objects/my-container/my-key')
+          .delete('/test-project-key/custom-objects/spoof-path%2Fmy-container/spoof-path%2Fmy-key')
           .reply(200, { success: true })
         const api = new CommercetoolsApi(defaultConfig)
 
-        const order = await api.deleteCustomObject({ container: 'my-container', key: 'my-key' })
+        const order = await api.deleteCustomObject({ container: 'spoof-path/my-container', key: 'spoof-path/my-key' })
 
         expect(order).toEqual({ success: true })
       })
@@ -2663,13 +3023,19 @@ describe('CommercetoolsApi', () => {
             authorization: 'Bearer test-access-token',
           },
         })
-          .get('/test-project-key/shipping-methods/my-shipping-method-id')
+          .get('/test-project-key/shipping-methods/spoof-path%2Fmy-shipping-method-id')
           .reply(200, { success: true })
         const api = new CommercetoolsApi(defaultConfig)
 
-        const order = await api.getShippingMethodById({ id: 'my-shipping-method-id' })
+        const order = await api.getShippingMethodById({ id: 'spoof-path/my-shipping-method-id' })
 
         expect(order).toEqual({ success: true })
+      })
+
+      it('should throw an error when an empty ID is being passed as a parameter', async () => {
+        const api = new CommercetoolsApi(defaultConfig)
+
+        await expect(() => api.getShippingMethodById({ id: ' ' })).toThrow(`The string parameter 'id' cannot be empty`)
       })
     })
 
@@ -2680,11 +3046,11 @@ describe('CommercetoolsApi', () => {
             authorization: 'Bearer test-access-token',
           },
         })
-          .get('/test-project-key/shipping-methods/key=my-shipping-method-key')
+          .get('/test-project-key/shipping-methods/key=spoof-path%2Fmy-shipping-method-key')
           .reply(200, { success: true })
         const api = new CommercetoolsApi(defaultConfig)
 
-        const order = await api.getShippingMethodByKey({ key: 'my-shipping-method-key' })
+        const order = await api.getShippingMethodByKey({ key: 'spoof-path/my-shipping-method-key' })
 
         expect(order).toEqual({ success: true })
       })
@@ -2812,24 +3178,30 @@ describe('CommercetoolsApi', () => {
     describe('getStateById', () => {
       it('should make a GET request to the correct endpoint', async () => {
         nock('https://api.europe-west1.gcp.commercetools.com')
-          .get('/test-project-key/states/my-state-id')
+          .get('/test-project-key/states/spoof-path%2Fmy-state-id')
           .reply(200, { success: true })
         const api = new CommercetoolsApi(defaultConfig)
 
-        const product = await api.getStateById({ id: 'my-state-id' })
+        const product = await api.getStateById({ id: 'spoof-path/my-state-id' })
 
         expect(product).toEqual({ success: true })
+      })
+
+      it('should throw an error when an empty ID is being passed as a parameter', async () => {
+        const api = new CommercetoolsApi(defaultConfig)
+
+        await expect(() => api.getStateById({ id: ' ' })).toThrow(`The string parameter 'id' cannot be empty`)
       })
     })
 
     describe('getStateByKey', () => {
       it('should make a GET request to the correct endpoint', async () => {
         nock('https://api.europe-west1.gcp.commercetools.com')
-          .get('/test-project-key/states/key=my-state-key')
+          .get('/test-project-key/states/key=spoof-path%2Fmy-state-key')
           .reply(200, { success: true })
         const api = new CommercetoolsApi(defaultConfig)
 
-        const product = await api.getStateByKey({ key: 'my-state-key' })
+        const product = await api.getStateByKey({ key: 'spoof-path/my-state-key' })
 
         expect(product).toEqual({ success: true })
       })
@@ -2872,24 +3244,30 @@ describe('CommercetoolsApi', () => {
     describe('getStandalonePriceById', () => {
       it('should make a GET request to the correct endpoint', async () => {
         nock('https://api.europe-west1.gcp.commercetools.com')
-          .get('/test-project-key/standalone-prices/my-standalone-price-id')
+          .get('/test-project-key/standalone-prices/spoof-path%2Fmy-standalone-price-id')
           .reply(200, { success: true })
         const api = new CommercetoolsApi(defaultConfig)
 
-        const product = await api.getStandalonePriceById({ id: 'my-standalone-price-id' })
+        const product = await api.getStandalonePriceById({ id: 'spoof-path/my-standalone-price-id' })
 
         expect(product).toEqual({ success: true })
+      })
+
+      it('should throw an error when an empty ID is being passed as a parameter', async () => {
+        const api = new CommercetoolsApi(defaultConfig)
+
+        await expect(() => api.getStandalonePriceById({ id: ' ' })).toThrow(`The string parameter 'id' cannot be empty`)
       })
     })
 
     describe('getStandalonePriceByKey', () => {
       it('should make a GET request to the correct endpoint', async () => {
         nock('https://api.europe-west1.gcp.commercetools.com')
-          .get('/test-project-key/standalone-prices/key=my-standalone-price-key')
+          .get('/test-project-key/standalone-prices/key=spoof-path%2Fmy-standalone-price-key')
           .reply(200, { success: true })
         const api = new CommercetoolsApi(defaultConfig)
 
-        const product = await api.getStandalonePriceByKey({ key: 'my-standalone-price-key' })
+        const product = await api.getStandalonePriceByKey({ key: 'spoof-path/my-standalone-price-key' })
 
         expect(product).toEqual({ success: true })
       })
@@ -2959,28 +3337,39 @@ describe('CommercetoolsApi', () => {
     describe('updateStandalonePriceById', () => {
       it('should make a POST request to the correct endpoint with all expected data and params', async () => {
         nock('https://api.europe-west1.gcp.commercetools.com')
-          .post('/test-project-key/standalone-prices/my-standalone-price-id', { version: 1, actions: [] })
+          .post('/test-project-key/standalone-prices/spoof-path%2Fmy-standalone-price-id', { version: 1, actions: [] })
           .reply(200, { success: true })
         const api = new CommercetoolsApi(defaultConfig)
 
         const category = await api.updateStandalonePriceById({
-          id: 'my-standalone-price-id',
+          id: 'spoof-path/my-standalone-price-id',
           data: { version: 1, actions: [] },
         })
 
         expect(category).toEqual({ success: true })
+      })
+
+      it('should throw an error when an empty ID is being passed as a parameter', async () => {
+        const api = new CommercetoolsApi(defaultConfig)
+
+        await expect(() => api.updateStandalonePriceById({ id: ' ', data: { version: 1, actions: [] } })).toThrow(
+          `The string parameter 'id' cannot be empty`,
+        )
       })
     })
 
     describe('updateStandalonePriceByKey', () => {
       it('should make a POST request to the correct endpoint with all expected data and params', async () => {
         nock('https://api.europe-west1.gcp.commercetools.com')
-          .post('/test-project-key/standalone-prices/key=my-standalone-price-key', { version: 1, actions: [] })
+          .post('/test-project-key/standalone-prices/key=spoof-path%2Fmy-standalone-price-key', {
+            version: 1,
+            actions: [],
+          })
           .reply(200, { success: true })
         const api = new CommercetoolsApi(defaultConfig)
 
         const category = await api.updateStandalonePriceByKey({
-          key: 'my-standalone-price-key',
+          key: 'spoof-path/my-standalone-price-key',
           data: { version: 1, actions: [] },
         })
 
@@ -2991,26 +3380,34 @@ describe('CommercetoolsApi', () => {
     describe('deleteStandalonePriceById', () => {
       it('should make a DELETE request to the correct endpoint with all expected data and params', async () => {
         nock('https://api.europe-west1.gcp.commercetools.com')
-          .delete('/test-project-key/standalone-prices/my-standalone-price-id')
+          .delete('/test-project-key/standalone-prices/spoof-path%2Fmy-standalone-price-id')
           .query({ version: 3 })
           .reply(200, { success: true })
         const api = new CommercetoolsApi(defaultConfig)
 
-        const category = await api.deleteStandalonePriceById({ id: 'my-standalone-price-id', version: 3 })
+        const category = await api.deleteStandalonePriceById({ id: 'spoof-path/my-standalone-price-id', version: 3 })
 
         expect(category).toEqual({ success: true })
+      })
+
+      it('should throw an error when an empty ID is being passed as a parameter', async () => {
+        const api = new CommercetoolsApi(defaultConfig)
+
+        await expect(() => api.deleteStandalonePriceById({ id: ' ', version: 3 })).toThrow(
+          `The string parameter 'id' cannot be empty`,
+        )
       })
     })
 
     describe('deleteStandalonePriceByKey', () => {
       it('should make a DELETE request to the correct endpoint with all expected data and params', async () => {
         nock('https://api.europe-west1.gcp.commercetools.com')
-          .delete('/test-project-key/standalone-prices/key=my-standalone-price-key')
+          .delete('/test-project-key/standalone-prices/key=spoof-path%2Fmy-standalone-price-key')
           .query({ version: 4 })
           .reply(200, { success: true })
         const api = new CommercetoolsApi(defaultConfig)
 
-        const category = await api.deleteStandalonePriceByKey({ key: 'my-standalone-price-key', version: 4 })
+        const category = await api.deleteStandalonePriceByKey({ key: 'spoof-path/my-standalone-price-key', version: 4 })
 
         expect(category).toEqual({ success: true })
       })
@@ -3116,6 +3513,11 @@ describe('CommercetoolsApi', () => {
   })
 
   describe('validateConfig', () => {
+    it('should throw an error config object is missing or empty', () => {
+      expect(() => CommercetoolsApi.validateConfig({})).toThrowError()
+      expect(() => CommercetoolsApi.validateConfig(null)).toThrowError()
+    })
+
     it('should throw an error if the `projectKey` property is falsy', () => {
       expect(() => CommercetoolsApi.validateConfig({ ...defaultConfig, projectKey: null })).toThrowError()
       expect(() => CommercetoolsApi.validateConfig({ ...defaultConfig, projectKey: '' })).toThrowError()
