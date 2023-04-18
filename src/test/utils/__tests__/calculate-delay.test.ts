@@ -1,9 +1,15 @@
 import { calculateDelay } from '../../../lib/utils/calculate-delay'
 
 describe('calculateDelay', () => {
+  it('should return zero if the retry configuration is missing', () => {
+    const result = calculateDelay(1, undefined)
+
+    expect(result).toBe(0)
+  })
+
   it('should return zero if the retry count is zero', () => {
-    const result = calculateDelay(1, {
-      delayMs: 0,
+    const result = calculateDelay(0, {
+      delayMs: 50,
     })
 
     expect(result).toBe(0)

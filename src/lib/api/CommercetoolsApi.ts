@@ -9,6 +9,7 @@ import {
 import { CommercetoolsError } from '../error'
 import { REGION_URLS } from '../auth/constants'
 import { CommercetoolsRequest, RegionEndpoints, RequestExecutor } from '../types'
+import { ensureNonEmptyString } from '../utils'
 import type {
   Cart,
   CartDiscount,
@@ -258,9 +259,11 @@ export class CommercetoolsApi {
    * https://docs.commercetools.com/api/projects/stores#get-a-store-by-id
    */
   getStoreById(options: CommonRequestOptions & { id: string }): Promise<Store> {
+    ensureNonEmptyString({ value: options.id, name: 'id' })
+
     return this.request({
       ...this.extractCommonRequestOptions(options),
-      path: `/stores/${options.id}`,
+      path: `/stores/${encodeURIComponent(options.id)}`,
       method: 'GET',
     })
   }
@@ -272,7 +275,7 @@ export class CommercetoolsApi {
   getStoreByKey(options: CommonRequestOptions & { key: string }): Promise<Store> {
     return this.request({
       ...this.extractCommonRequestOptions(options),
-      path: `/stores/key=${options.key}`,
+      path: `/stores/key=${encodeURIComponent(options.key)}`,
       method: 'GET',
     })
   }
@@ -306,9 +309,11 @@ export class CommercetoolsApi {
    * https://docs.commercetools.com/api/projects/stores#update-store-by-id
    */
   updateStoreById(options: CommonRequestOptions & { id: string; data: StoreUpdate }): Promise<Store> {
+    ensureNonEmptyString({ value: options.id, name: 'id' })
+
     return this.request({
       ...this.extractCommonRequestOptions(options),
-      path: `/stores/${options.id}`,
+      path: `/stores/${encodeURIComponent(options.id)}`,
       method: 'POST',
       data: options.data,
     })
@@ -320,7 +325,7 @@ export class CommercetoolsApi {
    */
   updateStoreByKey(options: CommonRequestOptions & { key: string; data: StoreUpdate }): Promise<Store> {
     return this.request({
-      path: `/stores/key=${options.key}`,
+      path: `/stores/key=${encodeURIComponent(options.key)}`,
       method: 'POST',
       data: options.data,
     })
@@ -331,9 +336,11 @@ export class CommercetoolsApi {
    * https://docs.commercetools.com/api/projects/stores#delete-store-by-id
    */
   deleteStoreById(options: CommonRequestOptions & { id: string; version: number }): Promise<Store> {
+    ensureNonEmptyString({ value: options.id, name: 'id' })
+
     return this.request({
       ...this.extractCommonRequestOptions(options),
-      path: `/stores/${options.id}`,
+      path: `/stores/${encodeURIComponent(options.id)}`,
       method: 'DELETE',
       params: {
         ...options.params,
@@ -349,7 +356,7 @@ export class CommercetoolsApi {
   deleteStoreByKey(options: CommonRequestOptions & { key: string; version: number }): Promise<Store> {
     return this.request({
       ...this.extractCommonRequestOptions(options),
-      path: `/stores/key=${options.key}`,
+      path: `/stores/key=${encodeURIComponent(options.key)}`,
       method: 'DELETE',
       params: {
         ...options.params,
@@ -363,9 +370,11 @@ export class CommercetoolsApi {
    * https://docs.commercetools.com/api/projects/categories#get-category-by-id
    */
   getCategoryById(options: CommonRequestOptions & { id: string }): Promise<Category> {
+    ensureNonEmptyString({ value: options.id, name: 'id' })
+
     return this.request({
       ...this.extractCommonRequestOptions(options),
-      path: `/categories/${options.id}`,
+      path: `/categories/${encodeURIComponent(options.id)}`,
       method: 'GET',
     })
   }
@@ -377,7 +386,7 @@ export class CommercetoolsApi {
   getCategoryByKey(options: CommonRequestOptions & { key: string }): Promise<Category> {
     return this.request({
       ...this.extractCommonRequestOptions(options),
-      path: `/categories/key=${options.key}`,
+      path: `/categories/key=${encodeURIComponent(options.key)}`,
       method: 'GET',
     })
   }
@@ -412,9 +421,11 @@ export class CommercetoolsApi {
    * https://docs.commercetools.com/api/projects/channels#get-channel-by-id
    */
   getChannelById(options: CommonRequestOptions & { id: string }): Promise<Channel> {
+    ensureNonEmptyString({ value: options.id, name: 'id' })
+
     return this.request({
       ...this.extractCommonRequestOptions(options),
-      path: `/channels/${options.id}`,
+      path: `/channels/${encodeURIComponent(options.id)}`,
       method: 'GET',
     })
   }
@@ -429,7 +440,7 @@ export class CommercetoolsApi {
       path: `/channels`,
       method: 'GET',
       params: {
-        where: `key="${options.key}"`,
+        where: `key="${encodeURIComponent(options.key)}"`,
         limit: 1,
       },
     })
@@ -447,15 +458,17 @@ export class CommercetoolsApi {
       throw new CommercetoolsError('Either an id, key or slug must be provided')
     }
     if (options.id) {
+      ensureNonEmptyString({ value: options.id, name: 'id' })
+
       return this.request({
         ...this.extractCommonRequestOptions(options),
-        path: `/categories/${options.id}`,
+        path: `/categories/${encodeURIComponent(options.id)}`,
         method: 'GET',
       })
     }
     return this.request({
       ...this.extractCommonRequestOptions(options),
-      path: `/categories/key=${options.key}`,
+      path: `/categories/key=${encodeURIComponent(options.key ?? '')}`,
       method: 'GET',
     })
   }
@@ -537,9 +550,11 @@ export class CommercetoolsApi {
    * https://docs.commercetools.com/api/projects/products#get-product-by-id
    */
   getProductById(options: CommonRequestOptions & { id: string }): Promise<Product> {
+    ensureNonEmptyString({ value: options.id, name: 'id' })
+
     return this.request({
       ...this.extractCommonRequestOptions(options),
-      path: `/products/${options.id}`,
+      path: `/products/${encodeURIComponent(options.id)}`,
       method: 'GET',
     })
   }
@@ -551,7 +566,7 @@ export class CommercetoolsApi {
   getProductByKey(options: CommonRequestOptions & { key: string }): Promise<Product> {
     return this.request({
       ...this.extractCommonRequestOptions(options),
-      path: `/products/key=${options.key}`,
+      path: `/products/key=${encodeURIComponent(options.key)}`,
       method: 'GET',
     })
   }
@@ -561,9 +576,11 @@ export class CommercetoolsApi {
    * https://docs.commercetools.com/api/projects/productProjections#get-productprojection-by-id
    */
   getProductProjectionById(options: CommonStoreEnabledRequestOptions & { id: string }): Promise<ProductProjection> {
+    ensureNonEmptyString({ value: options.id, name: 'id' })
+
     return this.request({
       ...this.extractCommonRequestOptions(options),
-      path: this.applyStore(`/product-projections/${options.id}`, options.storeKey),
+      path: this.applyStore(`/product-projections/${encodeURIComponent(options.id)}`, options.storeKey),
       method: 'GET',
     })
   }
@@ -575,7 +592,7 @@ export class CommercetoolsApi {
   getProductProjectionByKey(options: CommonStoreEnabledRequestOptions & { key: string }): Promise<ProductProjection> {
     return this.request({
       ...this.extractCommonRequestOptions(options),
-      path: this.applyStore(`/product-projections/key=${options.key}`, options.storeKey),
+      path: this.applyStore(`/product-projections/key=${encodeURIComponent(options.key)}`, options.storeKey),
       method: 'GET',
     })
   }
@@ -652,9 +669,11 @@ export class CommercetoolsApi {
    * https://docs.commercetools.com/api/projects/product-selections#get-product-selection
    */
   getProductSelectionById(options: CommonStoreEnabledRequestOptions & { id: string }): Promise<ProductSelection> {
+    ensureNonEmptyString({ value: options.id, name: 'id' })
+
     return this.request({
       ...this.extractCommonRequestOptions(options),
-      path: this.applyStore(`/product-selections/${options.id}`, options.storeKey),
+      path: this.applyStore(`/product-selections/${encodeURIComponent(options.id)}`, options.storeKey),
       method: 'GET',
     })
   }
@@ -666,7 +685,7 @@ export class CommercetoolsApi {
   getProductSelectionByKey(options: CommonStoreEnabledRequestOptions & { key: string }): Promise<ProductSelection> {
     return this.request({
       ...this.extractCommonRequestOptions(options),
-      path: this.applyStore(`/product-selections/key=${options.key}`, options.storeKey),
+      path: this.applyStore(`/product-selections/key=${encodeURIComponent(options.key)}`, options.storeKey),
       method: 'GET',
     })
   }
@@ -711,7 +730,7 @@ export class CommercetoolsApi {
   ): Promise<ProductSelection> {
     return this.request({
       ...this.extractCommonRequestOptions(options),
-      path: `/product-selections/key=${options.key}`,
+      path: `/product-selections/key=${encodeURIComponent(options.key)}`,
       method: 'POST',
       data: { version: options.version, actions: options.actions },
     })
@@ -729,7 +748,7 @@ export class CommercetoolsApi {
   ): Promise<ProductSelection> {
     return this.request({
       ...this.extractCommonRequestOptions(options),
-      path: `/product-selections/key=${options.key}&version=${options.version}`,
+      path: `/product-selections/key=${encodeURIComponent(options.key)}&version=${encodeURIComponent(options.version)}`,
       method: 'DELETE',
     })
   }
@@ -741,7 +760,7 @@ export class CommercetoolsApi {
   queryProductsInStore(options: CommonStoreEnabledRequestOptions): Promise<ProductsInStorePagedQueryResponse> {
     return this.request({
       ...this.extractCommonRequestOptions(options),
-      path: `/in-store/key=${options.storeKey}/product-selection-assignments`,
+      path: `/in-store/key=${encodeURIComponent(options.storeKey ?? '')}/product-selection-assignments`,
       method: `GET`,
     })
   }
@@ -751,9 +770,11 @@ export class CommercetoolsApi {
    * https://docs.commercetools.com/api/projects/carts#update-a-cart-by-id
    */
   getCartById(options: CommonStoreEnabledRequestOptions & { id: string }): Promise<Cart> {
+    ensureNonEmptyString({ value: options.id, name: 'id' })
+
     return this.request({
       ...this.extractCommonRequestOptions(options),
-      path: this.applyStore(`/carts/${options.id}`, options.storeKey),
+      path: this.applyStore(`/carts/${encodeURIComponent(options.id)}`, options.storeKey),
       method: 'GET',
     })
   }
@@ -805,9 +826,11 @@ export class CommercetoolsApi {
   async updateCartById(
     options: CommonStoreEnabledRequestOptions & { id: string; version: number; actions: CartUpdateAction[] },
   ): Promise<Cart> {
+    ensureNonEmptyString({ value: options.id, name: 'id' })
+
     return this.request({
       ...this.extractCommonRequestOptions(options),
-      path: this.applyStore(`/carts/${options.id}`, options.storeKey),
+      path: this.applyStore(`/carts/${encodeURIComponent(options.id)}`, options.storeKey),
       method: 'POST',
       data: {
         version: options.version,
@@ -836,9 +859,11 @@ export class CommercetoolsApi {
   async getMyCartById(
     options: CommonStoreEnabledRequestOptions & { accessToken: string; cartId: string },
   ): Promise<Cart> {
+    ensureNonEmptyString({ value: options.cartId, name: 'cartId' })
+
     return this.request({
       ...this.extractCommonRequestOptions(options),
-      path: this.applyStore(`/me/carts/${options.cartId}`, options.storeKey),
+      path: this.applyStore(`/me/carts/${encodeURIComponent(options.cartId)}`, options.storeKey),
       method: 'GET',
       accessToken: options.accessToken,
     })
@@ -873,9 +898,11 @@ export class CommercetoolsApi {
       actions: MyCartUpdateAction[]
     },
   ): Promise<Cart> {
+    ensureNonEmptyString({ value: options.cartId, name: 'cartId' })
+
     return this.request({
       ...this.extractCommonRequestOptions(options),
-      path: this.applyStore(`/me/carts/${options.cartId}`, options.storeKey),
+      path: this.applyStore(`/me/carts/${encodeURIComponent(options.cartId)}`, options.storeKey),
       method: 'POST',
       data: {
         version: options.cartVersion,
@@ -894,7 +921,7 @@ export class CommercetoolsApi {
     const cart = await this.getMyActiveCart(options)
     return await this.request({
       ...this.extractCommonRequestOptions(options),
-      path: this.applyStore(`/me/carts/${cart.id}`, options.storeKey),
+      path: this.applyStore(`/me/carts/${encodeURIComponent(cart.id)}`, options.storeKey),
       method: 'DELETE',
       params: {
         ...options.params,
@@ -911,10 +938,12 @@ export class CommercetoolsApi {
   async deleteMyCartById(
     options: CommonStoreEnabledRequestOptions & { accessToken: string; cartId: string },
   ): Promise<Cart> {
+    ensureNonEmptyString({ value: options.cartId, name: 'cartId' })
+
     const cart = await this.getMyCartById(options)
     return await this.request({
       ...this.extractCommonRequestOptions(options),
-      path: this.applyStore(`/me/carts/${options.cartId}`, options.storeKey),
+      path: this.applyStore(`/me/carts/${encodeURIComponent(options.cartId)}`, options.storeKey),
       method: 'DELETE',
       params: {
         ...options.params,
@@ -936,7 +965,7 @@ export class CommercetoolsApi {
     const cart = await this.getMyActiveCart(options)
     return this.request({
       ...this.extractCommonRequestOptions(options),
-      path: this.applyStore(`/me/carts/${cart.id}`, options.storeKey),
+      path: this.applyStore(`/me/carts/${encodeURIComponent(cart.id)}`, options.storeKey),
       method: 'POST',
       data: {
         version: cart.version,
@@ -990,9 +1019,11 @@ export class CommercetoolsApi {
    * https://docs.commercetools.com/api/projects/carts#delete-a-cart-by-id
    */
   async deleteCartById(options: CommonStoreEnabledRequestOptions & { id: string; version: number }): Promise<Cart> {
+    ensureNonEmptyString({ value: options.id, name: 'id' })
+
     return await this.request({
       ...this.extractCommonRequestOptions(options),
-      path: this.applyStore(`/carts/${options.id}`, options.storeKey),
+      path: this.applyStore(`/carts/${encodeURIComponent(options.id)}`, options.storeKey),
       method: 'DELETE',
       params: {
         ...options.params,
@@ -1019,9 +1050,11 @@ export class CommercetoolsApi {
    * https://docs.commercetools.com/api/projects/payments#delete-payment-by-id
    */
   deletePaymentById(options: CommonRequestOptions & { id: string; version: number }): Promise<Payment> {
+    ensureNonEmptyString({ value: options.id, name: 'id' })
+
     return this.request({
       ...this.extractCommonRequestOptions(options),
-      path: `/payments/${options.id}`,
+      path: `/payments/${encodeURIComponent(options.id)}`,
       method: 'DELETE',
       params: {
         ...options.params,
@@ -1035,9 +1068,11 @@ export class CommercetoolsApi {
    * https://docs.commercetools.com/api/projects/payments#update-payment-by-id
    */
   updatePaymentById(options: CommonRequestOptions & { id: string; data: PaymentUpdate }): Promise<Payment> {
+    ensureNonEmptyString({ value: options.id, name: 'id' })
+
     return this.request({
       ...this.extractCommonRequestOptions(options),
-      path: `/payments/${options.id}`,
+      path: `/payments/${encodeURIComponent(options.id)}`,
       method: 'POST',
       data: options.data,
     })
@@ -1048,9 +1083,11 @@ export class CommercetoolsApi {
    * https://docs.commercetools.com/api/projects/payments#get-payment-by-id
    */
   getPaymentById(options: CommonRequestOptions & { id: string }): Promise<Payment> {
+    ensureNonEmptyString({ value: options.id, name: 'id' })
+
     return this.request({
       ...this.extractCommonRequestOptions(options),
-      path: `/payments/${options.id}`,
+      path: `/payments/${encodeURIComponent(options.id)}`,
       method: 'GET',
     })
   }
@@ -1088,9 +1125,11 @@ export class CommercetoolsApi {
   updateMyPaymentById(
     options: CommonRequestOptions & { id: string; data: MyPaymentUpdate; accessToken: string },
   ): Promise<MyPayment> {
+    ensureNonEmptyString({ value: options.id, name: 'id' })
+
     return this.request({
       ...this.extractCommonRequestOptions(options),
-      path: `/me/payments/${options.id}`,
+      path: `/me/payments/${encodeURIComponent(options.id)}`,
       method: 'POST',
       data: options.data,
       accessToken: options.accessToken,
@@ -1102,9 +1141,11 @@ export class CommercetoolsApi {
    * https://docs.commercetools.com/api/projects/me-payments#get-mypayment-by-id
    */
   getMyPaymentById(options: CommonRequestOptions & { id: string; accessToken: string }): Promise<MyPayment> {
+    ensureNonEmptyString({ value: options.id, name: 'id' })
+
     return this.request({
       ...this.extractCommonRequestOptions(options),
-      path: `/me/payments/${options.id}`,
+      path: `/me/payments/${encodeURIComponent(options.id)}`,
       method: 'GET',
       accessToken: options.accessToken,
     })
@@ -1130,9 +1171,11 @@ export class CommercetoolsApi {
   deleteMyPaymentById(
     options: CommonRequestOptions & { id: string; version: number; accessToken: string },
   ): Promise<MyPayment> {
+    ensureNonEmptyString({ value: options.id, name: 'id' })
+
     return this.request({
       ...this.extractCommonRequestOptions(options),
-      path: `/me/payments/${options.id}`,
+      path: `/me/payments/${encodeURIComponent(options.id)}`,
       method: 'DELETE',
       params: {
         version: options.version,
@@ -1146,9 +1189,11 @@ export class CommercetoolsApi {
    * https://docs.commercetools.com/api/projects/me-orders#get-order-by-id
    */
   getMyOrderById(options: CommonStoreEnabledRequestOptions & { id: string; accessToken: string }): Promise<Order> {
+    ensureNonEmptyString({ value: options.id, name: 'id' })
+
     return this.request({
       ...this.extractCommonRequestOptions(options),
-      path: this.applyStore(`/me/orders/${options.id}`, options.storeKey),
+      path: this.applyStore(`/me/orders/${encodeURIComponent(options.id)}`, options.storeKey),
       method: 'GET',
       accessToken: options.accessToken,
     })
@@ -1172,9 +1217,11 @@ export class CommercetoolsApi {
    * https://docs.commercetools.com/api/projects/orders#update-order-by-id
    */
   updateOrderById(options: CommonStoreEnabledRequestOptions & { id: string; data: OrderUpdate }): Promise<Order> {
+    ensureNonEmptyString({ value: options.id, name: 'id' })
+
     return this.request({
       ...this.extractCommonRequestOptions(options),
-      path: this.applyStore(`/orders/${options.id}`, options.storeKey),
+      path: this.applyStore(`/orders/${encodeURIComponent(options.id)}`, options.storeKey),
       method: 'POST',
       data: options.data,
     })
@@ -1189,7 +1236,7 @@ export class CommercetoolsApi {
   ): Promise<Order> {
     return this.request({
       ...this.extractCommonRequestOptions(options),
-      path: this.applyStore(`/orders/order-number=${options.orderNumber}`, options.storeKey),
+      path: this.applyStore(`/orders/order-number=${encodeURIComponent(options.orderNumber)}`, options.storeKey),
       method: 'POST',
       data: options.data,
     })
@@ -1200,9 +1247,11 @@ export class CommercetoolsApi {
    * https://docs.commercetools.com/api/projects/orders#get-order-by-id
    */
   getOrderById(options: CommonStoreEnabledRequestOptions & { id: string }): Promise<Order> {
+    ensureNonEmptyString({ value: options.id, name: 'id' })
+
     return this.request({
       ...this.extractCommonRequestOptions(options),
-      path: this.applyStore(`/orders/${options.id}`, options.storeKey),
+      path: this.applyStore(`/orders/${encodeURIComponent(options.id)}`, options.storeKey),
       method: 'GET',
     })
   }
@@ -1214,7 +1263,7 @@ export class CommercetoolsApi {
   getOrderByOrderNumber(options: CommonStoreEnabledRequestOptions & { orderNumber: string }): Promise<Order> {
     return this.request({
       ...this.extractCommonRequestOptions(options),
-      path: this.applyStore(`/orders/order-number=${options.orderNumber}`, options.storeKey),
+      path: this.applyStore(`/orders/order-number=${encodeURIComponent(options.orderNumber)}`, options.storeKey),
       method: 'GET',
     })
   }
@@ -1226,9 +1275,11 @@ export class CommercetoolsApi {
   deleteOrderById(
     options: CommonStoreEnabledRequestOptions & { id: string; version: number; dataErasure?: boolean },
   ): Promise<Order> {
+    ensureNonEmptyString({ value: options.id, name: 'id' })
+
     return this.request({
       ...this.extractCommonRequestOptions(options),
-      path: this.applyStore(`/orders/${options.id}`, options.storeKey),
+      path: this.applyStore(`/orders/${encodeURIComponent(options.id)}`, options.storeKey),
       method: 'DELETE',
       params: {
         ...options.params,
@@ -1247,7 +1298,7 @@ export class CommercetoolsApi {
   ): Promise<Order> {
     return this.request({
       ...this.extractCommonRequestOptions(options),
-      path: this.applyStore(`/orders/order-number=${options.orderNo}`, options.storeKey),
+      path: this.applyStore(`/orders/order-number=${encodeURIComponent(options.orderNo)}`, options.storeKey),
       method: 'DELETE',
       params: {
         ...options.params,
@@ -1289,7 +1340,7 @@ export class CommercetoolsApi {
   updateProductByKey(options: CommonRequestOptions & { key: string; data: ProductUpdate }): Promise<Product> {
     return this.request({
       ...this.extractCommonRequestOptions(options),
-      path: `/products/key=${options.key}`,
+      path: `/products/key=${encodeURIComponent(options.key)}`,
       method: 'POST',
       data: options.data,
     })
@@ -1300,9 +1351,11 @@ export class CommercetoolsApi {
    * https://docs.commercetools.com/api/projects/products#update-product-by-id
    */
   updateProductById(options: CommonRequestOptions & { id: string; data: ProductUpdate }): Promise<Product> {
+    ensureNonEmptyString({ value: options.id, name: 'id' })
+
     return this.request({
       ...this.extractCommonRequestOptions(options),
-      path: `/products/${options.id}`,
+      path: `/products/${encodeURIComponent(options.id)}`,
       method: 'POST',
       data: options.data,
     })
@@ -1318,6 +1371,8 @@ export class CommercetoolsApi {
   async deleteProductById(
     options: CommonRequestOptions & { id: string; version: number; unpublish?: boolean },
   ): Promise<Product> {
+    ensureNonEmptyString({ value: options.id, name: 'id' })
+
     let version = options.version
     if (options.unpublish) {
       const product = await this.unpublishProductById({
@@ -1328,7 +1383,7 @@ export class CommercetoolsApi {
     }
     return this.request({
       ...this.extractCommonRequestOptions(options),
-      path: `/products/${options.id}`,
+      path: `/products/${encodeURIComponent(options.id)}`,
       method: 'DELETE',
       params: {
         ...options.params,
@@ -1357,7 +1412,7 @@ export class CommercetoolsApi {
     }
     return this.request({
       ...this.extractCommonRequestOptions(options),
-      path: `/products/key=${options.key}`,
+      path: `/products/key=${encodeURIComponent(options.key)}`,
       method: 'DELETE',
       params: {
         ...options.params,
@@ -1375,7 +1430,7 @@ export class CommercetoolsApi {
   unpublishProductByKey(options: CommonRequestOptions & { key: string; version: number }): Promise<Product> {
     return this.request({
       ...this.extractCommonRequestOptions(options),
-      path: `/products/key=${options.key}`,
+      path: `/products/key=${encodeURIComponent(options.key)}`,
       method: 'POST',
       params: options.params,
       data: {
@@ -1392,9 +1447,11 @@ export class CommercetoolsApi {
    * https://docs.commercetools.com/api/projects/products#unpublish
    */
   unpublishProductById(options: CommonRequestOptions & { id: string; version: number }): Promise<Product> {
+    ensureNonEmptyString({ value: options.id, name: 'id' })
+
     return this.request({
       ...this.extractCommonRequestOptions(options),
-      path: `/products/${options.id}`,
+      path: `/products/${encodeURIComponent(options.id)}`,
       method: 'POST',
       params: options.params,
       data: {
@@ -1422,7 +1479,7 @@ export class CommercetoolsApi {
    */
   updateCategoryByKey(options: CommonRequestOptions & { key: string; data: CategoryUpdate }): Promise<Category> {
     return this.request({
-      path: `/categories/key=${options.key}`,
+      path: `/categories/key=${encodeURIComponent(options.key)}`,
       method: 'POST',
       data: options.data,
     })
@@ -1433,9 +1490,11 @@ export class CommercetoolsApi {
    * https://docs.commercetools.com/api/projects/categories#update-category-by-id
    */
   updateCategoryById(options: CommonRequestOptions & { id: string; data: CategoryUpdate }): Promise<Category> {
+    ensureNonEmptyString({ value: options.id, name: 'id' })
+
     return this.request({
       ...this.extractCommonRequestOptions(options),
-      path: `/categories/${options.id}`,
+      path: `/categories/${encodeURIComponent(options.id)}`,
       method: 'POST',
       data: options.data,
     })
@@ -1446,9 +1505,11 @@ export class CommercetoolsApi {
    * https://docs.commercetools.com/api/projects/categories#delete-category-by-id
    */
   deleteCategoryById(options: CommonRequestOptions & { id: string; version: number }): Promise<Category> {
+    ensureNonEmptyString({ value: options.id, name: 'id' })
+
     return this.request({
       ...this.extractCommonRequestOptions(options),
-      path: `/categories/${options.id}`,
+      path: `/categories/${encodeURIComponent(options.id)}`,
       method: 'DELETE',
       params: {
         ...options.params,
@@ -1464,7 +1525,7 @@ export class CommercetoolsApi {
   deleteCategoryByKey(options: CommonRequestOptions & { key: string; version: number }): Promise<Category> {
     return this.request({
       ...this.extractCommonRequestOptions(options),
-      path: `/categories/key=${options.key}`,
+      path: `/categories/key=${encodeURIComponent(options.key)}`,
       method: 'DELETE',
       params: {
         ...options.params,
@@ -1493,9 +1554,11 @@ export class CommercetoolsApi {
   deleteCustomerById(
     options: CommonStoreEnabledRequestOptions & { id: string; version: number; dataErasure?: boolean },
   ): Promise<Customer> {
+    ensureNonEmptyString({ value: options.id, name: 'id' })
+
     return this.request({
       ...this.extractCommonRequestOptions(options),
-      path: this.applyStore(`/customers/${options.id}`, options.storeKey),
+      path: this.applyStore(`/customers/${encodeURIComponent(options.id)}`, options.storeKey),
       method: 'DELETE',
       params: {
         ...options.params,
@@ -1514,7 +1577,7 @@ export class CommercetoolsApi {
   ): Promise<Customer> {
     return this.request({
       ...this.extractCommonRequestOptions(options),
-      path: this.applyStore(`/customers/key=${options.key}`, options.storeKey),
+      path: this.applyStore(`/customers/key=${encodeURIComponent(options.key)}`, options.storeKey),
       method: 'DELETE',
       params: {
         ...options.params,
@@ -1653,9 +1716,11 @@ export class CommercetoolsApi {
    * https://docs.commercetools.com/api/projects/customers#get-customer-by-id
    */
   getCustomerById(options: CommonStoreEnabledRequestOptions & { id: string }): Promise<Customer> {
+    ensureNonEmptyString({ value: options.id, name: 'id' })
+
     return this.request({
       ...this.extractCommonRequestOptions(options),
-      path: this.applyStore(`/customers/${options.id}`, options.storeKey),
+      path: this.applyStore(`/customers/${encodeURIComponent(options.id)}`, options.storeKey),
       method: 'GET',
     })
   }
@@ -1667,7 +1732,7 @@ export class CommercetoolsApi {
   getCustomerByKey(options: CommonStoreEnabledRequestOptions & { key: string }): Promise<Customer> {
     return this.request({
       ...this.extractCommonRequestOptions(options),
-      path: this.applyStore(`/customers/key=${options.key}`, options.storeKey),
+      path: this.applyStore(`/customers/key=${encodeURIComponent(options.key)}`, options.storeKey),
       method: 'GET',
     })
   }
@@ -1679,7 +1744,7 @@ export class CommercetoolsApi {
   getCustomerByPasswordToken(options: CommonStoreEnabledRequestOptions & { token: string }): Promise<Customer> {
     return this.request({
       ...this.extractCommonRequestOptions(options),
-      path: this.applyStore(`/customers/password-token=${options.token}`, options.storeKey),
+      path: this.applyStore(`/customers/password-token=${encodeURIComponent(options.token)}`, options.storeKey),
       method: 'GET',
     })
   }
@@ -1703,9 +1768,11 @@ export class CommercetoolsApi {
   updateCustomerById(
     options: CommonStoreEnabledRequestOptions & { id: string; data: CustomerUpdate },
   ): Promise<Customer> {
+    ensureNonEmptyString({ value: options.id, name: 'id' })
+
     return this.request({
       ...this.extractCommonRequestOptions(options),
-      path: `/customers/${options.id}`,
+      path: `/customers/${encodeURIComponent(options.id)}`,
       method: 'POST',
       data: options.data,
     })
@@ -1720,7 +1787,7 @@ export class CommercetoolsApi {
   ): Promise<Customer> {
     return this.request({
       ...this.extractCommonRequestOptions(options),
-      path: `/customers/key=${options.key}`,
+      path: `/customers/key=${encodeURIComponent(options.key)}`,
       method: 'POST',
       data: options.data,
     })
@@ -1731,9 +1798,11 @@ export class CommercetoolsApi {
    * https://docs.commercetools.com/api/projects/productTypes#get-a-producttype-by-id
    */
   getProductTypeById(options: CommonRequestOptions & { id: string }): Promise<ProductType> {
+    ensureNonEmptyString({ value: options.id, name: 'id' })
+
     return this.request({
       ...this.extractCommonRequestOptions(options),
-      path: `/product-types/${options.id}`,
+      path: `/product-types/${encodeURIComponent(options.id)}`,
       method: 'GET',
     })
   }
@@ -1745,7 +1814,7 @@ export class CommercetoolsApi {
   getProductTypeByKey(options: CommonRequestOptions & { key: string }): Promise<ProductType> {
     return this.request({
       ...this.extractCommonRequestOptions(options),
-      path: `/product-types/key=${options.key}`,
+      path: `/product-types/key=${encodeURIComponent(options.key)}`,
       method: 'GET',
     })
   }
@@ -1767,9 +1836,11 @@ export class CommercetoolsApi {
    * https://docs.commercetools.com/api/projects/types#get-type-by-id
    */
   getTypeById(options: CommonRequestOptions & { id: string }): Promise<Type> {
+    ensureNonEmptyString({ value: options.id, name: 'id' })
+
     return this.request({
       ...this.extractCommonRequestOptions(options),
-      path: `/types/${options.id}`,
+      path: `/types/${encodeURIComponent(options.id)}`,
       method: 'GET',
     })
   }
@@ -1781,7 +1852,7 @@ export class CommercetoolsApi {
   getTypeByKey(options: CommonRequestOptions & { key: string }): Promise<Type> {
     return this.request({
       ...this.extractCommonRequestOptions(options),
-      path: `/types/key=${options.key}`,
+      path: `/types/key=${encodeURIComponent(options.key)}`,
       method: 'GET',
     })
   }
@@ -1803,9 +1874,11 @@ export class CommercetoolsApi {
    * https://docs.commercetools.com/api/projects/discountCodes#get-discountcode-by-id
    */
   getDiscountCodeById(options: CommonRequestOptions & { id: string }): Promise<DiscountCode> {
+    ensureNonEmptyString({ value: options.id, name: 'id' })
+
     return this.request({
       ...this.extractCommonRequestOptions(options),
-      path: `/discount-codes/${options.id}`,
+      path: `/discount-codes/${encodeURIComponent(options.id)}`,
       method: 'GET',
     })
   }
@@ -1815,9 +1888,11 @@ export class CommercetoolsApi {
    * https://docs.commercetools.com/api/projects/cartDiscounts#get-cartdiscount-by-id
    */
   getCartDiscountById(options: CommonRequestOptions & { id: string }): Promise<CartDiscount> {
+    ensureNonEmptyString({ value: options.id, name: 'id' })
+
     return this.request({
       ...this.extractCommonRequestOptions(options),
-      path: `/cart-discounts/${options.id}`,
+      path: `/cart-discounts/${encodeURIComponent(options.id)}`,
       method: 'GET',
     })
   }
@@ -1829,7 +1904,7 @@ export class CommercetoolsApi {
   getCartDiscountByKey(options: CommonRequestOptions & { key: string }): Promise<CartDiscount> {
     return this.request({
       ...this.extractCommonRequestOptions(options),
-      path: `/cart-discounts/key=${options.key}`,
+      path: `/cart-discounts/key=${encodeURIComponent(options.key)}`,
       method: 'GET',
     })
   }
@@ -1853,7 +1928,7 @@ export class CommercetoolsApi {
   getCustomObject(options: CommonRequestOptions & { container: string; key: string }): Promise<CustomObject> {
     return this.request({
       ...this.extractCommonRequestOptions(options),
-      path: `/custom-objects/${options.container}/${options.key}`,
+      path: `/custom-objects/${encodeURIComponent(options.container)}/${encodeURIComponent(options.key)}`,
       method: 'GET',
     })
   }
@@ -1863,9 +1938,11 @@ export class CommercetoolsApi {
    * https://docs.commercetools.com/api/projects/custom-objects#get-customobject
    */
   getCustomObjectById(options: CommonRequestOptions & { id: string }): Promise<CustomObject> {
+    ensureNonEmptyString({ value: options.id, name: 'id' })
+
     return this.request({
       ...this.extractCommonRequestOptions(options),
-      path: `/custom-objects/${options.id}`,
+      path: `/custom-objects/${encodeURIComponent(options.id)}`,
       method: 'GET',
     })
   }
@@ -1890,7 +1967,7 @@ export class CommercetoolsApi {
   deleteCustomObject(options: CommonRequestOptions & { container: string; key: string }): Promise<CustomObject> {
     return this.request({
       ...this.extractCommonRequestOptions(options),
-      path: `/custom-objects/${options.container}/${options.key}`,
+      path: `/custom-objects/${encodeURIComponent(options.container)}/${encodeURIComponent(options.key)}`,
       method: 'DELETE',
     })
   }
@@ -1900,9 +1977,11 @@ export class CommercetoolsApi {
    * https://docs.commercetools.com/api/projects/shippingMethods#get-shippingmethod-by-id
    */
   getShippingMethodById(options: CommonRequestOptions & { id: string }): Promise<ShippingMethod> {
+    ensureNonEmptyString({ value: options.id, name: 'id' })
+
     return this.request({
       ...this.extractCommonRequestOptions(options),
-      path: `/shipping-methods/${options.id}`,
+      path: `/shipping-methods/${encodeURIComponent(options.id)}`,
       method: 'GET',
     })
   }
@@ -1914,7 +1993,7 @@ export class CommercetoolsApi {
   getShippingMethodByKey(options: CommonRequestOptions & { key: string }): Promise<ShippingMethod> {
     return this.request({
       ...this.extractCommonRequestOptions(options),
-      path: `/shipping-methods/key=${options.key}`,
+      path: `/shipping-methods/key=${encodeURIComponent(options.key)}`,
       method: 'GET',
     })
   }
@@ -1980,9 +2059,11 @@ export class CommercetoolsApi {
    * https://docs.commercetools.com/api/projects/customerGroups#get-customergroup-by-id
    */
   getCustomerGroupById(options: CommonRequestOptions & { id: string }): Promise<CustomerGroup> {
+    ensureNonEmptyString({ value: options.id, name: 'id' })
+
     return this.request({
       ...this.extractCommonRequestOptions(options),
-      path: `/customer-groups/${options.id}`,
+      path: `/customer-groups/${encodeURIComponent(options.id)}`,
       method: 'GET',
     })
   }
@@ -1994,7 +2075,7 @@ export class CommercetoolsApi {
   getCustomerGroupByKey(options: CommonRequestOptions & { key: string }): Promise<CustomerGroup> {
     return this.request({
       ...this.extractCommonRequestOptions(options),
-      path: `/customer-groups/key=${options.key}`,
+      path: `/customer-groups/key=${encodeURIComponent(options.key)}`,
       method: 'GET',
     })
   }
@@ -2031,7 +2112,7 @@ export class CommercetoolsApi {
     options: CommonRequestOptions & { key: string; data: CustomerGroupUpdate },
   ): Promise<CustomerGroup> {
     return this.request({
-      path: `/customer-groups/key=${options.key}`,
+      path: `/customer-groups/key=${encodeURIComponent(options.key)}`,
       method: 'POST',
       data: options.data,
     })
@@ -2044,9 +2125,11 @@ export class CommercetoolsApi {
   updateCustomerGroupById(
     options: CommonRequestOptions & { id: string; data: CustomerGroupUpdate },
   ): Promise<CustomerGroup> {
+    ensureNonEmptyString({ value: options.id, name: 'id' })
+
     return this.request({
       ...this.extractCommonRequestOptions(options),
-      path: `/customer-groups/${options.id}`,
+      path: `/customer-groups/${encodeURIComponent(options.id)}`,
       method: 'POST',
       data: options.data,
     })
@@ -2057,9 +2140,11 @@ export class CommercetoolsApi {
    * https://docs.commercetools.com/api/projects/customerGroups#delete-customergroup-by-id
    */
   deleteCustomerGroupById(options: CommonRequestOptions & { id: string; version: number }): Promise<CustomerGroup> {
+    ensureNonEmptyString({ value: options.id, name: 'id' })
+
     return this.request({
       ...this.extractCommonRequestOptions(options),
-      path: `/customer-groups/${options.id}`,
+      path: `/customer-groups/${encodeURIComponent(options.id)}`,
       method: 'DELETE',
       params: {
         ...options.params,
@@ -2075,7 +2160,7 @@ export class CommercetoolsApi {
   deleteCustomerGroupByKey(options: CommonRequestOptions & { key: string; version: number }): Promise<CustomerGroup> {
     return this.request({
       ...this.extractCommonRequestOptions(options),
-      path: `/customer-groups/key=${options.key}`,
+      path: `/customer-groups/key=${encodeURIComponent(options.key)}`,
       method: 'DELETE',
       params: {
         ...options.params,
@@ -2089,9 +2174,11 @@ export class CommercetoolsApi {
    * https://docs.commercetools.com/api/projects/states#get-state-by-id
    */
   getStateById(options: CommonRequestOptions & { id: string }): Promise<State> {
+    ensureNonEmptyString({ value: options.id, name: 'id' })
+
     return this.request({
       ...this.extractCommonRequestOptions(options),
-      path: `/states/${options.id}`,
+      path: `/states/${encodeURIComponent(options.id)}`,
       method: 'GET',
     })
   }
@@ -2103,7 +2190,7 @@ export class CommercetoolsApi {
   getStateByKey(options: CommonRequestOptions & { key: string }): Promise<State> {
     return this.request({
       ...this.extractCommonRequestOptions(options),
-      path: `/states/key=${options.key}`,
+      path: `/states/key=${encodeURIComponent(options.key)}`,
       method: 'GET',
     })
   }
@@ -2125,9 +2212,11 @@ export class CommercetoolsApi {
    * https://docs.commercetools.com/api/projects/standalone-prices#get-standaloneprice-by-id
    */
   getStandalonePriceById(options: CommonRequestOptions & { id: string }): Promise<StandalonePrice> {
+    ensureNonEmptyString({ value: options.id, name: 'id' })
+
     return this.request({
       ...this.extractCommonRequestOptions(options),
-      path: `/standalone-prices/${options.id}`,
+      path: `/standalone-prices/${encodeURIComponent(options.id)}`,
       method: 'GET',
     })
   }
@@ -2139,7 +2228,7 @@ export class CommercetoolsApi {
   getStandalonePriceByKey(options: CommonRequestOptions & { key: string }): Promise<StandalonePrice> {
     return this.request({
       ...this.extractCommonRequestOptions(options),
-      path: `/standalone-prices/key=${options.key}`,
+      path: `/standalone-prices/key=${encodeURIComponent(options.key)}`,
       method: 'GET',
     })
   }
@@ -2176,9 +2265,11 @@ export class CommercetoolsApi {
   updateStandalonePriceById(
     options: CommonRequestOptions & { id: string; data: StandalonePriceUpdate },
   ): Promise<StandalonePrice> {
+    ensureNonEmptyString({ value: options.id, name: 'id' })
+
     return this.request({
       ...this.extractCommonRequestOptions(options),
-      path: `/standalone-prices/${options.id}`,
+      path: `/standalone-prices/${encodeURIComponent(options.id)}`,
       method: 'POST',
       data: options.data,
     })
@@ -2193,7 +2284,7 @@ export class CommercetoolsApi {
   ): Promise<StandalonePrice> {
     return this.request({
       ...this.extractCommonRequestOptions(options),
-      path: `/standalone-prices/key=${options.key}`,
+      path: `/standalone-prices/key=${encodeURIComponent(options.key)}`,
       method: 'POST',
       data: options.data,
     })
@@ -2204,9 +2295,11 @@ export class CommercetoolsApi {
    * https://docs.commercetools.com/api/projects/standalone-prices#delete-standaloneprice-by-id
    */
   deleteStandalonePriceById(options: CommonRequestOptions & { id: string; version: number }): Promise<StandalonePrice> {
+    ensureNonEmptyString({ value: options.id, name: 'id' })
+
     return this.request({
       ...this.extractCommonRequestOptions(options),
-      path: `/standalone-prices/${options.id}`,
+      path: `/standalone-prices/${encodeURIComponent(options.id)}`,
       method: 'DELETE',
       params: {
         ...options.params,
@@ -2224,7 +2317,7 @@ export class CommercetoolsApi {
   ): Promise<StandalonePrice> {
     return this.request({
       ...this.extractCommonRequestOptions(options),
-      path: `/standalone-prices/key=${options.key}`,
+      path: `/standalone-prices/key=${encodeURIComponent(options.key)}`,
       method: 'DELETE',
       params: {
         ...options.params,
