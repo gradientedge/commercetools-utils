@@ -504,6 +504,7 @@ export type CartUpdateAction =
   | CartSetDeliveryAddressCustomFieldAction
   | CartSetDeliveryAddressCustomTypeAction
   | CartSetDirectDiscountsAction
+  | CartFreezeCartAction
   | CartSetItemShippingAddressCustomFieldAction
   | CartSetItemShippingAddressCustomTypeAction
   | CartSetKeyAction
@@ -526,6 +527,7 @@ export type CartUpdateAction =
   | CartSetShippingMethodTaxAmountAction
   | CartSetShippingMethodTaxRateAction
   | CartSetShippingRateInputAction
+  | CartUnfreezeCartAction
   | CartUpdateItemShippingAddressAction
 export interface CustomLineItem {
   /**
@@ -1792,6 +1794,9 @@ export interface CartChangeTaxRoundingModeAction {
    */
   readonly taxRoundingMode: RoundingMode
 }
+export interface CartFreezeCartAction {
+  readonly action: 'freezeCart'
+}
 export interface CartRecalculateAction {
   readonly action: 'recalculate'
   /**
@@ -2447,6 +2452,9 @@ export interface CartSetShippingRateInputAction {
    *
    */
   readonly shippingRateInput?: ShippingRateInputDraft
+}
+export interface CartUnfreezeCartAction {
+  readonly action: 'unfreezeCart'
 }
 export interface CartUpdateItemShippingAddressAction {
   readonly action: 'updateItemShippingAddress'
