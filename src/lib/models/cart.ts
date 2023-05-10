@@ -447,7 +447,7 @@ export interface CartResourceIdentifier {
    */
   readonly key?: string
 }
-export type CartState = 'Active' | 'Merged' | 'Ordered'
+export type CartState = 'Active' | 'Merged' | 'Ordered' | 'Frozen'
 export interface CartUpdate {
   /**
    *
