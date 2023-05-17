@@ -4,7 +4,7 @@
  * For more information about the commercetools platform APIs, visit https://docs.commercetools.com/.
  */
 
-import { BaseResource, CreatedBy, LastModifiedBy, LocalizedString, Money, TypedMoney } from './common'
+import { BaseResource, CreatedBy, LastModifiedBy, LocalizedString, TypedMoney, _Money } from './common'
 import { TaxCategoryReference, TaxCategoryResourceIdentifier } from './tax-category'
 import { CustomFields, CustomFieldsDraft, FieldContainer, TypeResourceIdentifier } from './type'
 import { ZoneReference, ZoneResourceIdentifier } from './zone'
@@ -286,8 +286,8 @@ export interface ShippingRate {
   readonly freeAbove?: TypedMoney
   /**
    *	`true` if the ShippingRate matches given [Cart](ctp:api:type:Cart) or [Location](ctp:api:type:Location).
-   *	Only appears in response to requests for [Get ShippingMethods for a Cart](#get-shippingmethods-for-a-cart) or
-   *	[Get ShippingMethods for a Location](#get-shippingmethods-for-a-location).
+   *	Only appears in response to requests for [Get ShippingMethods for a Cart](ctp:api:endpoint:/{projectKey}/shipping-methods/matching-cart:GET) or
+   *	[Get ShippingMethods for a Location](ctp:api:endpoint:/{projectKey}/shipping-methods/matching-location:GET).
    *
    *
    */
@@ -303,12 +303,12 @@ export interface ShippingRateDraft {
    *	Money value of the ShippingRate.
    *
    */
-  readonly price: Money
+  readonly price: _Money
   /**
    *	Shipping is free if the sum of the (Custom) Line Item Prices reaches the specified value.
    *
    */
-  readonly freeAbove?: Money
+  readonly freeAbove?: _Money
   /**
    *	Price tiers for the ShippingRate.
    *
@@ -333,9 +333,9 @@ export interface CartClassificationTier {
    *
    *
    */
-  readonly price: Money
+  readonly price: _Money
   /**
-   *	Appears in response to [Get ShippingMethods for a Cart](#get-shippingmethods-for-a-cart) if the shipping rate matches the search query.
+   *	Appears in response to [Get ShippingMethods for a Cart](ctp:api:endpoint:/{projectKey}/shipping-methods/matching-cart:GET) if the shipping rate matches the search query.
    *
    *
    */
@@ -359,7 +359,7 @@ export interface CartScoreTier {
    *
    *
    */
-  readonly price?: Money
+  readonly price?: _Money
   /**
    *	Dynamically calculates a Price for a range of scores.
    *
@@ -367,7 +367,7 @@ export interface CartScoreTier {
    */
   readonly priceFunction?: PriceFunction
   /**
-   *	Appears in response to [Get ShippingMethods for a Cart](#get-shippingmethods-for-a-cart) if the shipping rate matches the search query.
+   *	Appears in response to [Get ShippingMethods for a Cart](ctp:api:endpoint:/{projectKey}/shipping-methods/matching-cart:GET) if the shipping rate matches the search query.
    *
    *
    */
@@ -393,15 +393,15 @@ export interface CartValueTier {
    *
    *
    */
-  readonly price: Money
+  readonly price: _Money
   /**
-   *	Appears in response to [Get ShippingMethods for a Cart](#get-shippingmethods-for-a-cart) if the shipping rate matches the search query.
+   *	Appears in response to [Get ShippingMethods for a Cart](ctp:api:endpoint:/{projectKey}/shipping-methods/matching-cart:GET) if the shipping rate matches the search query.
    *
    *
    */
   readonly isMatching?: boolean
 }
-export type ShippingRateTierType = 'CartClassification' | 'CartScore' | 'CartValue'
+export type ShippingRateTierType = 'CartClassification' | 'CartScore' | 'CartValue' | string
 /**
  *	Defines shipping rates in different currencies for a specific [Zone](ctp:api:type:Zone).
  *
@@ -519,7 +519,7 @@ export interface ShippingMethodSetCustomFieldAction {
   readonly name: string
   /**
    *	If `value` is absent or `null`, this field will be removed if it exists.
-   *	Trying to remove a field that does not exist will fail with an [InvalidOperation](/../api/errors#general-400-invalid-operation) error.
+   *	Removing a field that does not exist returns an [InvalidOperation](ctp:api:type:InvalidOperationError) error.
    *	If `value` is provided, it is set for the field defined by `name`.
    *
    *

@@ -18,7 +18,7 @@ import {
   TaxPortionDraft,
 } from './cart'
 import { ChannelResourceIdentifier } from './channel'
-import { BaseAddress, BaseResource, CreatedBy, LastModifiedBy, LocalizedString, Money, TypedMoney } from './common'
+import { BaseResource, CreatedBy, LastModifiedBy, LocalizedString, TypedMoney, _BaseAddress, _Money } from './common'
 import { CustomerGroupResourceIdentifier } from './customer-group'
 import { DiscountCodeReference } from './discount-code'
 import { ErrorObject } from './error'
@@ -317,7 +317,7 @@ export interface OrderEditSetCustomFieldAction {
   readonly name: string
   /**
    *	If `value` is absent or `null`, this field will be removed if it exists.
-   *	Trying to remove a field that does not exist will fail with an [InvalidOperation](/../api/errors#general-400-invalid-operation) error.
+   *	Removing a field that does not exist returns an [InvalidOperation](ctp:api:type:InvalidOperationError) error.
    *	If `value` is provided, it is set for the field defined by `name`.
    *
    *
@@ -359,13 +359,11 @@ export interface OrderEditSetStagedActionsAction {
 export interface StagedOrderAddCustomLineItemAction {
   readonly action: 'addCustomLineItem'
   /**
-   *	Draft type that stores amounts in cent precision for the specified currency.
-   *
-   *	For storing money values in fractions of the minor unit in a currency, use [HighPrecisionMoneyDraft](ctp:api:type:HighPrecisionMoneyDraft) instead.
+   *	Draft type that stores amounts only in cent precision for the specified currency.
    *
    *
    */
-  readonly money: Money
+  readonly money: _Money
   /**
    *	JSON object where the keys are of type [Locale](ctp:api:type:Locale), and the values are the strings used for the corresponding language.
    *
@@ -393,6 +391,8 @@ export interface StagedOrderAddCustomLineItemAction {
    */
   readonly custom?: CustomFieldsDraft
   /**
+   *	Controls calculation of taxed prices for Line Items, Custom Line Items, and Shipping Methods as explained in [Cart tax calculation](ctp:api:type:CartTaxCalculation).
+   *
    *
    */
   readonly externalTaxRate?: ExternalTaxRateDraft
@@ -412,9 +412,13 @@ export interface StagedOrderAddDeliveryAction {
    */
   readonly items?: DeliveryItem[]
   /**
+   *	Polymorphic base type that represents a postal address and contact details.
+   *	Depending on the read or write action, it can be either [Address](ctp:api:type:Address) or [AddressDraft](ctp:api:type:AddressDraft) that
+   *	only differ in the data type for the optional `custom` field.
+   *
    *
    */
-  readonly address?: BaseAddress
+  readonly address?: _BaseAddress
   /**
    *
    */
@@ -435,9 +439,13 @@ export interface StagedOrderAddDiscountCodeAction {
 export interface StagedOrderAddItemShippingAddressAction {
   readonly action: 'addItemShippingAddress'
   /**
+   *	Polymorphic base type that represents a postal address and contact details.
+   *	Depending on the read or write action, it can be either [Address](ctp:api:type:Address) or [AddressDraft](ctp:api:type:AddressDraft) that
+   *	only differ in the data type for the optional `custom` field.
+   *
    *
    */
-  readonly address: BaseAddress
+  readonly address: _BaseAddress
 }
 export interface StagedOrderAddLineItemAction {
   readonly action: 'addLineItem'
@@ -454,6 +462,8 @@ export interface StagedOrderAddLineItemAction {
    */
   readonly distributionChannel?: ChannelResourceIdentifier
   /**
+   *	Controls calculation of taxed prices for Line Items, Custom Line Items, and Shipping Methods as explained in [Cart tax calculation](ctp:api:type:CartTaxCalculation).
+   *
    *
    */
   readonly externalTaxRate?: ExternalTaxRateDraft
@@ -484,18 +494,18 @@ export interface StagedOrderAddLineItemAction {
    */
   readonly supplyChannel?: ChannelResourceIdentifier
   /**
-   *	Draft type that stores amounts in cent precision for the specified currency.
-   *
-   *	For storing money values in fractions of the minor unit in a currency, use [HighPrecisionMoneyDraft](ctp:api:type:HighPrecisionMoneyDraft) instead.
+   *	Draft type that stores amounts only in cent precision for the specified currency.
    *
    *
    */
-  readonly externalPrice?: Money
+  readonly externalPrice?: _Money
   /**
    *
    */
   readonly externalTotalPrice?: ExternalLineItemTotalPrice
   /**
+   *	For order creation and updates, the sum of the `targets` must match the quantity of the Line Items or Custom Line Items.
+   *
    *
    */
   readonly shippingDetails?: ItemShippingDetailsDraft
@@ -522,7 +532,7 @@ export interface StagedOrderAddParcelToDeliveryAction {
 export interface StagedOrderAddPaymentAction {
   readonly action: 'addPayment'
   /**
-   *	[ResourceIdentifier](ctp:api:type:ResourceIdentifier) to a [Payment](ctp:api:type:Payment).
+   *	[ResourceIdentifier](ctp:api:type:ResourceIdentifier) of a [Payment](ctp:api:type:Payment).
    *
    *
    */
@@ -571,13 +581,11 @@ export interface StagedOrderChangeCustomLineItemMoneyAction {
    */
   readonly customLineItemId: string
   /**
-   *	Draft type that stores amounts in cent precision for the specified currency.
-   *
-   *	For storing money values in fractions of the minor unit in a currency, use [HighPrecisionMoneyDraft](ctp:api:type:HighPrecisionMoneyDraft) instead.
+   *	Draft type that stores amounts only in cent precision for the specified currency.
    *
    *
    */
-  readonly money: Money
+  readonly money: _Money
 }
 export interface StagedOrderChangeCustomLineItemQuantityAction {
   readonly action: 'changeCustomLineItemQuantity'
@@ -601,13 +609,11 @@ export interface StagedOrderChangeLineItemQuantityAction {
    */
   readonly quantity: number
   /**
-   *	Draft type that stores amounts in cent precision for the specified currency.
-   *
-   *	For storing money values in fractions of the minor unit in a currency, use [HighPrecisionMoneyDraft](ctp:api:type:HighPrecisionMoneyDraft) instead.
+   *	Draft type that stores amounts only in cent precision for the specified currency.
    *
    *
    */
-  readonly externalPrice?: Money
+  readonly externalPrice?: _Money
   /**
    *
    */
@@ -637,6 +643,8 @@ export interface StagedOrderChangeShipmentStateAction {
 export interface StagedOrderChangeTaxCalculationModeAction {
   readonly action: 'changeTaxCalculationMode'
   /**
+   *	Determines in which [Tax calculation mode](/carts-orders-overview#tax-calculation-mode) taxed prices are calculated.
+   *
    *
    */
   readonly taxCalculationMode: TaxCalculationMode
@@ -644,6 +652,8 @@ export interface StagedOrderChangeTaxCalculationModeAction {
 export interface StagedOrderChangeTaxModeAction {
   readonly action: 'changeTaxMode'
   /**
+   *	Indicates how taxes are set on the Cart.
+   *
    *
    */
   readonly taxMode: TaxMode
@@ -651,6 +661,8 @@ export interface StagedOrderChangeTaxModeAction {
 export interface StagedOrderChangeTaxRoundingModeAction {
   readonly action: 'changeTaxRoundingMode'
   /**
+   *	Determines how monetary values are rounded.
+   *
    *
    */
   readonly taxRoundingMode: RoundingMode
@@ -718,18 +730,18 @@ export interface StagedOrderRemoveLineItemAction {
    */
   readonly quantity?: number
   /**
-   *	Draft type that stores amounts in cent precision for the specified currency.
-   *
-   *	For storing money values in fractions of the minor unit in a currency, use [HighPrecisionMoneyDraft](ctp:api:type:HighPrecisionMoneyDraft) instead.
+   *	Draft type that stores amounts only in cent precision for the specified currency.
    *
    *
    */
-  readonly externalPrice?: Money
+  readonly externalPrice?: _Money
   /**
    *
    */
   readonly externalTotalPrice?: ExternalLineItemTotalPrice
   /**
+   *	For order creation and updates, the sum of the `targets` must match the quantity of the Line Items or Custom Line Items.
+   *
    *
    */
   readonly shippingDetailsToRemove?: ItemShippingDetailsDraft
@@ -744,7 +756,7 @@ export interface StagedOrderRemoveParcelFromDeliveryAction {
 export interface StagedOrderRemovePaymentAction {
   readonly action: 'removePayment'
   /**
-   *	[ResourceIdentifier](ctp:api:type:ResourceIdentifier) to a [Payment](ctp:api:type:Payment).
+   *	[ResourceIdentifier](ctp:api:type:ResourceIdentifier) of a [Payment](ctp:api:type:Payment).
    *
    *
    */
@@ -753,9 +765,13 @@ export interface StagedOrderRemovePaymentAction {
 export interface StagedOrderSetBillingAddressAction {
   readonly action: 'setBillingAddress'
   /**
+   *	Polymorphic base type that represents a postal address and contact details.
+   *	Depending on the read or write action, it can be either [Address](ctp:api:type:Address) or [AddressDraft](ctp:api:type:AddressDraft) that
+   *	only differ in the data type for the optional `custom` field.
+   *
    *
    */
-  readonly address?: BaseAddress
+  readonly address?: _BaseAddress
 }
 export interface StagedOrderSetBillingAddressCustomFieldAction {
   readonly action: 'setBillingAddressCustomField'
@@ -767,7 +783,7 @@ export interface StagedOrderSetBillingAddressCustomFieldAction {
   readonly name: string
   /**
    *	If `value` is absent or `null`, this field will be removed if it exists.
-   *	Trying to remove a field that does not exist will fail with an [InvalidOperation](/../api/errors#general-400-invalid-operation) error.
+   *	Removing a field that does not exist returns an [InvalidOperation](ctp:api:type:InvalidOperationError) error.
    *	If `value` is provided, it is set for the field defined by `name`.
    *
    *
@@ -807,7 +823,7 @@ export interface StagedOrderSetCustomFieldAction {
   readonly name: string
   /**
    *	If `value` is absent or `null`, this field will be removed if it exists.
-   *	Trying to remove a field that does not exist will fail with an [InvalidOperation](/../api/errors#general-400-invalid-operation) error.
+   *	Removing a field that does not exist returns an [InvalidOperation](ctp:api:type:InvalidOperationError) error.
    *	If `value` is provided, it is set for the field defined by `name`.
    *
    *
@@ -828,7 +844,7 @@ export interface StagedOrderSetCustomLineItemCustomFieldAction {
   readonly name: string
   /**
    *	If `value` is absent or `null`, this field will be removed if it exists.
-   *	Trying to remove a field that does not exist will fail with an [InvalidOperation](/../api/errors#general-400-invalid-operation) error.
+   *	Removing a field that does not exist returns an [InvalidOperation](ctp:api:type:InvalidOperationError) error.
    *	If `value` is provided, it is set for the field defined by `name`.
    *
    *
@@ -862,6 +878,8 @@ export interface StagedOrderSetCustomLineItemShippingDetailsAction {
    */
   readonly customLineItemId: string
   /**
+   *	For order creation and updates, the sum of the `targets` must match the quantity of the Line Items or Custom Line Items.
+   *
    *
    */
   readonly shippingDetails?: ItemShippingDetailsDraft
@@ -873,6 +891,13 @@ export interface StagedOrderSetCustomLineItemTaxAmountAction {
    */
   readonly customLineItemId: string
   /**
+   *	Cannot be used in [LineItemDraft](ctp:api:type:LineItemDraft) or [CustomLineItemDraft](ctp:api:type:CustomLineItemDraft).
+   *
+   *	Can only be set by these update actions:
+   *
+   *	- [Set LineItem TaxAmount](ctp:api:type:CartSetLineItemTaxAmountAction), [Set CustomLineItem TaxAmount](ctp:api:type:CartSetCustomLineItemTaxAmountAction), or [Set ShippingMethod TaxAmount](ctp:api:type:CartSetShippingMethodTaxAmountAction) on Carts
+   *	- [Set LineItem TaxAmount](ctp:api:type:OrderEditSetLineItemTaxAmountAction), [Set CustomLineItem TaxAmount](ctp:api:type:OrderEditSetCustomLineItemTaxAmountAction), or [Set ShippingMethod TaxAmount](ctp:api:type:OrderEditSetShippingMethodTaxAmountAction) on Order Edits
+   *
    *
    */
   readonly externalTaxAmount?: ExternalTaxAmountDraft
@@ -884,6 +909,8 @@ export interface StagedOrderSetCustomLineItemTaxRateAction {
    */
   readonly customLineItemId: string
   /**
+   *	Controls calculation of taxed prices for Line Items, Custom Line Items, and Shipping Methods as explained in [Cart tax calculation](ctp:api:type:CartTaxCalculation).
+   *
    *
    */
   readonly externalTaxRate?: ExternalTaxRateDraft
@@ -905,6 +932,8 @@ export interface StagedOrderSetCustomShippingMethodAction {
    */
   readonly taxCategory?: TaxCategoryResourceIdentifier
   /**
+   *	Controls calculation of taxed prices for Line Items, Custom Line Items, and Shipping Methods as explained in [Cart tax calculation](ctp:api:type:CartTaxCalculation).
+   *
    *
    */
   readonly externalTaxRate?: ExternalTaxRateDraft
@@ -955,9 +984,13 @@ export interface StagedOrderSetDeliveryAddressAction {
    */
   readonly deliveryId: string
   /**
+   *	Polymorphic base type that represents a postal address and contact details.
+   *	Depending on the read or write action, it can be either [Address](ctp:api:type:Address) or [AddressDraft](ctp:api:type:AddressDraft) that
+   *	only differ in the data type for the optional `custom` field.
+   *
    *
    */
-  readonly address?: BaseAddress
+  readonly address?: _BaseAddress
 }
 export interface StagedOrderSetDeliveryAddressCustomFieldAction {
   readonly action: 'setDeliveryAddressCustomField'
@@ -973,7 +1006,7 @@ export interface StagedOrderSetDeliveryAddressCustomFieldAction {
   readonly name: string
   /**
    *	If `value` is absent or `null`, this field will be removed if it exists.
-   *	Trying to remove a field that does not exist will fail with an [InvalidOperation](/../api/errors#general-400-invalid-operation) error.
+   *	Removing a field that does not exist returns an [InvalidOperation](ctp:api:type:InvalidOperationError) error.
    *	If `value` is provided, it is set for the field defined by `name`.
    *
    *
@@ -1014,7 +1047,7 @@ export interface StagedOrderSetDeliveryCustomFieldAction {
   readonly name: string
   /**
    *	If `value` is absent or `null`, this field will be removed if it exists.
-   *	Trying to remove a field that does not exist will fail with an [InvalidOperation](/../api/errors#general-400-invalid-operation) error.
+   *	Removing a field that does not exist returns an [InvalidOperation](ctp:api:type:InvalidOperationError) error.
    *	If `value` is provided, it is set for the field defined by `name`.
    *
    *
@@ -1066,7 +1099,7 @@ export interface StagedOrderSetItemShippingAddressCustomFieldAction {
   readonly name: string
   /**
    *	If `value` is absent or `null`, this field will be removed if it exists.
-   *	Trying to remove a field that does not exist will fail with an [InvalidOperation](/../api/errors#general-400-invalid-operation) error.
+   *	Removing a field that does not exist returns an [InvalidOperation](ctp:api:type:InvalidOperationError) error.
    *	If `value` is provided, it is set for the field defined by `name`.
    *
    *
@@ -1107,7 +1140,7 @@ export interface StagedOrderSetLineItemCustomFieldAction {
   readonly name: string
   /**
    *	If `value` is absent or `null`, this field will be removed if it exists.
-   *	Trying to remove a field that does not exist will fail with an [InvalidOperation](/../api/errors#general-400-invalid-operation) error.
+   *	Removing a field that does not exist returns an [InvalidOperation](ctp:api:type:InvalidOperationError) error.
    *	If `value` is provided, it is set for the field defined by `name`.
    *
    *
@@ -1154,13 +1187,11 @@ export interface StagedOrderSetLineItemPriceAction {
    */
   readonly lineItemId: string
   /**
-   *	Draft type that stores amounts in cent precision for the specified currency.
-   *
-   *	For storing money values in fractions of the minor unit in a currency, use [HighPrecisionMoneyDraft](ctp:api:type:HighPrecisionMoneyDraft) instead.
+   *	Draft type that stores amounts only in cent precision for the specified currency.
    *
    *
    */
-  readonly externalPrice?: Money
+  readonly externalPrice?: _Money
 }
 export interface StagedOrderSetLineItemShippingDetailsAction {
   readonly action: 'setLineItemShippingDetails'
@@ -1169,6 +1200,8 @@ export interface StagedOrderSetLineItemShippingDetailsAction {
    */
   readonly lineItemId: string
   /**
+   *	For order creation and updates, the sum of the `targets` must match the quantity of the Line Items or Custom Line Items.
+   *
    *
    */
   readonly shippingDetails?: ItemShippingDetailsDraft
@@ -1180,9 +1213,23 @@ export interface StagedOrderSetLineItemTaxAmountAction {
    */
   readonly lineItemId: string
   /**
+   *	Cannot be used in [LineItemDraft](ctp:api:type:LineItemDraft) or [CustomLineItemDraft](ctp:api:type:CustomLineItemDraft).
+   *
+   *	Can only be set by these update actions:
+   *
+   *	- [Set LineItem TaxAmount](ctp:api:type:CartSetLineItemTaxAmountAction), [Set CustomLineItem TaxAmount](ctp:api:type:CartSetCustomLineItemTaxAmountAction), or [Set ShippingMethod TaxAmount](ctp:api:type:CartSetShippingMethodTaxAmountAction) on Carts
+   *	- [Set LineItem TaxAmount](ctp:api:type:OrderEditSetLineItemTaxAmountAction), [Set CustomLineItem TaxAmount](ctp:api:type:OrderEditSetCustomLineItemTaxAmountAction), or [Set ShippingMethod TaxAmount](ctp:api:type:OrderEditSetShippingMethodTaxAmountAction) on Order Edits
+   *
    *
    */
   readonly externalTaxAmount?: ExternalTaxAmountDraft
+  /**
+   *	`key` of the [ShippingMethod](ctp:api:type:ShippingMethod) used for this Line Item.```
+   *	This is required for Carts with `Multiple` [ShippingMode](ctp:api:type:ShippingMode).
+   *
+   *
+   */
+  readonly shippingKey?: string
 }
 export interface StagedOrderSetLineItemTaxRateAction {
   readonly action: 'setLineItemTaxRate'
@@ -1191,9 +1238,18 @@ export interface StagedOrderSetLineItemTaxRateAction {
    */
   readonly lineItemId: string
   /**
+   *	Controls calculation of taxed prices for Line Items, Custom Line Items, and Shipping Methods as explained in [Cart tax calculation](ctp:api:type:CartTaxCalculation).
+   *
    *
    */
   readonly externalTaxRate?: ExternalTaxRateDraft
+  /**
+   *	`key` of the [ShippingMethod](ctp:api:type:ShippingMethod) used for this Line Item.
+   *	This is required for Carts with `Multiple` [ShippingMode](ctp:api:type:ShippingMode).
+   *
+   *
+   */
+  readonly shippingKey?: string
 }
 export interface StagedOrderSetLineItemTotalPriceAction {
   readonly action: 'setLineItemTotalPrice'
@@ -1223,13 +1279,11 @@ export interface StagedOrderSetOrderNumberAction {
 export interface StagedOrderSetOrderTotalTaxAction {
   readonly action: 'setOrderTotalTax'
   /**
-   *	Draft type that stores amounts in cent precision for the specified currency.
-   *
-   *	For storing money values in fractions of the minor unit in a currency, use [HighPrecisionMoneyDraft](ctp:api:type:HighPrecisionMoneyDraft) instead.
+   *	Draft type that stores amounts only in cent precision for the specified currency.
    *
    *
    */
-  readonly externalTotalGross: Money
+  readonly externalTotalGross: _Money
   /**
    *
    */
@@ -1249,7 +1303,7 @@ export interface StagedOrderSetParcelCustomFieldAction {
   readonly name: string
   /**
    *	If `value` is absent or `null`, this field will be removed if it exists.
-   *	Trying to remove a field that does not exist will fail with an [InvalidOperation](/../api/errors#general-400-invalid-operation) error.
+   *	Removing a field that does not exist returns an [InvalidOperation](ctp:api:type:InvalidOperationError) error.
    *	If `value` is provided, it is set for the field defined by `name`.
    *
    *
@@ -1309,6 +1363,15 @@ export interface StagedOrderSetParcelTrackingDataAction {
    */
   readonly trackingData?: TrackingData
 }
+export interface StagedOrderSetPurchaseOrderNumberAction {
+  readonly action: 'setPurchaseOrderNumber'
+  /**
+   *	Identifier for a purchase order, usually in a B2B context.
+   *	The Purchase Order Number is typically entered by the [Buyer](/quotes-overview#buyer) and can also be used with [Quotes](/quotes-overview).
+   *
+   */
+  readonly purchaseOrderNumber?: string
+}
 export interface StagedOrderSetReturnInfoAction {
   readonly action: 'setReturnInfo'
   /**
@@ -1330,7 +1393,7 @@ export interface StagedOrderSetReturnItemCustomFieldAction {
   readonly name: string
   /**
    *	If `value` is absent or `null`, this field will be removed if it exists.
-   *	Trying to remove a field that does not exist will fail with an [InvalidOperation](/../api/errors#general-400-invalid-operation) error.
+   *	Removing a field that does not exist returns an [InvalidOperation](ctp:api:type:InvalidOperationError) error.
    *	If `value` is provided, it is set for the field defined by `name`.
    *
    *
@@ -1382,16 +1445,24 @@ export interface StagedOrderSetReturnShipmentStateAction {
 export interface StagedOrderSetShippingAddressAction {
   readonly action: 'setShippingAddress'
   /**
+   *	Polymorphic base type that represents a postal address and contact details.
+   *	Depending on the read or write action, it can be either [Address](ctp:api:type:Address) or [AddressDraft](ctp:api:type:AddressDraft) that
+   *	only differ in the data type for the optional `custom` field.
+   *
    *
    */
-  readonly address?: BaseAddress
+  readonly address?: _BaseAddress
 }
 export interface StagedOrderSetShippingAddressAndCustomShippingMethodAction {
   readonly action: 'setShippingAddressAndCustomShippingMethod'
   /**
+   *	Polymorphic base type that represents a postal address and contact details.
+   *	Depending on the read or write action, it can be either [Address](ctp:api:type:Address) or [AddressDraft](ctp:api:type:AddressDraft) that
+   *	only differ in the data type for the optional `custom` field.
+   *
    *
    */
-  readonly address: BaseAddress
+  readonly address: _BaseAddress
   /**
    *
    */
@@ -1407,6 +1478,8 @@ export interface StagedOrderSetShippingAddressAndCustomShippingMethodAction {
    */
   readonly taxCategory?: TaxCategoryResourceIdentifier
   /**
+   *	Controls calculation of taxed prices for Line Items, Custom Line Items, and Shipping Methods as explained in [Cart tax calculation](ctp:api:type:CartTaxCalculation).
+   *
    *
    */
   readonly externalTaxRate?: ExternalTaxRateDraft
@@ -1414,9 +1487,13 @@ export interface StagedOrderSetShippingAddressAndCustomShippingMethodAction {
 export interface StagedOrderSetShippingAddressAndShippingMethodAction {
   readonly action: 'setShippingAddressAndShippingMethod'
   /**
+   *	Polymorphic base type that represents a postal address and contact details.
+   *	Depending on the read or write action, it can be either [Address](ctp:api:type:Address) or [AddressDraft](ctp:api:type:AddressDraft) that
+   *	only differ in the data type for the optional `custom` field.
+   *
    *
    */
-  readonly address: BaseAddress
+  readonly address: _BaseAddress
   /**
    *	[ResourceIdentifier](ctp:api:type:ResourceIdentifier) to a [ShippingMethod](ctp:api:type:ShippingMethod).
    *
@@ -1424,6 +1501,8 @@ export interface StagedOrderSetShippingAddressAndShippingMethodAction {
    */
   readonly shippingMethod?: ShippingMethodResourceIdentifier
   /**
+   *	Controls calculation of taxed prices for Line Items, Custom Line Items, and Shipping Methods as explained in [Cart tax calculation](ctp:api:type:CartTaxCalculation).
+   *
    *
    */
   readonly externalTaxRate?: ExternalTaxRateDraft
@@ -1438,7 +1517,7 @@ export interface StagedOrderSetShippingAddressCustomFieldAction {
   readonly name: string
   /**
    *	If `value` is absent or `null`, this field will be removed if it exists.
-   *	Trying to remove a field that does not exist will fail with an [InvalidOperation](/../api/errors#general-400-invalid-operation) error.
+   *	Removing a field that does not exist returns an [InvalidOperation](ctp:api:type:InvalidOperationError) error.
    *	If `value` is provided, it is set for the field defined by `name`.
    *
    *
@@ -1470,6 +1549,8 @@ export interface StagedOrderSetShippingMethodAction {
    */
   readonly shippingMethod?: ShippingMethodResourceIdentifier
   /**
+   *	Controls calculation of taxed prices for Line Items, Custom Line Items, and Shipping Methods as explained in [Cart tax calculation](ctp:api:type:CartTaxCalculation).
+   *
    *
    */
   readonly externalTaxRate?: ExternalTaxRateDraft
@@ -1477,6 +1558,13 @@ export interface StagedOrderSetShippingMethodAction {
 export interface StagedOrderSetShippingMethodTaxAmountAction {
   readonly action: 'setShippingMethodTaxAmount'
   /**
+   *	Cannot be used in [LineItemDraft](ctp:api:type:LineItemDraft) or [CustomLineItemDraft](ctp:api:type:CustomLineItemDraft).
+   *
+   *	Can only be set by these update actions:
+   *
+   *	- [Set LineItem TaxAmount](ctp:api:type:CartSetLineItemTaxAmountAction), [Set CustomLineItem TaxAmount](ctp:api:type:CartSetCustomLineItemTaxAmountAction), or [Set ShippingMethod TaxAmount](ctp:api:type:CartSetShippingMethodTaxAmountAction) on Carts
+   *	- [Set LineItem TaxAmount](ctp:api:type:OrderEditSetLineItemTaxAmountAction), [Set CustomLineItem TaxAmount](ctp:api:type:OrderEditSetCustomLineItemTaxAmountAction), or [Set ShippingMethod TaxAmount](ctp:api:type:OrderEditSetShippingMethodTaxAmountAction) on Order Edits
+   *
    *
    */
   readonly externalTaxAmount?: ExternalTaxAmountDraft
@@ -1484,6 +1572,8 @@ export interface StagedOrderSetShippingMethodTaxAmountAction {
 export interface StagedOrderSetShippingMethodTaxRateAction {
   readonly action: 'setShippingMethodTaxRate'
   /**
+   *	Controls calculation of taxed prices for Line Items, Custom Line Items, and Shipping Methods as explained in [Cart tax calculation](ctp:api:type:CartTaxCalculation).
+   *
    *
    */
   readonly externalTaxRate?: ExternalTaxRateDraft
@@ -1491,6 +1581,7 @@ export interface StagedOrderSetShippingMethodTaxRateAction {
 export interface StagedOrderSetShippingRateInputAction {
   readonly action: 'setShippingRateInput'
   /**
+   *	Generic type holding specifc ShippingRateInputDraft types.
    *
    */
   readonly shippingRateInput?: ShippingRateInputDraft
@@ -1565,9 +1656,13 @@ export interface StagedOrderTransitionStateAction {
 export interface StagedOrderUpdateItemShippingAddressAction {
   readonly action: 'updateItemShippingAddress'
   /**
+   *	Polymorphic base type that represents a postal address and contact details.
+   *	Depending on the read or write action, it can be either [Address](ctp:api:type:Address) or [AddressDraft](ctp:api:type:AddressDraft) that
+   *	only differ in the data type for the optional `custom` field.
+   *
    *
    */
-  readonly address: BaseAddress
+  readonly address: _BaseAddress
 }
 export interface StagedOrderUpdateSyncInfoAction {
   readonly action: 'updateSyncInfo'

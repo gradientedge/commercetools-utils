@@ -4,6 +4,11 @@
  * For more information about the commercetools platform APIs, visit https://docs.commercetools.com/.
  */
 
-export type Expansion = string
-export type QueryPredicate = string
-export type Sort = string
+export interface StoreCountry {
+  /**
+   *	Two-digit country code as per [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2).
+   *
+   *
+   */
+  readonly code: string
+}

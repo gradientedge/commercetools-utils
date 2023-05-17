@@ -7,6 +7,7 @@
 import { ChannelReference, ChannelResourceIdentifier } from './channel'
 import { BaseResource, CreatedBy, LastModifiedBy, LocalizedString } from './common'
 import { ProductSelectionReference, ProductSelectionResourceIdentifier } from './product-selection'
+import { StoreCountry } from './store-country'
 import { CustomFields, CustomFieldsDraft, FieldContainer, TypeResourceIdentifier } from './type'
 
 export interface ProductSelectionSetting {
@@ -90,6 +91,12 @@ export interface Store extends BaseResource {
    */
   readonly languages: string[]
   /**
+   *	Countries defined for the Store.
+   *
+   *
+   */
+  readonly countries: StoreCountry[]
+  /**
    *	Product Distribution Channels allowed for the Store.
    *
    *
@@ -102,10 +109,12 @@ export interface Store extends BaseResource {
    */
   readonly supplyChannels: ChannelReference[]
   /**
-   *	Controls availability of Products for this Store via active Product Selections.
+   *	Controls availability of Products for this Store via Product Selections:
    *
-   *	- If empty all Products in the [Project](ctp:api:type:Project) are available in this Store.
-   *	- If provided, Products from `active` Product Selections are available in this Store.
+   *	- Leave empty if all Products in the [Project](ctp:api:type:Project) should be available in this Store.
+   *	- If only `inactive` Product Selections with `IndividualExclusion` [ProductSelectionMode](ctp:api:type:ProductSelectionMode) are provided, all the Products are availlable in this Store.
+   *	- If all the Product Selections provided are `inactive` and there's at least a Product Selection of mode `Individual`, no Product is availlable in this Store.
+   *	- If at least an `active` Product Selection is provided, only `active` Product Selections are considered to compute the availlability in this Store.
    *
    */
   readonly productSelections: ProductSelectionSetting[]
@@ -137,6 +146,12 @@ export interface StoreDraft {
    */
   readonly languages?: string[]
   /**
+   *	Countries defined for the Store.
+   *
+   *
+   */
+  readonly countries?: StoreCountry[]
+  /**
    *	ResourceIdentifier of a Channel with `ProductDistribution` [ChannelRoleEnum](ctp:api:type:ChannelRoleEnum).
    *
    *
@@ -149,10 +164,12 @@ export interface StoreDraft {
    */
   readonly supplyChannels?: ChannelResourceIdentifier[]
   /**
-   *	Controls availability of Products for this Store via active Product Selections.
+   *	Controls availability of Products for this Store via active/inactive Product Selections:
    *
    *	- Leave empty if all Products in the [Project](ctp:api:type:Project) should be available in this Store.
-   *	- If provided, Products from `active` Product Selections are available in this Store.
+   *	- If only `inactive` Product Selections with `IndividualExclusion` [ProductSelectionMode](ctp:api:type:ProductSelectionMode) are provided, all the Products are available in this Store.
+   *	- If all the Product Selections provided are `inactive` and there's at least a Product Selection of mode `Individual`, no Product is available in this Store.
+   *	- If at least an `active` Product Selection is provided, only `active` Product Selections are considered to compute the availability in this Store.
    *
    *
    */
@@ -257,7 +274,7 @@ export interface StoreResourceIdentifier {
 }
 export interface StoreUpdate {
   /**
-   *	Expected version of the Store on which the changes should be applied. If the expected version does not match the actual version, a [409 Conflict](/../api/errors#409-conflict) will be returned.
+   *	Expected version of the Store on which the changes should be applied. If the expected version does not match the actual version, a [ConcurrentModification](ctp:api:type:ConcurrentModificationError) error is returned.
    *
    *
    */
@@ -270,13 +287,16 @@ export interface StoreUpdate {
   readonly actions: StoreUpdateAction[]
 }
 export type StoreUpdateAction =
+  | StoreAddCountryAction
   | StoreAddDistributionChannelAction
   | StoreAddProductSelectionAction
   | StoreAddSupplyChannelAction
   | StoreChangeProductSelectionAction
+  | StoreRemoveCountryAction
   | StoreRemoveDistributionChannelAction
   | StoreRemoveProductSelectionAction
   | StoreRemoveSupplyChannelAction
+  | StoreSetCountriesAction
   | StoreSetCustomFieldAction
   | StoreSetCustomTypeAction
   | StoreSetDistributionChannelsAction
@@ -285,14 +305,30 @@ export type StoreUpdateAction =
   | StoreSetProductSelectionsAction
   | StoreSetSupplyChannelsAction
 /**
+ *	This update action produces the [StoreCountriesChanged](ctp:api:type:StoreCountriesChangedMessage) Message.
+ *	It has no effect if the given country is already present in a Store.
+ *
+ */
+export interface StoreAddCountryAction {
+  readonly action: 'addCountry'
+  /**
+   *	Value to append to `countries`.
+   *
+   *
+   */
+  readonly country: StoreCountry
+}
+/**
  *	This update action produces the [StoreDistributionChannelsChanged](ctp:api:type:StoreDistributionChannelsChangedMessage) Message.
  *	It has no effect if a given distribution channel is already present in a Store.
+ *
+ *	Adding a [Channel](ctp:api:type:Channel) without the `ProductDistribution` [ChannelRoleEnum](ctp:api:type:ChannelRoleEnum) returns a [MissingRoleOnChannel](ctp:api:type:MissingRoleOnChannelError) error.
  *
  */
 export interface StoreAddDistributionChannelAction {
   readonly action: 'addDistributionChannel'
   /**
-   *	Value to append. Any attempt to use [Channel](ctp:api:type:Channel) without the `ProductDistribution` [ChannelRoleEnum](ctp:api:type:ChannelRoleEnum) will fail with a [MissingRoleOnChannelError](ctp:api:type:MissingRoleOnChannelError) error.
+   *	Value to append.
    *
    *
    */
@@ -319,11 +355,16 @@ export interface StoreAddProductSelectionAction {
 }
 /**
  *	This action has no effect if a given supply channel is already present in a Store.
+ *
+ *	Adding a supply channel produces the [StoreSupplyChannelsChanged](ctp:api:type:StoreSupplyChannelsChangedMessage) Message.
+ *
+ *	Adding a [Channel](ctp:api:type:Channel) without the `InventorySupply` [ChannelRoleEnum](ctp:api:type:ChannelRoleEnum) returns a [MissingRoleOnChannel](ctp:api:type:MissingRoleOnChannelError) error.
+ *
  */
 export interface StoreAddSupplyChannelAction {
   readonly action: 'addSupplyChannel'
   /**
-   *	Any attempt to use [Channel](ctp:api:type:Channel) without the `InventorySupply` [ChannelRoleEnum](ctp:api:type:ChannelRoleEnum) will fail with a [MissingRoleOnChannel](ctp:api:type:MissingRoleOnChannelError) error.
+   *	Value to append.
    *
    *
    */
@@ -347,6 +388,20 @@ export interface StoreChangeProductSelectionAction {
    *
    */
   readonly active?: boolean
+}
+/**
+ *	This update action produces the [StoreCountriesChanged](ctp:api:type:StoreCountriesChangedMessage) Message.
+ *	It has no effect if a given country is not present in a Store.
+ *
+ */
+export interface StoreRemoveCountryAction {
+  readonly action: 'removeCountry'
+  /**
+   *	Value to remove from `countries`.
+   *
+   *
+   */
+  readonly country: StoreCountry
 }
 /**
  *	This update action produces the [StoreDistributionChannelsChanged](ctp:api:type:StoreDistributionChannelsChangedMessage) Message.
@@ -374,6 +429,10 @@ export interface StoreRemoveProductSelectionAction {
    */
   readonly productSelection: ProductSelectionResourceIdentifier
 }
+/**
+ *	This update action produces the [StoreSupplyChannelsChanged](ctp:api:type:StoreSupplyChannelsChangedMessage) Message.
+ *
+ */
 export interface StoreRemoveSupplyChannelAction {
   readonly action: 'removeSupplyChannel'
   /**
@@ -382,6 +441,19 @@ export interface StoreRemoveSupplyChannelAction {
    *
    */
   readonly supplyChannel: ChannelResourceIdentifier
+}
+/**
+ *	This update action produces the [StoreCountriesChanged](ctp:api:type:StoreCountriesChangedMessage) Message.
+ *
+ */
+export interface StoreSetCountriesAction {
+  readonly action: 'setCountries'
+  /**
+   *	New value to set.
+   *
+   *
+   */
+  readonly countries?: StoreCountry[]
 }
 export interface StoreSetCustomFieldAction {
   readonly action: 'setCustomField'
@@ -393,7 +465,7 @@ export interface StoreSetCustomFieldAction {
   readonly name: string
   /**
    *	If `value` is absent or `null`, this field will be removed if it exists.
-   *	Trying to remove a field that does not exist will fail with an [InvalidOperation](/../api/errors#general-400-invalid-operation) error.
+   *	Removing a field that does not exist returns an [InvalidOperation](ctp:api:type:InvalidOperationError) error.
    *	If `value` is provided, it is set for the field defined by `name`.
    *
    *
@@ -419,13 +491,14 @@ export interface StoreSetCustomTypeAction {
 /**
  *	This update action produces the [StoreDistributionChannelsChanged](ctp:api:type:StoreDistributionChannelsChangedMessage) Message.
  *
+ *	Setting a [Channel](ctp:api:type:Channel) without the `ProductDistribution` [ChannelRoleEnum](ctp:api:type:ChannelRoleEnum) returns a [MissingRoleOnChannel](ctp:api:type:MissingRoleOnChannelError) error.
+ *
  */
 export interface StoreSetDistributionChannelsAction {
   readonly action: 'setDistributionChannels'
   /**
    *	Value to set.
    *	If not defined, the Store's `distributionChannels` are unset.
-   *	Any attempt to use [Channel](ctp:api:type:Channel) without the `ProductDistribution` [ChannelRoleEnum](ctp:api:type:ChannelRoleEnum) will fail with a [MissingRoleOnChannel](ctp:api:type:MissingRoleOnChannelError) error.
    *
    *
    */
@@ -433,13 +506,13 @@ export interface StoreSetDistributionChannelsAction {
 }
 /**
  *	This update action produces the [StoreLanguagesChanged](ctp:api:type:StoreLanguagesChangedMessage) Message.
+ *	Adding a language other than the ones defined in the [Project](ctp:api:type:Project) returns a [ProjectNotConfiguredForLanguages](ctp:api:type:ProjectNotConfiguredForLanguagesError) error.
  *
  */
 export interface StoreSetLanguagesAction {
   readonly action: 'setLanguages'
   /**
    *	Value to set.
-   *	Any attempt to use languages other than the ones defined in the [Project](ctp:api:type:Project) will fail with a [ProjectNotConfiguredForLanguages](ctp:api:type:ProjectNotConfiguredForLanguagesError) error.
    *
    *
    */
@@ -474,12 +547,17 @@ export interface StoreSetProductSelectionsAction {
    */
   readonly productSelections?: ProductSelectionSettingDraft[]
 }
+/**
+ *	Setting a supply channel produces the [StoreSupplyChannelsChanged](ctp:api:type:StoreSupplyChannelsChangedMessage) Message.
+ *
+ *	Setting a [Channel](ctp:api:type:Channel) without the `InventorySupply` [ChannelRoleEnum](ctp:api:type:ChannelRoleEnum) returns a [MissingRoleOnChannel](ctp:api:type:MissingRoleOnChannelError) error.
+ *
+ */
 export interface StoreSetSupplyChannelsAction {
   readonly action: 'setSupplyChannels'
   /**
    *	Value to set.
    *	If not defined, the Store's `supplyChannels` are unset.
-   *	Any attempt to use [Channel](ctp:api:type:Channel) without the `InventorySupply` [ChannelRoleEnum](ctp:api:type:ChannelRoleEnum) will fail with a [MissingRoleOnChannel](ctp:api:type:MissingRoleOnChannelError) error.
    *
    *
    */
