@@ -189,7 +189,7 @@ export interface TaxCategoryResourceIdentifier {
 }
 export interface TaxCategoryUpdate {
   /**
-   *	Expected version of the TaxCategory on which the changes should be applied. If the expected version does not match the actual version, a [409 Conflict](/../api/errors#409-conflict) will be returned.
+   *	Expected version of the TaxCategory on which the changes should be applied. If the expected version does not match the actual version, a [ConcurrentModification](ctp:api:type:ConcurrentModificationError) error is returned.
    *
    *
    */
@@ -217,6 +217,13 @@ export interface TaxRate {
    */
   readonly id?: string
   /**
+   *	User-defined unique identifier of the TaxRate.
+   *	Present when set using [TaxRateDraft](ctp:api:type:TaxRateDraft). Not available for external TaxRates created using [ExternalTaxRateDraft](ctp:api:type:ExternalTaxRateDraft).
+   *
+   *
+   */
+  readonly key?: string
+  /**
    *	Name of the TaxRate.
    *
    *
@@ -229,7 +236,7 @@ export interface TaxRate {
    */
   readonly amount: number
   /**
-   *	If `true`, tax is included in [Embedded Prices](ctp:api:type:Price) and the `taxedPrice` is present on [LineItems](ctp:api:type:LineItem). In this case, the `totalNet` price on [TaxedPrice](ctp:api:type:TaxedPrice) includes the TaxRate.
+   *	If `true`, tax is included in [Embedded Prices](ctp:api:type:Price) or [Standalone Prices](ctp:api:type:StandalonePrice), and the `taxedPrice` is present on [LineItems](ctp:api:type:LineItem). In this case, the `totalNet` price on [TaxedPrice](ctp:api:type:TaxedPrice) includes the TaxRate.
    *
    *
    */
@@ -268,7 +275,7 @@ export interface TaxRateDraft {
    */
   readonly amount?: number
   /**
-   *	If `true`, tax is included in [Embedded Prices](ctp:api:type:Price) and the `taxedPrice` is present on [LineItems](ctp:api:type:LineItem). In this case, the `totalNet` price on [TaxedPrice](ctp:api:type:TaxedPrice) includes the TaxRate.
+   *	If `true`, tax is included in [Embedded Prices](ctp:api:type:Price) or [Standalone Prices](ctp:api:type:StandalonePrice), and the `taxedPrice` is present on [LineItems](ctp:api:type:LineItem). In this case, the `totalNet` price on [TaxedPrice](ctp:api:type:TaxedPrice) includes the TaxRate.
    *
    *
    */
@@ -291,6 +298,12 @@ export interface TaxRateDraft {
    *
    */
   readonly subRates?: SubRate[]
+  /**
+   *	User-defined unique identifier of the TaxRate.
+   *
+   *
+   */
+  readonly key?: string
 }
 export interface TaxCategoryAddTaxRateAction {
   readonly action: 'addTaxRate'
@@ -314,19 +327,35 @@ export interface TaxCategoryRemoveTaxRateAction {
   readonly action: 'removeTaxRate'
   /**
    *	ID of the TaxRate to remove.
+   *	Either `taxRateId` or `taxRateKey` is required for this update action.
    *
    *
    */
-  readonly taxRateId: string
+  readonly taxRateId?: string
+  /**
+   *	Key of the TaxRate to remove.
+   *	Either `taxRateId` or `taxRateKey` is required for this update action.
+   *
+   *
+   */
+  readonly taxRateKey?: string
 }
 export interface TaxCategoryReplaceTaxRateAction {
   readonly action: 'replaceTaxRate'
   /**
    *	ID of the TaxRate to replace.
+   *	Either `taxRateId` or `taxRateKey` is required for this update action.
    *
    *
    */
-  readonly taxRateId: string
+  readonly taxRateId?: string
+  /**
+   *	Key of the TaxRate to replace.
+   *	Either `taxRateId` or `taxRateKey` is required for this update action.
+   *
+   *
+   */
+  readonly taxRateKey?: string
   /**
    *	New TaxRate to replace with.
    *
