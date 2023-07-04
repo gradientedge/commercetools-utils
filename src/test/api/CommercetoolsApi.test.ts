@@ -3553,6 +3553,24 @@ describe('CommercetoolsApi', () => {
       expect(() => CommercetoolsApi.validateConfig({ ...defaultConfig, clientScopes: [] })).toThrowError()
     })
 
+    it('should throw an error if the `region` property is falsy', () => {
+      expect(() => CommercetoolsApi.validateConfig({ ...defaultConfig, region: undefined })).toThrowError(
+        'The `region` property is empty',
+      )
+    })
+
+    it('should throw an error if the `region` property is not a string', () => {
+      expect(() => CommercetoolsApi.validateConfig({ ...defaultConfig, region: 123 })).toThrowError(
+        'The `region` property must be a string',
+      )
+    })
+
+    it('should throw an error if the `region` property is not a known valid value', () => {
+      expect(() => CommercetoolsApi.validateConfig({ ...defaultConfig, region: 'unknown' })).toThrowError(
+        'The `region` property value is not valid: unknown. Must be one of: europe_gcp, europe_aws, north_america_gcp, north_america_aws, australia_gcp',
+      )
+    })
+
     it('should not throw an error if all required properties are populated', () => {
       expect(() =>
         CommercetoolsApi.validateConfig({
@@ -3560,6 +3578,7 @@ describe('CommercetoolsApi', () => {
           clientSecret: 'test',
           clientScopes: ['manage_project'],
           projectKey: 'test',
+          region: 'europe_gcp',
         }),
       ).not.toThrowError()
     })

@@ -2446,6 +2446,17 @@ export class CommercetoolsApi {
       } else if (config.clientScopes.length === 0) {
         errors.push('The `clientScopes` property must have at least 1 scope defined')
       }
+      if (!config.region) {
+        errors.push('The `region` property is empty')
+      } else if (typeof config.region !== 'string') {
+        errors.push('The `region` property must be a string')
+      } else if (!Object.prototype.hasOwnProperty.call(REGION_URLS, config.region)) {
+        errors.push(
+          `The \`region\` property value is not valid: ${config.region}. Must be one of: ${Object.keys(
+            REGION_URLS,
+          ).join(', ')}`,
+        )
+      }
     }
 
     if (errors.length) {
