@@ -2043,6 +2043,34 @@ export class CommercetoolsApi {
   }
 
   /**
+   * Get shipping methods applicable for a Cart and Location:
+   * https://docs.commercetools.com/api/projects/shippingMethods#for-a-cart-and-location
+   */
+  getShippingMethodsForCartAndLocation(
+    options: CommonStoreEnabledRequestOptions & {
+      accessToken?: string
+      cartId: string
+      country: string
+      state?: string
+    },
+  ): Promise<ShippingMethodPagedQueryResponse> {
+    return this.request({
+      ...this.extractCommonRequestOptions({
+        ...options,
+        params: {
+          ...options?.params,
+          cartId: options.cartId,
+          country: options.country,
+          state: options.state,
+        },
+      }),
+      path: `/shipping-methods/matching-cart-location`,
+      method: 'GET',
+      accessToken: options.accessToken,
+    })
+  }
+
+  /**
    * Query shipping methods:
    * https://docs.commercetools.com/api/projects/shippingMethods#query-shippingmethods
    */
