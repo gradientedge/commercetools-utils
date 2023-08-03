@@ -3093,28 +3093,6 @@ describe('CommercetoolsApi', () => {
 
         expect(order).toEqual({ success: true })
       })
-
-      it('should send through the customer access token when supplied', async () => {
-        nock('https://api.europe-west1.gcp.commercetools.com', {
-          reqheaders: {
-            authorization: 'Bearer my-access-token',
-          },
-        })
-          .get('/test-project-key/shipping-methods/matching-location')
-          .query({ limit: 10, country: 'GB', currency: 'GBP', state: 'Norfolk' })
-          .reply(200, { success: true })
-        const api = new CommercetoolsApi(defaultConfig)
-
-        const order = await api.getShippingMethodsForLocation({
-          accessToken: 'my-access-token',
-          country: 'GB',
-          currency: 'GBP',
-          state: 'Norfolk',
-          params: { limit: 10 },
-        })
-
-        expect(order).toEqual({ success: true })
-      })
     })
 
     describe('getShippingMethodsForCart', () => {
@@ -3133,21 +3111,40 @@ describe('CommercetoolsApi', () => {
 
         expect(order).toEqual({ success: true })
       })
+    })
 
-      it('should use the customer token when supplied', async () => {
+    describe('getShippingMethodsForCartAndLocation', () => {
+      it('should make a GET request to the correct endpoint when only sending through a cart and country', async () => {
         nock('https://api.europe-west1.gcp.commercetools.com', {
           reqheaders: {
-            authorization: 'Bearer my-access-token',
+            authorization: 'Bearer test-access-token',
           },
         })
-          .get('/test-project-key/shipping-methods/matching-cart')
-          .query({ limit: 10, cartId: 'my-cart-id' })
+          .get('/test-project-key/shipping-methods/matching-cart-location')
+          .query({ country: 'GB', cartId: 'my-cart-id' })
           .reply(200, { success: true })
         const api = new CommercetoolsApi(defaultConfig)
 
-        const order = await api.getShippingMethodsForCart({
-          accessToken: 'my-access-token',
+        const order = await api.getShippingMethodsForCartAndLocation({ cartId: 'my-cart-id', country: 'GB' })
+
+        expect(order).toEqual({ success: true })
+      })
+
+      it('should make a GET request to the correct endpoint when a state is included', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com', {
+          reqheaders: {
+            authorization: 'Bearer test-access-token',
+          },
+        })
+          .get('/test-project-key/shipping-methods/matching-cart-location')
+          .query({ limit: 10, cartId: 'my-cart-id', country: 'GB', state: 'Norfolk' })
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const order = await api.getShippingMethodsForCartAndLocation({
           cartId: 'my-cart-id',
+          country: 'GB',
+          state: 'Norfolk',
           params: { limit: 10 },
         })
 
