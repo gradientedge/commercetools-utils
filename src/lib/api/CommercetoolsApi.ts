@@ -2003,7 +2003,7 @@ export class CommercetoolsApi {
    * https://docs.commercetools.com/api/projects/shippingMethods#get-shippingmethods-for-a-location
    */
   getShippingMethodsForLocation(
-    options: CommonRequestOptions & { accessToken?: string; country: string; state?: string; currency?: string },
+    options: CommonRequestOptions & { country: string; state?: string; currency?: string },
   ): Promise<ShippingMethodPagedQueryResponse> {
     return this.request({
       ...this.extractCommonRequestOptions({
@@ -2017,7 +2017,6 @@ export class CommercetoolsApi {
       }),
       path: `/shipping-methods/matching-location`,
       method: 'GET',
-      accessToken: options.accessToken,
     })
   }
 
@@ -2026,7 +2025,7 @@ export class CommercetoolsApi {
    * https://docs.commercetools.com/api/projects/shippingMethods#get-shippingmethods-for-a-cart
    */
   getShippingMethodsForCart(
-    options: CommonStoreEnabledRequestOptions & { accessToken?: string; cartId: string },
+    options: CommonStoreEnabledRequestOptions & { cartId: string },
   ): Promise<ShippingMethodPagedQueryResponse> {
     return this.request({
       ...this.extractCommonRequestOptions({
@@ -2038,7 +2037,6 @@ export class CommercetoolsApi {
       }),
       path: `/shipping-methods/matching-cart`,
       method: 'GET',
-      accessToken: options.accessToken,
     })
   }
 
@@ -2048,7 +2046,6 @@ export class CommercetoolsApi {
    */
   getShippingMethodsForCartAndLocation(
     options: CommonStoreEnabledRequestOptions & {
-      accessToken?: string
       cartId: string
       country: string
       state?: string
@@ -2066,7 +2063,6 @@ export class CommercetoolsApi {
       }),
       path: `/shipping-methods/matching-cart-location`,
       method: 'GET',
-      accessToken: options.accessToken,
     })
   }
 
