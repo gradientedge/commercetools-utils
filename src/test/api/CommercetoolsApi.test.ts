@@ -1187,6 +1187,40 @@ describe('CommercetoolsApi', () => {
     })
   })
 
+  describe('Inventory', () => {
+    describe('queryInventory', () => {
+      it('should make a GET request to the correct endpoint with no parameters', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com', {
+          reqheaders: {
+            authorization: 'Bearer test-access-token',
+          },
+        })
+          .get('/test-project-key/inventory')
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        await api.queryInventory()
+      })
+
+      it('should make a GET request to the correct endpoint with expected parameters', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com', {
+          reqheaders: {
+            authorization: 'Bearer test-access-token',
+          },
+        })
+          .get('/test-project-key/inventory')
+          .query({
+            limit: 100,
+            where: 'sku in ("124141", "23423423")',
+          })
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        await api.queryInventory({ params: { limit: 100, where: 'sku in ("124141", "23423423")' } })
+      })
+    })
+  })
+
   describe('Customer Groups', () => {
     describe('getCustomerGroupById', () => {
       it('should make a GET request to the correct endpoint', async () => {
