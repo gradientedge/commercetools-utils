@@ -41,6 +41,7 @@ import type {
   DiscountCode,
   GraphQLRequest,
   GraphQLResponse,
+  InventoryPagedQueryResponse,
   MyCartDraft,
   MyCartUpdateAction,
   MyCustomerDraft,
@@ -766,6 +767,18 @@ export class CommercetoolsApi {
   }
 
   /**
+   * Query the inventory of Skus
+   * https://docs.commercetools.com/api/projects/inventory#query-inventory
+   */
+  queryInventory(options?: CommonRequestOptions): Promise<InventoryPagedQueryResponse> {
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/inventory`,
+      method: 'GET',
+    })
+  }
+
+  /*y
    * Get a cart by id
    * https://docs.commercetools.com/api/projects/carts#update-a-cart-by-id
    */
