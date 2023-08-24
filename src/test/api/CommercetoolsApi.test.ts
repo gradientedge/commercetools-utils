@@ -1188,6 +1188,40 @@ describe('CommercetoolsApi', () => {
   })
 
   describe('Inventory', () => {
+    describe('getInventoryEntryById', () => {
+      it('should make a GET request to the correct endpoint', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com', {
+          encodedQueryParams: true,
+        })
+          .get('/test-project-key/inventory/inventory-id')
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const inventoryEntry = await api.getInventoryEntryById({ id: 'inventory-id' })
+
+        expect(inventoryEntry).toEqual({ success: true })
+      })
+
+      it('should throw an error when an empty ID is being passed as a parameter', async () => {
+        const api = new CommercetoolsApi(defaultConfig)
+
+        await expect(() => api.getCustomerGroupById({ id: ' ' })).toThrow(`The string parameter 'id' cannot be empty`)
+      })
+    })
+
+    describe('getInventoryEntryByKey', () => {
+      it('should make a GET request to the correct endpoint', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com')
+          .get('/test-project-key/inventory/key=inventory-key')
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const customerGroup = await api.getInventoryEntryByKey({ key: 'inventory-key' })
+
+        expect(customerGroup).toEqual({ success: true })
+      })
+    })
+
     describe('queryInventory', () => {
       it('should make a GET request to the correct endpoint with no parameters', async () => {
         nock('https://api.europe-west1.gcp.commercetools.com', {
@@ -1217,6 +1251,110 @@ describe('CommercetoolsApi', () => {
         const api = new CommercetoolsApi(defaultConfig)
 
         await api.queryInventory({ params: { limit: 100, where: 'sku in ("124141", "23423423")' } })
+      })
+    })
+
+    describe('createInventoryEntry', () => {
+      it('should make a POST request to the correct endpoint with all expected data and params', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com')
+          .post('/test-project-key/inventory', {
+            sku: 'test-sku',
+            key: 'test-key',
+            supplyChannel: { typeId: 'channel', key: 'channel-key' },
+            quantityOnStock: 999,
+          })
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const inventoryEntry = await api.createInventoryEntry({
+          data: {
+            sku: 'test-sku',
+            key: 'test-key',
+            supplyChannel: { typeId: 'channel', key: 'channel-key' },
+            quantityOnStock: 999,
+          },
+        })
+
+        expect(inventoryEntry).toEqual({ success: true })
+      })
+    })
+
+    describe('updateInventoryEntryById', () => {
+      it('should make a POST request to the correct endpoint with all expected data and params', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com')
+          .post('/test-project-key/inventory/inventory-id', { version: 1, actions: [] })
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const customerGroup = await api.updateInventoryEntryById({
+          id: 'inventory-id',
+          data: { version: 1, actions: [] },
+        })
+
+        expect(customerGroup).toEqual({ success: true })
+      })
+
+      it('should throw an error when an empty ID is being passed as a parameter', async () => {
+        const api = new CommercetoolsApi(defaultConfig)
+
+        expect(() => api.updateInventoryEntryById({ id: ' ', data: { version: 1, actions: [] } })).toThrow(
+          `The string parameter 'id' cannot be empty`,
+        )
+      })
+    })
+
+    describe('updateInventoryEntryByKey', () => {
+      it('should make a POST request to the correct endpoint with all expected data and params', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com')
+          .post('/test-project-key/inventory/key=inventory-key', { version: 1, actions: [] })
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const customerGroup = await api.updateInventoryEntryByKey({
+          key: 'inventory-key',
+          data: { version: 1, actions: [] },
+        })
+
+        expect(customerGroup).toEqual({ success: true })
+      })
+    })
+
+    describe('deleteInventoryEntryById', () => {
+      it('should make a DELETE request to the correct endpoint with all expected data and params', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com')
+          .delete('/test-project-key/inventory/inventory-id')
+          .query({ version: 1 })
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const inventoryEntry = await api.deleteInventoryEntryById({ id: 'inventory-id', version: 1 })
+
+        expect(inventoryEntry).toEqual({ success: true })
+      })
+
+      it('should throw an error when an empty ID is being passed as a parameter', async () => {
+        const api = new CommercetoolsApi(defaultConfig)
+
+        expect(() => api.deleteInventoryEntryById({ id: ' ', version: 1 })).toThrow(
+          `The string parameter 'id' cannot be empty`,
+        )
+      })
+    })
+
+    describe('deleteInventoryEntryByKey', () => {
+      it('should make a DELETE request to the correct endpoint with all expected data and params', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com')
+          .delete('/test-project-key/inventory/key=inventory-key')
+          .query({ version: 4 })
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const inventoryEntry = await api.deleteInventoryEntryByKey({
+          key: 'inventory-key',
+          version: 4,
+        })
+
+        expect(inventoryEntry).toEqual({ success: true })
       })
     })
   })
