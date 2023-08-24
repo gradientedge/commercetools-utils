@@ -41,6 +41,9 @@ import type {
   DiscountCode,
   GraphQLRequest,
   GraphQLResponse,
+  InventoryEntry,
+  InventoryEntryDraft,
+  InventoryEntryUpdateAction,
   InventoryPagedQueryResponse,
   MyCartDraft,
   MyCartUpdateAction,
@@ -767,6 +770,34 @@ export class CommercetoolsApi {
   }
 
   /**
+   * Get an InventoryEntry by id
+   * https://docs.commercetools.com/api/projects/inventory#get-inventoryentry-by-id
+   */
+  getInventoryEntryById(options: CommonRequestOptions & { id: string }): Promise<InventoryEntry> {
+    ensureNonEmptyString({ value: options.id, name: 'id' })
+
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/inventory/${options.id}`,
+      method: 'GET',
+    })
+  }
+
+  /**
+   * Get an InventoryEntry by key
+   * https://docs.commercetools.com/api/projects/inventory#get-inventoryentry-by-key
+   */
+  getInventoryEntryByKey(options: CommonRequestOptions & { key: string }): Promise<InventoryEntry> {
+    ensureNonEmptyString({ value: options.key, name: 'key' })
+
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/inventory/key=${encodeURIComponent(options.key)}`,
+      method: 'GET',
+    })
+  }
+
+  /**
    * Query the inventory of Skus
    * https://docs.commercetools.com/api/projects/inventory#query-inventory
    */
@@ -778,7 +809,96 @@ export class CommercetoolsApi {
     })
   }
 
-  /*y
+  /**
+   * Create InventoryEntry
+   * https://docs.commercetools.com/api/projects/inventory#create-inventoryentry
+   */
+  createInventoryEntry(options: CommonRequestOptions & { data: InventoryEntryDraft }): Promise<InventoryEntry> {
+    ensureNonEmptyString({ value: options.data.sku, name: 'sku' })
+
+    return this.request<InventoryEntryDraft, InventoryEntry>({
+      ...this.extractCommonRequestOptions(options),
+      path: '/inventory',
+      data: options.data,
+      method: 'POST',
+    })
+  }
+
+  /**
+   * Update InventoryEntry by id
+   * https://docs.commercetools.com/api/projects/inventory#update-inventoryentry-by-id
+   */
+  updateInventoryEntryById(
+    options: CommonRequestOptions & { id: string; data: { version: number; actions: InventoryEntryUpdateAction[] } },
+  ): Promise<InventoryEntry> {
+    ensureNonEmptyString({ value: options.id, name: 'id' })
+
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/inventory/${options.id}`,
+      method: 'POST',
+      data: {
+        ...options.data,
+      },
+    })
+  }
+
+  /**
+   * Update InventoryEntry by key
+   * https://docs.commercetools.com/api/projects/inventory#update-inventoryentry-by-key
+   */
+  updateInventoryEntryByKey(
+    options: CommonRequestOptions & { key: string; data: { version: number; actions: InventoryEntryUpdateAction[] } },
+  ): Promise<InventoryEntry> {
+    ensureNonEmptyString({ value: options.key, name: 'key' })
+
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/inventory/key=${options.key}`,
+      method: 'POST',
+      data: {
+        ...options.data,
+      },
+    })
+  }
+
+  /**
+   * Delete InventoryEntry by id
+   * https://docs.commercetools.com/api/projects/inventory#delete-inventoryentry-by-id
+   */
+  deleteInventoryEntryById(options: CommonRequestOptions & { id: string; version: number }): Promise<InventoryEntry> {
+    ensureNonEmptyString({ value: options.id, name: 'id' })
+
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/inventory/${options.id}`,
+      params: {
+        ...options.params,
+        version: options.version,
+      },
+      method: 'DELETE',
+    })
+  }
+
+  /**
+   * Delete InventoryEntry by key
+   * https://docs.commercetools.com/api/projects/inventory#delete-inventoryentry-by-key
+   */
+  deleteInventoryEntryByKey(options: CommonRequestOptions & { key: string; version: number }): Promise<InventoryEntry> {
+    ensureNonEmptyString({ value: options.key, name: 'key' })
+
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/inventory/key=${options.key}`,
+      params: {
+        ...options.params,
+        version: options.version,
+      },
+      method: 'DELETE',
+    })
+  }
+
+  /**
    * Get a cart by id
    * https://docs.commercetools.com/api/projects/carts#update-a-cart-by-id
    */
