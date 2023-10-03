@@ -653,6 +653,8 @@ export type CartUpdateAction =
   | CartSetLineItemTotalPriceAction
   | CartSetLocaleAction
   | CartSetShippingAddressAction
+  | CartSetShippingAddressAndShippingMethodAction
+  | CartSetShippingAddressAndCustomShippingMethodAction
   | CartSetShippingAddressCustomFieldAction
   | CartSetShippingAddressCustomTypeAction
   | CartSetShippingCustomFieldAction
@@ -3190,6 +3192,31 @@ export interface CartSetShippingAddressAction {
    *
    */
   readonly address?: _BaseAddress
+}
+export interface CartSetShippingAddressAndShippingMethodAction {
+  readonly action: 'setShippingAddressAndShippingMethod'
+  /**
+   *	Value to set.
+   *	If not set, the shipping address is unset, and the `taxedPrice` and `taxRate` are unset in all Line Items of the Cart.
+   *
+   *
+   */
+  readonly address?: _BaseAddress
+  readonly shippingMethod?: ShippingMethodReference
+}
+export interface CartSetShippingAddressAndCustomShippingMethodAction {
+  readonly action: 'setShippingAddressAndCustomShippingMethod'
+  /**
+   *	Value to set.
+   *	If not set, the shipping address is unset, and the `taxedPrice` and `taxRate` are unset in all Line Items of the Cart.
+   *
+   *
+   */
+  readonly address?: _BaseAddress
+  readonly shippingMethodName: string
+  readonly shippingRate: ShippingRateDraft
+  readonly taxCategory?: TaxCategoryResourceIdentifier
+  externalTaxRate?: ExternalTaxRateDraft
 }
 export interface CartSetShippingAddressCustomFieldAction {
   readonly action: 'setShippingAddressCustomField'
