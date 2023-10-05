@@ -653,8 +653,6 @@ export type CartUpdateAction =
   | CartSetLineItemTotalPriceAction
   | CartSetLocaleAction
   | CartSetShippingAddressAction
-  | CartSetShippingAddressAndShippingMethodAction
-  | CartSetShippingAddressAndCustomShippingMethodAction
   | CartSetShippingAddressCustomFieldAction
   | CartSetShippingAddressCustomTypeAction
   | CartSetShippingCustomFieldAction
