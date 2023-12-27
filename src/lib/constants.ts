@@ -1,5 +1,5 @@
 import { Status } from '@tshttp/status'
-import { CommercetoolsRetryConfig } from './api'
+import { CommercetoolsRetryConfig } from './api/index.js'
 
 /**
  * Prefixed in the `User-Agent` header before the system identifier (if provided)

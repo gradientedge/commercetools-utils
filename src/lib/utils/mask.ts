@@ -1,6 +1,6 @@
 import traverse from 'traverse'
 import { AxiosHeaders } from 'axios'
-import { plainClone } from './plain-clone'
+import { plainClone } from './plain-clone.js'
 
 /**
  * List of property names that we want to mask.

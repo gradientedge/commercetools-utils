@@ -1,4 +1,4 @@
-import { DEFAULT_HTTPS_AGENT_CONFIG } from '../../constants'
+import { DEFAULT_HTTPS_AGENT_CONFIG } from '../../constants.js'
 import axios, { AxiosInstance } from 'axios'
 import https from 'https'
 

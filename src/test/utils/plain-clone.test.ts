@@ -1,4 +1,4 @@
-import { plainClone } from '../../lib/utils/plain-clone'
+import { plainClone } from '../../lib/utils/plain-clone.js'
 
 describe('plainClone', function () {
   it('should clone an entire object and non be affected by a change to a target string property', () => {

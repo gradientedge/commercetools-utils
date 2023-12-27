@@ -1,5 +1,6 @@
+import { beforeEach, jest } from '@jest/globals'
 import nock from 'nock'
-import { request, RequestOptions } from '../../../lib/request'
+import { request, RequestOptions } from '../../../lib/request/index.js'
 import axios from 'axios'
 
 describe('request', () => {
@@ -206,7 +207,7 @@ describe('request', () => {
               age: 123,
             })
             .reply(200, { success: true })
-          const mockOnBeforeRequest = jest.fn().mockResolvedValue(null)
+          const mockOnBeforeRequest = jest.fn<any>().mockResolvedValue(null)
           const requestConfig = getRequestConfig()
           requestConfig.onBeforeRequest = mockOnBeforeRequest
           requestConfig.request.params = {
@@ -241,7 +242,7 @@ describe('request', () => {
               age: 123,
             })
             .reply(200, { success: true })
-          const mockOnBeforeRequest = jest.fn().mockImplementation((config) => {
+          const mockOnBeforeRequest = jest.fn<any>().mockImplementation((config: any) => {
             config.headers['X-Test-Header'] = 'my-test-header-value'
             return config
           })
@@ -280,7 +281,7 @@ describe('request', () => {
               age: 123,
             })
             .reply(200, { success: true })
-          const mockOnBeforeRequest = jest.fn().mockImplementation((config) => {
+          const mockOnBeforeRequest = jest.fn<any>().mockImplementation((config: any) => {
             return new Promise((resolve) => {
               config.headers['X-Test-Header'] = 'my-test-header-value'
               resolve(config)

@@ -1,5 +1,5 @@
-import { CommercetoolsGrantResponse } from './types'
-import { scopeRequestStringToArray } from './scopes'
+import { CommercetoolsGrantResponse } from './types.js'
+import { scopeRequestStringToArray } from './scopes.js'
 
 /**
  * Holds the details of the grant returned from commercetools in response

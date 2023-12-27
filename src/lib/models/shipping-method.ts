@@ -4,10 +4,10 @@
  * For more information about the commercetools platform APIs, visit https://docs.commercetools.com/.
  */
 
-import { BaseResource, CreatedBy, LastModifiedBy, LocalizedString, TypedMoney, _Money } from './common'
-import { TaxCategoryReference, TaxCategoryResourceIdentifier } from './tax-category'
-import { CustomFields, CustomFieldsDraft, FieldContainer, TypeResourceIdentifier } from './type'
-import { ZoneReference, ZoneResourceIdentifier } from './zone'
+import { BaseResource, CreatedBy, LastModifiedBy, LocalizedString, TypedMoney, _Money } from './common.js'
+import { TaxCategoryReference, TaxCategoryResourceIdentifier } from './tax-category.js'
+import { CustomFields, CustomFieldsDraft, FieldContainer, TypeResourceIdentifier } from './type.js'
+import { ZoneReference, ZoneResourceIdentifier } from './zone.js'
 
 export interface PriceFunction {
   /**

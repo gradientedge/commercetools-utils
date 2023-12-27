@@ -5,13 +5,13 @@ import {
   LoginOptions,
   LogoutOptions,
   RevokeTokenOptions,
-} from './types'
-import { CommercetoolsError, CommercetoolsRequest } from '../'
-import { scopeArrayToRequestString } from './scopes'
-import { REGION_URLS } from './constants'
-import { base64EncodeForBasicAuth } from './utils'
-import { RegionEndpoints, RequestExecutor } from '../types'
-import { getRequestExecutor } from '../request/request-executor'
+} from './types.js'
+import { CommercetoolsError, CommercetoolsRequest } from '../index.js'
+import { scopeArrayToRequestString } from './scopes.js'
+import { REGION_URLS } from './constants.js'
+import { base64EncodeForBasicAuth } from './utils.js'
+import { RegionEndpoints, RequestExecutor } from '../types.js'
+import { getRequestExecutor } from '../request/request-executor.js'
 
 /**
  * Provides an easy to use set of methods for communicating with the commercetools

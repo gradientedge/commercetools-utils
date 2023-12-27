@@ -4,13 +4,13 @@
  * For more information about the commercetools platform APIs, visit https://docs.commercetools.com/.
  */
 
-import { BusinessUnitKeyReference } from './business-unit'
-import { CartReference } from './cart'
-import { BaseResource, CreatedBy, LastModifiedBy } from './common'
-import { CustomerReference } from './customer'
-import { QuoteRequestReference, QuoteRequestResourceIdentifier } from './quote-request'
-import { StateReference, StateResourceIdentifier } from './state'
-import { CustomFields, CustomFieldsDraft, FieldContainer, TypeResourceIdentifier } from './type'
+import { BusinessUnitKeyReference } from './business-unit.js'
+import { CartReference } from './cart.js'
+import { BaseResource, CreatedBy, LastModifiedBy } from './common.js'
+import { CustomerReference } from './customer.js'
+import { QuoteRequestReference, QuoteRequestResourceIdentifier } from './quote-request.js'
+import { StateReference, StateResourceIdentifier } from './state.js'
+import { CustomFields, CustomFieldsDraft, FieldContainer, TypeResourceIdentifier } from './type.js'
 
 export interface StagedQuote extends BaseResource {
   /**

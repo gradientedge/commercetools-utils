@@ -1,4 +1,4 @@
-import { isRetryableError } from '../../../lib/request/is-retryable-error'
+import { isRetryableError } from '../../../lib/request/index.js'
 
 describe('isRetryableError', () => {
   it('should return true when the error is not an axios error', async () => {

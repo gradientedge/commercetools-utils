@@ -1,4 +1,4 @@
-import { getAttributeValue } from '../../lib/utils/get-attribute-value'
+import { getAttributeValue } from '../../lib/utils/get-attribute-value.js'
 
 describe('getAttributeValue', () => {
   it('should return null if the attribute list is undefined', () => {

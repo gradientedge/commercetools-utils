@@ -4,7 +4,7 @@
  * For more information about the commercetools platform APIs, visit https://docs.commercetools.com/.
  */
 
-import { GraphQLErrorObject } from './error'
+import { GraphQLErrorObject } from './error.js'
 
 export interface GraphQLError {
   /**

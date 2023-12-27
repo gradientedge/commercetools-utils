@@ -1,9 +1,9 @@
 import https from 'https'
-import { CommercetoolsRetryConfig } from '../api'
-import { CommercetoolsHooks, CommercetoolsRequest, RequestExecutor } from '../types'
-import { request } from './index'
-import { buildUserAgent, createAxiosInstance } from '../utils'
-import { DEFAULT_RETRY_CONFIG } from '../constants'
+import { CommercetoolsRetryConfig } from '../api/index.js'
+import { CommercetoolsHooks, CommercetoolsRequest, RequestExecutor } from '../types.js'
+import { request } from './index.js'
+import { buildUserAgent, createAxiosInstance } from '../utils/index.js'
+import { DEFAULT_RETRY_CONFIG } from '../constants.js'
 
 export interface GetRequestExecutorProps extends CommercetoolsHooks {
   httpsAgent?: https.Agent

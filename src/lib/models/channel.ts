@@ -4,9 +4,9 @@
  * For more information about the commercetools platform APIs, visit https://docs.commercetools.com/.
  */
 
-import { Address, BaseResource, CreatedBy, GeoJson, LastModifiedBy, LocalizedString, _BaseAddress } from './common'
-import { ReviewRatingStatistics } from './review'
-import { CustomFields, CustomFieldsDraft, FieldContainer, TypeResourceIdentifier } from './type'
+import { Address, BaseResource, CreatedBy, GeoJson, LastModifiedBy, LocalizedString, _BaseAddress } from './common.js'
+import { ReviewRatingStatistics } from './review.js'
+import { CustomFields, CustomFieldsDraft, FieldContainer, TypeResourceIdentifier } from './type.js'
 
 export interface Channel extends BaseResource {
   /**

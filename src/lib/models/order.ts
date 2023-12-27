@@ -4,7 +4,7 @@
  * For more information about the commercetools platform APIs, visit https://docs.commercetools.com/.
  */
 
-import { BusinessUnitKeyReference, BusinessUnitResourceIdentifier } from './business-unit'
+import { BusinessUnitKeyReference, BusinessUnitResourceIdentifier } from './business-unit.js'
 import {
   CartOrigin,
   CartReference,
@@ -26,9 +26,9 @@ import {
   TaxedPrice,
   TaxedPriceDraft,
   TaxMode,
-} from './cart'
-import { CartDiscountReference } from './cart-discount'
-import { ChannelReference, ChannelResourceIdentifier } from './channel'
+} from './cart.js'
+import { CartDiscountReference } from './cart-discount.js'
+import { ChannelReference, ChannelResourceIdentifier } from './channel.js'
 import {
   Address,
   AddressDraft,
@@ -42,8 +42,8 @@ import {
   TypedMoney,
   _BaseAddress,
   _Money,
-} from './common'
-import { CustomerGroupReference, CustomerGroupResourceIdentifier } from './customer-group'
+} from './common.js'
+import { CustomerGroupReference, CustomerGroupResourceIdentifier } from './customer-group.js'
 import {
   StagedOrder,
   StagedOrderAddCustomLineItemAction,
@@ -132,15 +132,15 @@ import {
   StagedOrderTransitionStateAction,
   StagedOrderUpdateItemShippingAddressAction,
   StagedOrderUpdateSyncInfoAction,
-} from './order-edit'
-import { PaymentReference, PaymentResourceIdentifier } from './payment'
-import { Attribute } from './product'
-import { QuoteReference, QuoteResourceIdentifier } from './quote'
-import { ShippingMethodResourceIdentifier, ShippingRateDraft } from './shipping-method'
-import { StateReference, StateResourceIdentifier } from './state'
-import { StoreKeyReference, StoreResourceIdentifier } from './store'
-import { TaxCategoryResourceIdentifier, TaxRate } from './tax-category'
-import { CustomFields, CustomFieldsDraft, FieldContainer, TypeResourceIdentifier } from './type'
+} from './order-edit.js'
+import { PaymentReference, PaymentResourceIdentifier } from './payment.js'
+import { Attribute } from './product.js'
+import { QuoteReference, QuoteResourceIdentifier } from './quote.js'
+import { ShippingMethodResourceIdentifier, ShippingRateDraft } from './shipping-method.js'
+import { StateReference, StateResourceIdentifier } from './state.js'
+import { StoreKeyReference, StoreResourceIdentifier } from './store.js'
+import { TaxCategoryResourceIdentifier, TaxRate } from './tax-category.js'
+import { CustomFields, CustomFieldsDraft, FieldContainer, TypeResourceIdentifier } from './type.js'
 
 export type StagedOrderUpdateAction =
   | StagedOrderAddCustomLineItemAction

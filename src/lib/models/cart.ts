@@ -4,9 +4,9 @@
  * For more information about the commercetools platform APIs, visit https://docs.commercetools.com/.
  */
 
-import { BusinessUnitKeyReference, BusinessUnitResourceIdentifier } from './business-unit'
-import { CartDiscountReference, CartDiscountTarget, CartDiscountValue } from './cart-discount'
-import { ChannelReference, ChannelResourceIdentifier } from './channel'
+import { BusinessUnitKeyReference, BusinessUnitResourceIdentifier } from './business-unit.js'
+import { CartDiscountReference, CartDiscountTarget, CartDiscountValue } from './cart-discount.js'
+import { ChannelReference, ChannelResourceIdentifier } from './channel.js'
 import {
   Address,
   BaseAddress,
@@ -20,23 +20,23 @@ import {
   TypedMoney,
   _BaseAddress,
   _Money,
-} from './common'
-import { CustomerGroupReference, CustomerGroupResourceIdentifier } from './customer-group'
-import { DiscountCodeReference } from './discount-code'
-import { Delivery, DeliveryDraft, ItemState, OrderReference, PaymentInfo } from './order'
-import { PaymentResourceIdentifier } from './payment'
-import { ProductVariant } from './product'
-import { ProductTypeReference } from './product-type'
+} from './common.js'
+import { CustomerGroupReference, CustomerGroupResourceIdentifier } from './customer-group.js'
+import { DiscountCodeReference } from './discount-code.js'
+import { Delivery, DeliveryDraft, ItemState, OrderReference, PaymentInfo } from './order.js'
+import { PaymentResourceIdentifier } from './payment.js'
+import { ProductVariant } from './product.js'
+import { ProductTypeReference } from './product-type.js'
 import {
   ShippingMethodReference,
   ShippingMethodResourceIdentifier,
   ShippingRate,
   ShippingRateDraft,
-} from './shipping-method'
-import { ShoppingListResourceIdentifier } from './shopping-list'
-import { StoreKeyReference, StoreResourceIdentifier } from './store'
-import { SubRate, TaxCategoryReference, TaxCategoryResourceIdentifier, TaxRate } from './tax-category'
-import { CustomFields, CustomFieldsDraft, FieldContainer, TypeResourceIdentifier } from './type'
+} from './shipping-method.js'
+import { ShoppingListResourceIdentifier } from './shopping-list.js'
+import { StoreKeyReference, StoreResourceIdentifier } from './store.js'
+import { SubRate, TaxCategoryReference, TaxCategoryResourceIdentifier, TaxRate } from './tax-category.js'
+import { CustomFields, CustomFieldsDraft, FieldContainer, TypeResourceIdentifier } from './type.js'
 
 export interface Cart extends BaseResource {
   /**

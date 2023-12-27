@@ -1,4 +1,4 @@
-import { INVALID_SCOPES } from './constants'
+import { INVALID_SCOPES } from './constants.js'
 
 /**
  * Take an array of scope strings and form them in to a string

@@ -1,4 +1,4 @@
-import { calculateDelay } from '../../../lib/utils/calculate-delay'
+import { calculateDelay } from '../../lib//utils/calculate-delay.js'
 
 describe('calculateDelay', () => {
   it('should return zero if the retry configuration is missing', () => {

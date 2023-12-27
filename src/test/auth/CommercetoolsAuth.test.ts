@@ -1,8 +1,8 @@
+import { beforeAll, beforeEach } from '@jest/globals'
 import nock from 'nock'
-import { CommercetoolsAuth, CommercetoolsError } from '../../lib'
-import { CommercetoolsGrantResponse } from '../../lib/auth/types'
+import { CommercetoolsAuth, CommercetoolsError, Region } from '../../lib/index.js'
+import { CommercetoolsGrantResponse } from '../../lib/auth/types.js'
 import FakeTimers from '@sinonjs/fake-timers'
-import { Region } from '../../lib'
 
 const defaultConfig = {
   projectKey: 'test-project-key',

@@ -1,4 +1,4 @@
-import { maskSensitiveData } from '../../lib'
+import { maskSensitiveData } from '../../lib/utils/mask.js'
 
 describe('maskSensitiveData', () => {
   it('should return null if null is passed in', () => {

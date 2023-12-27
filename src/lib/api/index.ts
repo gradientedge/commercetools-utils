@@ -1,2 +1,2 @@
-export * from './CommercetoolsApi'
-export * from './types'
+export * from './CommercetoolsApi.js'
+export * from './types.js'

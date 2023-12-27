@@ -4,7 +4,7 @@
  * For more information about the commercetools platform APIs, visit https://docs.commercetools.com/.
  */
 
-import { ChannelReference, ChannelResourceIdentifier } from './channel'
+import { ChannelReference, ChannelResourceIdentifier } from './channel.js'
 import {
   BaseResource,
   CentPrecisionMoney,
@@ -13,9 +13,9 @@ import {
   LocalizedString,
   Money,
   Reference,
-} from './common'
-import { ProductReference, ProductResourceIdentifier } from './product'
-import { CustomFields, CustomFieldsDraft, FieldContainer, TypeResourceIdentifier } from './type'
+} from './common.js'
+import { ProductReference, ProductResourceIdentifier } from './product.js'
+import { CustomFields, CustomFieldsDraft, FieldContainer, TypeResourceIdentifier } from './type.js'
 
 export interface CartDiscount extends BaseResource {
   /**

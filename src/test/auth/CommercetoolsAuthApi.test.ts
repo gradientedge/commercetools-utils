@@ -1,8 +1,8 @@
 import nock from 'nock'
-import { CommercetoolsError, Region } from '../../lib'
-import { CommercetoolsAuthApi } from '../../lib/auth/CommercetoolsAuthApi'
-import { CommercetoolsGrantResponse } from '../../lib/auth/types'
-import assert = require('assert')
+import { CommercetoolsError, Region } from '../../lib/index.js'
+import { CommercetoolsAuthApi } from '../../lib/auth/CommercetoolsAuthApi.js'
+import { CommercetoolsGrantResponse } from '../../lib/auth/types.js'
+import * as assert from 'assert'
 
 const defaultConfig = {
   projectKey: 'test-project-key',

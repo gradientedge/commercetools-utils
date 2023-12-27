@@ -1,3 +1,3 @@
-export * from './CommercetoolsAuth'
-export * from './CommercetoolsGrant'
-export type { CommercetoolsAuthConfig, AnonymousGrantOptions, GrantType, LoginOptions } from './types'
+export * from './CommercetoolsAuth.js'
+export * from './CommercetoolsGrant.js'
+export type { CommercetoolsAuthConfig, AnonymousGrantOptions, GrantType, LoginOptions } from './types.js'

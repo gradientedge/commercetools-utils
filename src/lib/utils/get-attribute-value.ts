@@ -1,4 +1,4 @@
-import { Attribute } from '../models'
+import { Attribute } from '../models/index.js'
 
 /**
  * Options interface for {@see getAttributeValue}

@@ -4,8 +4,8 @@
  * For more information about the commercetools platform APIs, visit https://docs.commercetools.com/.
  */
 
-import { BaseResource, CreatedBy, LastModifiedBy, Reference } from './common'
-import { UserProvidedIdentifiers } from './message'
+import { BaseResource, CreatedBy, LastModifiedBy, Reference } from './common.js'
+import { UserProvidedIdentifiers } from './message.js'
 
 /**
  *	Defines the method of authentication for AWS SQS and SNS Destinations.

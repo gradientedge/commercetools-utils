@@ -1,5 +1,5 @@
-import { transformError } from '../../../lib/request/transform-error'
-import { CommercetoolsError } from '../../../lib/error'
+import { transformError } from '../../../lib/request/transform-error.js'
+import { CommercetoolsError } from '../../../lib/error/CommercetoolsError.js'
 
 describe('transformError', () => {
   it("should return the object passed in when it's not an axios error object", async () => {

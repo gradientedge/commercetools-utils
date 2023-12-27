@@ -9,7 +9,7 @@ import {
   AssociateRoleAssignmentDraft,
   BusinessUnitResourceIdentifier,
   BusinessUnitUpdateAction,
-} from './business-unit'
+} from './business-unit.js'
 import {
   CartReference,
   ExternalLineItemTotalPrice,
@@ -18,17 +18,23 @@ import {
   ItemShippingDetailsDraft,
   ItemShippingTarget,
   TaxMode,
-} from './cart'
-import { ChannelResourceIdentifier } from './channel'
-import { BaseAddress, CentPrecisionMoney, LocalizedString, _BaseAddress, _Money } from './common'
-import { CustomerReference, CustomerResourceIdentifier } from './customer'
-import { DiscountCodeReference } from './discount-code'
-import { OrderReference } from './order'
-import { PaymentMethodInfo, PaymentResourceIdentifier, Transaction, TransactionDraft, TransactionType } from './payment'
-import { ShippingMethodResourceIdentifier } from './shipping-method'
-import { ShoppingListLineItemDraft, TextLineItemDraft } from './shopping-list'
-import { StoreResourceIdentifier } from './store'
-import { CustomFields, CustomFieldsDraft, FieldContainer, TypeResourceIdentifier } from './type'
+} from './cart.js'
+import { ChannelResourceIdentifier } from './channel.js'
+import { BaseAddress, CentPrecisionMoney, LocalizedString, _BaseAddress, _Money } from './common.js'
+import { CustomerReference, CustomerResourceIdentifier } from './customer.js'
+import { DiscountCodeReference } from './discount-code.js'
+import { OrderReference } from './order.js'
+import {
+  PaymentMethodInfo,
+  PaymentResourceIdentifier,
+  Transaction,
+  TransactionDraft,
+  TransactionType,
+} from './payment.js'
+import { ShippingMethodResourceIdentifier } from './shipping-method.js'
+import { ShoppingListLineItemDraft, TextLineItemDraft } from './shopping-list.js'
+import { StoreResourceIdentifier } from './store.js'
+import { CustomFields, CustomFieldsDraft, FieldContainer, TypeResourceIdentifier } from './type.js'
 
 export interface MyBusinessUnitAssociateDraft {
   /**

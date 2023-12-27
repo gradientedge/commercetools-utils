@@ -1,4 +1,4 @@
-import { CommercetoolsGrant } from '../../lib'
+import { CommercetoolsGrant } from '../../lib/auth/CommercetoolsGrant.js'
 import FakeTimers from '@sinonjs/fake-timers'
 
 describe('CommercetoolsGrant', () => {

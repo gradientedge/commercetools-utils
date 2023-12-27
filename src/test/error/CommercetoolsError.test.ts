@@ -1,4 +1,4 @@
-import { CommercetoolsError } from '../../lib'
+import { CommercetoolsError } from '../../lib/index.js'
 import { AxiosRequestHeaders, InternalAxiosRequestConfig } from 'axios'
 
 describe('CommercetoolsError', () => {

@@ -1,5 +1,5 @@
 import * as https from 'https'
-import { CommercetoolsAuthConfig } from '../auth'
+import { CommercetoolsAuthConfig } from '../auth/index.js'
 
 /**
  * Configuration for constructing the {@see CommercetoolsApi} class.

@@ -1,4 +1,4 @@
-import { CommercetoolsBaseConfig } from '../types'
+import { CommercetoolsBaseConfig } from '../types.js'
 import https from 'https'
 
 /**

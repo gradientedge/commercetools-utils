@@ -4,12 +4,12 @@
  * For more information about the commercetools platform APIs, visit https://docs.commercetools.com/.
  */
 
-import { ChannelReference, ChannelResourceIdentifier } from './channel'
-import { BaseResource, CreatedBy, LastModifiedBy } from './common'
-import { CustomerReference, CustomerResourceIdentifier } from './customer'
-import { ProductReference, ProductResourceIdentifier } from './product'
-import { StateReference, StateResourceIdentifier } from './state'
-import { CustomFields, CustomFieldsDraft, FieldContainer, TypeResourceIdentifier } from './type'
+import { ChannelReference, ChannelResourceIdentifier } from './channel.js'
+import { BaseResource, CreatedBy, LastModifiedBy } from './common.js'
+import { CustomerReference, CustomerResourceIdentifier } from './customer.js'
+import { ProductReference, ProductResourceIdentifier } from './product.js'
+import { StateReference, StateResourceIdentifier } from './state.js'
+import { CustomFields, CustomFieldsDraft, FieldContainer, TypeResourceIdentifier } from './type.js'
 
 export interface Review extends BaseResource {
   /**

@@ -1,4 +1,4 @@
-import { CommercetoolsError } from '../error'
+import { CommercetoolsError } from '../error/index.js'
 
 /**
  * Transform an unknown error in to a {@see CommercetoolsError}

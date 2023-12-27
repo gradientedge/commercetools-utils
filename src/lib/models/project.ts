@@ -4,10 +4,10 @@
  * For more information about the commercetools platform APIs, visit https://docs.commercetools.com/.
  */
 
-import { AssociateRoleKeyReference, AssociateRoleResourceIdentifier } from './associate-role'
-import { LastModifiedBy } from './common'
-import { MessagesConfiguration, MessagesConfigurationDraft } from './message'
-import { CustomFieldLocalizedEnumValue } from './type'
+import { AssociateRoleKeyReference, AssociateRoleResourceIdentifier } from './associate-role.js'
+import { LastModifiedBy } from './common.js'
+import { MessagesConfiguration, MessagesConfigurationDraft } from './message.js'
+import { CustomFieldLocalizedEnumValue } from './type.js'
 
 export interface BusinessUnitConfiguration {
   /**

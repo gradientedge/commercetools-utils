@@ -1,4 +1,4 @@
-import { CommercetoolsError } from '../error'
+import { CommercetoolsError } from '../error/index.js'
 
 /**
  * Options interface for {@see ensureNonEmptyString}

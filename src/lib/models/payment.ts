@@ -12,10 +12,10 @@ import {
   LocalizedString,
   TypedMoney,
   _Money,
-} from './common'
-import { CustomerReference, CustomerResourceIdentifier } from './customer'
-import { StateReference, StateResourceIdentifier } from './state'
-import { CustomFields, CustomFieldsDraft, FieldContainer, TypeResourceIdentifier } from './type'
+} from './common.js'
+import { CustomerReference, CustomerResourceIdentifier } from './customer.js'
+import { StateReference, StateResourceIdentifier } from './state.js'
+import { CustomFields, CustomFieldsDraft, FieldContainer, TypeResourceIdentifier } from './type.js'
 
 export interface Payment extends BaseResource {
   /**

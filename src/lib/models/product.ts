@@ -4,8 +4,8 @@
  * For more information about the commercetools platform APIs, visit https://docs.commercetools.com/.
  */
 
-import { ProductPublishScope } from './cart'
-import { CategoryReference, CategoryResourceIdentifier } from './category'
+import { ProductPublishScope } from './cart.js'
+import { CategoryReference, CategoryResourceIdentifier } from './category.js'
 import {
   Asset,
   AssetDraft,
@@ -19,12 +19,12 @@ import {
   Price,
   PriceDraft,
   ScopedPrice,
-} from './common'
-import { ProductTypeReference, ProductTypeResourceIdentifier } from './product-type'
-import { ReviewRatingStatistics } from './review'
-import { StateReference, StateResourceIdentifier } from './state'
-import { TaxCategoryReference, TaxCategoryResourceIdentifier } from './tax-category'
-import { FieldContainer, TypeResourceIdentifier } from './type'
+} from './common.js'
+import { ProductTypeReference, ProductTypeResourceIdentifier } from './product-type.js'
+import { ReviewRatingStatistics } from './review.js'
+import { StateReference, StateResourceIdentifier } from './state.js'
+import { TaxCategoryReference, TaxCategoryResourceIdentifier } from './tax-category.js'
+import { FieldContainer, TypeResourceIdentifier } from './type.js'
 
 export interface Attribute {
   /**

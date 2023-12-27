@@ -1,9 +1,9 @@
-export * from './error'
-export * from './auth'
-export * from './api'
-export { Region, RegionEndpoints, CommercetoolsRequest, CommercetoolsRequestResponse } from './types'
-export * from './utils'
+export * from './error/index.js'
+export * from './auth/index.js'
+export * from './api/index.js'
+export * from './utils/index.js'
+export * from './types.js'
 
-export * from './models'
+export * from './models/index.js'
 
-export { MAX_ITEMS_PER_QUERY } from './constants'
+export { MAX_ITEMS_PER_QUERY } from './constants.js'

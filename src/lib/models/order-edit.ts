@@ -16,13 +16,13 @@ import {
   TaxedPrice,
   TaxMode,
   TaxPortionDraft,
-} from './cart'
-import { ChannelResourceIdentifier } from './channel'
-import { BaseResource, CreatedBy, LastModifiedBy, LocalizedString, TypedMoney, _BaseAddress, _Money } from './common'
-import { CustomerGroupResourceIdentifier } from './customer-group'
-import { DiscountCodeReference } from './discount-code'
-import { ErrorObject } from './error'
-import { MessagePayload } from './message'
+} from './cart.js'
+import { ChannelResourceIdentifier } from './channel.js'
+import { BaseResource, CreatedBy, LastModifiedBy, LocalizedString, TypedMoney, _BaseAddress, _Money } from './common.js'
+import { CustomerGroupResourceIdentifier } from './customer-group.js'
+import { DiscountCodeReference } from './discount-code.js'
+import { ErrorObject } from './error.js'
+import { MessagePayload } from './message.js'
 import {
   DeliveryItem,
   ItemState,
@@ -39,13 +39,13 @@ import {
   ShipmentState,
   StagedOrderUpdateAction,
   TrackingData,
-} from './order'
-import { PaymentResourceIdentifier } from './payment'
-import { ShippingMethodResourceIdentifier, ShippingRateDraft } from './shipping-method'
-import { ShoppingListResourceIdentifier } from './shopping-list'
-import { StateResourceIdentifier } from './state'
-import { TaxCategoryResourceIdentifier } from './tax-category'
-import { CustomFields, CustomFieldsDraft, FieldContainer, TypeResourceIdentifier } from './type'
+} from './order.js'
+import { PaymentResourceIdentifier } from './payment.js'
+import { ShippingMethodResourceIdentifier, ShippingRateDraft } from './shipping-method.js'
+import { ShoppingListResourceIdentifier } from './shopping-list.js'
+import { StateResourceIdentifier } from './state.js'
+import { TaxCategoryResourceIdentifier } from './tax-category.js'
+import { CustomFields, CustomFieldsDraft, FieldContainer, TypeResourceIdentifier } from './type.js'
 
 export interface OrderEdit extends BaseResource {
   /**
