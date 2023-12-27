@@ -1,4 +1,4 @@
-import { USER_AGENT_PREFIX } from '../constants'
+import { USER_AGENT_PREFIX } from '../constants.js'
 
 /**
  * Build a string suitable for sending as the `User-Agent` HTTP header.

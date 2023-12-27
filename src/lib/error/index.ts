@@ -1,1 +1,1 @@
-export * from './CommercetoolsError'
+export * from './CommercetoolsError.js'

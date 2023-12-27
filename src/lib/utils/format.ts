@@ -1,4 +1,4 @@
-import { CommercetoolsError } from '../error'
+import { CommercetoolsError } from '../error/index.js'
 
 /**
  * Format a string for use as a key.

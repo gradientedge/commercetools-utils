@@ -1,7 +1,15 @@
+import { beforeAll, beforeEach, jest } from '@jest/globals'
 import nock from 'nock'
-import { CommercetoolsApi, CommercetoolsApiConfig, CommercetoolsError, Region } from '../../lib'
-import { CommercetoolsGrantResponse } from '../../lib/auth/types'
-import type { CustomerUpdateAction, ProductDraft, ProductUpdateAction } from '../../lib'
+import {
+  CommercetoolsApi,
+  CommercetoolsApiConfig,
+  CommercetoolsError,
+  Region,
+  CustomerUpdateAction,
+  ProductDraft,
+  ProductUpdateAction,
+} from '../../lib/index.js'
+import { CommercetoolsGrantResponse } from '../../lib/auth/types.js'
 
 const defaultConfig: CommercetoolsApiConfig = {
   projectKey: 'test-project-key',
@@ -930,7 +938,7 @@ describe('CommercetoolsApi', () => {
           .query({ version: 4 })
           .reply(200, { success: true })
         const api = new CommercetoolsApi(defaultConfig)
-        api.unpublishProductByKey = jest.fn().mockResolvedValue({
+        api.unpublishProductByKey = jest.fn<any>().mockResolvedValue({
           version: 4,
         })
 
@@ -961,7 +969,7 @@ describe('CommercetoolsApi', () => {
           .query({ version: 4 })
           .reply(200, { success: true })
         const api = new CommercetoolsApi(defaultConfig)
-        api.unpublishProductById = jest.fn().mockResolvedValue({
+        api.unpublishProductById = jest.fn<any>().mockResolvedValue({
           version: 4,
         })
 

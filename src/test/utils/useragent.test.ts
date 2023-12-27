@@ -1,4 +1,4 @@
-import { buildUserAgent } from '../../lib'
+import { buildUserAgent } from '../../lib/utils/useragent.js'
 
 describe('buildUserAgent', () => {
   it('should use only the package name when no system identifier is passed in', () => {

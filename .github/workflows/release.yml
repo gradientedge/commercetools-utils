@@ -8,22 +8,28 @@ jobs:
     name: Release
     runs-on: ubuntu-20.04
     steps:
+      - name: install pnpm
+        shell: bash
+        run: npm i -g pnpm@8
+      - name: Turn on auto-install-peers
+        shell: bash
+        run: pnpm config set auto-install-peers true
       - name: Checkout
         uses: actions/checkout@v1
       - name: Setup Node.js
         uses: actions/setup-node@v1
         with:
-          node-version: 18
+          node-version: 20
       - name: Install dependencies
-        run: npm ci
+        run: pnpm i
       - name: Prettier check
-        run: npm run prettier
+        run: pnpm prettier
       - name: Lint the code
-        run: npm run lint
+        run: pnpm lint
       - name: Run the test suite
         run: npm test
       - name: Compile the TypeScript code
-        run: npm run package
+        run: pnpm package
       - name: Publish Code Coverage
         run: npx codecov
       - name: Release to npm
@@ -32,7 +38,7 @@ jobs:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: npx semantic-release
       - name: Build the documentation
-        run: npm run docs
+        run: pnpm docs
       - name: Deploy docs
         uses: peaceiris/actions-gh-pages@v3
         with:

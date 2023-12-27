@@ -4,7 +4,7 @@
  * For more information about the commercetools platform APIs, visit https://docs.commercetools.com/.
  */
 
-import { ChannelReference, ChannelResourceIdentifier } from './channel'
+import { ChannelReference, ChannelResourceIdentifier } from './channel.js'
 import {
   BaseResource,
   CreatedBy,
@@ -15,9 +15,9 @@ import {
   PriceTierDraft,
   TypedMoney,
   _Money,
-} from './common'
-import { CustomerGroupReference, CustomerGroupResourceIdentifier } from './customer-group'
-import { CustomFields, CustomFieldsDraft, FieldContainer, TypeResourceIdentifier } from './type'
+} from './common.js'
+import { CustomerGroupReference, CustomerGroupResourceIdentifier } from './customer-group.js'
+import { CustomFields, CustomFieldsDraft, FieldContainer, TypeResourceIdentifier } from './type.js'
 
 /**
  *	Staged changes on a Standalone Price. To update the `value` property of a Staged Standalone Price, use the corresponding [update action](ctp:api:type:StandalonePriceChangeValueAction). To apply all staged changes to the Standalone Price, use the `applyStagedChanges` update action.

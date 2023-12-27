@@ -4,11 +4,11 @@
  * For more information about the commercetools platform APIs, visit https://docs.commercetools.com/.
  */
 
-import { ChannelReference, ChannelResourceIdentifier } from './channel'
-import { BaseResource, CreatedBy, LastModifiedBy, LocalizedString } from './common'
-import { ProductSelectionReference, ProductSelectionResourceIdentifier } from './product-selection'
-import { StoreCountry } from './store-country'
-import { CustomFields, CustomFieldsDraft, FieldContainer, TypeResourceIdentifier } from './type'
+import { ChannelReference, ChannelResourceIdentifier } from './channel.js'
+import { BaseResource, CreatedBy, LastModifiedBy, LocalizedString } from './common.js'
+import { ProductSelectionReference, ProductSelectionResourceIdentifier } from './product-selection.js'
+import { StoreCountry } from './store-country.js'
+import { CustomFields, CustomFieldsDraft, FieldContainer, TypeResourceIdentifier } from './type.js'
 
 export interface ProductSelectionSetting {
   /**

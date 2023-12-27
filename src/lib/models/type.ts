@@ -4,7 +4,7 @@
  * For more information about the commercetools platform APIs, visit https://docs.commercetools.com/.
  */
 
-import { BaseResource, CreatedBy, LastModifiedBy, LocalizedString } from './common'
+import { BaseResource, CreatedBy, LastModifiedBy, LocalizedString } from './common.js'
 
 /**
  *	Defines an allowed value of a [CustomFieldEnumType](ctp:api:type:CustomFieldEnumType) field.

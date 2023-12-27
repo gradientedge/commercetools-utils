@@ -4,11 +4,11 @@
  * For more information about the commercetools platform APIs, visit https://docs.commercetools.com/.
  */
 
-import { Cart, CartResourceIdentifier } from './cart'
-import { Address, BaseAddress, BaseResource, CreatedBy, LastModifiedBy, _BaseAddress } from './common'
-import { CustomerGroupReference, CustomerGroupResourceIdentifier } from './customer-group'
-import { StoreKeyReference, StoreResourceIdentifier } from './store'
-import { CustomFields, CustomFieldsDraft, FieldContainer, TypeResourceIdentifier } from './type'
+import { Cart, CartResourceIdentifier } from './cart.js'
+import { Address, BaseAddress, BaseResource, CreatedBy, LastModifiedBy, _BaseAddress } from './common.js'
+import { CustomerGroupReference, CustomerGroupResourceIdentifier } from './customer-group.js'
+import { StoreKeyReference, StoreResourceIdentifier } from './store.js'
+import { CustomFields, CustomFieldsDraft, FieldContainer, TypeResourceIdentifier } from './type.js'
 
 export type AnonymousCartSignInMode = 'MergeWithExistingCustomerCart' | 'UseAsNewActiveCustomerCart' | string
 export type AuthenticationMode = 'ExternalAuth' | 'Password' | string

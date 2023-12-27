@@ -1,4 +1,4 @@
-import { base64EncodeForBasicAuth } from '../../lib/auth/utils'
+import { base64EncodeForBasicAuth } from '../../lib/auth/utils.js'
 
 describe('base64EncodeForBasicAuth', () => {
   let originalProcessEnv = {}

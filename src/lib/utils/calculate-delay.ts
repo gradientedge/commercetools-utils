@@ -1,4 +1,4 @@
-import { CommercetoolsRetryConfig } from '../api'
+import { CommercetoolsRetryConfig } from '../api/index.js'
 
 /**
  * Calculate how long to delay before running the request.

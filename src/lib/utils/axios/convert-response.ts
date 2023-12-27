@@ -1,6 +1,6 @@
-import { CommercetoolsRequestResponse, CommercetoolsRequestResponseStats } from '../../types'
+import { CommercetoolsRequestResponse, CommercetoolsRequestResponseStats } from '../../types.js'
 import { AxiosResponse } from 'axios'
-import { extractAxiosHeaders } from './extract-headers'
+import { extractAxiosHeaders } from './extract-headers.js'
 
 export function convertAxiosResponse(
   response: AxiosResponse,

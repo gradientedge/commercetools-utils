@@ -1,11 +1,11 @@
-import { buildUserAgent, calculateDelay, convertAxiosError, convertAxiosResponse } from '../utils'
+import { buildUserAgent, calculateDelay, convertAxiosError, convertAxiosResponse } from '../utils/index.js'
 import { AxiosInstance } from 'axios'
-import { CommercetoolsRetryConfig } from '../api'
-import { CommercetoolsHooks, CommercetoolsRequest } from '../types'
-import { isRetryableError } from './is-retryable-error'
-import { transformError } from './transform-error'
-import { DEFAULT_REQUEST_TIMEOUT_MS } from '../constants'
-import { plainClone } from '../utils/plain-clone'
+import { CommercetoolsRetryConfig } from '../api/index.js'
+import { CommercetoolsHooks, CommercetoolsRequest } from '../types.js'
+import { isRetryableError } from './is-retryable-error.js'
+import { transformError } from './transform-error.js'
+import { DEFAULT_REQUEST_TIMEOUT_MS } from '../constants.js'
+import { plainClone } from '../utils/plain-clone.js'
 
 export interface RequestOptions extends CommercetoolsHooks {
   axiosInstance: AxiosInstance

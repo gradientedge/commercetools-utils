@@ -4,7 +4,7 @@
  * For more information about the commercetools platform APIs, visit https://docs.commercetools.com/.
  */
 
-import { AssociateRole, Permission } from './associate-role'
+import { AssociateRole, Permission } from './associate-role.js'
 import {
   Associate,
   BusinessUnit,
@@ -12,7 +12,7 @@ import {
   BusinessUnitKeyReference,
   BusinessUnitStatus,
   BusinessUnitStoreMode,
-} from './business-unit'
+} from './business-unit.js'
 import {
   CustomLineItem,
   DiscountCodeState,
@@ -24,9 +24,9 @@ import {
   ShippingInfo,
   ShippingRateInput,
   TaxedItemPrice,
-} from './cart'
-import { Category, CategoryReference } from './category'
-import { ChannelReference } from './channel'
+} from './cart.js'
+import { Category, CategoryReference } from './category.js'
+import { ChannelReference } from './channel.js'
 import {
   Address,
   CentPrecisionMoney,
@@ -38,11 +38,11 @@ import {
   Price,
   Reference,
   _Money,
-} from './common'
-import { Customer, CustomerReference } from './customer'
-import { CustomerGroupReference } from './customer-group'
-import { DiscountCodeReference } from './discount-code'
-import { InventoryEntry } from './inventory'
+} from './common.js'
+import { Customer, CustomerReference } from './customer.js'
+import { CustomerGroupReference } from './customer-group.js'
+import { DiscountCodeReference } from './discount-code.js'
+import { InventoryEntry } from './inventory.js'
 import {
   Delivery,
   DeliveryItem,
@@ -56,20 +56,20 @@ import {
   ShipmentState,
   TrackingData,
   _Order,
-} from './order'
-import { OrderEdit, OrderEditApplied } from './order-edit'
-import { Payment, PaymentReference, Transaction, TransactionState } from './payment'
-import { ProductPriceModeEnum, ProductProjection, ProductReference, ProductVariant } from './product'
-import { ProductSelection, ProductVariantExclusion, ProductVariantSelection } from './product-selection'
-import { Quote, QuoteState } from './quote'
-import { QuoteRequest, QuoteRequestState } from './quote-request'
-import { Review } from './review'
-import { StagedQuote, StagedQuoteState } from './staged-quote'
-import { StagedStandalonePrice, StandalonePrice } from './standalone-price'
-import { StateReference } from './state'
-import { ProductSelectionSetting, StoreKeyReference } from './store'
-import { StoreCountry } from './store-country'
-import { CustomFields } from './type'
+} from './order.js'
+import { OrderEdit, OrderEditApplied } from './order-edit.js'
+import { Payment, PaymentReference, Transaction, TransactionState } from './payment.js'
+import { ProductPriceModeEnum, ProductProjection, ProductReference, ProductVariant } from './product.js'
+import { ProductSelection, ProductVariantExclusion, ProductVariantSelection } from './product-selection.js'
+import { Quote, QuoteState } from './quote.js'
+import { QuoteRequest, QuoteRequestState } from './quote-request.js'
+import { Review } from './review.js'
+import { StagedQuote, StagedQuoteState } from './staged-quote.js'
+import { StagedStandalonePrice, StandalonePrice } from './standalone-price.js'
+import { StateReference } from './state.js'
+import { ProductSelectionSetting, StoreKeyReference } from './store.js'
+import { StoreCountry } from './store-country.js'
+import { CustomFields } from './type.js'
 
 /**
  *	`ContainerAndKey` is specific to [Custom Objects](ctp:api:type:CustomObject). Custom Objects are grouped into containers, which can be used like namespaces. Within a given container, a user-defined key can be used to uniquely identify resources.

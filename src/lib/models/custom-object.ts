@@ -4,7 +4,7 @@
  * For more information about the commercetools platform APIs, visit https://docs.commercetools.com/.
  */
 
-import { BaseResource, CreatedBy, LastModifiedBy } from './common'
+import { BaseResource, CreatedBy, LastModifiedBy } from './common.js'
 
 export interface CustomObject extends BaseResource {
   /**

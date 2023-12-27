@@ -4,16 +4,16 @@
  * For more information about the commercetools platform APIs, visit https://docs.commercetools.com/.
  */
 
-import { Permission } from './associate-role'
-import { BusinessUnitResourceIdentifier } from './business-unit'
-import { ChannelReference, ChannelResourceIdentifier, ChannelRoleEnum } from './channel'
-import { LocalizedString, Price, PriceDraft, Reference, ReferenceTypeId } from './common'
-import { CustomerResourceIdentifier } from './customer'
-import { CustomerGroupReference, CustomerGroupResourceIdentifier } from './customer-group'
-import { OrderEditPreviewFailure } from './order-edit'
-import { Attribute, ProductReference } from './product'
-import { ProductVariantSelection } from './product-selection'
-import { StandalonePriceReference } from './standalone-price'
+import { Permission } from './associate-role.js'
+import { BusinessUnitResourceIdentifier } from './business-unit.js'
+import { ChannelReference, ChannelResourceIdentifier, ChannelRoleEnum } from './channel.js'
+import { LocalizedString, Price, PriceDraft, Reference, ReferenceTypeId } from './common.js'
+import { CustomerResourceIdentifier } from './customer.js'
+import { CustomerGroupReference, CustomerGroupResourceIdentifier } from './customer-group.js'
+import { OrderEditPreviewFailure } from './order-edit.js'
+import { Attribute, ProductReference } from './product.js'
+import { ProductVariantSelection } from './product-selection.js'
+import { StandalonePriceReference } from './standalone-price.js'
 
 export interface ErrorByExtension {
   /**

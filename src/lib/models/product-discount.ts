@@ -13,7 +13,7 @@ import {
   Money,
   QueryPrice,
   Reference,
-} from './common'
+} from './common.js'
 
 export interface ProductDiscount extends BaseResource {
   /**

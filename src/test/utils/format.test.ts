@@ -1,4 +1,4 @@
-import { formatAsKey } from '../../lib'
+import { formatAsKey } from '../../lib/utils/format.js'
 
 describe('formatAsKey', () => {
   it('should throw an error if the parameter is undefined', () => {

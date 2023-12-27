@@ -4,9 +4,9 @@
  * For more information about the commercetools platform APIs, visit https://docs.commercetools.com/.
  */
 
-import { BaseResource, CreatedBy, LastModifiedBy, LocalizedString } from './common'
-import { ProductReference, ProductResourceIdentifier } from './product'
-import { CustomFields, CustomFieldsDraft, FieldContainer, TypeResourceIdentifier } from './type'
+import { BaseResource, CreatedBy, LastModifiedBy, LocalizedString } from './common.js'
+import { ProductReference, ProductResourceIdentifier } from './product.js'
+import { CustomFields, CustomFieldsDraft, FieldContainer, TypeResourceIdentifier } from './type.js'
 
 export interface AssignedProductReference {
   /**

@@ -4,7 +4,7 @@
  * For more information about the commercetools platform APIs, visit https://docs.commercetools.com/.
  */
 
-import { BaseResource, CreatedBy, LastModifiedBy } from './common'
+import { BaseResource, CreatedBy, LastModifiedBy } from './common.js'
 
 /**
  *	A geographical location representing a country and optionally a state within this country.  A location can only be assigned to one Zone.

@@ -4,7 +4,7 @@
  * For more information about the commercetools platform APIs, visit https://docs.commercetools.com/.
  */
 
-import { BaseResource, CreatedBy, LastModifiedBy } from './common'
+import { BaseResource, CreatedBy, LastModifiedBy } from './common.js'
 
 /**
  *	It is used to calculate the [taxPortions](/../api/projects/carts#taxedprice) field in a Cart or Order.

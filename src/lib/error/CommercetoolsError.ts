@@ -1,6 +1,6 @@
 import stringify from 'json-stringify-safe'
 import { AxiosError, InternalAxiosRequestConfig } from 'axios'
-import { extractAxiosHeaders, maskSensitiveHeaders, maskSensitiveInput } from '../utils'
+import { extractAxiosHeaders, maskSensitiveHeaders, maskSensitiveInput } from '../utils/index.js'
 
 /**
  * The error class thrown by any of the utility classes.

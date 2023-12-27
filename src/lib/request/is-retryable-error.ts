@@ -1,4 +1,4 @@
-import { RETRYABLE_STATUS_CODES } from '../constants'
+import { RETRYABLE_STATUS_CODES } from '../constants.js'
 
 /**
  * Determine whether the given error means we should allow the request

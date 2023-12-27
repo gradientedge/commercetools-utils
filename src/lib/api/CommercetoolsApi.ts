@@ -1,15 +1,15 @@
-import { CommercetoolsApiConfig, CommercetoolsRetryConfig } from './types'
+import { CommercetoolsApiConfig, CommercetoolsRetryConfig } from './types.js'
 import {
   CommercetoolsAuth,
   OrderFromCartDraft,
   PaymentDraft,
   ProductTypePagedQueryResponse,
   TypePagedQueryResponse,
-} from '../'
-import { CommercetoolsError } from '../error'
-import { REGION_URLS } from '../auth/constants'
-import { CommercetoolsRequest, RegionEndpoints, RequestExecutor } from '../types'
-import { ensureNonEmptyString } from '../utils'
+} from '../index.js'
+import { CommercetoolsError } from '../error/index.js'
+import { REGION_URLS } from '../auth/constants.js'
+import { CommercetoolsRequest, RegionEndpoints, RequestExecutor } from '../types.js'
+import { ensureNonEmptyString } from '../utils/index.js'
 import type {
   Cart,
   CartDiscount,
@@ -84,8 +84,8 @@ import type {
   StorePagedQueryResponse,
   StoreUpdate,
   Type,
-} from '../models'
-import { getRequestExecutor } from '../request/request-executor'
+} from '../models/index.js'
+import { getRequestExecutor } from '../request/request-executor.js'
 
 export interface FetchOptions<T = any> {
   /**

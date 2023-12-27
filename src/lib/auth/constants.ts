@@ -1,4 +1,4 @@
-import { Region, RegionEndpoints } from '../types'
+import { Region, RegionEndpoints } from '../types.js'
 
 /**
  * Commercetools regions and cloud providers - https://docs.commercetools.com/api/general-concepts#hosts

@@ -4,11 +4,11 @@
  * For more information about the commercetools platform APIs, visit https://docs.commercetools.com/.
  */
 
-import { AssociateRoleKeyReference, AssociateRoleResourceIdentifier } from './associate-role'
-import { Address, BaseAddress, CreatedBy, LastModifiedBy, _BaseAddress } from './common'
-import { CustomerReference, CustomerResourceIdentifier } from './customer'
-import { StoreKeyReference, StoreResourceIdentifier } from './store'
-import { CustomFields, CustomFieldsDraft, FieldContainer, TypeResourceIdentifier } from './type'
+import { AssociateRoleKeyReference, AssociateRoleResourceIdentifier } from './associate-role.js'
+import { Address, BaseAddress, CreatedBy, LastModifiedBy, _BaseAddress } from './common.js'
+import { CustomerReference, CustomerResourceIdentifier } from './customer.js'
+import { StoreKeyReference, StoreResourceIdentifier } from './store.js'
+import { CustomFields, CustomFieldsDraft, FieldContainer, TypeResourceIdentifier } from './type.js'
 
 export interface Associate {
   /**

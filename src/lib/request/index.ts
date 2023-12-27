@@ -1,2 +1,2 @@
-export * from './request'
-export * from './is-retryable-error'
+export * from './request.js'
+export * from './is-retryable-error.js'

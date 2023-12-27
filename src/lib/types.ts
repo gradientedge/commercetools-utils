@@ -1,4 +1,4 @@
-import { CommercetoolsRetryConfig } from './api'
+import { CommercetoolsRetryConfig } from './api/index.js'
 
 /**
  * The commercetools region that your API client id/secret relate to.

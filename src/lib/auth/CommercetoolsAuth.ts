@@ -4,10 +4,10 @@ import {
   LoginOptions,
   LogoutOptions,
   RevokeTokenOptions,
-} from './types'
-import { CommercetoolsError } from '../'
-import { CommercetoolsGrant } from './CommercetoolsGrant'
-import { CommercetoolsAuthApi } from './CommercetoolsAuthApi'
+} from './types.js'
+import { CommercetoolsError } from '../index.js'
+import { CommercetoolsGrant } from './CommercetoolsGrant.js'
+import { CommercetoolsAuthApi } from './CommercetoolsAuthApi.js'
 
 /**
  * This interface used for holding the internal config of {@see CommercetoolsAuth}.

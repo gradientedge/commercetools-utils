@@ -1,4 +1,4 @@
-import { scopeArrayToRequestString, scopeRequestStringToArray } from '../../lib/auth/scopes'
+import { scopeArrayToRequestString, scopeRequestStringToArray } from '../../lib/auth/scopes.js'
 
 describe('scopeArrayToRequestString', () => {
   it('should return a blank string when the argument is an empty array', () => {

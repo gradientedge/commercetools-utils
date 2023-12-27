@@ -1,4 +1,4 @@
-import { calculateDelay } from './calculate-delay'
+import { calculateDelay } from './calculate-delay.js'
 import { Status } from '@tshttp/status'
 
 /**

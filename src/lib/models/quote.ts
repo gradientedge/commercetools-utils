@@ -4,7 +4,7 @@
  * For more information about the commercetools platform APIs, visit https://docs.commercetools.com/.
  */
 
-import { BusinessUnitKeyReference } from './business-unit'
+import { BusinessUnitKeyReference } from './business-unit.js'
 import {
   CustomLineItem,
   DirectDiscount,
@@ -16,16 +16,16 @@ import {
   TaxCalculationMode,
   TaxedPrice,
   TaxMode,
-} from './cart'
-import { Address, BaseResource, CreatedBy, LastModifiedBy, TypedMoney } from './common'
-import { CustomerReference } from './customer'
-import { CustomerGroupReference } from './customer-group'
-import { PaymentInfo } from './order'
-import { QuoteRequestReference } from './quote-request'
-import { StagedQuoteReference, StagedQuoteResourceIdentifier } from './staged-quote'
-import { StateReference, StateResourceIdentifier } from './state'
-import { StoreKeyReference } from './store'
-import { CustomFields, CustomFieldsDraft, FieldContainer, TypeResourceIdentifier } from './type'
+} from './cart.js'
+import { Address, BaseResource, CreatedBy, LastModifiedBy, TypedMoney } from './common.js'
+import { CustomerReference } from './customer.js'
+import { CustomerGroupReference } from './customer-group.js'
+import { PaymentInfo } from './order.js'
+import { QuoteRequestReference } from './quote-request.js'
+import { StagedQuoteReference, StagedQuoteResourceIdentifier } from './staged-quote.js'
+import { StateReference, StateResourceIdentifier } from './state.js'
+import { StoreKeyReference } from './store.js'
+import { CustomFields, CustomFieldsDraft, FieldContainer, TypeResourceIdentifier } from './type.js'
 
 export interface Quote extends BaseResource {
   /**
