@@ -8,7 +8,7 @@ jobs:
     name: Release
     runs-on: ubuntu-20.04
     steps:
-      - name: install pnpm
+      - name: Install pnpm
         shell: bash
         run: npm i -g pnpm@8
       - name: Turn on auto-install-peers
@@ -27,18 +27,18 @@ jobs:
       - name: Lint the code
         run: pnpm lint
       - name: Run the test suite
-        run: npm test
-      - name: Compile the TypeScript code
-        run: pnpm package
+        run: pnpm test
+      - name: Build the code
+        run: pnpm build
       - name: Publish Code Coverage
-        run: npx codecov
+        run: pnpx codecov
       - name: Release to npm
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: npx semantic-release
       - name: Build the documentation
-        run: pnpm docs
+        run: pnpm run docs
       - name: Deploy docs
         uses: peaceiris/actions-gh-pages@v3
         with:

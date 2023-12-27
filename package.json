@@ -28,7 +28,7 @@
     "build": "tsc --build && pnpm build:commonjs",
     "build:commonjs": "tsc --build tsconfig-cjs.json",
     "build:watch": "tsc --build --incremental --watch",
-    "test": "TZ=UTC node --experimental-vm-modules ./node_modules/jest-cli/bin/jest.js",
+    "test": "TZ=UTC NODE_OPTIONS=\"$NODE_OPTIONS --experimental-vm-modules\" jest",
     "prepack": "echo '{\"type\": \"commonjs\"}' > dist/cjs/package.json",
     "postpack": "rm -f dist/cjs/package.json"
   },

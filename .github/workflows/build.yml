@@ -9,12 +9,18 @@ jobs:
     name: Validate build
     runs-on: ubuntu-20.04
     steps:
+      - name: Install pnpm
+        shell: bash
+        run: npm i -g pnpm@8
+      - name: Turn on auto-install-peers
+        shell: bash
+        run: pnpm config set auto-install-peers true
       - name: Checkout
         uses: actions/checkout@v1
       - name: Setup Node.js
         uses: actions/setup-node@v1
         with:
-          node-version: 18
+          node-version: 20
       - name: Install dependencies
         run: pnpm i
       - name: Prettier check
@@ -23,6 +29,8 @@ jobs:
         run: pnpm lint
       - name: Run the test suite
         run: pnpm test
+      - name: Build the code
+        run: pnpm build
       - name: Monitor coverage
         uses: slavcodev/coverage-monitor-action@1.2.0
         with:
@@ -32,7 +40,5 @@ jobs:
           threshold_warning: 60
       - name: Publish Code Coverage
         run: pnpx codecov
-      - name: Build and package the code
-        run: pnpm build
       - name: Build the documentation
-        run: pnpm docs
+        run: pnpm run docs

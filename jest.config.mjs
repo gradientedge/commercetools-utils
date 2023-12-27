@@ -7,7 +7,7 @@ export default {
   testPathIgnorePatterns: ["node_modules/", "dist/"],
   setupFilesAfterEnv: ["jest-matcher-specific-error"],
   collectCoverage,
-  coverageDirectory: '.coverage',
+  coverageDirectory: '../.coverage',
   coverageProvider: 'v8',
   verbose: true,
   extensionsToTreatAsEsm: [".ts"],
