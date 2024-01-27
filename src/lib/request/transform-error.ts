@@ -5,8 +5,5 @@ import { CommercetoolsError } from '../error/index.js'
  * if the error we receive is from axios.
  */
 export function transformError(lastError: any): Error | CommercetoolsError {
-  if (lastError.isAxiosError) {
-    return CommercetoolsError.fromAxiosError(lastError)
-  }
   return lastError
 }

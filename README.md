@@ -7,6 +7,8 @@
 An easy-to-use toolkit for working with the commercetools HTTP API:
 https://docs.commercetools.com/api/
 
+Please note: **Node.js 16+ is required.**
+
 **Please note:** this API is being built out bit by bit. If you're looking to use a method
 that doesn't appear to exist, please either raise an issue or feel free to make the change
 yourself and raise a PR 👍

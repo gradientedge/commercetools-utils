@@ -88,13 +88,6 @@
     "typedoc": "0.25.4",
     "typescript": "5.3.3"
   },
-  "dependencies": {
-    "@tshttp/status": "^2.0.0",
-    "axios": "1.6.3",
-    "json-stringify-safe": "5.0.1",
-    "qs": "6.11.2",
-    "traverse": "0.6.8"
-  },
   "config": {
     "commitizen": {
       "path": "./node_modules/cz-conventional-changelog"

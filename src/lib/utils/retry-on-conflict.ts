@@ -1,5 +1,4 @@
 import { calculateDelay } from './calculate-delay.js'
-import { Status } from '@tshttp/status'
 
 /**
  * Default maximum number of retries
@@ -26,7 +25,7 @@ export interface RetryOnConflictParams<T = any> {
   executeFn: (attemptNo: number) => Promise<T>
   /**
    * The number of milliseconds to wait before retrying a failed request.
-   * This will be increased exponentially {@link CommercetoolsApi.calculateDelay}.
+   * This will be increased exponentially {@link calculateDelay}.
    * Defaults to 100.
    */
   delayMs?: number
@@ -129,7 +128,7 @@ export async function retryOnConflict<T = any>(options: RetryOnConflictParams): 
     try {
       return await options.executeFn(attemptCount)
     } catch (e: any) {
-      if (!e.isCommercetoolsError || e.status !== Status.Conflict || attemptCount === maxAttempts) {
+      if (!e.isCommercetoolsError || e.status !== 409 || attemptCount === maxAttempts) {
         throw e
       }
     }

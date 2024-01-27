@@ -10,7 +10,7 @@
  *
  * The object passed to it should not have any other data types within it.
  */
-export function plainClone(source: any): any {
+export function plainClone<T = any>(source: T): T {
   return recursiveClone(source, {})
 }
 

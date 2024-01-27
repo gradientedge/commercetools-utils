@@ -250,7 +250,6 @@ export class CommercetoolsApi {
     this.endpoints = REGION_URLS[this.config.region]
     this.requestExecutor = getRequestExecutor({
       timeoutMs: config.timeoutMs,
-      httpsAgent: config.httpsAgent,
       systemIdentifier: config.systemIdentifier,
       onBeforeRequest: config.onBeforeRequest,
       onAfterResponse: config.onAfterResponse,

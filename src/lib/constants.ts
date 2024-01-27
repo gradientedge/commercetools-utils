@@ -1,4 +1,3 @@
-import { Status } from '@tshttp/status'
 import { CommercetoolsRetryConfig } from './api/index.js'
 
 /**
@@ -29,21 +28,4 @@ export const DEFAULT_RETRY_CONFIG: CommercetoolsRetryConfig = {
 /**
  * List of status codes which are allowed to retry
  */
-export const RETRYABLE_STATUS_CODES: number[] = [
-  Status.InternalServerError,
-  Status.NotImplemented,
-  Status.BadGateway,
-  Status.ServiceUnavailable,
-  Status.GatewayTimeout,
-]
-
-/**
- * The config options passed in to the {@see HttpsAgent.Agent} used
- * with the axios instance that we create.
- */
-export const DEFAULT_HTTPS_AGENT_CONFIG = {
-  keepAlive: true,
-  maxSockets: 32,
-  maxFreeSockets: 10,
-  timeout: DEFAULT_REQUEST_TIMEOUT_MS,
-}
+export const RETRYABLE_STATUS_CODES: number[] = [500, 501, 502, 503, 504]

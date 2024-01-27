@@ -51,13 +51,17 @@ export interface CommercetoolsHooks {
   /**
    * If passed in, will be called before sending a request to commercetools.
    * The {@see requestConfig} parameter can be manipulated if you wish to
-   * modify/add headers or any other request data.
+   * modify/add headers or any other request data. Bear in mind that this
+   * will be called before every request, which includes requests that are
+   * made as a part of the retry mechanism.
    */
   onBeforeRequest?: (requestConfig: CommercetoolsRequest) => Promise<CommercetoolsRequest> | CommercetoolsRequest
 
   /**
    * If passed in, will be called once a request has been made and the
-   * response received (or error thrown).
+   * response received (or error thrown). Bear in mind that this
+   * will be called before every request, which includes requests that are
+   * made as a part of the retry mechanism.
    */
   onAfterResponse?: (response: CommercetoolsRequestResponse) => void
 }
