@@ -108,4 +108,8 @@ export class CommercetoolsError extends Error {
   toString(): string {
     return stringify(this.toJSON())
   }
+
+  static isInstance(error: unknown): error is CommercetoolsError {
+    return error instanceof Object && 'isCommercetoolsError' in error && error.isCommercetoolsError === true
+  }
 }

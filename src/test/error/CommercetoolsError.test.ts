@@ -122,4 +122,24 @@ describe('CommercetoolsError', () => {
       })
     })
   })
+
+  describe('isInstance', () => {
+    it('should return true if the error is a CommercetoolsError instance', () => {
+      const error = new CommercetoolsError('test message')
+
+      expect(CommercetoolsError.isInstance(error)).toBe(true)
+    })
+
+    it('should return false if the error is a standard Error instance', () => {
+      const error = new Error('test message')
+
+      expect(CommercetoolsError.isInstance(error)).toBe(false)
+    })
+
+    it('should return false if the error is a not an object', () => {
+      const error = 'test'
+
+      expect(CommercetoolsError.isInstance(error)).toBe(false)
+    })
+  })
 })
