@@ -1761,6 +1761,138 @@ describe('CommercetoolsApi', () => {
         })
       })
 
+      describe('checkCartExistsById', () => {
+        it('should make a HEAD request to the correct endpoint, passing the provided data', async () => {
+          nock('https://api.europe-west1.gcp.commercetools.com', {
+            reqheaders: {
+              authorization: 'Bearer test-access-token',
+            },
+          })
+            .head('/test-project-key/carts/test-cart-id')
+            .reply(200)
+          const api = new CommercetoolsApi(defaultConfig)
+
+          const result = await api.checkCartExistsById({ id: 'test-cart-id' })
+
+          expect(result).toBe(true)
+        })
+
+        it('should make a HEAD request to the correct endpoint with the given store key', async () => {
+          nock('https://api.europe-west1.gcp.commercetools.com', {
+            reqheaders: {
+              authorization: 'Bearer test-access-token',
+            },
+          })
+            .head('/test-project-key/in-store/key=my-store-key/carts/test-cart-id')
+            .reply(200)
+          const api = new CommercetoolsApi(defaultConfig)
+
+          const result = await api.checkCartExistsById({
+            id: 'test-cart-id',
+            storeKey: 'my-store-key',
+          })
+
+          expect(result).toBe(true)
+        })
+
+        it('should return a false if 404 is the return status code', async () => {
+          nock('https://api.europe-west1.gcp.commercetools.com', {
+            reqheaders: {
+              authorization: 'Bearer test-access-token',
+            },
+          })
+            .head('/test-project-key/carts/test-cart-id')
+            .reply(404)
+          const api = new CommercetoolsApi(defaultConfig)
+
+          const result = await api.checkCartExistsById({ id: 'test-cart-id' })
+
+          expect(result).toBe(false)
+        })
+
+        it('should throw an error if the status code is >= 300 and not a 404', async () => {
+          nock('https://api.europe-west1.gcp.commercetools.com', {
+            reqheaders: {
+              authorization: 'Bearer test-access-token',
+            },
+          })
+            .head('/test-project-key/carts/test-cart-id')
+            .reply(500)
+            .persist()
+          const api = new CommercetoolsApi(defaultConfig)
+
+          await expect(() => api.checkCartExistsById({ id: 'test-cart-id' })).rejects.toThrow(
+            'Request failed with status code 500',
+          )
+        })
+      })
+
+      describe('checkCartExistsByKey', () => {
+        it('should make a HEAD request to the correct endpoint, passing the provided data', async () => {
+          nock('https://api.europe-west1.gcp.commercetools.com', {
+            reqheaders: {
+              authorization: 'Bearer test-access-token',
+            },
+          })
+            .head('/test-project-key/carts/key=test-cart-key')
+            .reply(200)
+          const api = new CommercetoolsApi(defaultConfig)
+
+          const result = await api.checkCartExistsByKey({ key: 'test-cart-key' })
+
+          expect(result).toBe(true)
+        })
+
+        it('should make a HEAD request to the correct endpoint with the given store key', async () => {
+          nock('https://api.europe-west1.gcp.commercetools.com', {
+            reqheaders: {
+              authorization: 'Bearer test-access-token',
+            },
+          })
+            .head('/test-project-key/in-store/key=my-store-key/carts/key=test-cart-key')
+            .reply(200)
+          const api = new CommercetoolsApi(defaultConfig)
+
+          const result = await api.checkCartExistsByKey({
+            key: 'test-cart-key',
+            storeKey: 'my-store-key',
+          })
+
+          expect(result).toBe(true)
+        })
+
+        it('should return a false if 404 is the return status code', async () => {
+          nock('https://api.europe-west1.gcp.commercetools.com', {
+            reqheaders: {
+              authorization: 'Bearer test-access-token',
+            },
+          })
+            .head('/test-project-key/carts/key=test-cart-key')
+            .reply(404)
+          const api = new CommercetoolsApi(defaultConfig)
+
+          const result = await api.checkCartExistsByKey({ key: 'test-cart-key' })
+
+          expect(result).toBe(false)
+        })
+
+        it('should throw an error if the status code is >= 300 and not a 404', async () => {
+          nock('https://api.europe-west1.gcp.commercetools.com', {
+            reqheaders: {
+              authorization: 'Bearer test-access-token',
+            },
+          })
+            .head('/test-project-key/carts/key=test-cart-key')
+            .reply(500)
+            .persist()
+          const api = new CommercetoolsApi(defaultConfig)
+
+          await expect(() => api.checkCartExistsByKey({ key: 'test-cart-key' })).rejects.toThrow(
+            'Request failed with status code 500',
+          )
+        })
+      })
+
       describe('getCartById', () => {
         it('should make a GET request to the correct endpoint, passing the provided data', async () => {
           nock('https://api.europe-west1.gcp.commercetools.com', {

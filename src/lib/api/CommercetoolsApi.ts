@@ -899,6 +899,50 @@ export class CommercetoolsApi {
   }
 
   /**
+   * Check if a cart exists by id
+   * https://docs.commercetools.com/api/projects/carts#check-if-cart-exists-by-id
+   */
+  async checkCartExistsById(options: CommonStoreEnabledRequestOptions & { id: string }): Promise<boolean> {
+    ensureNonEmptyString({ value: options.id, name: 'id' })
+
+    try {
+      await this.request({
+        ...this.extractCommonRequestOptions(options),
+        path: this.applyStore(`/carts/${encodeURIComponent(options.id)}`, options.storeKey),
+        method: 'HEAD',
+      })
+      return true
+    } catch (error) {
+      if (CommercetoolsError.isInstance(error) && error.status === 404) {
+        return false
+      }
+      throw error
+    }
+  }
+
+  /**
+   * Check if a cart exists by key
+   * https://docs.commercetools.com/api/projects/carts#check-if-cart-exists-by-id
+   */
+  async checkCartExistsByKey(options: CommonStoreEnabledRequestOptions & { key: string }): Promise<boolean> {
+    ensureNonEmptyString({ value: options.key, name: 'key' })
+
+    try {
+      await this.request({
+        ...this.extractCommonRequestOptions(options),
+        path: this.applyStore(`/carts/key=${encodeURIComponent(options.key)}`, options.storeKey),
+        method: 'HEAD',
+      })
+      return true
+    } catch (error) {
+      if (CommercetoolsError.isInstance(error) && error.status === 404) {
+        return false
+      }
+      throw error
+    }
+  }
+
+  /**
    * Get a cart by id
    * https://docs.commercetools.com/api/projects/carts#update-a-cart-by-id
    */
