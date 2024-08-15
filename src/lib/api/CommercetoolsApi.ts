@@ -71,6 +71,7 @@ import type {
   ProductsInStorePagedQueryResponse,
   ProductType,
   ProductUpdate,
+  ReplicaCartDraft,
   ShippingMethod,
   ShippingMethodPagedQueryResponse,
   StandalonePrice,
@@ -991,6 +992,19 @@ export class CommercetoolsApi {
     return this.request<CartDraft, Cart>({
       ...this.extractCommonRequestOptions(options),
       path: this.applyStore(`/carts`, options.storeKey),
+      method: 'POST',
+      data: options.data,
+    })
+  }
+
+  /**
+   * Replicate an existing cart from a Cart or Order
+   * https://docs.commercetools.com/api/projects/carts#replicate-cart
+   */
+  async replicate(options: CommonRequestOptions & { data: ReplicaCartDraft }): Promise<Cart> {
+    return this.request<ReplicaCartDraft, Cart>({
+      ...this.extractCommonRequestOptions(options),
+      path: '/carts/replicate',
       method: 'POST',
       data: options.data,
     })

@@ -1976,6 +1976,24 @@ describe('CommercetoolsApi', () => {
         })
       })
 
+      describe('replicateCart', () => {
+        it('should make a POST request to the correct endpoint, passing the provided data', async () => {
+          nock('https://api.europe-west1.gcp.commercetools.com', {
+            reqheaders: {
+              authorization: 'Bearer test-access-token',
+            },
+          })
+            .post('/test-project-key/carts/replicate', {
+              key: 'new-cart-key',
+              reference: { typeId: 'cart', id: 'test-cart-id' },
+            })
+            .reply(200, { success: true })
+          const api = new CommercetoolsApi(defaultConfig)
+
+          await api.replicate({ data: { reference: { typeId: 'cart', id: 'test-cart-id' }, key: 'new-cart-key' } })
+        })
+      })
+
       describe('updateCartById', () => {
         it('should make a POST request to the correct endpoint, passing the provided data', async () => {
           nock('https://api.europe-west1.gcp.commercetools.com', {
