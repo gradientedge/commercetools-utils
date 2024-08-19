@@ -3910,4 +3910,35 @@ describe('CommercetoolsApi', () => {
       ).not.toThrowError()
     })
   })
+
+  describe('queryTaxCaterories', () => {
+    it('should make a GET request to the correct endpoint when no parameters are passed', async () => {
+      nock('https://api.europe-west1.gcp.commercetools.com')
+        .get('/test-project-key/tax-categories')
+        .reply(200, { success: true })
+      const api = new CommercetoolsApi(defaultConfig)
+
+      const taxCategoriesQueryResult = await api.queryTaxCategories()
+
+      expect(taxCategoriesQueryResult).toEqual({ success: true })
+    })
+
+    it('should make a GET request to the correct endpoint with the passed in parameters in the querystring', async () => {
+      nock('https://api.europe-west1.gcp.commercetools.com')
+        .get('/test-project-key/tax-categories')
+        .query({
+          where: 'key=123',
+        })
+        .reply(200, singleItemResponse)
+      const api = new CommercetoolsApi(defaultConfig)
+
+      const taxCategoriesQueryResult = await api.queryTaxCategories({
+        params: {
+          where: 'key=123',
+        },
+      })
+
+      expect(taxCategoriesQueryResult).toEqual(singleItemResponse)
+    })
+  })
 })
