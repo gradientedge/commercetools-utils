@@ -84,6 +84,7 @@ import type {
   StoreDraft,
   StorePagedQueryResponse,
   StoreUpdate,
+  TaxCategoryPagedQueryResponse,
   Type,
 } from '../models/index.js'
 import { getRequestExecutor } from '../request/request-executor.js'
@@ -2538,6 +2539,18 @@ export class CommercetoolsApi {
         ...options.params,
         version: options.version,
       },
+    })
+  }
+
+  /**
+   * Query tax categories
+   * https://docs.commercetools.com/api/projects/taxCategories#query-taxcategories
+   */
+  queryTaxCategories(options?: CommonRequestOptions): Promise<TaxCategoryPagedQueryResponse> {
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/tax-categories`,
+      method: 'GET',
     })
   }
 
