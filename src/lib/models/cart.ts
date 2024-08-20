@@ -1184,6 +1184,11 @@ export interface LineItem {
    */
   readonly id: string
   /**
+   *	User-defined unique identifier of the [Product](ctp:api:type:LineItem).
+   *
+   */
+  readonly key?: string
+  /**
    *	`id` of the [Product](ctp:api:type:Product) the Line Item is based on.
    *
    *
