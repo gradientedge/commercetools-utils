@@ -1184,7 +1184,7 @@ export interface LineItem {
    */
   readonly id: string
   /**
-   *	User-defined unique identifier of the [Product](ctp:api:type:LineItem).
+   *	User-defined unique identifier of the LineItem
    *
    */
   readonly key?: string
@@ -1351,6 +1351,11 @@ export interface LineItem {
  *
  */
 export interface LineItemDraft {
+  /**
+   *	User-defined unique identifier of the LineItem
+   *
+   */
+  readonly key?: string
   /**
    *	`id` of a published [Product](ctp:api:type:Product).
    *
