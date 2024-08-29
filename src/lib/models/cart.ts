@@ -2040,6 +2040,12 @@ export interface CartAddItemShippingAddressAction {
 export interface CartAddLineItemAction {
   readonly action: 'addLineItem'
   /**
+   *	User-defined unique identifier of the LineItem.
+   *
+   *
+   */
+  readonly key?: string
+  /**
    *	`id` of the published [Product](ctp:api:type:Product).
    *
    *	Either the `productId` and `variantId`, or `sku` must be provided.
