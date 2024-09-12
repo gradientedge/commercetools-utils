@@ -4,6 +4,7 @@ import {
   OrderFromCartDraft,
   PaymentDraft,
   ProductTypePagedQueryResponse,
+  TaxCategory,
   TypePagedQueryResponse,
 } from '../index.js'
 import { CommercetoolsError } from '../error/index.js'
@@ -2539,6 +2540,33 @@ export class CommercetoolsApi {
         ...options.params,
         version: options.version,
       },
+    })
+  }
+
+  /**
+   * Get a tax category given its id
+   * https://docs.commercetools.com/api/projects/taxCategories#get-taxcategory-by-id
+   */
+  getTaxCategoryById(options: CommonRequestOptions & { id: string }): Promise<TaxCategory> {
+    ensureNonEmptyString({ value: options.id, name: 'id' })
+
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/tax-categories/${encodeURIComponent(options.id)}`,
+      method: 'GET',
+    })
+  }
+
+  /**
+   * Get a tax category given its key
+   * https://docs.commercetools.com/api/projects/taxCategories#get-taxcategory-by-key
+   */
+  getTaxCategoryByKey(options: CommonRequestOptions & { key: string }): Promise<TaxCategory> {
+    ensureNonEmptyString({ value: options.key, name: 'key' })
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/tax-categories/key=${encodeURIComponent(options.key)}`,
+      method: 'GET',
     })
   }
 
