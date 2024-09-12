@@ -3741,6 +3741,71 @@ describe('CommercetoolsApi', () => {
     })
   })
 
+  describe('Tax categories', () => {
+    describe('getTaxCategoryById', () => {
+      it('should make a GET request to the correct endpoint', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com')
+          .get('/test-project-key/tax-categories/my-tax-category-id')
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const product = await api.getTaxCategoryById({ id: 'my-tax-category-id' })
+
+        expect(product).toEqual({ success: true })
+      })
+
+      it('should throw an error when an empty ID is being passed as a parameter', async () => {
+        const api = new CommercetoolsApi(defaultConfig)
+
+        await expect(() => api.getTaxCategoryById({ id: ' ' })).toThrow(`The string parameter 'id' cannot be empty`)
+      })
+    })
+
+    describe('getTaxCategoryByKey', () => {
+      it('should make a GET request to the correct endpoint', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com')
+          .get('/test-project-key/tax-categories/key=my-tax-category-key')
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const product = await api.getTaxCategoryByKey({ key: 'my-tax-category-key' })
+
+        expect(product).toEqual({ success: true })
+      })
+    })
+
+    describe('queryTaxCategories', () => {
+      it('should make a GET request to the correct endpoint when no parameters are passed', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com')
+          .get('/test-project-key/tax-categories')
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const taxCategoriesQueryResult = await api.queryTaxCategories()
+
+        expect(taxCategoriesQueryResult).toEqual({ success: true })
+      })
+
+      it('should make a GET request to the correct endpoint with the passed in parameters in the querystring', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com')
+          .get('/test-project-key/tax-categories')
+          .query({
+            where: 'key=123',
+          })
+          .reply(200, singleItemResponse)
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const taxCategoriesQueryResult = await api.queryTaxCategories({
+          params: {
+            where: 'key=123',
+          },
+        })
+
+        expect(taxCategoriesQueryResult).toEqual(singleItemResponse)
+      })
+    })
+  })
+
   describe('graphql', () => {
     it('should call the /graphql endpoint with the data passed in, using the client access token', async () => {
       nock('https://api.europe-west1.gcp.commercetools.com', {
@@ -3908,37 +3973,6 @@ describe('CommercetoolsApi', () => {
           region: 'europe_gcp',
         }),
       ).not.toThrowError()
-    })
-  })
-
-  describe('queryTaxCaterories', () => {
-    it('should make a GET request to the correct endpoint when no parameters are passed', async () => {
-      nock('https://api.europe-west1.gcp.commercetools.com')
-        .get('/test-project-key/tax-categories')
-        .reply(200, { success: true })
-      const api = new CommercetoolsApi(defaultConfig)
-
-      const taxCategoriesQueryResult = await api.queryTaxCategories()
-
-      expect(taxCategoriesQueryResult).toEqual({ success: true })
-    })
-
-    it('should make a GET request to the correct endpoint with the passed in parameters in the querystring', async () => {
-      nock('https://api.europe-west1.gcp.commercetools.com')
-        .get('/test-project-key/tax-categories')
-        .query({
-          where: 'key=123',
-        })
-        .reply(200, singleItemResponse)
-      const api = new CommercetoolsApi(defaultConfig)
-
-      const taxCategoriesQueryResult = await api.queryTaxCategories({
-        params: {
-          where: 'key=123',
-        },
-      })
-
-      expect(taxCategoriesQueryResult).toEqual(singleItemResponse)
     })
   })
 })
