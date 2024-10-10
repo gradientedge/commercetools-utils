@@ -1965,7 +1965,7 @@ export class CommercetoolsApi {
 
     return this.request({
       ...this.extractCommonRequestOptions(options),
-      path: `/customers/${encodeURIComponent(options.id)}`,
+      path: this.applyStore(`/customers/${encodeURIComponent(options.id)}`, options.storeKey),
       method: 'POST',
       data: options.data,
     })
@@ -1980,7 +1980,7 @@ export class CommercetoolsApi {
   ): Promise<Customer> {
     return this.request({
       ...this.extractCommonRequestOptions(options),
-      path: `/customers/key=${encodeURIComponent(options.key)}`,
+      path: this.applyStore(`/customers/key=${encodeURIComponent(options.key)}`, options.storeKey),
       method: 'POST',
       data: options.data,
     })
@@ -2228,7 +2228,7 @@ export class CommercetoolsApi {
           cartId: options.cartId,
         },
       }),
-      path: `/shipping-methods/matching-cart`,
+      path: this.applyStore(`/shipping-methods/matching-cart`, options.storeKey),
       method: 'GET',
     })
   }
