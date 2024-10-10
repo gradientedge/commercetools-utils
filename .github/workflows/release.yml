@@ -30,8 +30,8 @@ jobs:
         run: pnpm test
       - name: Build the code
         run: pnpm build
-      - name: Publish Code Coverage
-        run: pnpx codecov
+      # - name: Publish Code Coverage
+      #   run: pnpx codecov
       - name: Release to npm
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
