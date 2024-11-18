@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@commercetools/platform-sdk':
+        specifier: 7.20.0
+        version: 7.20.0
       '@tshttp/status':
         specifier: ^2.0.0
         version: 2.0.0
@@ -304,6 +307,30 @@ packages:
   '@colors/colors@1.5.0':
     resolution: {integrity: sha512-ooWCrlZP11i8GImSjTHYHLkvFDP48nS4+204nGb1RiX/WXYHmJA2III9/e2DWVabCESdW7hBAEzHRqUn9OUVvQ==}
     engines: {node: '>=0.1.90'}
+
+  '@commercetools/platform-sdk@7.20.0':
+    resolution: {integrity: sha512-Dv/abLO3yuJmt/MT4zeqodAJhBzZZNSyULKSZCUgy42VTt6UC9Sg5Iud8ghJzezlsuTWF/VvtUP/Ow61CJeFQA==}
+    engines: {node: '>=14'}
+
+  '@commercetools/sdk-client-v2@2.5.0':
+    resolution: {integrity: sha512-v1y++O6yllG+IRTYm9jPE8s667+GapnysyGIf8NJDZbVwhvcanixZL4d20imXjCpOr4u1iZrgRftc90mgYqblw==}
+    engines: {node: '>=14'}
+
+  '@commercetools/sdk-middleware-auth@7.0.1':
+    resolution: {integrity: sha512-XLRm+o3Yd0mkVoyzsOA98PUu0U0ajQdBHMhZ8N2XMOtL4OY8zsgT8ap5JneXV8zWZNiwIYYAYoUDwBlLZh2lAQ==}
+    engines: {node: '>=14'}
+
+  '@commercetools/sdk-middleware-http@7.0.4':
+    resolution: {integrity: sha512-YpBDTA1NqjfwqPxrll6FzDc0A7hLSRwd9OLGMlPcvUG2Je1ks8Pe34pLdPqz7jgdURwfFXRBmXxPhezDzMbnZA==}
+    engines: {node: '>=14'}
+
+  '@commercetools/sdk-middleware-logger@3.0.0':
+    resolution: {integrity: sha512-DhMXAA2yIch/AaGxy7st85Z1HFmeLtHWGkr9z5rX4xKjan4PHGB/IE5saAR+SNGHhs6+1Lp8vZEHDo3tFqVLmg==}
+    engines: {node: '>=14'}
+
+  '@commercetools/ts-client@2.1.2':
+    resolution: {integrity: sha512-gTRMsrDb5XxhP7q+BJfV96QgQJrMqcQMgmKxzZwoXfnT4BwDgLW4B3fP0oJ4QX8OAZnMVgWr7GAr0Dck4xDnBg==}
+    engines: {node: '>=14'}
 
   '@commitlint/config-validator@19.0.3':
     resolution: {integrity: sha512-2D3r4PKjoo59zBc2auodrSCaUnCSALCx54yveOFwwP/i2kfEAQrygwOleFWswLqK0UL/F9r07MFi5ev2ohyM4Q==}
@@ -825,6 +852,10 @@ packages:
     resolution: {integrity: sha512-E+iruNOY8VV9s4JEbe1aNEm6MiszPRr/UfcHMz0TQh1BXSxHK+ASV1R6W4HpjBhSeS+54PIsAMCBmwD06LLsqQ==}
     hasBin: true
 
+  abort-controller@3.0.0:
+    resolution: {integrity: sha512-h8lQ8tacZYnR3vNQTgibj+tODHI5/+l06Au2Pcriv/Gmet0eaj4TwWH41sO9wnHDiQsEj19q0drzdWdeAHtweg==}
+    engines: {node: '>=6.5'}
+
   acorn-jsx@5.3.2:
     resolution: {integrity: sha512-rq9s+JNhf0IChjtDXxllJ7g41oZk5SlXtp0LHwyA5cejwn7vKmKp4pPri6YEePv2PU65sAsegbXtIinmDFDXgQ==}
     peerDependencies:
@@ -1017,6 +1048,9 @@ packages:
 
   buffer@5.7.1:
     resolution: {integrity: sha512-EHcyIPBQ4BSGlvjB16k5KgAJ27CIsHY/2JBmCRReo48y9rQ3MaUzWX3KVlBa4U7MyX02HdVj0K7C3WaB3ju7FQ==}
+
+  buffer@6.0.3:
+    resolution: {integrity: sha512-FTiCpNxtwiZZHEZbcbTIcZjERVICn9yq/pDFkTl95/AxzD1naBctN7YO68riM/gLSDY7sdrMby8hofADYuuqOA==}
 
   cachedir@2.3.0:
     resolution: {integrity: sha512-A+Fezp4zxnit6FanDmv9EqXNAi3vt9DWp51/71UEhXukb7QUuvtv9344h91dyAxuTLoSYJFU299qzR3tzwPAhw==}
@@ -1425,6 +1459,10 @@ packages:
   esutils@2.0.3:
     resolution: {integrity: sha512-kVscqXk4OCp68SZ0dkgEKVi6/8ij300KBWTJq32P/dYeWTSwK41WyTxalN1eRmA5Z9UU/LX9D7FWSmV9SAYx6g==}
     engines: {node: '>=0.10.0'}
+
+  event-target-shim@5.0.1:
+    resolution: {integrity: sha512-i/2XbnSz/uxRCU6+NdVJgKWDTM427+MqYbkQzD321DuCQJUqOuJKIA0IM2+W2xtYHdKOmZ4dR6fExsd4SXL+WQ==}
+    engines: {node: '>=6'}
 
   execa@5.1.1:
     resolution: {integrity: sha512-8uSpZZocAZRBAPIEINJj3Lo9HyGitllczc27Eh5YYojjMFMn8yHMDMaUHE2Jqfq05D/wucwI4JGURyXt1vchyg==}
@@ -3605,6 +3643,41 @@ snapshots:
   '@colors/colors@1.5.0':
     optional: true
 
+  '@commercetools/platform-sdk@7.20.0':
+    dependencies:
+      '@commercetools/sdk-client-v2': 2.5.0
+      '@commercetools/sdk-middleware-auth': 7.0.1
+      '@commercetools/sdk-middleware-http': 7.0.4
+      '@commercetools/sdk-middleware-logger': 3.0.0
+      '@commercetools/ts-client': 2.1.2
+    transitivePeerDependencies:
+      - encoding
+
+  '@commercetools/sdk-client-v2@2.5.0':
+    dependencies:
+      buffer: 6.0.3
+      node-fetch: 2.7.0
+    transitivePeerDependencies:
+      - encoding
+
+  '@commercetools/sdk-middleware-auth@7.0.1':
+    dependencies:
+      node-fetch: 2.7.0
+    transitivePeerDependencies:
+      - encoding
+
+  '@commercetools/sdk-middleware-http@7.0.4': {}
+
+  '@commercetools/sdk-middleware-logger@3.0.0': {}
+
+  '@commercetools/ts-client@2.1.2':
+    dependencies:
+      abort-controller: 3.0.0
+      buffer: 6.0.3
+      node-fetch: 2.7.0
+    transitivePeerDependencies:
+      - encoding
+
   '@commitlint/config-validator@19.0.3':
     dependencies:
       '@commitlint/types': 19.0.3
@@ -4307,6 +4380,10 @@ snapshots:
       jsonparse: 1.3.1
       through: 2.3.8
 
+  abort-controller@3.0.0:
+    dependencies:
+      event-target-shim: 5.0.1
+
   acorn-jsx@5.3.2(acorn@8.11.2):
     dependencies:
       acorn: 8.11.2
@@ -4525,6 +4602,11 @@ snapshots:
   buffer-from@1.1.2: {}
 
   buffer@5.7.1:
+    dependencies:
+      base64-js: 1.5.1
+      ieee754: 1.2.1
+
+  buffer@6.0.3:
     dependencies:
       base64-js: 1.5.1
       ieee754: 1.2.1
@@ -5013,6 +5095,8 @@ snapshots:
   estraverse@5.3.0: {}
 
   esutils@2.0.3: {}
+
+  event-target-shim@5.0.1: {}
 
   execa@5.1.1:
     dependencies:
