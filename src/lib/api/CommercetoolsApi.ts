@@ -1,16 +1,10 @@
 import { CommercetoolsApiConfig, CommercetoolsRetryConfig } from './types.js'
-import {
-  CommercetoolsAuth,
-  OrderFromCartDraft,
-  PaymentDraft,
-  ProductTypePagedQueryResponse,
-  TaxCategory,
-  TypePagedQueryResponse,
-} from '../index.js'
+import { CommercetoolsAuth } from '../index.js'
 import { CommercetoolsError } from '../error/index.js'
 import { REGION_URLS } from '../auth/constants.js'
 import { CommercetoolsRequest, RegionEndpoints, RequestExecutor } from '../types.js'
 import { ensureNonEmptyString } from '../utils/index.js'
+
 import type {
   Cart,
   CartDiscount,
@@ -55,10 +49,12 @@ import type {
   MyPaymentPagedQueryResponse,
   MyPaymentUpdate,
   Order,
+  OrderFromCartDraft,
   OrderImportDraft,
   OrderPagedQueryResponse,
   OrderUpdate,
   Payment,
+  PaymentDraft,
   PaymentPagedQueryResponse,
   PaymentUpdate,
   Product,
@@ -71,6 +67,7 @@ import type {
   ProductSelectionUpdateAction,
   ProductsInStorePagedQueryResponse,
   ProductType,
+  ProductTypePagedQueryResponse,
   ProductUpdate,
   ReplicaCartDraft,
   ShippingMethod,
@@ -85,9 +82,12 @@ import type {
   StoreDraft,
   StorePagedQueryResponse,
   StoreUpdate,
+  TaxCategory,
   TaxCategoryPagedQueryResponse,
   Type,
-} from '../models/index.js'
+  TypePagedQueryResponse,
+} from '@commercetools/platform-sdk'
+
 import { getRequestExecutor } from '../request/request-executor.js'
 
 export interface FetchOptions<T = any> {
@@ -100,7 +100,7 @@ export interface FetchOptions<T = any> {
    *
    * Example: `/product-projections`
    *
-   * Note that if you want to create a path that takes in to account
+   * Note that if you want to create a path that takes into account
    * the store key that you defined in {@see CommercetoolsApiConfig}
    * then you should use the {@see CommercetoolsApi.applyStore} method.
    */
@@ -162,7 +162,7 @@ export interface FetchOptions<T = any> {
   /**
    * Access token to use as the value for the `Authorization` bearer token
    *
-   * Typically this would be the access token that belongs to a customer.
+   * Typically, this would be the access token that belongs to a customer.
    * This must be passed in when using one of the `me` endpoints.
    *
    * If this property is not passed in, we fall back to using the client
@@ -262,7 +262,7 @@ export class CommercetoolsApi {
   }
 
   /**
-   * Get a store given it's id
+   * Get a store given its id
    * https://docs.commercetools.com/api/projects/stores#get-a-store-by-id
    */
   getStoreById(options: CommonRequestOptions & { id: string }): Promise<Store> {
@@ -276,7 +276,7 @@ export class CommercetoolsApi {
   }
 
   /**
-   * Get a store given it's key
+   * Get a store given its key
    * https://docs.commercetools.com/api/projects/stores#get-a-store-by-key
    */
   getStoreByKey(options: CommonRequestOptions & { key: string }): Promise<Store> {
@@ -458,7 +458,7 @@ export class CommercetoolsApi {
   }
 
   /**
-   * Get an category by id or key. Either the id or the key must be provided.
+   * Get a category by id or key. Either the id or the key must be provided.
    */
   getCategory(options: CommonRequestOptions & { id?: string; key?: string }): Promise<Category> {
     if (!options.id && !options.key) {
@@ -2387,7 +2387,7 @@ export class CommercetoolsApi {
   }
 
   /**
-   * Get a state given it's id
+   * Get a state given its id
    * https://docs.commercetools.com/api/projects/states#get-state-by-id
    */
   getStateById(options: CommonRequestOptions & { id: string }): Promise<State> {
@@ -2401,7 +2401,7 @@ export class CommercetoolsApi {
   }
 
   /**
-   * Get a state given it's key
+   * Get a state given its key
    * https://docs.commercetools.com/api/projects/states#get-state-by-key
    */
   getStateByKey(options: CommonRequestOptions & { key: string }): Promise<State> {
@@ -2425,7 +2425,7 @@ export class CommercetoolsApi {
   }
 
   /**
-   * Get a standalone price given it's id
+   * Get a standalone price given its id
    * https://docs.commercetools.com/api/projects/standalone-prices#get-standaloneprice-by-id
    */
   getStandalonePriceById(options: CommonRequestOptions & { id: string }): Promise<StandalonePrice> {
@@ -2439,7 +2439,7 @@ export class CommercetoolsApi {
   }
 
   /**
-   * Get a standalone price given it's key
+   * Get a standalone price given its key
    * https://docs.commercetools.com/api/projects/standalone-prices#get-standaloneprice-by-key
    */
   getStandalonePriceByKey(options: CommonRequestOptions & { key: string }): Promise<StandalonePrice> {

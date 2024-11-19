@@ -90,6 +90,7 @@
     "typescript": "5.4.5"
   },
   "dependencies": {
+    "@commercetools/platform-sdk": "7.20.0",
     "@tshttp/status": "^2.0.0",
     "axios": "1.7.7",
     "json-stringify-safe": "5.0.1",

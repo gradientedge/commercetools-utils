@@ -1,9 +1,8 @@
-import { Attribute } from '../models/index.js'
+import { Attribute } from '@commercetools/platform-sdk'
 
 /**
  * Options interface for {@see getAttributeValue}
  */
-
 export interface GetAttributeValueParams {
   /** Attribute list */
   attributes: Attribute[] | null | undefined
