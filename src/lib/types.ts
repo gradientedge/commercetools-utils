@@ -105,6 +105,9 @@ export interface RequestExecutor<T = any> {
 }
 
 export type {
+  Address,
+  AddressDraft,
+  Attribute,
   Cart,
   CartDiscount,
   CartDiscountPagedQueryResponse,
@@ -115,6 +118,7 @@ export type {
   CategoryDraft,
   CategoryPagedQueryResponse,
   CategoryUpdate,
+  CentPrecisionMoney,
   Channel,
   ChannelPagedQueryResponse,
   Customer,
@@ -132,6 +136,7 @@ export type {
   CustomerUpdate,
   CustomObject,
   CustomObjectDraft,
+  CustomerUpdateAction,
   DiscountCode,
   GraphQLRequest,
   GraphQLResponse,
@@ -139,6 +144,8 @@ export type {
   InventoryEntryDraft,
   InventoryEntryUpdateAction,
   InventoryPagedQueryResponse,
+  LineItem,
+  LocalizedString,
   MyCartDraft,
   MyCartUpdateAction,
   MyCustomerDraft,
@@ -155,6 +162,7 @@ export type {
   Payment,
   PaymentDraft,
   PaymentPagedQueryResponse,
+  PaymentReference,
   PaymentUpdate,
   Product,
   ProductDraft,
@@ -169,6 +177,7 @@ export type {
   ProductTypePagedQueryResponse,
   ProductUpdate,
   ReplicaCartDraft,
+  ShippingInfo,
   ShippingMethod,
   ShippingMethodPagedQueryResponse,
   StandalonePrice,
@@ -184,5 +193,6 @@ export type {
   TaxCategory,
   TaxCategoryPagedQueryResponse,
   Type,
+  TypedMoney,
   TypePagedQueryResponse,
 } from '@commercetools/platform-sdk'
