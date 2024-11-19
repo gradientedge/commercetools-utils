@@ -163,6 +163,7 @@ export type {
   MyCartDraft,
   MyCartSetShippingMethodAction,
   MyCartUpdateAction,
+  MyCartChangeLineItemQuantityAction,
   MyCustomerDraft,
   MyOrderFromCartDraft,
   MyPayment,
