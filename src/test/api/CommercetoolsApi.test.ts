@@ -1914,6 +1914,27 @@ describe('CommercetoolsApi', () => {
         })
       })
 
+      describe('getCartByKey', () => {
+        it('should make a GET request to the correct endpoint, passing the provided data', async () => {
+          nock('https://api.europe-west1.gcp.commercetools.com', {
+            reqheaders: {
+              authorization: 'Bearer test-access-token',
+            },
+          })
+            .get('/test-project-key/carts/key=test-cart-key')
+            .reply(200, { success: true })
+          const api = new CommercetoolsApi(defaultConfig)
+
+          await api.getCartByKey({ key: 'test-cart-key' })
+        })
+
+        it('should throw an error when an empty key is being passed as a parameter', async () => {
+          const api = new CommercetoolsApi(defaultConfig)
+
+          await expect(() => api.getCartByKey({ key: ' ' })).toThrow(`The string parameter 'key' cannot be empty`)
+        })
+      })
+
       describe('queryCarts', () => {
         it('should make a GET request to the correct endpoint with no parameters', async () => {
           nock('https://api.europe-west1.gcp.commercetools.com', {
@@ -2151,7 +2172,7 @@ describe('CommercetoolsApi', () => {
       it('should throw an error when an empty ID is being passed as a parameter', async () => {
         const api = new CommercetoolsApi(defaultConfig)
 
-        await expect(() => api.getMyOrderById({ id: ' ', accessToken: 'my-access-token' })).toThrow(
+        expect(() => api.getMyOrderById({ id: ' ', accessToken: 'my-access-token' })).toThrow(
           `The string parameter 'id' cannot be empty`,
         )
       })
@@ -2209,7 +2230,7 @@ describe('CommercetoolsApi', () => {
       it('should throw an error when an empty ID is being passed as a parameter', async () => {
         const api = new CommercetoolsApi(defaultConfig)
 
-        await expect(() => api.getOrderById({ id: ' ' })).toThrow(`The string parameter 'id' cannot be empty`)
+        expect(() => api.getOrderById({ id: ' ' })).toThrow(`The string parameter 'id' cannot be empty`)
       })
     })
 
@@ -2252,7 +2273,7 @@ describe('CommercetoolsApi', () => {
       it('should throw an error when an empty ID is being passed as a parameter', async () => {
         const api = new CommercetoolsApi(defaultConfig)
 
-        await expect(() => api.updateOrderById({ id: ' ', data: { version: 2, actions: [] } })).toThrow(
+        expect(() => api.updateOrderById({ id: ' ', data: { version: 2, actions: [] } })).toThrow(
           `The string parameter 'id' cannot be empty`,
         )
       })
@@ -2301,9 +2322,7 @@ describe('CommercetoolsApi', () => {
       it('should throw an error when an empty ID is being passed as a parameter', async () => {
         const api = new CommercetoolsApi(defaultConfig)
 
-        await expect(() => api.deleteOrderById({ id: ' ', version: 2 })).toThrow(
-          `The string parameter 'id' cannot be empty`,
-        )
+        expect(() => api.deleteOrderById({ id: ' ', version: 2 })).toThrow(`The string parameter 'id' cannot be empty`)
       })
     })
 
@@ -2390,7 +2409,7 @@ describe('CommercetoolsApi', () => {
       it('should throw an error when an empty ID is being passed as a parameter', async () => {
         const api = new CommercetoolsApi(defaultConfig)
 
-        await expect(() => api.deletePaymentById({ id: ' ', version: 4 })).toThrow(
+        expect(() => api.deletePaymentById({ id: ' ', version: 4 })).toThrow(
           `The string parameter 'id' cannot be empty`,
         )
       })
@@ -2418,7 +2437,7 @@ describe('CommercetoolsApi', () => {
       it('should throw an error when an empty ID is being passed as a parameter', async () => {
         const api = new CommercetoolsApi(defaultConfig)
 
-        await expect(() => api.updatePaymentById({ id: ' ', data: { version: 1, actions: [] } })).toThrow(
+        expect(() => api.updatePaymentById({ id: ' ', data: { version: 1, actions: [] } })).toThrow(
           `The string parameter 'id' cannot be empty`,
         )
       })
@@ -2445,7 +2464,7 @@ describe('CommercetoolsApi', () => {
       it('should throw an error when an empty ID is being passed as a parameter', async () => {
         const api = new CommercetoolsApi(defaultConfig)
 
-        await expect(() => api.getPaymentById({ id: ' ' })).toThrow(`The string parameter 'id' cannot be empty`)
+        expect(() => api.getPaymentById({ id: ' ' })).toThrow(`The string parameter 'id' cannot be empty`)
       })
     })
 
@@ -2514,7 +2533,7 @@ describe('CommercetoolsApi', () => {
       it('should throw an error when an empty ID is being passed as a parameter', async () => {
         const api = new CommercetoolsApi(defaultConfig)
 
-        await expect(() =>
+        expect(() =>
           api.updateMyPaymentById({ accessToken: 'my-access-token', id: ' ', data: { version: 1, actions: [] } }),
         ).toThrow(`The string parameter 'id' cannot be empty`)
       })
@@ -2542,7 +2561,7 @@ describe('CommercetoolsApi', () => {
       it('should throw an error when an empty ID is being passed as a parameter', async () => {
         const api = new CommercetoolsApi(defaultConfig)
 
-        await expect(() => api.getMyPaymentById({ accessToken: 'my-access-token', id: ' ' })).toThrow(
+        expect(() => api.getMyPaymentById({ accessToken: 'my-access-token', id: ' ' })).toThrow(
           `The string parameter 'id' cannot be empty`,
         )
       })
@@ -2594,7 +2613,7 @@ describe('CommercetoolsApi', () => {
       it('should throw an error when an empty ID is being passed as a parameter', async () => {
         const api = new CommercetoolsApi(defaultConfig)
 
-        await expect(() => api.deleteMyPaymentById({ accessToken: 'my-access-token', id: ' ', version: 1 })).toThrow(
+        expect(() => api.deleteMyPaymentById({ accessToken: 'my-access-token', id: ' ', version: 1 })).toThrow(
           `The string parameter 'id' cannot be empty`,
         )
       })
@@ -2621,7 +2640,7 @@ describe('CommercetoolsApi', () => {
       it('should throw an error when an empty ID is being passed as a parameter', async () => {
         const api = new CommercetoolsApi(defaultConfig)
 
-        await expect(() => api.getCustomerById({ id: ' ' })).toThrow(`The string parameter 'id' cannot be empty`)
+        expect(() => api.getCustomerById({ id: ' ' })).toThrow(`The string parameter 'id' cannot be empty`)
       })
     })
 
@@ -2831,7 +2850,7 @@ describe('CommercetoolsApi', () => {
       it('should throw an error when an empty ID is being passed as a parameter', async () => {
         const api = new CommercetoolsApi(defaultConfig)
 
-        await expect(() =>
+        expect(() =>
           api.updateCustomerById({
             id: ' ',
             data: {
@@ -2887,7 +2906,7 @@ describe('CommercetoolsApi', () => {
       it('should throw an error when an empty ID is being passed as a parameter', async () => {
         const api = new CommercetoolsApi(defaultConfig)
 
-        await expect(() => api.deleteCustomerById({ id: ' ', version: 2 })).toThrow(
+        expect(() => api.deleteCustomerById({ id: ' ', version: 2 })).toThrow(
           `The string parameter 'id' cannot be empty`,
         )
       })
@@ -3082,7 +3101,7 @@ describe('CommercetoolsApi', () => {
       it('should throw an error when an empty ID is being passed as a parameter', async () => {
         const api = new CommercetoolsApi(defaultConfig)
 
-        await expect(() => api.getProductTypeById({ id: ' ' })).toThrow(`The string parameter 'id' cannot be empty`)
+        expect(() => api.getProductTypeById({ id: ' ' })).toThrow(`The string parameter 'id' cannot be empty`)
       })
     })
 
@@ -3142,7 +3161,7 @@ describe('CommercetoolsApi', () => {
       it('should throw an error when an empty ID is being passed as a parameter', async () => {
         const api = new CommercetoolsApi(defaultConfig)
 
-        await expect(() => api.getTypeById({ id: ' ' })).toThrow(`The string parameter 'id' cannot be empty`)
+        expect(() => api.getTypeById({ id: ' ' })).toThrow(`The string parameter 'id' cannot be empty`)
       })
     })
 
@@ -3202,7 +3221,7 @@ describe('CommercetoolsApi', () => {
       it('should throw an error when an empty ID is being passed as a parameter', async () => {
         const api = new CommercetoolsApi(defaultConfig)
 
-        await expect(() => api.getDiscountCodeById({ id: ' ' })).toThrow(`The string parameter 'id' cannot be empty`)
+        expect(() => api.getDiscountCodeById({ id: ' ' })).toThrow(`The string parameter 'id' cannot be empty`)
       })
     })
   })
@@ -3227,7 +3246,7 @@ describe('CommercetoolsApi', () => {
       it('should throw an error when an empty ID is being passed as a parameter', async () => {
         const api = new CommercetoolsApi(defaultConfig)
 
-        await expect(() => api.getCartDiscountById({ id: ' ' })).toThrow(`The string parameter 'id' cannot be empty`)
+        expect(() => api.getCartDiscountById({ id: ' ' })).toThrow(`The string parameter 'id' cannot be empty`)
       })
     })
 
@@ -3304,7 +3323,7 @@ describe('CommercetoolsApi', () => {
       it('should throw an error when an empty ID is being passed as a parameter', async () => {
         const api = new CommercetoolsApi(defaultConfig)
 
-        await expect(() => api.getCustomObjectById({ id: ' ' })).toThrow(`The string parameter 'id' cannot be empty`)
+        expect(() => api.getCustomObjectById({ id: ' ' })).toThrow(`The string parameter 'id' cannot be empty`)
       })
     })
 
@@ -3365,7 +3384,7 @@ describe('CommercetoolsApi', () => {
       it('should throw an error when an empty ID is being passed as a parameter', async () => {
         const api = new CommercetoolsApi(defaultConfig)
 
-        await expect(() => api.getShippingMethodById({ id: ' ' })).toThrow(`The string parameter 'id' cannot be empty`)
+        expect(() => api.getShippingMethodById({ id: ' ' })).toThrow(`The string parameter 'id' cannot be empty`)
       })
     })
 
@@ -3517,7 +3536,7 @@ describe('CommercetoolsApi', () => {
       it('should throw an error when an empty ID is being passed as a parameter', async () => {
         const api = new CommercetoolsApi(defaultConfig)
 
-        await expect(() => api.getStateById({ id: ' ' })).toThrow(`The string parameter 'id' cannot be empty`)
+        expect(() => api.getStateById({ id: ' ' })).toThrow(`The string parameter 'id' cannot be empty`)
       })
     })
 
@@ -3583,7 +3602,7 @@ describe('CommercetoolsApi', () => {
       it('should throw an error when an empty ID is being passed as a parameter', async () => {
         const api = new CommercetoolsApi(defaultConfig)
 
-        await expect(() => api.getStandalonePriceById({ id: ' ' })).toThrow(`The string parameter 'id' cannot be empty`)
+        expect(() => api.getStandalonePriceById({ id: ' ' })).toThrow(`The string parameter 'id' cannot be empty`)
       })
     })
 
@@ -3679,7 +3698,7 @@ describe('CommercetoolsApi', () => {
       it('should throw an error when an empty ID is being passed as a parameter', async () => {
         const api = new CommercetoolsApi(defaultConfig)
 
-        await expect(() => api.updateStandalonePriceById({ id: ' ', data: { version: 1, actions: [] } })).toThrow(
+        expect(() => api.updateStandalonePriceById({ id: ' ', data: { version: 1, actions: [] } })).toThrow(
           `The string parameter 'id' cannot be empty`,
         )
       })
@@ -3720,7 +3739,7 @@ describe('CommercetoolsApi', () => {
       it('should throw an error when an empty ID is being passed as a parameter', async () => {
         const api = new CommercetoolsApi(defaultConfig)
 
-        await expect(() => api.deleteStandalonePriceById({ id: ' ', version: 3 })).toThrow(
+        expect(() => api.deleteStandalonePriceById({ id: ' ', version: 3 })).toThrow(
           `The string parameter 'id' cannot be empty`,
         )
       })
@@ -3757,7 +3776,7 @@ describe('CommercetoolsApi', () => {
       it('should throw an error when an empty ID is being passed as a parameter', async () => {
         const api = new CommercetoolsApi(defaultConfig)
 
-        await expect(() => api.getTaxCategoryById({ id: ' ' })).toThrow(`The string parameter 'id' cannot be empty`)
+        expect(() => api.getTaxCategoryById({ id: ' ' })).toThrow(`The string parameter 'id' cannot be empty`)
       })
     })
 
