@@ -947,7 +947,7 @@ export class CommercetoolsApi {
 
   /**
    * Get a cart by id
-   * https://docs.commercetools.com/api/projects/carts#update-a-cart-by-id
+   * https://docs.commercetools.com/api/projects/carts#get-a-cart-by-id
    */
   getCartById(options: CommonStoreEnabledRequestOptions & { id: string }): Promise<Cart> {
     ensureNonEmptyString({ value: options.id, name: 'id' })
@@ -955,6 +955,20 @@ export class CommercetoolsApi {
     return this.request({
       ...this.extractCommonRequestOptions(options),
       path: this.applyStore(`/carts/${encodeURIComponent(options.id)}`, options.storeKey),
+      method: 'GET',
+    })
+  }
+
+  /**
+   * Get a cart by key
+   * https://docs.commercetools.com/api/projects/carts#get-a-cart-by-key
+   */
+  getCartByKey(options: CommonStoreEnabledRequestOptions & { key: string }): Promise<Cart> {
+    ensureNonEmptyString({ value: options.key, name: 'key' })
+
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: this.applyStore(`/carts/key=${encodeURIComponent(options.key)}`, options.storeKey),
       method: 'GET',
     })
   }
