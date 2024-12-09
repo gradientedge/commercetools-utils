@@ -2367,6 +2367,40 @@ describe('CommercetoolsApi', () => {
         expect(order).toEqual({ success: true })
       })
     })
+
+    describe('searchOrders', () => {
+      it('should make a POST request to the correct endpoint', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com', {
+          reqheaders: {
+            authorization: 'Bearer test-access-token',
+          },
+        })
+          .post('/test-project-key/orders/search', {
+            query: 'orderNumber="1234"',
+            limit: 5,
+            offset: 10,
+            sort: [
+              {
+                field: 'orderNumber',
+                order: 'asc',
+              },
+            ],
+          })
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const order = await api.searchOrders({
+          data: {
+            query: 'orderNumber="1234"',
+            limit: 5,
+            offset: 10,
+            sort: [{ field: 'orderNumber', order: 'asc' }],
+          },
+        })
+
+        expect(order).toEqual({ success: true })
+      })
+    })
   })
 
   describe('Payment', () => {
@@ -2695,6 +2729,40 @@ describe('CommercetoolsApi', () => {
         const order = await api.queryCustomers({
           params: {
             where: 'email="jimmy@gradientedge.com"',
+          },
+        })
+
+        expect(order).toEqual({ success: true })
+      })
+    })
+
+    describe('searchCustomers', () => {
+      it('should make a POST request to the correct endpoint', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com', {
+          reqheaders: {
+            authorization: 'Bearer test-access-token',
+          },
+        })
+          .post('/test-project-key/customers/search', {
+            query: 'firstName="Jimmy"',
+            limit: 5,
+            offset: 10,
+            sort: [
+              {
+                field: 'customerNumber',
+                order: 'desc',
+              },
+            ],
+          })
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const order = await api.searchCustomers({
+          data: {
+            query: 'firstName="Jimmy"',
+            limit: 5,
+            offset: 10,
+            sort: [{ field: 'customerNumber', order: 'desc' }],
           },
         })
 
