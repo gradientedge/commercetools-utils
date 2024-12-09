@@ -26,7 +26,9 @@ import type {
   CustomerGroupPagedQueryResponse,
   CustomerGroupUpdate,
   CustomerPagedQueryResponse,
+  CustomerPagedSearchResponse,
   CustomerResetPassword,
+  CustomerSearchRequest,
   CustomerSignin,
   CustomerSignInResult,
   CustomerToken,
@@ -52,6 +54,8 @@ import type {
   OrderFromCartDraft,
   OrderImportDraft,
   OrderPagedQueryResponse,
+  OrderPagedSearchResponse,
+  OrderSearchRequest,
   OrderUpdate,
   Payment,
   PaymentDraft,
@@ -1528,6 +1532,19 @@ export class CommercetoolsApi {
   }
 
   /**
+   * Search orders:
+   * https://docs.commercetools.com/api/projects/order-search#search-orders
+   */
+  searchOrders(options: CommonRequestOptions & { data: OrderSearchRequest }): Promise<OrderPagedSearchResponse> {
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: '/orders/search',
+      method: 'POST',
+      data: options.data,
+    })
+  }
+
+  /**
    * Create a product:
    * https://docs.commercetools.com/api/projects/products#create-a-product
    */
@@ -1965,6 +1982,21 @@ export class CommercetoolsApi {
       ...this.extractCommonRequestOptions(options),
       path: this.applyStore(`/customers`, options.storeKey),
       method: 'GET',
+    })
+  }
+
+  /**
+   * Search customers:
+   * https://docs.commercetools.com/api/projects/customer-search#search-customers
+   */
+  searchCustomers(
+    options: CommonRequestOptions & { data: CustomerSearchRequest },
+  ): Promise<CustomerPagedSearchResponse> {
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: '/customers/search',
+      method: 'POST',
+      data: options.data,
     })
   }
 
