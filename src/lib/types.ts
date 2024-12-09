@@ -225,6 +225,7 @@ export type {
   StoreUpdate,
   TaxCategory,
   TaxCategoryPagedQueryResponse,
+  TaxCategoryResourceIdentifier,
   TaxedItemPrice,
   TaxMode,
   TaxPortion,
