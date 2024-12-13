@@ -11,3 +11,5 @@ dist
 src/lib/models/*
 !src/lib/models/*.ts
 src/lib/models/*.d.ts
+
+.commercetools-repo
