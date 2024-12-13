@@ -19,4 +19,5 @@ module.exports = {
     '@typescript-eslint/no-var-requires': 'off',
     'no-empty': 'off',
   },
+  ignorePatterns: ['src/lib/types/**/*'],
 }

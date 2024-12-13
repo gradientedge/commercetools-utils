@@ -74,6 +74,7 @@ export class CommercetoolsError extends Error {
       if (contentType.substring(0, 16) === 'application/json') {
         try {
           data = JSON.parse(config.data)
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
         } catch (e) {}
       } else if (contentType.substring(0, 33) === 'application/x-www-form-urlencoded') {
         try {
@@ -90,6 +91,7 @@ export class CommercetoolsError extends Error {
             }
           })
           data = paramsObj
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
         } catch (e) {}
       }
     }
