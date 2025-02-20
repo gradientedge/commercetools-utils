@@ -4,7 +4,8 @@
  * For more information about the commercetools platform APIs, visit https://docs.commercetools.com/.
  */
 
-import { BaseResource, CreatedBy, LastModifiedBy, LocalizedString } from './common.js'
+import { BusinessUnitKeyReference, BusinessUnitResourceIdentifier } from './business-unit.js'
+import { BaseResource, CreatedBy, IReference, IResourceIdentifier, LastModifiedBy, LocalizedString } from './common.js'
 import { CustomerReference, CustomerResourceIdentifier } from './customer.js'
 import { ProductVariant } from './product.js'
 import { ProductTypeReference } from './product-type.js'
@@ -80,6 +81,12 @@ export interface ShoppingList extends BaseResource {
    *
    */
   readonly store?: StoreKeyReference
+  /**
+   *	[Reference](ctp:api:type:Reference) to the Business Unit the Shopping List belongs to.
+   *
+   *
+   */
+  readonly businessUnit?: BusinessUnitKeyReference
   /**
    *	Custom Fields defined for the ShoppingList.
    *
@@ -172,6 +179,12 @@ export interface ShoppingListDraft {
    *
    */
   readonly store?: StoreResourceIdentifier
+  /**
+   *	[ResourceIdentifier](ctp:api:type:ResourceIdentifier) of the Business Unit the Shopping List should belong to. When the `customer` of the Shopping List is set, the [Customer](ctp:api:type:Customer) must be an [Associate](ctp:api:type:Associate) of the Business Unit.
+   *
+   *
+   */
+  readonly businessUnit?: BusinessUnitResourceIdentifier
   /**
    *	Custom Fields defined for the ShoppingList.
    *
@@ -351,7 +364,7 @@ export interface ShoppingListPagedQueryResponse {
  *	[Reference](ctp:api:type:Reference) to a [ShoppingList](ctp:api:type:ShoppingList).
  *
  */
-export interface ShoppingListReference {
+export interface ShoppingListReference extends IReference {
   readonly typeId: 'shopping-list'
   /**
    *	Unique identifier of the referenced [ShoppingList](ctp:api:type:ShoppingList).
@@ -370,7 +383,7 @@ export interface ShoppingListReference {
  *	[ResourceIdentifier](ctp:api:type:ResourceIdentifier) to a [ShoppingList](ctp:api:type:ShoppingList). Either `id` or `key` is required. If both are set, an [InvalidJsonInput](/../api/errors#invalidjsoninput) error is returned.
  *
  */
-export interface ShoppingListResourceIdentifier {
+export interface ShoppingListResourceIdentifier extends IResourceIdentifier {
   readonly typeId: 'shopping-list'
   /**
    *	Unique identifier of the referenced [ShoppingList](ctp:api:type:ShoppingList). Required if `key` is absent.
@@ -412,6 +425,7 @@ export type ShoppingListUpdateAction =
   | ShoppingListRemoveLineItemAction
   | ShoppingListRemoveTextLineItemAction
   | ShoppingListSetAnonymousIdAction
+  | ShoppingListSetBusinessUnitAction
   | ShoppingListSetCustomFieldAction
   | ShoppingListSetCustomTypeAction
   | ShoppingListSetCustomerAction
@@ -425,6 +439,12 @@ export type ShoppingListUpdateAction =
   | ShoppingListSetTextLineItemCustomFieldAction
   | ShoppingListSetTextLineItemCustomTypeAction
   | ShoppingListSetTextLineItemDescriptionAction
+export interface IShoppingListUpdateAction {
+  /**
+   *
+   */
+  readonly action: string
+}
 /**
  *	TextLineItems are Line Items that use text values instead of references to Products.
  *
@@ -513,8 +533,10 @@ export interface TextLineItemDraft {
  *	If the ShoppingList already contains a ShoppingListLineItem for the same Product Variant with the same Custom Fields, then only the quantity of the existing ShoppingListLineItem is increased.
  *	A ShoppingListLineItem with an empty `variantId` is not considered the same as a ShoppingListLineItem with a `variantId` currently referring to the Master Variant.
  *
+ *	Produces the [Shopping List Line Item Added](ctp:api:type:ShoppingListLineItemAddedMessage) Message.
+ *
  */
-export interface ShoppingListAddLineItemAction {
+export interface ShoppingListAddLineItemAction extends IShoppingListUpdateAction {
   readonly action: 'addLineItem'
   /**
    *	User-defined identifier of the ShoppingListLineItem. Must be unique per [ShoppingList](ctp:api:type:ShoppingList).
@@ -559,7 +581,7 @@ export interface ShoppingListAddLineItemAction {
    */
   readonly custom?: CustomFieldsDraft
 }
-export interface ShoppingListAddTextLineItemAction {
+export interface ShoppingListAddTextLineItemAction extends IShoppingListUpdateAction {
   readonly action: 'addTextLineItem'
   /**
    *	Name of the TextLineItem.
@@ -598,7 +620,7 @@ export interface ShoppingListAddTextLineItemAction {
    */
   readonly custom?: CustomFieldsDraft
 }
-export interface ShoppingListChangeLineItemQuantityAction {
+export interface ShoppingListChangeLineItemQuantityAction extends IShoppingListUpdateAction {
   readonly action: 'changeLineItemQuantity'
   /**
    *	The `id` of the [ShoppingListLineItem](ctp:api:type:ShoppingListLineItem) to update. Either `lineItemId` or `lineItemKey` is required.
@@ -619,7 +641,7 @@ export interface ShoppingListChangeLineItemQuantityAction {
    */
   readonly quantity: number
 }
-export interface ShoppingListChangeLineItemsOrderAction {
+export interface ShoppingListChangeLineItemsOrderAction extends IShoppingListUpdateAction {
   readonly action: 'changeLineItemsOrder'
   /**
    *	All existing ShoppingListLineItem `id`s in the desired new order.
@@ -628,7 +650,7 @@ export interface ShoppingListChangeLineItemsOrderAction {
    */
   readonly lineItemOrder: string[]
 }
-export interface ShoppingListChangeNameAction {
+export interface ShoppingListChangeNameAction extends IShoppingListUpdateAction {
   readonly action: 'changeName'
   /**
    *	New value to set. Must not be empty.
@@ -637,7 +659,7 @@ export interface ShoppingListChangeNameAction {
    */
   readonly name: LocalizedString
 }
-export interface ShoppingListChangeTextLineItemNameAction {
+export interface ShoppingListChangeTextLineItemNameAction extends IShoppingListUpdateAction {
   readonly action: 'changeTextLineItemName'
   /**
    *	The `id` of the [TextLineItem](ctp:api:type:TextLineItem) to update. Either `lineItemId` or `lineItemKey` is required.
@@ -658,7 +680,7 @@ export interface ShoppingListChangeTextLineItemNameAction {
    */
   readonly name: LocalizedString
 }
-export interface ShoppingListChangeTextLineItemQuantityAction {
+export interface ShoppingListChangeTextLineItemQuantityAction extends IShoppingListUpdateAction {
   readonly action: 'changeTextLineItemQuantity'
   /**
    *	The `id` of the [TextLineItem](ctp:api:type:TextLineItem) to update. Either `lineItemId` or `lineItemKey` is required.
@@ -679,7 +701,7 @@ export interface ShoppingListChangeTextLineItemQuantityAction {
    */
   readonly quantity: number
 }
-export interface ShoppingListChangeTextLineItemsOrderAction {
+export interface ShoppingListChangeTextLineItemsOrderAction extends IShoppingListUpdateAction {
   readonly action: 'changeTextLineItemsOrder'
   /**
    *	Must contain all existing [TextLineItem](ctp:api:type:TextLineItem) `id`s in the desired new order.
@@ -688,7 +710,11 @@ export interface ShoppingListChangeTextLineItemsOrderAction {
    */
   readonly textLineItemOrder: string[]
 }
-export interface ShoppingListRemoveLineItemAction {
+/**
+ *	Produces the [Shopping List Line Item Removed](ctp:api:type:ShoppingListLineItemRemovedMessage) Message.
+ *
+ */
+export interface ShoppingListRemoveLineItemAction extends IShoppingListUpdateAction {
   readonly action: 'removeLineItem'
   /**
    *	The `id` of the [ShoppingListLineItem](ctp:api:type:ShoppingListLineItem) to update. Either `lineItemId` or `lineItemKey` is required.
@@ -709,7 +735,7 @@ export interface ShoppingListRemoveLineItemAction {
    */
   readonly quantity?: number
 }
-export interface ShoppingListRemoveTextLineItemAction {
+export interface ShoppingListRemoveTextLineItemAction extends IShoppingListUpdateAction {
   readonly action: 'removeTextLineItem'
   /**
    *	The `id` of the [TextLineItem](ctp:api:type:TextLineItem) to update. Either `lineItemId` or `lineItemKey` is required.
@@ -734,7 +760,7 @@ export interface ShoppingListRemoveTextLineItemAction {
  *	If the Shopping List is already associated with a Customer, an [InvalidOperation](ctp:api:type:InvalidOperationError) error is returned.
  *
  */
-export interface ShoppingListSetAnonymousIdAction {
+export interface ShoppingListSetAnonymousIdAction extends IShoppingListUpdateAction {
   readonly action: 'setAnonymousId'
   /**
    *	Value to set. If empty, any existing value will be removed.
@@ -743,7 +769,20 @@ export interface ShoppingListSetAnonymousIdAction {
    */
   readonly anonymousId?: string
 }
-export interface ShoppingListSetCustomFieldAction {
+/**
+ *	Updates the Business Unit on the Shopping List. The Shopping List must have an existing Business Unit assigned already.
+ *
+ */
+export interface ShoppingListSetBusinessUnitAction extends IShoppingListUpdateAction {
+  readonly action: 'setBusinessUnit'
+  /**
+   *	The Business Unit to assign to the Shopping List, which must have access to the [Store](/../api/projects/stores) that is set on the Shopping List.
+   *
+   *
+   */
+  readonly businessUnit: BusinessUnitResourceIdentifier
+}
+export interface ShoppingListSetCustomFieldAction extends IShoppingListUpdateAction {
   readonly action: 'setCustomField'
   /**
    *	Name of the [Custom Field](/../api/projects/custom-fields).
@@ -760,7 +799,7 @@ export interface ShoppingListSetCustomFieldAction {
    */
   readonly value?: any
 }
-export interface ShoppingListSetCustomTypeAction {
+export interface ShoppingListSetCustomTypeAction extends IShoppingListUpdateAction {
   readonly action: 'setCustomType'
   /**
    *	Defines the [Type](ctp:api:type:Type) that extends the ShoppingList with [Custom Fields](/../api/projects/custom-fields).
@@ -776,7 +815,7 @@ export interface ShoppingListSetCustomTypeAction {
    */
   readonly fields?: FieldContainer
 }
-export interface ShoppingListSetCustomerAction {
+export interface ShoppingListSetCustomerAction extends IShoppingListUpdateAction {
   readonly action: 'setCustomer'
   /**
    *	The [Customer](ctp:api:type:Customer) the ShoppingList should be associated to. If empty, any existing value will be removed.
@@ -785,7 +824,7 @@ export interface ShoppingListSetCustomerAction {
    */
   readonly customer?: CustomerResourceIdentifier
 }
-export interface ShoppingListSetDeleteDaysAfterLastModificationAction {
+export interface ShoppingListSetDeleteDaysAfterLastModificationAction extends IShoppingListUpdateAction {
   readonly action: 'setDeleteDaysAfterLastModification'
   /**
    *	Value to set. If empty, any existing value will be removed.
@@ -794,7 +833,7 @@ export interface ShoppingListSetDeleteDaysAfterLastModificationAction {
    */
   readonly deleteDaysAfterLastModification?: number
 }
-export interface ShoppingListSetDescriptionAction {
+export interface ShoppingListSetDescriptionAction extends IShoppingListUpdateAction {
   readonly action: 'setDescription'
   /**
    *	Value to set. If empty, any existing value will be removed.
@@ -803,7 +842,7 @@ export interface ShoppingListSetDescriptionAction {
    */
   readonly description?: LocalizedString
 }
-export interface ShoppingListSetKeyAction {
+export interface ShoppingListSetKeyAction extends IShoppingListUpdateAction {
   readonly action: 'setKey'
   /**
    *	Value to set. If empty, any existing value will be removed.
@@ -811,7 +850,7 @@ export interface ShoppingListSetKeyAction {
    */
   readonly key?: string
 }
-export interface ShoppingListSetLineItemCustomFieldAction {
+export interface ShoppingListSetLineItemCustomFieldAction extends IShoppingListUpdateAction {
   readonly action: 'setLineItemCustomField'
   /**
    *	The `id` of the [ShoppingListLineItem](ctp:api:type:ShoppingListLineItem) to update. Either `lineItemId` or `lineItemKey` is required.
@@ -840,7 +879,7 @@ export interface ShoppingListSetLineItemCustomFieldAction {
    */
   readonly value?: any
 }
-export interface ShoppingListSetLineItemCustomTypeAction {
+export interface ShoppingListSetLineItemCustomTypeAction extends IShoppingListUpdateAction {
   readonly action: 'setLineItemCustomType'
   /**
    *	The `id` of the [ShoppingListLineItem](ctp:api:type:ShoppingListLineItem) to update. Either `lineItemId` or `lineItemKey` is required.
@@ -868,7 +907,7 @@ export interface ShoppingListSetLineItemCustomTypeAction {
    */
   readonly fields?: FieldContainer
 }
-export interface ShoppingListSetSlugAction {
+export interface ShoppingListSetSlugAction extends IShoppingListUpdateAction {
   readonly action: 'setSlug'
   /**
    *	Value to set. If empty, any existing value will be removed. Each slug is unique across a Project, but a ShoppingList can have the same slug for different languages. Must match the pattern `^[A-Za-z0-9_-]{2,256}+$`
@@ -877,7 +916,7 @@ export interface ShoppingListSetSlugAction {
    */
   readonly slug?: LocalizedString
 }
-export interface ShoppingListSetStoreAction {
+export interface ShoppingListSetStoreAction extends IShoppingListUpdateAction {
   readonly action: 'setStore'
   /**
    *	The [Store](ctp:api:type:Store) the ShoppingList should be assigned to. If empty, any existing value will be removed.
@@ -886,7 +925,7 @@ export interface ShoppingListSetStoreAction {
    */
   readonly store?: StoreResourceIdentifier
 }
-export interface ShoppingListSetTextLineItemCustomFieldAction {
+export interface ShoppingListSetTextLineItemCustomFieldAction extends IShoppingListUpdateAction {
   readonly action: 'setTextLineItemCustomField'
   /**
    *	The `id` of the [TextLineItem](ctp:api:type:TextLineItem) to update. Either `lineItemId` or `lineItemKey` is required.
@@ -915,7 +954,7 @@ export interface ShoppingListSetTextLineItemCustomFieldAction {
    */
   readonly value?: any
 }
-export interface ShoppingListSetTextLineItemCustomTypeAction {
+export interface ShoppingListSetTextLineItemCustomTypeAction extends IShoppingListUpdateAction {
   readonly action: 'setTextLineItemCustomType'
   /**
    *	The `id` of the [TextLineItem](ctp:api:type:TextLineItem) to update. Either `lineItemId` or `lineItemKey` is required.
@@ -943,7 +982,7 @@ export interface ShoppingListSetTextLineItemCustomTypeAction {
    */
   readonly fields?: FieldContainer
 }
-export interface ShoppingListSetTextLineItemDescriptionAction {
+export interface ShoppingListSetTextLineItemDescriptionAction extends IShoppingListUpdateAction {
   readonly action: 'setTextLineItemDescription'
   /**
    *	The `id` of the [TextLineItem](ctp:api:type:TextLineItem) to update. Either `lineItemId` or `lineItemKey` is required.

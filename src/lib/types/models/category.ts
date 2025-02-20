@@ -4,7 +4,17 @@
  * For more information about the commercetools platform APIs, visit https://docs.commercetools.com/.
  */
 
-import { Asset, AssetDraft, AssetSource, BaseResource, CreatedBy, LastModifiedBy, LocalizedString } from './common.js'
+import {
+  Asset,
+  AssetDraft,
+  AssetSource,
+  BaseResource,
+  CreatedBy,
+  IReference,
+  IResourceIdentifier,
+  LastModifiedBy,
+  LocalizedString,
+} from './common.js'
 import { CustomFields, CustomFieldsDraft, FieldContainer, TypeResourceIdentifier } from './type.js'
 
 export interface Category extends BaseResource {
@@ -200,7 +210,7 @@ export interface CategoryDraft {
   /**
    *	User-defined unique identifier for the Category.
    *
-   *	This field is optional for backwards compatibility reasons, but we strongly recommend setting it. Keys are mandatory for importing Categories with the [Import API](/../import-export/) and the [Merchant Center](/../merchant-center/import-data).
+   *	This field is optional for backwards compatibility reasons, but we strongly recommend setting it. Keys are mandatory for importing Categories with the [Import API](/../api/import-export/overview) and the [Merchant Center](/../merchant-center/import-data).
    *
    *
    */
@@ -250,7 +260,7 @@ export interface CategoryPagedQueryResponse {
  *	[Reference](ctp:api:type:Reference) to a [Category](ctp:api:type:Category).
  *
  */
-export interface CategoryReference {
+export interface CategoryReference extends IReference {
   readonly typeId: 'category'
   /**
    *	Unique identifier of the referenced [Category](ctp:api:type:Category).
@@ -269,7 +279,7 @@ export interface CategoryReference {
  *	[ResourceIdentifier](ctp:api:type:ResourceIdentifier) to a [Category](ctp:api:type:Category). Either `id` or `key` is required. If both are set, an [InvalidJsonInput](/../api/errors#invalidjsoninput) error is returned.
  *
  */
-export interface CategoryResourceIdentifier {
+export interface CategoryResourceIdentifier extends IResourceIdentifier {
   readonly typeId: 'category'
   /**
    *	Unique identifier of the referenced [Category](ctp:api:type:Channel). Required if `key` is absent.
@@ -322,7 +332,13 @@ export type CategoryUpdateAction =
   | CategorySetMetaDescriptionAction
   | CategorySetMetaKeywordsAction
   | CategorySetMetaTitleAction
-export interface CategoryAddAssetAction {
+export interface ICategoryUpdateAction {
+  /**
+   *
+   */
+  readonly action: string
+}
+export interface CategoryAddAssetAction extends ICategoryUpdateAction {
   readonly action: 'addAsset'
   /**
    *	Value to append.
@@ -336,7 +352,7 @@ export interface CategoryAddAssetAction {
    */
   readonly position?: number
 }
-export interface CategoryChangeAssetNameAction {
+export interface CategoryChangeAssetNameAction extends ICategoryUpdateAction {
   readonly action: 'changeAssetName'
   /**
    *	New value to set. Either `assetId` or `assetKey` is required.
@@ -361,7 +377,7 @@ export interface CategoryChangeAssetNameAction {
  *	This update action changes the order of the `assets` array. The new order is defined by listing the `id`s of the Assets.
  *
  */
-export interface CategoryChangeAssetOrderAction {
+export interface CategoryChangeAssetOrderAction extends ICategoryUpdateAction {
   readonly action: 'changeAssetOrder'
   /**
    *	New value to set. Must contain all Asset `id`s.
@@ -370,7 +386,7 @@ export interface CategoryChangeAssetOrderAction {
    */
   readonly assetOrder: string[]
 }
-export interface CategoryChangeNameAction {
+export interface CategoryChangeNameAction extends ICategoryUpdateAction {
   readonly action: 'changeName'
   /**
    *	New value to set. Must not be empty.
@@ -379,7 +395,7 @@ export interface CategoryChangeNameAction {
    */
   readonly name: LocalizedString
 }
-export interface CategoryChangeOrderHintAction {
+export interface CategoryChangeOrderHintAction extends ICategoryUpdateAction {
   readonly action: 'changeOrderHint'
   /**
    *	New value to set. Must be a decimal value between 0 and 1.
@@ -388,7 +404,7 @@ export interface CategoryChangeOrderHintAction {
    */
   readonly orderHint: string
 }
-export interface CategoryChangeParentAction {
+export interface CategoryChangeParentAction extends ICategoryUpdateAction {
   readonly action: 'changeParent'
   /**
    *	New value to set as parent.
@@ -401,7 +417,7 @@ export interface CategoryChangeParentAction {
  *	Changing the slug produces the [CategorySlugChanged](ctp:api:type:CategorySlugChangedMessage) Message.
  *
  */
-export interface CategoryChangeSlugAction {
+export interface CategoryChangeSlugAction extends ICategoryUpdateAction {
   readonly action: 'changeSlug'
   /**
    *	New value to set. Must not be empty.
@@ -412,7 +428,7 @@ export interface CategoryChangeSlugAction {
    */
   readonly slug: LocalizedString
 }
-export interface CategoryRemoveAssetAction {
+export interface CategoryRemoveAssetAction extends ICategoryUpdateAction {
   readonly action: 'removeAsset'
   /**
    *	Value to remove. Either `assetId` or `assetKey` is required.
@@ -427,7 +443,7 @@ export interface CategoryRemoveAssetAction {
    */
   readonly assetKey?: string
 }
-export interface CategorySetAssetCustomFieldAction {
+export interface CategorySetAssetCustomFieldAction extends ICategoryUpdateAction {
   readonly action: 'setAssetCustomField'
   /**
    *	New value to set. Either `assetId` or `assetKey` is required.
@@ -456,7 +472,7 @@ export interface CategorySetAssetCustomFieldAction {
    */
   readonly value?: any
 }
-export interface CategorySetAssetCustomTypeAction {
+export interface CategorySetAssetCustomTypeAction extends ICategoryUpdateAction {
   readonly action: 'setAssetCustomType'
   /**
    *	New value to set. Either `assetId` or `assetKey` is required.
@@ -484,7 +500,7 @@ export interface CategorySetAssetCustomTypeAction {
    */
   readonly fields?: FieldContainer
 }
-export interface CategorySetAssetDescriptionAction {
+export interface CategorySetAssetDescriptionAction extends ICategoryUpdateAction {
   readonly action: 'setAssetDescription'
   /**
    *	New value to set. Either `assetId` or `assetKey` is required.
@@ -509,7 +525,7 @@ export interface CategorySetAssetDescriptionAction {
  *	Set or remove the `key` of an [Asset](ctp:api:type:Asset).
  *
  */
-export interface CategorySetAssetKeyAction {
+export interface CategorySetAssetKeyAction extends ICategoryUpdateAction {
   readonly action: 'setAssetKey'
   /**
    *	Value to set.
@@ -524,7 +540,7 @@ export interface CategorySetAssetKeyAction {
    */
   readonly assetKey?: string
 }
-export interface CategorySetAssetSourcesAction {
+export interface CategorySetAssetSourcesAction extends ICategoryUpdateAction {
   readonly action: 'setAssetSources'
   /**
    *	New value to set. Either `assetId` or `assetKey` is required.
@@ -545,7 +561,7 @@ export interface CategorySetAssetSourcesAction {
    */
   readonly sources: AssetSource[]
 }
-export interface CategorySetAssetTagsAction {
+export interface CategorySetAssetTagsAction extends ICategoryUpdateAction {
   readonly action: 'setAssetTags'
   /**
    *	New value to set. Either `assetId` or `assetKey` is required.
@@ -566,7 +582,7 @@ export interface CategorySetAssetTagsAction {
    */
   readonly tags?: string[]
 }
-export interface CategorySetCustomFieldAction {
+export interface CategorySetCustomFieldAction extends ICategoryUpdateAction {
   readonly action: 'setCustomField'
   /**
    *	Name of the [Custom Field](/../api/projects/custom-fields).
@@ -583,7 +599,7 @@ export interface CategorySetCustomFieldAction {
    */
   readonly value?: any
 }
-export interface CategorySetCustomTypeAction {
+export interface CategorySetCustomTypeAction extends ICategoryUpdateAction {
   readonly action: 'setCustomType'
   /**
    *	Defines the [Type](ctp:api:type:Type) that extends the Category with [Custom Fields](/../api/projects/custom-fields).
@@ -599,7 +615,7 @@ export interface CategorySetCustomTypeAction {
    */
   readonly fields?: FieldContainer
 }
-export interface CategorySetDescriptionAction {
+export interface CategorySetDescriptionAction extends ICategoryUpdateAction {
   readonly action: 'setDescription'
   /**
    *	Value to set. If empty, any existing value will be removed.
@@ -612,7 +628,7 @@ export interface CategorySetDescriptionAction {
  *	This update action sets a new ID that can be used as an additional identifier for external systems like customer relationship management (CRM) or enterprise resource planning (ERP).
  *
  */
-export interface CategorySetExternalIdAction {
+export interface CategorySetExternalIdAction extends ICategoryUpdateAction {
   readonly action: 'setExternalId'
   /**
    *	Value to set. If empty, any existing value will be removed.
@@ -621,7 +637,7 @@ export interface CategorySetExternalIdAction {
    */
   readonly externalId?: string
 }
-export interface CategorySetKeyAction {
+export interface CategorySetKeyAction extends ICategoryUpdateAction {
   readonly action: 'setKey'
   /**
    *	Value to set. If empty, any existing value will be removed.
@@ -630,7 +646,7 @@ export interface CategorySetKeyAction {
    */
   readonly key?: string
 }
-export interface CategorySetMetaDescriptionAction {
+export interface CategorySetMetaDescriptionAction extends ICategoryUpdateAction {
   readonly action: 'setMetaDescription'
   /**
    *	Value to set.
@@ -639,7 +655,7 @@ export interface CategorySetMetaDescriptionAction {
    */
   readonly metaDescription?: LocalizedString
 }
-export interface CategorySetMetaKeywordsAction {
+export interface CategorySetMetaKeywordsAction extends ICategoryUpdateAction {
   readonly action: 'setMetaKeywords'
   /**
    *	Value to set.
@@ -648,7 +664,7 @@ export interface CategorySetMetaKeywordsAction {
    */
   readonly metaKeywords?: LocalizedString
 }
-export interface CategorySetMetaTitleAction {
+export interface CategorySetMetaTitleAction extends ICategoryUpdateAction {
   readonly action: 'setMetaTitle'
   /**
    *	Value to set.

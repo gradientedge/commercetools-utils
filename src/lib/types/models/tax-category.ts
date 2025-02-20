@@ -4,7 +4,7 @@
  * For more information about the commercetools platform APIs, visit https://docs.commercetools.com/.
  */
 
-import { BaseResource, CreatedBy, LastModifiedBy } from './common.js'
+import { BaseResource, CreatedBy, IReference, IResourceIdentifier, LastModifiedBy } from './common.js'
 
 /**
  *	It is used to calculate the [taxPortions](/../api/projects/carts#taxedprice) field in a Cart or Order.
@@ -153,7 +153,7 @@ export interface TaxCategoryPagedQueryResponse {
  *	[Reference](ctp:api:type:Reference) to a [TaxCategory](ctp:api:type:TaxCategory).
  *
  */
-export interface TaxCategoryReference {
+export interface TaxCategoryReference extends IReference {
   readonly typeId: 'tax-category'
   /**
    *	Unique identifier of the referenced [TaxCategory](ctp:api:type:TaxCategory).
@@ -172,7 +172,7 @@ export interface TaxCategoryReference {
  *	[ResourceIdentifier](ctp:api:type:ResourceIdentifier) to a [TaxCategory](ctp:api:type:TaxCategory). Either `id` or `key` is required. If both are set, an [InvalidJsonInput](/../api/errors#invalidjsoninput) error is returned.
  *
  */
-export interface TaxCategoryResourceIdentifier {
+export interface TaxCategoryResourceIdentifier extends IResourceIdentifier {
   readonly typeId: 'tax-category'
   /**
    *	Unique identifier of the referenced [TaxCategory](ctp:api:type:TaxCategory). Required if `key` is absent.
@@ -209,6 +209,12 @@ export type TaxCategoryUpdateAction =
   | TaxCategoryReplaceTaxRateAction
   | TaxCategorySetDescriptionAction
   | TaxCategorySetKeyAction
+export interface ITaxCategoryUpdateAction {
+  /**
+   *
+   */
+  readonly action: string
+}
 export interface TaxRate {
   /**
    *	Present if the TaxRate is part of a [TaxCategory](ctp:api:type:TaxCategory).
@@ -308,7 +314,7 @@ export interface TaxRateDraft {
    */
   readonly key?: string
 }
-export interface TaxCategoryAddTaxRateAction {
+export interface TaxCategoryAddTaxRateAction extends ITaxCategoryUpdateAction {
   readonly action: 'addTaxRate'
   /**
    *	Value to append to the `rates` array.
@@ -317,7 +323,7 @@ export interface TaxCategoryAddTaxRateAction {
    */
   readonly taxRate: TaxRateDraft
 }
-export interface TaxCategoryChangeNameAction {
+export interface TaxCategoryChangeNameAction extends ITaxCategoryUpdateAction {
   readonly action: 'changeName'
   /**
    *	New value to set. Must not be empty.
@@ -326,7 +332,7 @@ export interface TaxCategoryChangeNameAction {
    */
   readonly name: string
 }
-export interface TaxCategoryRemoveTaxRateAction {
+export interface TaxCategoryRemoveTaxRateAction extends ITaxCategoryUpdateAction {
   readonly action: 'removeTaxRate'
   /**
    *	ID of the TaxRate to remove.
@@ -343,7 +349,7 @@ export interface TaxCategoryRemoveTaxRateAction {
    */
   readonly taxRateKey?: string
 }
-export interface TaxCategoryReplaceTaxRateAction {
+export interface TaxCategoryReplaceTaxRateAction extends ITaxCategoryUpdateAction {
   readonly action: 'replaceTaxRate'
   /**
    *	ID of the TaxRate to replace.
@@ -366,7 +372,7 @@ export interface TaxCategoryReplaceTaxRateAction {
    */
   readonly taxRate: TaxRateDraft
 }
-export interface TaxCategorySetDescriptionAction {
+export interface TaxCategorySetDescriptionAction extends ITaxCategoryUpdateAction {
   readonly action: 'setDescription'
   /**
    *	Value to set. If empty, any existing value will be removed.
@@ -375,7 +381,7 @@ export interface TaxCategorySetDescriptionAction {
    */
   readonly description?: string
 }
-export interface TaxCategorySetKeyAction {
+export interface TaxCategorySetKeyAction extends ITaxCategoryUpdateAction {
   readonly action: 'setKey'
   /**
    *	Value to set. If empty, any existing value will be removed.

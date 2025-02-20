@@ -5,7 +5,7 @@
  */
 
 import { ChannelReference, ChannelResourceIdentifier } from './channel.js'
-import { BaseResource, CreatedBy, LastModifiedBy } from './common.js'
+import { BaseResource, CreatedBy, IReference, IResourceIdentifier, LastModifiedBy } from './common.js'
 import { CustomFields, CustomFieldsDraft, FieldContainer, TypeResourceIdentifier } from './type.js'
 
 export interface InventoryEntry extends BaseResource {
@@ -101,7 +101,7 @@ export interface InventoryEntryDraft {
   /**
    *	User-defined unique identifier for the InventoryEntry.
    *
-   *	This field is optional for backwards compatibility reasons, but we strongly recommend setting it. Keys are mandatory for importing InventoryEntries with the [Import API](/../import-export/) and the [Merchant Center](/../merchant-center/import-data).
+   *	This field is optional for backwards compatibility reasons, but we strongly recommend setting it. Keys are mandatory for importing InventoryEntries with the [Import API](/../api/import-export/overview) and the [Merchant Center](/../merchant-center/import-data).
    *
    *
    */
@@ -141,7 +141,7 @@ export interface InventoryEntryDraft {
  *	[Reference](ctp:api:type:Reference) to an [InventoryEntry](ctp:api:type:InventoryEntry).
  *
  */
-export interface InventoryEntryReference {
+export interface InventoryEntryReference extends IReference {
   readonly typeId: 'inventory-entry'
   /**
    *	Unique identifier of the referenced [InventoryEntry](ctp:api:type:InventoryEntry).
@@ -160,7 +160,7 @@ export interface InventoryEntryReference {
  *	[ResourceIdentifier](ctp:api:type:ResourceIdentifier) to an [InventoryEntry](ctp:api:type:InventoryEntry). Either `id` or `key` is required. If both are set, an [InvalidJsonInput](/../api/errors#invalidjsoninput) error is returned.
  *
  */
-export interface InventoryEntryResourceIdentifier {
+export interface InventoryEntryResourceIdentifier extends IResourceIdentifier {
   readonly typeId: 'inventory-entry'
   /**
    *	Unique identifier of the referenced [InventoryEntry](ctp:api:type:InventoryEntry). Required if `key` is absent.
@@ -200,6 +200,12 @@ export type InventoryEntryUpdateAction =
   | InventoryEntrySetKeyAction
   | InventoryEntrySetRestockableInDaysAction
   | InventoryEntrySetSupplyChannelAction
+export interface IInventoryEntryUpdateAction {
+  /**
+   *
+   */
+  readonly action: string
+}
 export interface InventoryPagedQueryResponse {
   /**
    *	Number of [results requested](/../api/general-concepts#limit).
@@ -239,7 +245,7 @@ export interface InventoryPagedQueryResponse {
 /**
  *	Updates `availableQuantity` based on the new `quantityOnStock` and amount of active reservations.
  */
-export interface InventoryEntryAddQuantityAction {
+export interface InventoryEntryAddQuantityAction extends IInventoryEntryUpdateAction {
   readonly action: 'addQuantity'
   /**
    *	Value to add to `quantityOnStock`.
@@ -250,7 +256,7 @@ export interface InventoryEntryAddQuantityAction {
 /**
  *	Updates `availableQuantity` based on the new `quantityOnStock` and amount of active reservations.
  */
-export interface InventoryEntryChangeQuantityAction {
+export interface InventoryEntryChangeQuantityAction extends IInventoryEntryUpdateAction {
   readonly action: 'changeQuantity'
   /**
    *	Value to set for `quantityOnStock`.
@@ -261,7 +267,7 @@ export interface InventoryEntryChangeQuantityAction {
 /**
  *	Updates `availableQuantity` based on the new `quantityOnStock` and amount of active reservations.
  */
-export interface InventoryEntryRemoveQuantityAction {
+export interface InventoryEntryRemoveQuantityAction extends IInventoryEntryUpdateAction {
   readonly action: 'removeQuantity'
   /**
    *	Value to remove from `quantityOnStock`.
@@ -269,7 +275,7 @@ export interface InventoryEntryRemoveQuantityAction {
    */
   readonly quantity: number
 }
-export interface InventoryEntrySetCustomFieldAction {
+export interface InventoryEntrySetCustomFieldAction extends IInventoryEntryUpdateAction {
   readonly action: 'setCustomField'
   /**
    *	Name of the [Custom Field](/../api/projects/custom-fields).
@@ -286,7 +292,7 @@ export interface InventoryEntrySetCustomFieldAction {
    */
   readonly value?: any
 }
-export interface InventoryEntrySetCustomTypeAction {
+export interface InventoryEntrySetCustomTypeAction extends IInventoryEntryUpdateAction {
   readonly action: 'setCustomType'
   /**
    *	Defines the [Type](ctp:api:type:Type) that extends the InventoryEntry with [Custom Fields](/../api/projects/custom-fields).
@@ -302,7 +308,7 @@ export interface InventoryEntrySetCustomTypeAction {
    */
   readonly fields?: FieldContainer
 }
-export interface InventoryEntrySetExpectedDeliveryAction {
+export interface InventoryEntrySetExpectedDeliveryAction extends IInventoryEntryUpdateAction {
   readonly action: 'setExpectedDelivery'
   /**
    *	Value to set. If empty, any existing value will be removed.
@@ -310,7 +316,7 @@ export interface InventoryEntrySetExpectedDeliveryAction {
    */
   readonly expectedDelivery?: string
 }
-export interface InventoryEntrySetKeyAction {
+export interface InventoryEntrySetKeyAction extends IInventoryEntryUpdateAction {
   readonly action: 'setKey'
   /**
    *	Value to set. If empty, any existing value will be removed.
@@ -319,7 +325,7 @@ export interface InventoryEntrySetKeyAction {
    */
   readonly key?: string
 }
-export interface InventoryEntrySetRestockableInDaysAction {
+export interface InventoryEntrySetRestockableInDaysAction extends IInventoryEntryUpdateAction {
   readonly action: 'setRestockableInDays'
   /**
    *	Value to set. If empty, any existing value will be removed.
@@ -330,7 +336,7 @@ export interface InventoryEntrySetRestockableInDaysAction {
 /**
  *	If an entry with the same `sku` and `supplyChannel` already exists, an [DuplicateField](ctp:api:type:DuplicateFieldError) error is returned.
  */
-export interface InventoryEntrySetSupplyChannelAction {
+export interface InventoryEntrySetSupplyChannelAction extends IInventoryEntryUpdateAction {
   readonly action: 'setSupplyChannel'
   /**
    *	Value to set. If empty, any existing value will be removed.
