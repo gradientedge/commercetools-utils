@@ -6,7 +6,7 @@
 
 import { BusinessUnitKeyReference } from './business-unit.js'
 import { CartReference } from './cart.js'
-import { BaseResource, CreatedBy, LastModifiedBy } from './common.js'
+import { BaseResource, CreatedBy, IReference, IResourceIdentifier, LastModifiedBy } from './common.js'
 import { CustomerReference } from './customer.js'
 import { QuoteRequestReference, QuoteRequestResourceIdentifier } from './quote-request.js'
 import { StateReference, StateResourceIdentifier } from './state.js'
@@ -80,7 +80,7 @@ export interface StagedQuote extends BaseResource {
    */
   readonly quotationCart: CartReference
   /**
-   *	Expiration date for the Quote.
+   *	Expiration date for the Quote. Once a Quote expires, it cannot be ordered.
    *
    *
    */
@@ -209,7 +209,7 @@ export interface StagedQuotePagedQueryResponse {
  *	[Reference](ctp:api:type:Reference) to a [StagedQuote](ctp:api:type:StagedQuote).
  *
  */
-export interface StagedQuoteReference {
+export interface StagedQuoteReference extends IReference {
   readonly typeId: 'staged-quote'
   /**
    *	Unique ID of the referenced resource.
@@ -229,7 +229,7 @@ export interface StagedQuoteReference {
  *	[ResourceIdentifier](ctp:api:type:ResourceIdentifier) to a [StagedQuote](ctp:api:type:StagedQuote).
  *
  */
-export interface StagedQuoteResourceIdentifier {
+export interface StagedQuoteResourceIdentifier extends IResourceIdentifier {
   readonly typeId: 'staged-quote'
   /**
    *	Unique identifier of the referenced resource. Required if `key` is absent.
@@ -248,6 +248,12 @@ export interface StagedQuoteResourceIdentifier {
  *	Predefined states tracking the status of the Staged Quote.
  *
  */
+export enum StagedQuoteStateValues {
+  Closed = 'Closed',
+  InProgress = 'InProgress',
+  Sent = 'Sent',
+}
+
 export type StagedQuoteState = 'Closed' | 'InProgress' | 'Sent' | string
 export interface StagedQuoteUpdate {
   /**
@@ -271,7 +277,13 @@ export type StagedQuoteUpdateAction =
   | StagedQuoteSetSellerCommentAction
   | StagedQuoteSetValidToAction
   | StagedQuoteTransitionStateAction
-export interface StagedQuoteChangeStagedQuoteStateAction {
+export interface IStagedQuoteUpdateAction {
+  /**
+   *
+   */
+  readonly action: string
+}
+export interface StagedQuoteChangeStagedQuoteStateAction extends IStagedQuoteUpdateAction {
   readonly action: 'changeStagedQuoteState'
   /**
    *	New state to be set for the Staged Quote.
@@ -279,7 +291,7 @@ export interface StagedQuoteChangeStagedQuoteStateAction {
    */
   readonly stagedQuoteState: StagedQuoteState
 }
-export interface StagedQuoteSetCustomFieldAction {
+export interface StagedQuoteSetCustomFieldAction extends IStagedQuoteUpdateAction {
   readonly action: 'setCustomField'
   /**
    *	Name of the [Custom Field](/../api/projects/custom-fields).
@@ -296,7 +308,7 @@ export interface StagedQuoteSetCustomFieldAction {
    */
   readonly value?: any
 }
-export interface StagedQuoteSetCustomTypeAction {
+export interface StagedQuoteSetCustomTypeAction extends IStagedQuoteUpdateAction {
   readonly action: 'setCustomType'
   /**
    *	Defines the [Type](ctp:api:type:Type) that extends the StagedQuote with [Custom Fields](/../api/projects/custom-fields).
@@ -312,7 +324,7 @@ export interface StagedQuoteSetCustomTypeAction {
    */
   readonly fields?: FieldContainer
 }
-export interface StagedQuoteSetSellerCommentAction {
+export interface StagedQuoteSetSellerCommentAction extends IStagedQuoteUpdateAction {
   readonly action: 'setSellerComment'
   /**
    *	If `sellerComment` is absent or `null`, this field will be removed if it exists.
@@ -321,7 +333,7 @@ export interface StagedQuoteSetSellerCommentAction {
    */
   readonly sellerComment?: string
 }
-export interface StagedQuoteSetValidToAction {
+export interface StagedQuoteSetValidToAction extends IStagedQuoteUpdateAction {
   readonly action: 'setValidTo'
   /**
    *	If `validTo` is absent or `null`, this field will be removed if it exists.
@@ -334,7 +346,7 @@ export interface StagedQuoteSetValidToAction {
  *	If the existing [State](ctp:api:type:State) has set `transitions`, there must be a direct transition to the new State. If `transitions` is not set, no validation is performed. This update action produces the [Staged Quote State Transition](ctp:api:type:StagedQuoteStateTransitionMessage) Message.
  *
  */
-export interface StagedQuoteTransitionStateAction {
+export interface StagedQuoteTransitionStateAction extends IStagedQuoteUpdateAction {
   readonly action: 'transitionState'
   /**
    *	Value to set.

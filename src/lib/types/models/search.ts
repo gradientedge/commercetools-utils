@@ -5,8 +5,33 @@
  */
 
 /**
- *	Possible values for the `fieldType` property on [query expressions](/../api/search-query-language#query-expressions) indicating the data type of the `field`.
+ *	Possible values for the `fieldType` property on [simple expressions](/../api/search-query-language#simple-expressions) indicating the data type of the `field`.
  */
+export enum SearchFieldTypeValues {
+  Boolean = 'boolean',
+  Date = 'date',
+  Datetime = 'datetime',
+  Enum = 'enum',
+  Lenum = 'lenum',
+  Ltext = 'ltext',
+  Money = 'money',
+  Number = 'number',
+  Reference = 'reference',
+  SetBoolean = 'set_boolean',
+  SetDate = 'set_date',
+  SetDatetime = 'set_datetime',
+  SetEnum = 'set_enum',
+  SetLenum = 'set_lenum',
+  SetLtext = 'set_ltext',
+  SetMoney = 'set_money',
+  SetNumber = 'set_number',
+  SetReference = 'set_reference',
+  SetText = 'set_text',
+  SetTime = 'set_time',
+  Text = 'text',
+  Time = 'time',
+}
+
 export type SearchFieldType =
   | 'boolean'
   | 'date'
@@ -31,6 +56,11 @@ export type SearchFieldType =
   | 'text'
   | 'time'
   | string
+export enum SearchMatchTypeValues {
+  All = 'all',
+  Any = 'any',
+}
+
 export type SearchMatchType = 'all' | 'any' | string
 export interface SearchMatchingVariant {
   /**
@@ -107,7 +137,7 @@ export interface SearchExactExpression extends SearchQueryExpression {
   /**
    *
    */
-  readonly exact: SearchAnyValue
+  readonly exact: SearchExactValue
 }
 export interface SearchExistsExpression extends SearchQueryExpression {
   /**
@@ -155,7 +185,7 @@ export interface SearchQueryExpressionValue {
    */
   readonly boost?: number
   /**
-   *	Possible values for the `fieldType` property on [query expressions](/../api/search-query-language#query-expressions) indicating the data type of the `field`.
+   *	Possible values for the `fieldType` property on [simple expressions](/../api/search-query-language#simple-expressions) indicating the data type of the `field`.
    *
    */
   readonly fieldType?: SearchFieldType
@@ -165,6 +195,7 @@ export type _SearchQueryExpressionValue =
   | SearchAnyValue
   | SearchDateRangeValue
   | SearchDateTimeRangeValue
+  | SearchExactValue
   | SearchExistsValue
   | SearchFullTextPrefixValue
   | SearchFullTextValue
@@ -222,6 +253,26 @@ export interface SearchDateTimeRangeValue extends SearchQueryExpressionValue {
    *
    */
   readonly lt?: string
+}
+export interface SearchExactValue extends SearchQueryExpressionValue {
+  /**
+   *
+   */
+  readonly value?: any
+  /**
+   *
+   */
+  readonly values?: any[]
+  /**
+   *	String value specifying linguistic and regional preferences using the [IETF language tag format](https://en.wikipedia.org/wiki/IETF_language_tag), as described in [BCP 47](https://www.rfc-editor.org/rfc/bcp/bcp47.txt). The format combines language, script, and region using hyphen-separated subtags. For example: `en`, `en-US`, `zh-Hans-SG`.
+   *
+   *
+   */
+  readonly language?: string
+  /**
+   *
+   */
+  readonly caseInsensitive?: boolean
 }
 export interface SearchExistsValue extends SearchQueryExpressionValue {
   /**
@@ -304,7 +355,19 @@ export interface SearchNumberRangeValue extends SearchQueryExpressionValue {
  *	The sort mode determines whether the minimum or maximum value, or a calculated statistical value should be used as sorting value.
  *
  */
+export enum SearchSortModeValues {
+  Avg = 'avg',
+  Max = 'max',
+  Min = 'min',
+  Sum = 'sum',
+}
+
 export type SearchSortMode = 'avg' | 'max' | 'min' | 'sum' | string
+export enum SearchSortOrderValues {
+  Asc = 'asc',
+  Desc = 'desc',
+}
+
 export type SearchSortOrder = 'asc' | 'desc' | string
 /**
  *	Sorting parameters provided with a Search request.

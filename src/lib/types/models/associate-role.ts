@@ -4,7 +4,7 @@
  * For more information about the commercetools platform APIs, visit https://docs.commercetools.com/.
  */
 
-import { BaseResource, CreatedBy, LastModifiedBy } from './common.js'
+import { BaseResource, CreatedBy, IKeyReference, IReference, IResourceIdentifier, LastModifiedBy } from './common.js'
 import { CustomFields, CustomFieldsDraft, FieldContainer, TypeResourceIdentifier } from './type.js'
 
 export interface AssociateRole extends BaseResource {
@@ -111,7 +111,7 @@ export interface AssociateRoleDraft {
  *	[KeyReference](ctp:api:type:KeyReference) to an [AssociateRole](ctp:api:type:AssociateRole).
  *
  */
-export interface AssociateRoleKeyReference {
+export interface AssociateRoleKeyReference extends IKeyReference {
   readonly typeId: 'associate-role'
   /**
    *	Unique and immutable key of the referenced [AssociateRole](ctp:api:type:AssociateRole).
@@ -164,7 +164,7 @@ export interface AssociateRolePagedQueryResponse {
  *	[Reference](ctp:api:type:Reference) to an [AssociateRole](ctp:api:type:AssociateRole).
  *
  */
-export interface AssociateRoleReference {
+export interface AssociateRoleReference extends IReference {
   readonly typeId: 'associate-role'
   /**
    *	Unique identifier of the referenced [AssociateRole](ctp:api:type:AssociateRole).
@@ -183,7 +183,7 @@ export interface AssociateRoleReference {
  *	[ResourceIdentifier](ctp:api:type:TypeResourceIdentifier) of an [AssociateRole](ctp:api:type:AssociateRole). Either `id` or `key` is required. If both are set, an [InvalidJsonInput](/../api/errors#invalidjsoninput) error is returned.
  *
  */
-export interface AssociateRoleResourceIdentifier {
+export interface AssociateRoleResourceIdentifier extends IResourceIdentifier {
   readonly typeId: 'associate-role'
   /**
    *	Unique identifier of the referenced [AssociateRole](ctp:api:type:AssociateRole). Required if `key` is absent.
@@ -221,10 +221,58 @@ export type AssociateRoleUpdateAction =
   | AssociateRoleSetCustomTypeAction
   | AssociateRoleSetNameAction
   | AssociateRoleSetPermissionsAction
+export interface IAssociateRoleUpdateAction {
+  /**
+   *
+   */
+  readonly action: string
+}
 /**
  *	Permissions grant granular access to [Approval Rules](ctp:api:type:ApprovalRule), [Approval Flows](ctp:api:type:ApprovalFlow), [Business Units](ctp:api:type:BusinessUnit), [Carts](ctp:api:type:Cart), [Orders](ctp:api:type:Order), [Quotes](ctp:api:type:Quote), and [Quote Requests](ctp:api:type:QuoteRequest).
  *
  */
+export enum PermissionValues {
+  AcceptMyQuotes = 'AcceptMyQuotes',
+  AcceptOthersQuotes = 'AcceptOthersQuotes',
+  AddChildUnits = 'AddChildUnits',
+  CreateApprovalRules = 'CreateApprovalRules',
+  CreateMyCarts = 'CreateMyCarts',
+  CreateMyOrdersFromMyCarts = 'CreateMyOrdersFromMyCarts',
+  CreateMyOrdersFromMyQuotes = 'CreateMyOrdersFromMyQuotes',
+  CreateMyQuoteRequestsFromMyCarts = 'CreateMyQuoteRequestsFromMyCarts',
+  CreateOrdersFromOthersCarts = 'CreateOrdersFromOthersCarts',
+  CreateOrdersFromOthersQuotes = 'CreateOrdersFromOthersQuotes',
+  CreateOthersCarts = 'CreateOthersCarts',
+  CreateQuoteRequestsFromOthersCarts = 'CreateQuoteRequestsFromOthersCarts',
+  DeclineMyQuotes = 'DeclineMyQuotes',
+  DeclineOthersQuotes = 'DeclineOthersQuotes',
+  DeleteMyCarts = 'DeleteMyCarts',
+  DeleteOthersCarts = 'DeleteOthersCarts',
+  ReassignMyQuotes = 'ReassignMyQuotes',
+  ReassignOthersQuotes = 'ReassignOthersQuotes',
+  RenegotiateMyQuotes = 'RenegotiateMyQuotes',
+  RenegotiateOthersQuotes = 'RenegotiateOthersQuotes',
+  UpdateApprovalFlows = 'UpdateApprovalFlows',
+  UpdateApprovalRules = 'UpdateApprovalRules',
+  UpdateAssociates = 'UpdateAssociates',
+  UpdateBusinessUnitDetails = 'UpdateBusinessUnitDetails',
+  UpdateMyCarts = 'UpdateMyCarts',
+  UpdateMyOrders = 'UpdateMyOrders',
+  UpdateMyQuoteRequests = 'UpdateMyQuoteRequests',
+  UpdateOthersCarts = 'UpdateOthersCarts',
+  UpdateOthersOrders = 'UpdateOthersOrders',
+  UpdateOthersQuoteRequests = 'UpdateOthersQuoteRequests',
+  UpdateParentUnit = 'UpdateParentUnit',
+  ViewMyCarts = 'ViewMyCarts',
+  ViewMyOrders = 'ViewMyOrders',
+  ViewMyQuoteRequests = 'ViewMyQuoteRequests',
+  ViewMyQuotes = 'ViewMyQuotes',
+  ViewOthersCarts = 'ViewOthersCarts',
+  ViewOthersOrders = 'ViewOthersOrders',
+  ViewOthersQuoteRequests = 'ViewOthersQuoteRequests',
+  ViewOthersQuotes = 'ViewOthersQuotes',
+}
+
 export type Permission =
   | 'AcceptMyQuotes'
   | 'AcceptOthersQuotes'
@@ -270,7 +318,7 @@ export type Permission =
  *	Adding a Permission to an [AssociateRole](ctp:api:type:AssociateRole) generates an [AssociateRolePermissionAdded](ctp:api:type:AssociateRolePermissionAddedMessage) Message.
  *
  */
-export interface AssociateRoleAddPermissionAction {
+export interface AssociateRoleAddPermissionAction extends IAssociateRoleUpdateAction {
   readonly action: 'addPermission'
   /**
    *	Permission to be added to the AssociateRole.
@@ -283,7 +331,7 @@ export interface AssociateRoleAddPermissionAction {
  *	Changing the `buyerAssignable` value of an AssociateRole generates an [AssociateRoleBuyerAssignableChanged](ctp:api:type:AssociateRoleBuyerAssignableChangedMessage) Message.
  *
  */
-export interface AssociateRoleChangeBuyerAssignableAction {
+export interface AssociateRoleChangeBuyerAssignableAction extends IAssociateRoleUpdateAction {
   readonly action: 'changeBuyerAssignable'
   /**
    *	The new value of the `buyerAssignable` field of the AssociateRole.
@@ -296,7 +344,7 @@ export interface AssociateRoleChangeBuyerAssignableAction {
  *	Removing a Permission from an [AssociateRole](ctp:api:type:AssociateRole) generates an [AssociateRolePermissionRemoved](ctp:api:type:AssociateRolePermissionRemovedMessage) Message.
  *
  */
-export interface AssociateRoleRemovePermissionAction {
+export interface AssociateRoleRemovePermissionAction extends IAssociateRoleUpdateAction {
   readonly action: 'removePermission'
   /**
    *	Permission to be removed from the AssociateRole.
@@ -305,7 +353,7 @@ export interface AssociateRoleRemovePermissionAction {
    */
   readonly permission: Permission
 }
-export interface AssociateRoleSetCustomFieldAction {
+export interface AssociateRoleSetCustomFieldAction extends IAssociateRoleUpdateAction {
   readonly action: 'setCustomField'
   /**
    *	Name of the [Custom Field](ctp:api:type:CustomFields).
@@ -322,7 +370,7 @@ export interface AssociateRoleSetCustomFieldAction {
    */
   readonly value?: any
 }
-export interface AssociateRoleSetCustomTypeAction {
+export interface AssociateRoleSetCustomTypeAction extends IAssociateRoleUpdateAction {
   readonly action: 'setCustomType'
   /**
    *	Defines the [Type](ctp:api:type:Type) that extends the AssociateRole with [Custom Fields](ctp:api:type:CustomFields).
@@ -342,7 +390,7 @@ export interface AssociateRoleSetCustomTypeAction {
  *	Updating the name of an [AssociateRole](ctp:api:type:AssociateRole) generates an [AssociateRoleNameSet](ctp:api:type:AssociateRoleNameSetMessage) Message.
  *
  */
-export interface AssociateRoleSetNameAction {
+export interface AssociateRoleSetNameAction extends IAssociateRoleUpdateAction {
   readonly action: 'setName'
   /**
    *	New name to set.
@@ -356,7 +404,7 @@ export interface AssociateRoleSetNameAction {
  *	Updating the Permissions on an [AssociateRole](ctp:api:type:AssociateRole) generates an [AssociateRolePermissionsSet](ctp:api:type:AssociateRolePermissionsSetMessage) Message.
  *
  */
-export interface AssociateRoleSetPermissionsAction {
+export interface AssociateRoleSetPermissionsAction extends IAssociateRoleUpdateAction {
   readonly action: 'setPermissions'
   /**
    *	Overrides the current list of Permissions for the AssociateRole.

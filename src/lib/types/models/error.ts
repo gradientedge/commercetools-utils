@@ -110,13 +110,28 @@ export type ErrorObject =
   | ShippingMethodDoesNotMatchCartError
   | StoreCartDiscountsLimitReachedError
   | SyntaxErrorError
+export interface IErrorObject {
+  [key: string]: any
+  /**
+   *	Error identifier.
+   *
+   *
+   */
+  readonly code: string
+  /**
+   *	Plain text description of the cause of the error.
+   *
+   *
+   */
+  readonly message: string
+}
 /**
  *	Returned when the anonymous ID is being used by another resource.
  *
  *	The client application should choose another anonymous ID or retrieve an automatically generated one.
  *
  */
-export interface AnonymousIdAlreadyInUseError {
+export interface AnonymousIdAlreadyInUseError extends IErrorObject {
   readonly code: 'AnonymousIdAlreadyInUse'
   [key: string]: any
   /**
@@ -130,7 +145,7 @@ export interface AnonymousIdAlreadyInUseError {
  *	Returned when an [Associate](/projects/business-units#associate) is missing a [Permission](/projects/associate-roles#ctp:api:type:Permission) on a [B2B resource](/associates-overview#b2b-resources).
  *
  */
-export interface AssociateMissingPermissionError {
+export interface AssociateMissingPermissionError extends IErrorObject {
   readonly code: 'AssociateMissingPermission'
   [key: string]: any
   /**
@@ -172,7 +187,7 @@ export interface AssociateMissingPermissionError {
  *	The error is returned as a failed response to the [Create ProductType](ctp:api:endpoint:/{projectKey}/product-types:POST) request or [Change AttributeDefinition Name](ctp:api:type:ProductTypeChangeAttributeNameAction) update action.
  *
  */
-export interface AttributeDefinitionAlreadyExistsError {
+export interface AttributeDefinitionAlreadyExistsError extends IErrorObject {
   readonly code: 'AttributeDefinitionAlreadyExists'
   [key: string]: any
   /**
@@ -206,7 +221,7 @@ export interface AttributeDefinitionAlreadyExistsError {
  *	The error is returned as a failed response to the [Create ProductType](ctp:api:endpoint:/{projectKey}/product-types:POST) request.
  *
  */
-export interface AttributeDefinitionTypeConflictError {
+export interface AttributeDefinitionTypeConflictError extends IErrorObject {
   readonly code: 'AttributeDefinitionTypeConflict'
   [key: string]: any
   /**
@@ -240,7 +255,7 @@ export interface AttributeDefinitionTypeConflictError {
  *	The error is returned as a failed response to the [Change AttributeDefinition Name](ctp:api:type:ProductTypeChangeAttributeNameAction) update action.
  *
  */
-export interface AttributeNameDoesNotExistError {
+export interface AttributeNameDoesNotExistError extends IErrorObject {
   readonly code: 'AttributeNameDoesNotExist'
   [key: string]: any
   /**
@@ -262,7 +277,7 @@ export interface AttributeNameDoesNotExistError {
  *	The client application should retry the request with exponential backoff up to a point where further delay is unacceptable.
  *
  */
-export interface BadGatewayError {
+export interface BadGatewayError extends IErrorObject {
   readonly code: 'BadGateway'
   [key: string]: any
   /**
@@ -276,7 +291,7 @@ export interface BadGatewayError {
  *	The client application should resolve the conflict (with or without involving the end user) before retrying the request.
  *
  */
-export interface ConcurrentModificationError {
+export interface ConcurrentModificationError extends IErrorObject {
   readonly code: 'ConcurrentModification'
   [key: string]: any
   /**
@@ -296,7 +311,7 @@ export interface ConcurrentModificationError {
  *	Returned when the request results in too much data being returned from the API. Adjust the request query to reduce the size of the data returned.
  *
  */
-export interface ContentTooLargeError {
+export interface ContentTooLargeError extends IErrorObject {
   readonly code: 'ContentTooLarge'
   [key: string]: any
   /**
@@ -319,7 +334,7 @@ export interface ContentTooLargeError {
  *	- [Set Country](ctp:api:type:StagedOrderSetCountryAction) update action on Order Edits.
  *
  */
-export interface CountryNotConfiguredInStoreError {
+export interface CountryNotConfiguredInStoreError extends IErrorObject {
   readonly code: 'CountryNotConfiguredInStore'
   [key: string]: any
   /**
@@ -355,7 +370,7 @@ export interface CountryNotConfiguredInStoreError {
  *	- [Create Order from Cart in BusinessUnit](ctp:api:endpoint:/{projectKey}/as-associate/{associateId}/in-business-unit/key={businessUnitKey}/orders:POST) request on Associate Orders.
  *
  */
-export interface DiscountCodeNonApplicableError {
+export interface DiscountCodeNonApplicableError extends IErrorObject {
   readonly code: 'DiscountCodeNonApplicable'
   [key: string]: any
   /**
@@ -405,7 +420,7 @@ export interface DiscountCodeNonApplicableError {
  *	Returned when the `Unique` [AttributeConstraint](ctp:api:type:AttributeConstraintEnum) criteria are not met during an [Update Product](/../api/projects/products#update-product) request.
  *
  */
-export interface DuplicateAttributeValueError {
+export interface DuplicateAttributeValueError extends IErrorObject {
   readonly code: 'DuplicateAttributeValue'
   [key: string]: any
   /**
@@ -425,7 +440,7 @@ export interface DuplicateAttributeValueError {
  *	Returned when the `CombinationUnique` [AttributeConstraint](ctp:api:type:AttributeConstraintEnum) criteria are not met during an [Update Product](/../api/projects/products#update-product) request.
  *
  */
-export interface DuplicateAttributeValuesError {
+export interface DuplicateAttributeValuesError extends IErrorObject {
   readonly code: 'DuplicateAttributeValues'
   [key: string]: any
   /**
@@ -445,7 +460,7 @@ export interface DuplicateAttributeValuesError {
  *	Returned when an [AttributeEnumType](ctp:api:type:AttributeEnumType) or [AttributeLocalizedEnumType](ctp:api:type:AttributeLocalizedEnumType) contains duplicate keys.
  *
  */
-export interface DuplicateEnumValuesError {
+export interface DuplicateEnumValuesError extends IErrorObject {
   readonly code: 'DuplicateEnumValues'
   [key: string]: any
   /**
@@ -465,7 +480,7 @@ export interface DuplicateEnumValuesError {
  *	Returned when a field value conflicts with an existing value causing a duplicate.
  *
  */
-export interface DuplicateFieldError {
+export interface DuplicateFieldError extends IErrorObject {
   readonly code: 'DuplicateField'
   [key: string]: any
   /**
@@ -491,7 +506,7 @@ export interface DuplicateFieldError {
  *	Returned when a field value conflicts with an existing value stored in a particular resource causing a duplicate.
  *
  */
-export interface DuplicateFieldWithConflictingResourceError {
+export interface DuplicateFieldWithConflictingResourceError extends IErrorObject {
   readonly code: 'DuplicateFieldWithConflictingResource'
   [key: string]: any
   /**
@@ -525,7 +540,7 @@ export interface DuplicateFieldWithConflictingResourceError {
  *	Keys of Embedded Prices must be unique per ProductVariant.
  *
  */
-export interface DuplicatePriceKeyError {
+export interface DuplicatePriceKeyError extends IErrorObject {
   readonly code: 'DuplicatePriceKey'
   [key: string]: any
   /**
@@ -547,7 +562,7 @@ export interface DuplicatePriceKeyError {
  *	Every Price of a Product Variant must have a distinct combination of currency, Customer Group, country, and Channel that constitute the scope of a Price.
  *
  */
-export interface DuplicatePriceScopeError {
+export interface DuplicatePriceScopeError extends IErrorObject {
   readonly code: 'DuplicatePriceScope'
   [key: string]: any
   /**
@@ -570,7 +585,7 @@ export interface DuplicatePriceScopeError {
  *	The error is returned as a failed response to the [Create StandalonePrice](ctp:api:endpoint:/{projectKey}/standalone-prices:POST) request.
  *
  */
-export interface DuplicateStandalonePriceScopeError {
+export interface DuplicateStandalonePriceScopeError extends IErrorObject {
   readonly code: 'DuplicateStandalonePriceScope'
   [key: string]: any
   /**
@@ -632,7 +647,7 @@ export interface DuplicateStandalonePriceScopeError {
  *	Returned when a [Product Variant](ctp:api:type:ProductVariant) value conflicts with an existing one during an [Update Product](/../api/projects/products#update-product) request.
  *
  */
-export interface DuplicateVariantValuesError {
+export interface DuplicateVariantValuesError extends IErrorObject {
   readonly code: 'DuplicateVariantValues'
   [key: string]: any
   /**
@@ -654,7 +669,7 @@ export interface DuplicateVariantValuesError {
  *	The error is returned as a failed response to the [Get Shipping Methods for an OrderEdit](ctp:api:endpoint:/{projectKey}/shipping-methods/matching-orderedit:GET) request.
  *
  */
-export interface EditPreviewFailedError {
+export interface EditPreviewFailedError extends IErrorObject {
   readonly code: 'EditPreviewFailed'
   [key: string]: any
   /**
@@ -674,7 +689,7 @@ export interface EditPreviewFailedError {
  *	Returned when an [AttributeEnumType](ctp:api:type:AttributeEnumType) or [AttributeLocalizedEnumType](ctp:api:type:AttributeLocalizedEnumType) contains a key that already exists.
  *
  */
-export interface EnumKeyAlreadyExistsError {
+export interface EnumKeyAlreadyExistsError extends IErrorObject {
   readonly code: 'EnumKeyAlreadyExists'
   [key: string]: any
   /**
@@ -702,7 +717,7 @@ export interface EnumKeyAlreadyExistsError {
  *	The error is returned as a failed response to the [Change the key of an EnumValue](ctp:api:type:ProductTypeChangeEnumKeyAction) update action.
  *
  */
-export interface EnumKeyDoesNotExistError {
+export interface EnumKeyDoesNotExistError extends IErrorObject {
   readonly code: 'EnumKeyDoesNotExist'
   [key: string]: any
   /**
@@ -730,7 +745,7 @@ export interface EnumKeyDoesNotExistError {
  *	The error is returned as a failed response to the [Remove EnumValues from AttributeDefinition](ctp:api:type:ProductTypeRemoveEnumValuesAction) update action.
  *
  */
-export interface EnumValueIsUsedError {
+export interface EnumValueIsUsedError extends IErrorObject {
   readonly code: 'EnumValueIsUsed'
   [key: string]: any
   /**
@@ -746,7 +761,7 @@ export interface EnumValueIsUsedError {
  *	The error is returned as a failed response to the [Change the order of EnumValues](ctp:api:type:ProductTypeChangePlainEnumValueOrderAction) and [Change the order of LocalizedEnumValues](ctp:api:type:ProductTypeChangeLocalizedEnumValueOrderAction) update actions.
  *
  */
-export interface EnumValuesMustMatchError {
+export interface EnumValuesMustMatchError extends IErrorObject {
   readonly code: 'EnumValuesMustMatch'
   [key: string]: any
   /**
@@ -810,7 +825,7 @@ export interface AuthErrorResponse extends ErrorResponse {
  *	Returned when the response from the API Extension could not be parsed successfully (such as a `500` HTTP status code, or an invalid JSON response).
  *
  */
-export interface ExtensionBadResponseError {
+export interface ExtensionBadResponseError extends IErrorObject {
   readonly code: 'ExtensionBadResponse'
   [key: string]: any
   /**
@@ -887,7 +902,7 @@ export interface ExtensionError {
  *	Returned when the API Extension does not respond within the [time limit](/../api/projects/api-extensions#time-limits), or could not be reached.
  *
  */
-export interface ExtensionNoResponseError {
+export interface ExtensionNoResponseError extends IErrorObject {
   readonly code: 'ExtensionNoResponse'
   [key: string]: any
   /**
@@ -913,7 +928,7 @@ export interface ExtensionNoResponseError {
  *	Returned when the predicate defined in the [ExtensionTrigger](ctp:api:type:ExtensionTrigger) could not be evaluated due to a missing field.
  *
  */
-export interface ExtensionPredicateEvaluationFailedError {
+export interface ExtensionPredicateEvaluationFailedError extends IErrorObject {
   readonly code: 'ExtensionPredicateEvaluationFailed'
   [key: string]: any
   /**
@@ -934,7 +949,7 @@ export interface ExtensionPredicateEvaluationFailedError {
  *	This would result in a [400 Bad Request](#400-bad-request) response if the same update action was sent from a regular client.
  *
  */
-export interface ExtensionUpdateActionsFailedError {
+export interface ExtensionUpdateActionsFailedError extends IErrorObject {
   readonly code: 'ExtensionUpdateActionsFailed'
   [key: string]: any
   /**
@@ -963,10 +978,10 @@ export interface ExtensionUpdateActionsFailedError {
   readonly extensionErrors: ExtensionError[]
 }
 /**
- *	Returned when an [external OAuth Introspection endpoint](/../api/authorization#requesting-an-access-token-using-an-external-oauth-server) does not return a response within the [time limit](/../api/authorization#time-limits), or the response isn't compliant with [RFC 7662](https://www.rfc-editor.org/rfc/rfc7662.html) (for example, an HTTP status code like `500`).
+ *	Returned when an [external OAuth Introspection endpoint](/../api/authorization#request-an-access-token-using-an-external-oauth-server) does not return a response within the [time limit](/../api/authorization#time-limits), or the response isn't compliant with [RFC 7662](https://www.rfc-editor.org/rfc/rfc7662.html) (for example, an HTTP status code like `500`).
  *
  */
-export interface ExternalOAuthFailedError {
+export interface ExternalOAuthFailedError extends IErrorObject {
   readonly code: 'ExternalOAuthFailed'
   [key: string]: any
   /**
@@ -980,7 +995,7 @@ export interface ExternalOAuthFailedError {
  *	Returned when the requested feature was removed.
  *
  */
-export interface FeatureRemovedError {
+export interface FeatureRemovedError extends IErrorObject {
   readonly code: 'FeatureRemoved'
   [key: string]: any
   /**
@@ -996,7 +1011,7 @@ export interface FeatureRemovedError {
  *	If you encounter this error, report it to the [Composable Commerce support team](https://support.commercetools.com).
  *
  */
-export interface GeneralError {
+export interface GeneralError extends IErrorObject {
   readonly code: 'General'
   [key: string]: any
   /**
@@ -1006,7 +1021,7 @@ export interface GeneralError {
    */
   readonly message: string
 }
-export interface InsufficientScopeError {
+export interface InsufficientScopeError extends IErrorObject {
   readonly code: 'insufficient_scope'
   [key: string]: any
   /**
@@ -1020,7 +1035,7 @@ export interface InsufficientScopeError {
  *	Returned when certain API-specific constraints were not met. For example, the specified [Discount Code](ctp:api:type:DiscountCode) was never applied and cannot be updated.
  *
  */
-export interface InternalConstraintViolatedError {
+export interface InternalConstraintViolatedError extends IErrorObject {
   readonly code: 'InternalConstraintViolated'
   [key: string]: any
   /**
@@ -1038,7 +1053,7 @@ export interface InternalConstraintViolatedError {
  *	- [Authenticate (sign in) Customer](ctp:api:endpoint:/{projectKey}/me/login:POST) and [Authenticate (sign in) Customer in Store](ctp:api:endpoint:/{projectKey}/in-store/key={storeKey}/me/login:POST) requests on My Customer Profile.
  *
  */
-export interface InvalidCredentialsError {
+export interface InvalidCredentialsError extends IErrorObject {
   readonly code: 'InvalidCredentials'
   [key: string]: any
   /**
@@ -1057,7 +1072,7 @@ export interface InvalidCredentialsError {
  *	- [Change Customer Password](ctp:api:endpoint:/{projectKey}/me/password:POST) and [Change Customer Password in a Store](ctp:api:endpoint:/{projectKey}/in-store/key={storeKey}/me/password:POST) requests on My Customer Profile.
  *
  */
-export interface InvalidCurrentPasswordError {
+export interface InvalidCurrentPasswordError extends IErrorObject {
   readonly code: 'InvalidCurrentPassword'
   [key: string]: any
   /**
@@ -1071,7 +1086,7 @@ export interface InvalidCurrentPasswordError {
  *	Returned when a field has an invalid value.
  *
  */
-export interface InvalidFieldError {
+export interface InvalidFieldError extends IErrorObject {
   readonly code: 'InvalidField'
   [key: string]: any
   /**
@@ -1103,7 +1118,7 @@ export interface InvalidFieldError {
  *	Returned when an invalid input has been sent.
  *
  */
-export interface InvalidInputError {
+export interface InvalidInputError extends IErrorObject {
   readonly code: 'InvalidInput'
   [key: string]: any
   /**
@@ -1129,7 +1144,7 @@ export interface InvalidInputError {
  *	- [Create Order from Cart in BusinessUnit](ctp:api:endpoint:/{projectKey}/as-associate/{associateId}/in-business-unit/key={businessUnitKey}/orders:POST) and [Create Order from Quote in BusinessUnit](ctp:api:endpoint:/{projectKey}/as-associate/{associateId}/in-business-unit/key={businessUnitKey}/orders/quotes:POST) requests on Associate Orders.
  *
  */
-export interface InvalidItemShippingDetailsError {
+export interface InvalidItemShippingDetailsError extends IErrorObject {
   readonly code: 'InvalidItemShippingDetails'
   [key: string]: any
   /**
@@ -1158,7 +1173,7 @@ export interface InvalidItemShippingDetailsError {
  *	The client application should validate the input according to the constraints described in the error message before sending the request.
  *
  */
-export interface InvalidJsonInputError {
+export interface InvalidJsonInputError extends IErrorObject {
   readonly code: 'InvalidJsonInput'
   [key: string]: any
   /**
@@ -1179,7 +1194,7 @@ export interface InvalidJsonInputError {
  *	The client application should validate the constraints described in the error message before sending the request.
  *
  */
-export interface InvalidOperationError {
+export interface InvalidOperationError extends IErrorObject {
   readonly code: 'InvalidOperation'
   [key: string]: any
   /**
@@ -1189,7 +1204,7 @@ export interface InvalidOperationError {
    */
   readonly message: string
 }
-export interface InvalidSubjectError {
+export interface InvalidSubjectError extends IErrorObject {
   readonly code: 'InvalidSubject'
   [key: string]: any
   /**
@@ -1199,7 +1214,7 @@ export interface InvalidSubjectError {
    */
   readonly message: string
 }
-export interface InvalidTokenError {
+export interface InvalidTokenError extends IErrorObject {
   readonly code: 'invalid_token'
   [key: string]: any
   /**
@@ -1215,7 +1230,7 @@ export interface InvalidTokenError {
  *	The error is returned as a failed response to the [Change Languages](ctp:api:type:ProjectChangeLanguagesAction) update action.
  *
  */
-export interface LanguageUsedInStoresError {
+export interface LanguageUsedInStoresError extends IErrorObject {
   readonly code: 'LanguageUsedInStores'
   [key: string]: any
   /**
@@ -1231,7 +1246,7 @@ export interface LanguageUsedInStoresError {
  *	To confirm if the operation was successful, repeat the request.
  *
  */
-export interface LockedFieldError {
+export interface LockedFieldError extends IErrorObject {
   readonly code: 'LockedField'
   [key: string]: any
   /**
@@ -1264,7 +1279,7 @@ export interface LockedFieldError {
  *	- [Create Order from Cart in BusinessUnit](ctp:api:endpoint:/{projectKey}/as-associate/{associateId}/in-business-unit/key={businessUnitKey}/orders:POST) request on Associate Orders.
  *
  */
-export interface MatchingPriceNotFoundError {
+export interface MatchingPriceNotFoundError extends IErrorObject {
   readonly code: 'MatchingPriceNotFound'
   [key: string]: any
   /**
@@ -1319,7 +1334,7 @@ export interface MatchingPriceNotFoundError {
  *	- [Change IsActive](ctp:api:type:CartDiscountChangeIsActiveAction) update action
  *
  */
-export interface MaxCartDiscountsReachedError {
+export interface MaxCartDiscountsReachedError extends IErrorObject {
   readonly code: 'MaxCartDiscountsReached'
   [key: string]: any
   /**
@@ -1335,7 +1350,7 @@ export interface MaxCartDiscountsReachedError {
  *	The limits must be adjusted for this resource before sending the request again.
  *
  */
-export interface MaxResourceLimitExceededError {
+export interface MaxResourceLimitExceededError extends IErrorObject {
   readonly code: 'MaxResourceLimitExceeded'
   [key: string]: any
   /**
@@ -1360,7 +1375,7 @@ export interface MaxResourceLimitExceededError {
  *	- [Add Store](ctp:api:type:CartDiscountAddStoreAction) and [Set Store](ctp:api:type:CartDiscountSetStoresAction) update actions
  *
  */
-export interface MaxStoreReferencesReachedError {
+export interface MaxStoreReferencesReachedError extends IErrorObject {
   readonly code: 'MaxStoreReferencesReached'
   [key: string]: any
   /**
@@ -1382,7 +1397,7 @@ export interface MaxStoreReferencesReachedError {
  *	- [Create StandalonePrice](ctp:api:endpoint:/{projectKey}/standalone-prices:POST) request.
  *
  */
-export interface MissingRoleOnChannelError {
+export interface MissingRoleOnChannelError extends IErrorObject {
   readonly code: 'MissingRoleOnChannel'
   [key: string]: any
   /**
@@ -1422,7 +1437,7 @@ export interface MissingRoleOnChannelError {
  *	- [Create Order from Cart in BusinessUnit](ctp:api:endpoint:/{projectKey}/as-associate/{associateId}/in-business-unit/key={businessUnitKey}/orders:POST) requests on Associate Orders.
  *
  */
-export interface MissingTaxRateForCountryError {
+export interface MissingTaxRateForCountryError extends IErrorObject {
   readonly code: 'MissingTaxRateForCountry'
   [key: string]: any
   /**
@@ -1455,7 +1470,7 @@ export interface MissingTaxRateForCountryError {
  *	See [Money usage](/types#usage) for more information.
  *
  */
-export interface MoneyOverflowError {
+export interface MoneyOverflowError extends IErrorObject {
   readonly code: 'MoneyOverflow'
   [key: string]: any
   /**
@@ -1471,7 +1486,7 @@ export interface MoneyOverflowError {
  *	The error is returned as a failed response to the [Get Matching ProductDiscount](ctp:api:endpoint:/{projectKey}/product-discounts/matching:POST) request.
  *
  */
-export interface NoMatchingProductDiscountFoundError {
+export interface NoMatchingProductDiscountFoundError extends IErrorObject {
   readonly code: 'NoMatchingProductDiscountFound'
   [key: string]: any
   /**
@@ -1482,14 +1497,16 @@ export interface NoMatchingProductDiscountFoundError {
   readonly message: string
 }
 /**
- *	Returned when the requested resource was not found.
+ *	Returned if the requested resource was not found or the Product Search index is [inactive](/../api/projects/product-search#activation-of-the-feature).
  *
  */
-export interface ObjectNotFoundError {
+export interface ObjectNotFoundError extends IErrorObject {
   readonly code: 'ObjectNotFound'
   [key: string]: any
   /**
-   *	`"A $resourceType with identifier $id was unexpectedly not found."`
+   *	`"A $resourceType with identifier $id was unexpectedly not found."` or
+   *
+   *	`"No index found for project"`
    *
    *
    */
@@ -1505,7 +1522,7 @@ export interface ObjectNotFoundError {
  *	- [Create Order from Cart in BusinessUnit](ctp:api:endpoint:/{projectKey}/as-associate/{associateId}/in-business-unit/key={businessUnitKey}/orders:POST) and [Create Order from Quote in BusinessUnit](ctp:api:endpoint:/{projectKey}/as-associate/{associateId}/in-business-unit/key={businessUnitKey}/orders/quotes:POST) requests on Associate Orders.
  *
  */
-export interface OutOfStockError {
+export interface OutOfStockError extends IErrorObject {
   readonly code: 'OutOfStock'
   [key: string]: any
   /**
@@ -1533,7 +1550,7 @@ export interface OutOfStockError {
  *	The client application should retry the request with exponential backoff up to a point where further delay is unacceptable.
  *
  */
-export interface OverCapacityError {
+export interface OverCapacityError extends IErrorObject {
   readonly code: 'OverCapacity'
   [key: string]: any
   /**
@@ -1549,7 +1566,7 @@ export interface OverCapacityError {
  *	The error is returned as a failed response to the [Create StandalonePrice](ctp:api:endpoint:/{projectKey}/standalone-prices:POST) request.
  *
  */
-export interface OverlappingStandalonePriceValidityError {
+export interface OverlappingStandalonePriceValidityError extends IErrorObject {
   readonly code: 'OverlappingStandalonePriceValidity'
   [key: string]: any
   /**
@@ -1626,7 +1643,7 @@ export interface OverlappingStandalonePriceValidityError {
  *	If the error persists, report it to the [Composable Commerce support team](https://support.commercetools.com).
  *
  */
-export interface PendingOperationError {
+export interface PendingOperationError extends IErrorObject {
   readonly code: 'PendingOperation'
   [key: string]: any
   /**
@@ -1642,12 +1659,12 @@ export interface PendingOperationError {
  *
  *	The error is also returned as a failed response to:
  *
- *	- [Create Order from Cart](ctp:api:endpoint:/{projectKey}/orders:POST), [Create Order in Store from Cart](ctp:api:endpoint:/{projectKey}/in-store/orders:POST), and [Create Order from Quote](ctp:api:endpoint:/{projectKey}/orders/quotes:POST) requests on Orders.
- *	- [Create Order from Cart](ctp:api:endpoint:/{projectKey}/me/orders:POST), [Create Order in Store from Cart](ctp:api:endpoint:/{projectKey}/in-store/me/orders:POST), and [Create Order from Quote](ctp:api:endpoint:/{projectKey}/me/orders/quotes:POST) requests on My Orders.
+ *	- [Create Order from Cart](ctp:api:endpoint:/{projectKey}/orders:POST) and [Create Order in Store from Cart](ctp:api:endpoint:/{projectKey}/in-store/orders:POST) requests on Orders.
+ *	- [Create Order from Cart](ctp:api:endpoint:/{projectKey}/me/orders:POST) and [Create Order in Store from Cart](ctp:api:endpoint:/{projectKey}/in-store/me/orders:POST) requests on My Orders.
  *	- [Create Order from Cart in BusinessUnit](ctp:api:endpoint:/{projectKey}/as-associate/{associateId}/in-business-unit/key={businessUnitKey}/orders:POST) request on Associate Orders.
  *
  */
-export interface PriceChangedError {
+export interface PriceChangedError extends IErrorObject {
   readonly code: 'PriceChanged'
   [key: string]: any
   /**
@@ -1674,7 +1691,7 @@ export interface PriceChangedError {
  *	The error is returned as a failed response either to the [Set Variant Selection](ctp:api:type:ProductSelectionSetVariantSelectionAction) or to the [Set Variant Exclusion](ctp:api:type:ProductSelectionSetVariantExclusionAction) update action.
  *
  */
-export interface ProductAssignmentMissingError {
+export interface ProductAssignmentMissingError extends IErrorObject {
   readonly code: 'ProductAssignmentMissing'
   [key: string]: any
   /**
@@ -1699,7 +1716,7 @@ export interface ProductAssignmentMissingError {
  *	The error is returned as a failed response either to the [Add Product](ctp:api:type:ProductSelectionAddProductAction) or to the [Exclude Product](ctp:api:type:ProductSelectionExcludeProductAction) update action.
  *
  */
-export interface ProductPresentWithDifferentVariantSelectionError {
+export interface ProductPresentWithDifferentVariantSelectionError extends IErrorObject {
   readonly code: 'ProductPresentWithDifferentVariantSelection'
   [key: string]: any
   /**
@@ -1727,7 +1744,7 @@ export interface ProductPresentWithDifferentVariantSelectionError {
  *	The error is returned as a failed response to the [Set Languages](ctp:api:type:StoreSetLanguagesAction) update action.
  *
  */
-export interface ProjectNotConfiguredForLanguagesError {
+export interface ProjectNotConfiguredForLanguagesError extends IErrorObject {
   readonly code: 'ProjectNotConfiguredForLanguages'
   [key: string]: any
   /**
@@ -1743,7 +1760,7 @@ export interface ProjectNotConfiguredForLanguagesError {
    */
   readonly languages?: string[]
 }
-export interface QueryComplexityLimitExceededError {
+export interface QueryComplexityLimitExceededError extends IErrorObject {
   readonly code: 'QueryComplexityLimitExceeded'
   [key: string]: any
   /**
@@ -1757,7 +1774,7 @@ export interface QueryComplexityLimitExceededError {
  *	If a query constantly times out, please check if it follows the [performance best practices](/../api/predicates/query#performance-considerations).
  *
  */
-export interface QueryTimedOutError {
+export interface QueryTimedOutError extends IErrorObject {
   readonly code: 'QueryTimedOut'
   [key: string]: any
   /**
@@ -1771,7 +1788,7 @@ export interface QueryTimedOutError {
  *	Returned when a resource cannot be deleted because it is being referenced by another resource.
  *
  */
-export interface ReferenceExistsError {
+export interface ReferenceExistsError extends IErrorObject {
   readonly code: 'ReferenceExists'
   [key: string]: any
   /**
@@ -1791,7 +1808,7 @@ export interface ReferenceExistsError {
  *	Returned when a resource referenced by a [Reference](ctp:api:type:Reference) or a [ResourceIdentifier](ctp:api:type:ResourceIdentifier) could not be found.
  *
  */
-export interface ReferencedResourceNotFoundError {
+export interface ReferencedResourceNotFoundError extends IErrorObject {
   readonly code: 'ReferencedResourceNotFound'
   [key: string]: any
   /**
@@ -1823,7 +1840,7 @@ export interface ReferencedResourceNotFoundError {
  *	Returned when a value is not defined for a required field.
  *
  */
-export interface RequiredFieldError {
+export interface RequiredFieldError extends IErrorObject {
   readonly code: 'RequiredField'
   [key: string]: any
   /**
@@ -1843,7 +1860,7 @@ export interface RequiredFieldError {
  *	Returned when the resource addressed by the request URL does not exist.
  *
  */
-export interface ResourceNotFoundError {
+export interface ResourceNotFoundError extends IErrorObject {
   readonly code: 'ResourceNotFound'
   [key: string]: any
   /**
@@ -1857,7 +1874,7 @@ export interface ResourceNotFoundError {
  *	Returned when the resource exceeds the maximum allowed size of 16 MB.
  *
  */
-export interface ResourceSizeLimitExceededError {
+export interface ResourceSizeLimitExceededError extends IErrorObject {
   readonly code: 'ResourceSizeLimitExceeded'
   [key: string]: any
   /**
@@ -1873,7 +1890,7 @@ export interface ResourceSizeLimitExceededError {
  *	To activate indexing, call [Change Product Search Indexing Enabled](ctp:api:type:ProjectChangeProductSearchIndexingEnabledAction) and set `enabled` to `true`.
  *
  */
-export interface SearchDeactivatedError {
+export interface SearchDeactivatedError extends IErrorObject {
   readonly code: 'SearchDeactivated'
   [key: string]: any
   /**
@@ -1887,7 +1904,7 @@ export interface SearchDeactivatedError {
  *	Returned when a search query could not be completed due to an unexpected failure.
  *
  */
-export interface SearchExecutionFailureError {
+export interface SearchExecutionFailureError extends IErrorObject {
   readonly code: 'SearchExecutionFailure'
   [key: string]: any
   /**
@@ -1901,7 +1918,7 @@ export interface SearchExecutionFailureError {
  *	Returned when a search facet path could not be found.
  *
  */
-export interface SearchFacetPathNotFoundError {
+export interface SearchFacetPathNotFoundError extends IErrorObject {
   readonly code: 'SearchFacetPathNotFound'
   [key: string]: any
   /**
@@ -1915,7 +1932,7 @@ export interface SearchFacetPathNotFoundError {
  *	Returned when the indexing of Product information is still in progress for Projects that have indexing activated.
  *
  */
-export interface SearchIndexingInProgressError {
+export interface SearchIndexingInProgressError extends IErrorObject {
   readonly code: 'SearchIndexingInProgress'
   [key: string]: any
   /**
@@ -1929,7 +1946,7 @@ export interface SearchIndexingInProgressError {
  *	Returned if the requested search service is not ready. The search might be deactivated or indexing is in progress.
  *
  */
-export interface SearchNotReadyError {
+export interface SearchNotReadyError extends IErrorObject {
   readonly code: 'SearchNotReady'
   [key: string]: any
   /**
@@ -1940,10 +1957,10 @@ export interface SearchNotReadyError {
   readonly message: string
 }
 /**
- *	Returned when a [Discount predicate](/../api/predicates/predicate-operators) or [API Extension predicate](/../api/predicates/query#using-predicates-in-conditional-api-extensions) is not semantically correct.
+ *	Returned when a [Discount predicate](/../api/predicates/predicate-operators) or [API Extension predicate](/../api/predicates/query#use-predicates-in-conditional-api-extensions) is not semantically correct.
  *
  */
-export interface SemanticErrorError {
+export interface SemanticErrorError extends IErrorObject {
   readonly code: 'SemanticError'
   [key: string]: any
   /**
@@ -1965,7 +1982,7 @@ export interface SemanticErrorError {
  *	- [Create Order from Cart in BusinessUnit](ctp:api:endpoint:/{projectKey}/as-associate/{associateId}/in-business-unit/key={businessUnitKey}/orders:POST) request on Associate Orders.
  *
  */
-export interface ShippingMethodDoesNotMatchCartError {
+export interface ShippingMethodDoesNotMatchCartError extends IErrorObject {
   readonly code: 'ShippingMethodDoesNotMatchCart'
   [key: string]: any
   /**
@@ -1984,7 +2001,7 @@ export interface ShippingMethodDoesNotMatchCartError {
  *	- [Add Store](ctp:api:type:CartDiscountAddStoreAction) and [Set Store](ctp:api:type:CartDiscountSetStoresAction) update actions
  *
  */
-export interface StoreCartDiscountsLimitReachedError {
+export interface StoreCartDiscountsLimitReachedError extends IErrorObject {
   readonly code: 'StoreCartDiscountsLimitReached'
   [key: string]: any
   /**
@@ -2001,10 +2018,10 @@ export interface StoreCartDiscountsLimitReachedError {
   readonly stores: StoreKeyReference[]
 }
 /**
- *	Returned when a [Discount predicate](/../api/predicates/predicate-operators), [API Extension predicate](/../api/predicates/query#using-predicates-in-conditional-api-extensions), or [search query](/../api/projects/products-search) does not have the correct syntax.
+ *	Returned when a [Discount predicate](/../api/predicates/predicate-operators), [API Extension predicate](/../api/predicates/query#use-predicates-in-conditional-api-extensions), or [search query](/../api/projects/products-search) does not have the correct syntax.
  *
  */
-export interface SyntaxErrorError {
+export interface SyntaxErrorError extends IErrorObject {
   readonly code: 'SyntaxError'
   [key: string]: any
   /**
@@ -2115,13 +2132,22 @@ export type GraphQLErrorObject =
   | GraphQLShippingMethodDoesNotMatchCartError
   | GraphQLStoreCartDiscountsLimitReachedError
   | GraphQLSyntaxErrorError
+export interface IGraphQLErrorObject {
+  [key: string]: any
+  /**
+   *	One of the error codes that is listed on the [Errors](/errors) page.
+   *
+   *
+   */
+  readonly code: string
+}
 /**
  *	Returned when the anonymous ID is being used by another resource.
  *
  *	The client application should choose another anonymous ID or retrieve an automatically generated one.
  *
  */
-export interface GraphQLAnonymousIdAlreadyInUseError {
+export interface GraphQLAnonymousIdAlreadyInUseError extends IGraphQLErrorObject {
   readonly code: 'AnonymousIdAlreadyInUse'
   [key: string]: any
 }
@@ -2129,7 +2155,7 @@ export interface GraphQLAnonymousIdAlreadyInUseError {
  *	Returned when an [Associate](/projects/business-units#associate) is missing a [Permission](/projects/associate-roles#ctp:api:type:Permission) on a [B2B resource](/associates-overview#b2b-resources).
  *
  */
-export interface GraphQLAssociateMissingPermissionError {
+export interface GraphQLAssociateMissingPermissionError extends IGraphQLErrorObject {
   readonly code: 'AssociateMissingPermission'
   [key: string]: any
   /**
@@ -2163,7 +2189,7 @@ export interface GraphQLAssociateMissingPermissionError {
  *	The error is returned as a failed response to the [Create ProductType](ctp:api:endpoint:/{projectKey}/product-types:POST) request or [Change AttributeDefinition Name](ctp:api:type:ProductTypeChangeAttributeNameAction) update action.
  *
  */
-export interface GraphQLAttributeDefinitionAlreadyExistsError {
+export interface GraphQLAttributeDefinitionAlreadyExistsError extends IGraphQLErrorObject {
   readonly code: 'AttributeDefinitionAlreadyExists'
   [key: string]: any
   /**
@@ -2191,7 +2217,7 @@ export interface GraphQLAttributeDefinitionAlreadyExistsError {
  *	The error is returned as a failed response to the [Create ProductType](ctp:api:endpoint:/{projectKey}/product-types:POST) request.
  *
  */
-export interface GraphQLAttributeDefinitionTypeConflictError {
+export interface GraphQLAttributeDefinitionTypeConflictError extends IGraphQLErrorObject {
   readonly code: 'AttributeDefinitionTypeConflict'
   [key: string]: any
   /**
@@ -2219,7 +2245,7 @@ export interface GraphQLAttributeDefinitionTypeConflictError {
  *	The error is returned as a failed response to the [Change AttributeDefinition Name](ctp:api:type:ProductTypeChangeAttributeNameAction) update action.
  *
  */
-export interface GraphQLAttributeNameDoesNotExistError {
+export interface GraphQLAttributeNameDoesNotExistError extends IGraphQLErrorObject {
   readonly code: 'AttributeNameDoesNotExist'
   [key: string]: any
   /**
@@ -2235,7 +2261,7 @@ export interface GraphQLAttributeNameDoesNotExistError {
  *	The client application should retry the request with exponential backoff up to a point where further delay is unacceptable.
  *
  */
-export interface GraphQLBadGatewayError {
+export interface GraphQLBadGatewayError extends IGraphQLErrorObject {
   readonly code: 'BadGateway'
   [key: string]: any
 }
@@ -2244,7 +2270,7 @@ export interface GraphQLBadGatewayError {
  *	The client application should resolve the conflict (with or without involving the end user) before retrying the request.
  *
  */
-export interface GraphQLConcurrentModificationError {
+export interface GraphQLConcurrentModificationError extends IGraphQLErrorObject {
   readonly code: 'ConcurrentModification'
   [key: string]: any
   /**
@@ -2258,7 +2284,7 @@ export interface GraphQLConcurrentModificationError {
  *	Returned when the request results in too much data being returned from the API. Adjust the request query to reduce the size of the data returned.
  *
  */
-export interface GraphQLContentTooLargeError {
+export interface GraphQLContentTooLargeError extends IGraphQLErrorObject {
   readonly code: 'ContentTooLarge'
   [key: string]: any
 }
@@ -2275,7 +2301,7 @@ export interface GraphQLContentTooLargeError {
  *	- [Set Country](ctp:api:type:StagedOrderSetCountryAction) update action on Order Edits.
  *
  */
-export interface GraphQLCountryNotConfiguredInStoreError {
+export interface GraphQLCountryNotConfiguredInStoreError extends IGraphQLErrorObject {
   readonly code: 'CountryNotConfiguredInStore'
   [key: string]: any
   /**
@@ -2305,7 +2331,7 @@ export interface GraphQLCountryNotConfiguredInStoreError {
  *	- [Create Order from Cart in BusinessUnit](ctp:api:endpoint:/{projectKey}/as-associate/{associateId}/in-business-unit/key={businessUnitKey}/orders:POST) request on Associate Orders.
  *
  */
-export interface GraphQLDiscountCodeNonApplicableError {
+export interface GraphQLDiscountCodeNonApplicableError extends IGraphQLErrorObject {
   readonly code: 'DiscountCodeNonApplicable'
   [key: string]: any
   /**
@@ -2349,7 +2375,7 @@ export interface GraphQLDiscountCodeNonApplicableError {
  *	Returned when the `Unique` [AttributeConstraint](ctp:api:type:AttributeConstraintEnum) criteria are not met during an [Update Product](/../api/projects/products#update-product) request.
  *
  */
-export interface GraphQLDuplicateAttributeValueError {
+export interface GraphQLDuplicateAttributeValueError extends IGraphQLErrorObject {
   readonly code: 'DuplicateAttributeValue'
   [key: string]: any
   /**
@@ -2363,7 +2389,7 @@ export interface GraphQLDuplicateAttributeValueError {
  *	Returned when the `CombinationUnique` [AttributeConstraint](ctp:api:type:AttributeConstraintEnum) criteria are not met during an [Update Product](/../api/projects/products#update-product) request.
  *
  */
-export interface GraphQLDuplicateAttributeValuesError {
+export interface GraphQLDuplicateAttributeValuesError extends IGraphQLErrorObject {
   readonly code: 'DuplicateAttributeValues'
   [key: string]: any
   /**
@@ -2377,7 +2403,7 @@ export interface GraphQLDuplicateAttributeValuesError {
  *	Returned when an [AttributeEnumType](ctp:api:type:AttributeEnumType) or [AttributeLocalizedEnumType](ctp:api:type:AttributeLocalizedEnumType) contains duplicate keys.
  *
  */
-export interface GraphQLDuplicateEnumValuesError {
+export interface GraphQLDuplicateEnumValuesError extends IGraphQLErrorObject {
   readonly code: 'DuplicateEnumValues'
   [key: string]: any
   /**
@@ -2391,7 +2417,7 @@ export interface GraphQLDuplicateEnumValuesError {
  *	Returned when a field value conflicts with an existing value causing a duplicate.
  *
  */
-export interface GraphQLDuplicateFieldError {
+export interface GraphQLDuplicateFieldError extends IGraphQLErrorObject {
   readonly code: 'DuplicateField'
   [key: string]: any
   /**
@@ -2411,7 +2437,7 @@ export interface GraphQLDuplicateFieldError {
  *	Returned when a field value conflicts with an existing value stored in a particular resource causing a duplicate.
  *
  */
-export interface GraphQLDuplicateFieldWithConflictingResourceError {
+export interface GraphQLDuplicateFieldWithConflictingResourceError extends IGraphQLErrorObject {
   readonly code: 'DuplicateFieldWithConflictingResource'
   [key: string]: any
   /**
@@ -2439,7 +2465,7 @@ export interface GraphQLDuplicateFieldWithConflictingResourceError {
  *	Keys of Embedded Prices must be unique per ProductVariant.
  *
  */
-export interface GraphQLDuplicatePriceKeyError {
+export interface GraphQLDuplicatePriceKeyError extends IGraphQLErrorObject {
   readonly code: 'DuplicatePriceKey'
   [key: string]: any
   /**
@@ -2455,7 +2481,7 @@ export interface GraphQLDuplicatePriceKeyError {
  *	Every Price of a Product Variant must have a distinct combination of currency, Customer Group, country, and Channel that constitute the scope of a Price.
  *
  */
-export interface GraphQLDuplicatePriceScopeError {
+export interface GraphQLDuplicatePriceScopeError extends IGraphQLErrorObject {
   readonly code: 'DuplicatePriceScope'
   [key: string]: any
   /**
@@ -2472,7 +2498,7 @@ export interface GraphQLDuplicatePriceScopeError {
  *	The error is returned as a failed response to the [Create StandalonePrice](ctp:api:endpoint:/{projectKey}/standalone-prices:POST) request.
  *
  */
-export interface GraphQLDuplicateStandalonePriceScopeError {
+export interface GraphQLDuplicateStandalonePriceScopeError extends IGraphQLErrorObject {
   readonly code: 'DuplicateStandalonePriceScope'
   [key: string]: any
   /**
@@ -2528,7 +2554,7 @@ export interface GraphQLDuplicateStandalonePriceScopeError {
  *	Returned when a [Product Variant](ctp:api:type:ProductVariant) value conflicts with an existing one during an [Update Product](/../api/projects/products#update-product) request.
  *
  */
-export interface GraphQLDuplicateVariantValuesError {
+export interface GraphQLDuplicateVariantValuesError extends IGraphQLErrorObject {
   readonly code: 'DuplicateVariantValues'
   [key: string]: any
   /**
@@ -2544,7 +2570,7 @@ export interface GraphQLDuplicateVariantValuesError {
  *	The error is returned as a failed response to the [Get Shipping Methods for an OrderEdit](ctp:api:endpoint:/{projectKey}/shipping-methods/matching-orderedit:GET) request.
  *
  */
-export interface GraphQLEditPreviewFailedError {
+export interface GraphQLEditPreviewFailedError extends IGraphQLErrorObject {
   readonly code: 'EditPreviewFailed'
   [key: string]: any
   /**
@@ -2558,7 +2584,7 @@ export interface GraphQLEditPreviewFailedError {
  *	Returned when an [AttributeEnumType](ctp:api:type:AttributeEnumType) or [AttributeLocalizedEnumType](ctp:api:type:AttributeLocalizedEnumType) contains a key that already exists.
  *
  */
-export interface GraphQLEnumKeyAlreadyExistsError {
+export interface GraphQLEnumKeyAlreadyExistsError extends IGraphQLErrorObject {
   readonly code: 'EnumKeyAlreadyExists'
   [key: string]: any
   /**
@@ -2580,7 +2606,7 @@ export interface GraphQLEnumKeyAlreadyExistsError {
  *	The error is returned as a failed response to the [Change the key of an EnumValue](ctp:api:type:ProductTypeChangeEnumKeyAction) update action.
  *
  */
-export interface GraphQLEnumKeyDoesNotExistError {
+export interface GraphQLEnumKeyDoesNotExistError extends IGraphQLErrorObject {
   readonly code: 'EnumKeyDoesNotExist'
   [key: string]: any
   /**
@@ -2602,7 +2628,7 @@ export interface GraphQLEnumKeyDoesNotExistError {
  *	The error is returned as a failed response to the [Remove EnumValues from AttributeDefinition](ctp:api:type:ProductTypeRemoveEnumValuesAction) update action.
  *
  */
-export interface GraphQLEnumValueIsUsedError {
+export interface GraphQLEnumValueIsUsedError extends IGraphQLErrorObject {
   readonly code: 'EnumValueIsUsed'
   [key: string]: any
 }
@@ -2612,7 +2638,7 @@ export interface GraphQLEnumValueIsUsedError {
  *	The error is returned as a failed response to the [Change the order of EnumValues](ctp:api:type:ProductTypeChangePlainEnumValueOrderAction) and [Change the order of LocalizedEnumValues](ctp:api:type:ProductTypeChangeLocalizedEnumValueOrderAction) update actions.
  *
  */
-export interface GraphQLEnumValuesMustMatchError {
+export interface GraphQLEnumValuesMustMatchError extends IGraphQLErrorObject {
   readonly code: 'EnumValuesMustMatch'
   [key: string]: any
 }
@@ -2620,7 +2646,7 @@ export interface GraphQLEnumValuesMustMatchError {
  *	Returned when the response from the API Extension could not be parsed successfully (such as a `500` HTTP status code, or an invalid JSON response).
  *
  */
-export interface GraphQLExtensionBadResponseError {
+export interface GraphQLExtensionBadResponseError extends IGraphQLErrorObject {
   readonly code: 'ExtensionBadResponse'
   [key: string]: any
   /**
@@ -2666,7 +2692,7 @@ export interface GraphQLExtensionBadResponseError {
  *	Returned when the API Extension does not respond within the [time limit](/../api/projects/api-extensions#time-limits), or could not be reached.
  *
  */
-export interface GraphQLExtensionNoResponseError {
+export interface GraphQLExtensionNoResponseError extends IGraphQLErrorObject {
   readonly code: 'ExtensionNoResponse'
   [key: string]: any
   /**
@@ -2686,7 +2712,7 @@ export interface GraphQLExtensionNoResponseError {
  *	Returned when the predicate defined in the [ExtensionTrigger](ctp:api:type:ExtensionTrigger) could not be evaluated due to a missing field.
  *
  */
-export interface GraphQLExtensionPredicateEvaluationFailedError {
+export interface GraphQLExtensionPredicateEvaluationFailedError extends IGraphQLErrorObject {
   readonly code: 'ExtensionPredicateEvaluationFailed'
   [key: string]: any
   /**
@@ -2701,7 +2727,7 @@ export interface GraphQLExtensionPredicateEvaluationFailedError {
  *	This would result in a [400 Bad Request](#400-bad-request) response if the same update action was sent from a regular client.
  *
  */
-export interface GraphQLExtensionUpdateActionsFailedError {
+export interface GraphQLExtensionUpdateActionsFailedError extends IGraphQLErrorObject {
   readonly code: 'ExtensionUpdateActionsFailed'
   [key: string]: any
   /**
@@ -2724,10 +2750,10 @@ export interface GraphQLExtensionUpdateActionsFailedError {
   readonly extensionErrors: ExtensionError[]
 }
 /**
- *	Returned when an [external OAuth Introspection endpoint](/../api/authorization#requesting-an-access-token-using-an-external-oauth-server) does not return a response within the [time limit](/../api/authorization#time-limits), or the response isn't compliant with [RFC 7662](https://www.rfc-editor.org/rfc/rfc7662.html) (for example, an HTTP status code like `500`).
+ *	Returned when an [external OAuth Introspection endpoint](/../api/authorization#request-an-access-token-using-an-external-oauth-server) does not return a response within the [time limit](/../api/authorization#time-limits), or the response isn't compliant with [RFC 7662](https://www.rfc-editor.org/rfc/rfc7662.html) (for example, an HTTP status code like `500`).
  *
  */
-export interface GraphQLExternalOAuthFailedError {
+export interface GraphQLExternalOAuthFailedError extends IGraphQLErrorObject {
   readonly code: 'ExternalOAuthFailed'
   [key: string]: any
 }
@@ -2735,7 +2761,7 @@ export interface GraphQLExternalOAuthFailedError {
  *	Returned when the requested feature was removed.
  *
  */
-export interface GraphQLFeatureRemovedError {
+export interface GraphQLFeatureRemovedError extends IGraphQLErrorObject {
   readonly code: 'FeatureRemoved'
   [key: string]: any
 }
@@ -2745,11 +2771,11 @@ export interface GraphQLFeatureRemovedError {
  *	If you encounter this error, report it to the [Composable Commerce support team](https://support.commercetools.com).
  *
  */
-export interface GraphQLGeneralError {
+export interface GraphQLGeneralError extends IGraphQLErrorObject {
   readonly code: 'General'
   [key: string]: any
 }
-export interface GraphQLInsufficientScopeError {
+export interface GraphQLInsufficientScopeError extends IGraphQLErrorObject {
   readonly code: 'insufficient_scope'
   [key: string]: any
 }
@@ -2757,7 +2783,7 @@ export interface GraphQLInsufficientScopeError {
  *	Returned when certain API-specific constraints were not met. For example, the specified [Discount Code](ctp:api:type:DiscountCode) was never applied and cannot be updated.
  *
  */
-export interface GraphQLInternalConstraintViolatedError {
+export interface GraphQLInternalConstraintViolatedError extends IGraphQLErrorObject {
   readonly code: 'InternalConstraintViolated'
   [key: string]: any
 }
@@ -2770,7 +2796,7 @@ export interface GraphQLInternalConstraintViolatedError {
  *	- [Authenticate (sign in) Customer](ctp:api:endpoint:/{projectKey}/me/login:POST) and [Authenticate (sign in) Customer in Store](ctp:api:endpoint:/{projectKey}/in-store/key={storeKey}/me/login:POST) requests on My Customer Profile.
  *
  */
-export interface GraphQLInvalidCredentialsError {
+export interface GraphQLInvalidCredentialsError extends IGraphQLErrorObject {
   readonly code: 'InvalidCredentials'
   [key: string]: any
 }
@@ -2783,7 +2809,7 @@ export interface GraphQLInvalidCredentialsError {
  *	- [Change Customer Password](ctp:api:endpoint:/{projectKey}/me/password:POST) and [Change Customer Password in a Store](ctp:api:endpoint:/{projectKey}/in-store/key={storeKey}/me/password:POST) requests on My Customer Profile.
  *
  */
-export interface GraphQLInvalidCurrentPasswordError {
+export interface GraphQLInvalidCurrentPasswordError extends IGraphQLErrorObject {
   readonly code: 'InvalidCurrentPassword'
   [key: string]: any
 }
@@ -2791,7 +2817,7 @@ export interface GraphQLInvalidCurrentPasswordError {
  *	Returned when a field has an invalid value.
  *
  */
-export interface GraphQLInvalidFieldError {
+export interface GraphQLInvalidFieldError extends IGraphQLErrorObject {
   readonly code: 'InvalidField'
   [key: string]: any
   /**
@@ -2817,7 +2843,7 @@ export interface GraphQLInvalidFieldError {
  *	Returned when an invalid input has been sent.
  *
  */
-export interface GraphQLInvalidInputError {
+export interface GraphQLInvalidInputError extends IGraphQLErrorObject {
   readonly code: 'InvalidInput'
   [key: string]: any
 }
@@ -2837,7 +2863,7 @@ export interface GraphQLInvalidInputError {
  *	- [Create Order from Cart in BusinessUnit](ctp:api:endpoint:/{projectKey}/as-associate/{associateId}/in-business-unit/key={businessUnitKey}/orders:POST) and [Create Order from Quote in BusinessUnit](ctp:api:endpoint:/{projectKey}/as-associate/{associateId}/in-business-unit/key={businessUnitKey}/orders/quotes:POST) requests on Associate Orders.
  *
  */
-export interface GraphQLInvalidItemShippingDetailsError {
+export interface GraphQLInvalidItemShippingDetailsError extends IGraphQLErrorObject {
   readonly code: 'InvalidItemShippingDetails'
   [key: string]: any
   /**
@@ -2860,7 +2886,7 @@ export interface GraphQLInvalidItemShippingDetailsError {
  *	The client application should validate the input according to the constraints described in the error message before sending the request.
  *
  */
-export interface GraphQLInvalidJsonInputError {
+export interface GraphQLInvalidJsonInputError extends IGraphQLErrorObject {
   readonly code: 'InvalidJsonInput'
   [key: string]: any
   /**
@@ -2875,15 +2901,15 @@ export interface GraphQLInvalidJsonInputError {
  *	The client application should validate the constraints described in the error message before sending the request.
  *
  */
-export interface GraphQLInvalidOperationError {
+export interface GraphQLInvalidOperationError extends IGraphQLErrorObject {
   readonly code: 'InvalidOperation'
   [key: string]: any
 }
-export interface GraphQLInvalidSubjectError {
+export interface GraphQLInvalidSubjectError extends IGraphQLErrorObject {
   readonly code: 'InvalidSubject'
   [key: string]: any
 }
-export interface GraphQLInvalidTokenError {
+export interface GraphQLInvalidTokenError extends IGraphQLErrorObject {
   readonly code: 'invalid_token'
   [key: string]: any
 }
@@ -2893,7 +2919,7 @@ export interface GraphQLInvalidTokenError {
  *	The error is returned as a failed response to the [Change Languages](ctp:api:type:ProjectChangeLanguagesAction) update action.
  *
  */
-export interface GraphQLLanguageUsedInStoresError {
+export interface GraphQLLanguageUsedInStoresError extends IGraphQLErrorObject {
   readonly code: 'LanguageUsedInStores'
   [key: string]: any
 }
@@ -2903,7 +2929,7 @@ export interface GraphQLLanguageUsedInStoresError {
  *	To confirm if the operation was successful, repeat the request.
  *
  */
-export interface GraphQLLockedFieldError {
+export interface GraphQLLockedFieldError extends IGraphQLErrorObject {
   readonly code: 'LockedField'
   [key: string]: any
   /**
@@ -2930,7 +2956,7 @@ export interface GraphQLLockedFieldError {
  *	- [Create Order from Cart in BusinessUnit](ctp:api:endpoint:/{projectKey}/as-associate/{associateId}/in-business-unit/key={businessUnitKey}/orders:POST) request on Associate Orders.
  *
  */
-export interface GraphQLMatchingPriceNotFoundError {
+export interface GraphQLMatchingPriceNotFoundError extends IGraphQLErrorObject {
   readonly code: 'MatchingPriceNotFound'
   [key: string]: any
   /**
@@ -2979,7 +3005,7 @@ export interface GraphQLMatchingPriceNotFoundError {
  *	- [Change IsActive](ctp:api:type:CartDiscountChangeIsActiveAction) update action
  *
  */
-export interface GraphQLMaxCartDiscountsReachedError {
+export interface GraphQLMaxCartDiscountsReachedError extends IGraphQLErrorObject {
   readonly code: 'MaxCartDiscountsReached'
   [key: string]: any
 }
@@ -2989,7 +3015,7 @@ export interface GraphQLMaxCartDiscountsReachedError {
  *	The limits must be adjusted for this resource before sending the request again.
  *
  */
-export interface GraphQLMaxResourceLimitExceededError {
+export interface GraphQLMaxResourceLimitExceededError extends IGraphQLErrorObject {
   readonly code: 'MaxResourceLimitExceeded'
   [key: string]: any
   /**
@@ -3008,7 +3034,7 @@ export interface GraphQLMaxResourceLimitExceededError {
  *	- [Add Store](ctp:api:type:CartDiscountAddStoreAction) and [Set Store](ctp:api:type:CartDiscountSetStoresAction) update actions
  *
  */
-export interface GraphQLMaxStoreReferencesReachedError {
+export interface GraphQLMaxStoreReferencesReachedError extends IGraphQLErrorObject {
   readonly code: 'MaxStoreReferencesReached'
   [key: string]: any
 }
@@ -3024,7 +3050,7 @@ export interface GraphQLMaxStoreReferencesReachedError {
  *	- [Create StandalonePrice](ctp:api:endpoint:/{projectKey}/standalone-prices:POST) request.
  *
  */
-export interface GraphQLMissingRoleOnChannelError {
+export interface GraphQLMissingRoleOnChannelError extends IGraphQLErrorObject {
   readonly code: 'MissingRoleOnChannel'
   [key: string]: any
   /**
@@ -3058,7 +3084,7 @@ export interface GraphQLMissingRoleOnChannelError {
  *	- [Create Order from Cart in BusinessUnit](ctp:api:endpoint:/{projectKey}/as-associate/{associateId}/in-business-unit/key={businessUnitKey}/orders:POST) requests on Associate Orders.
  *
  */
-export interface GraphQLMissingTaxRateForCountryError {
+export interface GraphQLMissingTaxRateForCountryError extends IGraphQLErrorObject {
   readonly code: 'MissingTaxRateForCountry'
   [key: string]: any
   /**
@@ -3085,7 +3111,7 @@ export interface GraphQLMissingTaxRateForCountryError {
  *	See [Money usage](/types#usage) for more information.
  *
  */
-export interface GraphQLMoneyOverflowError {
+export interface GraphQLMoneyOverflowError extends IGraphQLErrorObject {
   readonly code: 'MoneyOverflow'
   [key: string]: any
 }
@@ -3095,15 +3121,15 @@ export interface GraphQLMoneyOverflowError {
  *	The error is returned as a failed response to the [Get Matching ProductDiscount](ctp:api:endpoint:/{projectKey}/product-discounts/matching:POST) request.
  *
  */
-export interface GraphQLNoMatchingProductDiscountFoundError {
+export interface GraphQLNoMatchingProductDiscountFoundError extends IGraphQLErrorObject {
   readonly code: 'NoMatchingProductDiscountFound'
   [key: string]: any
 }
 /**
- *	Returned when the requested resource was not found.
+ *	Returned if the requested resource was not found or the Product Search index is [inactive](/../api/projects/product-search#activation-of-the-feature).
  *
  */
-export interface GraphQLObjectNotFoundError {
+export interface GraphQLObjectNotFoundError extends IGraphQLErrorObject {
   readonly code: 'ObjectNotFound'
   [key: string]: any
 }
@@ -3117,7 +3143,7 @@ export interface GraphQLObjectNotFoundError {
  *	- [Create Order from Cart in BusinessUnit](ctp:api:endpoint:/{projectKey}/as-associate/{associateId}/in-business-unit/key={businessUnitKey}/orders:POST) and [Create Order from Quote in BusinessUnit](ctp:api:endpoint:/{projectKey}/as-associate/{associateId}/in-business-unit/key={businessUnitKey}/orders/quotes:POST) requests on Associate Orders.
  *
  */
-export interface GraphQLOutOfStockError {
+export interface GraphQLOutOfStockError extends IGraphQLErrorObject {
   readonly code: 'OutOfStock'
   [key: string]: any
   /**
@@ -3139,7 +3165,7 @@ export interface GraphQLOutOfStockError {
  *	The client application should retry the request with exponential backoff up to a point where further delay is unacceptable.
  *
  */
-export interface GraphQLOverCapacityError {
+export interface GraphQLOverCapacityError extends IGraphQLErrorObject {
   readonly code: 'OverCapacity'
   [key: string]: any
 }
@@ -3150,7 +3176,7 @@ export interface GraphQLOverCapacityError {
  *	The error is returned as a failed response to the [Create StandalonePrice](ctp:api:endpoint:/{projectKey}/standalone-prices:POST) request.
  *
  */
-export interface GraphQLOverlappingStandalonePriceValidityError {
+export interface GraphQLOverlappingStandalonePriceValidityError extends IGraphQLErrorObject {
   readonly code: 'OverlappingStandalonePriceValidity'
   [key: string]: any
   /**
@@ -3221,7 +3247,7 @@ export interface GraphQLOverlappingStandalonePriceValidityError {
  *	If the error persists, report it to the [Composable Commerce support team](https://support.commercetools.com).
  *
  */
-export interface GraphQLPendingOperationError {
+export interface GraphQLPendingOperationError extends IGraphQLErrorObject {
   readonly code: 'PendingOperation'
   [key: string]: any
 }
@@ -3232,12 +3258,12 @@ export interface GraphQLPendingOperationError {
  *
  *	The error is also returned as a failed response to:
  *
- *	- [Create Order from Cart](ctp:api:endpoint:/{projectKey}/orders:POST), [Create Order in Store from Cart](ctp:api:endpoint:/{projectKey}/in-store/orders:POST), and [Create Order from Quote](ctp:api:endpoint:/{projectKey}/orders/quotes:POST) requests on Orders.
- *	- [Create Order from Cart](ctp:api:endpoint:/{projectKey}/me/orders:POST), [Create Order in Store from Cart](ctp:api:endpoint:/{projectKey}/in-store/me/orders:POST), and [Create Order from Quote](ctp:api:endpoint:/{projectKey}/me/orders/quotes:POST) requests on My Orders.
+ *	- [Create Order from Cart](ctp:api:endpoint:/{projectKey}/orders:POST) and [Create Order in Store from Cart](ctp:api:endpoint:/{projectKey}/in-store/orders:POST) requests on Orders.
+ *	- [Create Order from Cart](ctp:api:endpoint:/{projectKey}/me/orders:POST) and [Create Order in Store from Cart](ctp:api:endpoint:/{projectKey}/in-store/me/orders:POST) requests on My Orders.
  *	- [Create Order from Cart in BusinessUnit](ctp:api:endpoint:/{projectKey}/as-associate/{associateId}/in-business-unit/key={businessUnitKey}/orders:POST) request on Associate Orders.
  *
  */
-export interface GraphQLPriceChangedError {
+export interface GraphQLPriceChangedError extends IGraphQLErrorObject {
   readonly code: 'PriceChanged'
   [key: string]: any
   /**
@@ -3258,7 +3284,7 @@ export interface GraphQLPriceChangedError {
  *	The error is returned as a failed response either to the [Set Variant Selection](ctp:api:type:ProductSelectionSetVariantSelectionAction) or to the [Set Variant Exclusion](ctp:api:type:ProductSelectionSetVariantExclusionAction) update action.
  *
  */
-export interface GraphQLProductAssignmentMissingError {
+export interface GraphQLProductAssignmentMissingError extends IGraphQLErrorObject {
   readonly code: 'ProductAssignmentMissing'
   [key: string]: any
   /**
@@ -3274,7 +3300,7 @@ export interface GraphQLProductAssignmentMissingError {
  *	The error is returned as a failed response either to the [Add Product](ctp:api:type:ProductSelectionAddProductAction) or to the [Exclude Product](ctp:api:type:ProductSelectionExcludeProductAction) update action.
  *
  */
-export interface GraphQLProductPresentWithDifferentVariantSelectionError {
+export interface GraphQLProductPresentWithDifferentVariantSelectionError extends IGraphQLErrorObject {
   readonly code: 'ProductPresentWithDifferentVariantSelection'
   [key: string]: any
   /**
@@ -3296,7 +3322,7 @@ export interface GraphQLProductPresentWithDifferentVariantSelectionError {
  *	The error is returned as a failed response to the [Set Languages](ctp:api:type:StoreSetLanguagesAction) update action.
  *
  */
-export interface GraphQLProjectNotConfiguredForLanguagesError {
+export interface GraphQLProjectNotConfiguredForLanguagesError extends IGraphQLErrorObject {
   readonly code: 'ProjectNotConfiguredForLanguages'
   [key: string]: any
   /**
@@ -3306,7 +3332,7 @@ export interface GraphQLProjectNotConfiguredForLanguagesError {
    */
   readonly languages?: string[]
 }
-export interface GraphQLQueryComplexityLimitExceededError {
+export interface GraphQLQueryComplexityLimitExceededError extends IGraphQLErrorObject {
   readonly code: 'QueryComplexityLimitExceeded'
   [key: string]: any
 }
@@ -3316,7 +3342,7 @@ export interface GraphQLQueryComplexityLimitExceededError {
  *	If a query constantly times out, please check if it follows the [performance best practices](/../api/predicates/query#performance-considerations).
  *
  */
-export interface GraphQLQueryTimedOutError {
+export interface GraphQLQueryTimedOutError extends IGraphQLErrorObject {
   readonly code: 'QueryTimedOut'
   [key: string]: any
 }
@@ -3324,7 +3350,7 @@ export interface GraphQLQueryTimedOutError {
  *	Returned when a resource cannot be deleted because it is being referenced by another resource.
  *
  */
-export interface GraphQLReferenceExistsError {
+export interface GraphQLReferenceExistsError extends IGraphQLErrorObject {
   readonly code: 'ReferenceExists'
   [key: string]: any
   /**
@@ -3338,7 +3364,7 @@ export interface GraphQLReferenceExistsError {
  *	Returned when a resource referenced by a [Reference](ctp:api:type:Reference) or a [ResourceIdentifier](ctp:api:type:ResourceIdentifier) could not be found.
  *
  */
-export interface GraphQLReferencedResourceNotFoundError {
+export interface GraphQLReferencedResourceNotFoundError extends IGraphQLErrorObject {
   readonly code: 'ReferencedResourceNotFound'
   [key: string]: any
   /**
@@ -3364,7 +3390,7 @@ export interface GraphQLReferencedResourceNotFoundError {
  *	Returned when a value is not defined for a required field.
  *
  */
-export interface GraphQLRequiredFieldError {
+export interface GraphQLRequiredFieldError extends IGraphQLErrorObject {
   readonly code: 'RequiredField'
   [key: string]: any
   /**
@@ -3378,7 +3404,7 @@ export interface GraphQLRequiredFieldError {
  *	Returned when the resource addressed by the request URL does not exist.
  *
  */
-export interface GraphQLResourceNotFoundError {
+export interface GraphQLResourceNotFoundError extends IGraphQLErrorObject {
   readonly code: 'ResourceNotFound'
   [key: string]: any
 }
@@ -3386,7 +3412,7 @@ export interface GraphQLResourceNotFoundError {
  *	Returned when the resource exceeds the maximum allowed size of 16 MB.
  *
  */
-export interface GraphQLResourceSizeLimitExceededError {
+export interface GraphQLResourceSizeLimitExceededError extends IGraphQLErrorObject {
   readonly code: 'ResourceSizeLimitExceeded'
   [key: string]: any
 }
@@ -3396,7 +3422,7 @@ export interface GraphQLResourceSizeLimitExceededError {
  *	To activate indexing, call [Change Product Search Indexing Enabled](ctp:api:type:ProjectChangeProductSearchIndexingEnabledAction) and set `enabled` to `true`.
  *
  */
-export interface GraphQLSearchDeactivatedError {
+export interface GraphQLSearchDeactivatedError extends IGraphQLErrorObject {
   readonly code: 'SearchDeactivated'
   [key: string]: any
 }
@@ -3404,7 +3430,7 @@ export interface GraphQLSearchDeactivatedError {
  *	Returned when a search query could not be completed due to an unexpected failure.
  *
  */
-export interface GraphQLSearchExecutionFailureError {
+export interface GraphQLSearchExecutionFailureError extends IGraphQLErrorObject {
   readonly code: 'SearchExecutionFailure'
   [key: string]: any
 }
@@ -3412,7 +3438,7 @@ export interface GraphQLSearchExecutionFailureError {
  *	Returned when a search facet path could not be found.
  *
  */
-export interface GraphQLSearchFacetPathNotFoundError {
+export interface GraphQLSearchFacetPathNotFoundError extends IGraphQLErrorObject {
   readonly code: 'SearchFacetPathNotFound'
   [key: string]: any
 }
@@ -3420,7 +3446,7 @@ export interface GraphQLSearchFacetPathNotFoundError {
  *	Returned when the indexing of Product information is still in progress for Projects that have indexing activated.
  *
  */
-export interface GraphQLSearchIndexingInProgressError {
+export interface GraphQLSearchIndexingInProgressError extends IGraphQLErrorObject {
   readonly code: 'SearchIndexingInProgress'
   [key: string]: any
 }
@@ -3428,15 +3454,15 @@ export interface GraphQLSearchIndexingInProgressError {
  *	Returned if the requested search service is not ready. The search might be deactivated or indexing is in progress.
  *
  */
-export interface GraphQLSearchNotReadyError {
+export interface GraphQLSearchNotReadyError extends IGraphQLErrorObject {
   readonly code: 'SearchNotReady'
   [key: string]: any
 }
 /**
- *	Returned when a [Discount predicate](/../api/predicates/predicate-operators) or [API Extension predicate](/../api/predicates/query#using-predicates-in-conditional-api-extensions) is not semantically correct.
+ *	Returned when a [Discount predicate](/../api/predicates/predicate-operators) or [API Extension predicate](/../api/predicates/query#use-predicates-in-conditional-api-extensions) is not semantically correct.
  *
  */
-export interface GraphQLSemanticErrorError {
+export interface GraphQLSemanticErrorError extends IGraphQLErrorObject {
   readonly code: 'SemanticError'
   [key: string]: any
 }
@@ -3452,7 +3478,7 @@ export interface GraphQLSemanticErrorError {
  *	- [Create Order from Cart in BusinessUnit](ctp:api:endpoint:/{projectKey}/as-associate/{associateId}/in-business-unit/key={businessUnitKey}/orders:POST) request on Associate Orders.
  *
  */
-export interface GraphQLShippingMethodDoesNotMatchCartError {
+export interface GraphQLShippingMethodDoesNotMatchCartError extends IGraphQLErrorObject {
   readonly code: 'ShippingMethodDoesNotMatchCart'
   [key: string]: any
 }
@@ -3465,7 +3491,7 @@ export interface GraphQLShippingMethodDoesNotMatchCartError {
  *	- [Add Store](ctp:api:type:CartDiscountAddStoreAction) and [Set Store](ctp:api:type:CartDiscountSetStoresAction) update actions
  *
  */
-export interface GraphQLStoreCartDiscountsLimitReachedError {
+export interface GraphQLStoreCartDiscountsLimitReachedError extends IGraphQLErrorObject {
   readonly code: 'StoreCartDiscountsLimitReached'
   [key: string]: any
   /**
@@ -3476,10 +3502,10 @@ export interface GraphQLStoreCartDiscountsLimitReachedError {
   readonly stores: StoreKeyReference[]
 }
 /**
- *	Returned when a [Discount predicate](/../api/predicates/predicate-operators), [API Extension predicate](/../api/predicates/query#using-predicates-in-conditional-api-extensions), or [search query](/../api/projects/products-search) does not have the correct syntax.
+ *	Returned when a [Discount predicate](/../api/predicates/predicate-operators), [API Extension predicate](/../api/predicates/query#use-predicates-in-conditional-api-extensions), or [search query](/../api/projects/products-search) does not have the correct syntax.
  *
  */
-export interface GraphQLSyntaxErrorError {
+export interface GraphQLSyntaxErrorError extends IGraphQLErrorObject {
   readonly code: 'SyntaxError'
   [key: string]: any
 }

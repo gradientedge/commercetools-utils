@@ -5,12 +5,31 @@
  */
 
 import { Cart, CartResourceIdentifier } from './cart.js'
-import { Address, BaseAddress, BaseResource, CreatedBy, LastModifiedBy, _BaseAddress } from './common.js'
+import {
+  Address,
+  BaseAddress,
+  BaseResource,
+  CreatedBy,
+  IReference,
+  IResourceIdentifier,
+  LastModifiedBy,
+  _BaseAddress,
+} from './common.js'
 import { CustomerGroupReference, CustomerGroupResourceIdentifier } from './customer-group.js'
 import { StoreKeyReference, StoreResourceIdentifier } from './store.js'
 import { CustomFields, CustomFieldsDraft, FieldContainer, TypeResourceIdentifier } from './type.js'
 
+export enum AnonymousCartSignInModeValues {
+  MergeWithExistingCustomerCart = 'MergeWithExistingCustomerCart',
+  UseAsNewActiveCustomerCart = 'UseAsNewActiveCustomerCart',
+}
+
 export type AnonymousCartSignInMode = 'MergeWithExistingCustomerCart' | 'UseAsNewActiveCustomerCart' | string
+export enum AuthenticationModeValues {
+  ExternalAuth = 'ExternalAuth',
+  Password = 'Password',
+}
+
 export type AuthenticationMode = 'ExternalAuth' | 'Password' | string
 /**
  *	If `stores` is not empty, the Customer is specific to those Stores.
@@ -268,7 +287,7 @@ export interface CustomerDraft {
    *	User-defined unique identifier for the Customer.
    *	The `key` field is preferred over `customerNumber` as it is mutable and provides more flexibility.
    *
-   *	This field is optional for backwards compatibility reasons, but we strongly recommend setting it. Keys are mandatory for importing Customers with the [Import API](/../import-export/).
+   *	This field is optional for backwards compatibility reasons, but we strongly recommend setting it. Keys are mandatory for importing Customers with the [Import API](/../api/import-export/overview).
    *
    *
    */
@@ -351,7 +370,7 @@ export interface CustomerDraft {
    */
   readonly dateOfBirth?: string
   /**
-   *	Company name of the Customer. When representing a company as a Customer, [Business Units](ctp:api:type:BusinessUnit) provide extended funtionality.
+   *	Company name of the Customer. When representing a company as a Customer, [Business Units](ctp:api:type:BusinessUnit) provide extended functionality.
    *
    *
    */
@@ -449,7 +468,7 @@ export interface CustomerDraft {
  *	[Reference](ctp:api:type:Reference) to a [CustomerToken](ctp:api:type:CustomerToken) for email verification.
  *
  */
-export interface CustomerEmailTokenReference {
+export interface CustomerEmailTokenReference extends IReference {
   readonly typeId: 'customer-email-token'
   /**
    *	Unique identifier of the referenced [CustomerToken](ctp:api:type:CustomerToken).
@@ -516,7 +535,7 @@ export interface CustomerPagedQueryResponse {
  *	[Reference](ctp:api:type:Reference) to a [CustomerToken](ctp:api:type:CustomerToken) for password reset.
  *
  */
-export interface CustomerPasswordTokenReference {
+export interface CustomerPasswordTokenReference extends IReference {
   readonly typeId: 'customer-password-token'
   /**
    *	Unique identifier of the referenced [CustomerToken](ctp:api:type:CustomerToken).
@@ -529,7 +548,7 @@ export interface CustomerPasswordTokenReference {
  *	[Reference](ctp:api:type:Reference) to a [Customer](ctp:api:type:Customer).
  *
  */
-export interface CustomerReference {
+export interface CustomerReference extends IReference {
   readonly typeId: 'customer'
   /**
    *	Unique identifier of the referenced [Customer](ctp:api:type:Customer).
@@ -568,7 +587,7 @@ export interface CustomerResetPassword {
  *	[ResourceIdentifier](ctp:api:type:ResourceIdentifier) to a [Customer](ctp:api:type:Customer). Either `id` or `key` is required. If both are set, an [InvalidJsonInput](/../api/errors#invalidjsoninput) error is returned.
  *
  */
-export interface CustomerResourceIdentifier {
+export interface CustomerResourceIdentifier extends IResourceIdentifier {
   readonly typeId: 'customer'
   /**
    *	Unique identifier of the referenced [Customer](ctp:api:type:Customer). Required if `key` is absent.
@@ -731,6 +750,12 @@ export type CustomerUpdateAction =
   | CustomerSetStoresAction
   | CustomerSetTitleAction
   | CustomerSetVatIdAction
+export interface ICustomerUpdateAction {
+  /**
+   *
+   */
+  readonly action: string
+}
 export interface MyCustomerChangePassword {
   /**
    *	Expected version of the Customer on which the changes should be applied.
@@ -807,7 +832,7 @@ export interface MyCustomerSignin {
  *	Adding an address to the Customer produces the [CustomerAddressAdded](ctp:api:type:CustomerAddressAddedMessage) Message.
  *
  */
-export interface CustomerAddAddressAction {
+export interface CustomerAddAddressAction extends ICustomerUpdateAction {
   readonly action: 'addAddress'
   /**
    *	Value to append to the `addresses` array.
@@ -820,7 +845,7 @@ export interface CustomerAddAddressAction {
  *	Adds an Address from the `addresses` array to `billingAddressIds`. Either `addressId` or `addressKey` is required.
  *
  */
-export interface CustomerAddBillingAddressIdAction {
+export interface CustomerAddBillingAddressIdAction extends ICustomerUpdateAction {
   readonly action: 'addBillingAddressId'
   /**
    *	`id` of the [Address](ctp:api:type:Address) to become a billing address.
@@ -839,7 +864,7 @@ export interface CustomerAddBillingAddressIdAction {
  *	Adds an Address from the `addresses` array to `shippingAddressIds`. Either `addressId` or `addressKey` is required.
  *
  */
-export interface CustomerAddShippingAddressIdAction {
+export interface CustomerAddShippingAddressIdAction extends ICustomerUpdateAction {
   readonly action: 'addShippingAddressId'
   /**
    *	`id` of the [Address](ctp:api:type:Address) to become a shipping address.
@@ -858,7 +883,7 @@ export interface CustomerAddShippingAddressIdAction {
  *	Associates the Customer with a Store.
  *
  */
-export interface CustomerAddStoreAction {
+export interface CustomerAddStoreAction extends ICustomerUpdateAction {
   readonly action: 'addStore'
   /**
    *	ResourceIdentifier of the Store to add.
@@ -873,7 +898,7 @@ export interface CustomerAddStoreAction {
  *	Either `addressId` or `addressKey` is required.
  *
  */
-export interface CustomerChangeAddressAction {
+export interface CustomerChangeAddressAction extends ICustomerUpdateAction {
   readonly action: 'changeAddress'
   /**
    *	`id` of the [Address](ctp:api:type:Address) to change.
@@ -898,7 +923,7 @@ export interface CustomerChangeAddressAction {
  *	Changes the `email` of the Customer and sets the `isEmailVerified` property to `false`. This update action generates a [CustomerEmailChanged](ctp:api:type:CustomerEmailChangedMessage) Message.
  *
  */
-export interface CustomerChangeEmailAction {
+export interface CustomerChangeEmailAction extends ICustomerUpdateAction {
   readonly action: 'changeEmail'
   /**
    *	Value to set.
@@ -913,7 +938,7 @@ export interface CustomerChangeEmailAction {
  *	Either `addressId` or `addressKey` is required.
  *
  */
-export interface CustomerRemoveAddressAction {
+export interface CustomerRemoveAddressAction extends ICustomerUpdateAction {
   readonly action: 'removeAddress'
   /**
    *	`id` of the [Address](ctp:api:type:Address) to remove.
@@ -933,7 +958,7 @@ export interface CustomerRemoveAddressAction {
  *	If the billing address is the default billing address, the `defaultBillingAddressId` is unset. Either `addressId` or `addressKey` is required.
  *
  */
-export interface CustomerRemoveBillingAddressIdAction {
+export interface CustomerRemoveBillingAddressIdAction extends ICustomerUpdateAction {
   readonly action: 'removeBillingAddressId'
   /**
    *	`id` of the [Address](ctp:api:type:Address) to remove from `billingAddressesIds`.
@@ -953,7 +978,7 @@ export interface CustomerRemoveBillingAddressIdAction {
  *	If the shipping address is the default shipping address, the `defaultShippingAddressId` is unset. Either `addressId` or `addressKey` is required.
  *
  */
-export interface CustomerRemoveShippingAddressIdAction {
+export interface CustomerRemoveShippingAddressIdAction extends ICustomerUpdateAction {
   readonly action: 'removeShippingAddressId'
   /**
    *	`id` of the [Address](ctp:api:type:Address) to remove from `shippingAddressesIds`.
@@ -973,7 +998,7 @@ export interface CustomerRemoveShippingAddressIdAction {
  *	If no more Stores are assigned, the Customer becomes a [global Customer](/../api/customers-overview#global-versus-store-specific-customers).
  *
  */
-export interface CustomerRemoveStoreAction {
+export interface CustomerRemoveStoreAction extends ICustomerUpdateAction {
   readonly action: 'removeStore'
   /**
    *	ResourceIdentifier of the Store to remove.
@@ -986,7 +1011,7 @@ export interface CustomerRemoveStoreAction {
  *	Adding a Custom Field to an Address of a Customer generates the [CustomerAddressCustomFieldAdded](ctp:api:type:CustomerAddressCustomFieldAddedMessage) Message, removing one generates the [CustomerAddressCustomFieldRemoved](ctp:api:type:CustomerAddressCustomFieldRemovedMessage) Message, and updating an existing one generates the [CustomerAddressCustomFieldChanged](ctp:api:type:CustomerAddressCustomFieldChangedMessage) Message.
  *
  */
-export interface CustomerSetAddressCustomFieldAction {
+export interface CustomerSetAddressCustomFieldAction extends ICustomerUpdateAction {
   readonly action: 'setAddressCustomField'
   /**
    *	User-defined unique identifier of the [Address](ctp:api:type:Address) to be updated.
@@ -1013,7 +1038,7 @@ export interface CustomerSetAddressCustomFieldAction {
  *	Adding or updating a Custom Type on an Address of a Customer generates the [CustomerAddressCustomTypeSet](ctp:api:type:CustomerAddressCustomTypeSetMessage) Message, and removing one generates the [CustomerAddressCustomTypeRemoved](ctp:api:type:CustomerAddressCustomTypeRemovedMessage) Message.
  *
  */
-export interface CustomerSetAddressCustomTypeAction {
+export interface CustomerSetAddressCustomTypeAction extends ICustomerUpdateAction {
   readonly action: 'setAddressCustomType'
   /**
    *	User-defined unique identifier of the [Address](ctp:api:type:Address) to be updated.
@@ -1035,7 +1060,7 @@ export interface CustomerSetAddressCustomTypeAction {
    */
   readonly fields?: FieldContainer
 }
-export interface CustomerSetAuthenticationModeAction {
+export interface CustomerSetAuthenticationModeAction extends ICustomerUpdateAction {
   readonly action: 'setAuthenticationMode'
   /**
    *	Value to set.
@@ -1055,7 +1080,7 @@ export interface CustomerSetAuthenticationModeAction {
  *	Setting a company name produces the [CustomerCompanyNameSet](ctp:api:type:CustomerCompanyNameSetMessage) Message.
  *
  */
-export interface CustomerSetCompanyNameAction {
+export interface CustomerSetCompanyNameAction extends ICustomerUpdateAction {
   readonly action: 'setCompanyName'
   /**
    *	Value to set.
@@ -1069,7 +1094,7 @@ export interface CustomerSetCompanyNameAction {
  *	Adding a Custom Field to a Customer generates the [CustomerCustomFieldAdded](ctp:api:type:CustomerCustomFieldAddedMessage) Message, removing one generates the [CustomerCustomFieldRemoved](ctp:api:type:CustomerCustomFieldRemovedMessage) Message, and updating an existing one generates the [CustomerCustomFieldChanged](ctp:api:type:CustomerCustomFieldChangedMessage) Message.
  *
  */
-export interface CustomerSetCustomFieldAction {
+export interface CustomerSetCustomFieldAction extends ICustomerUpdateAction {
   readonly action: 'setCustomField'
   /**
    *	Name of the [Custom Field](/../api/projects/custom-fields).
@@ -1090,7 +1115,7 @@ export interface CustomerSetCustomFieldAction {
  *	Adding or updating a Custom Type on a Customer generates the [CustomerCustomTypeSet](ctp:api:type:CustomerCustomTypeSetMessage) Message, removing one generates the [CustomerCustomTypeRemoved](ctp:api:type:CustomerCustomTypeRemovedMessage) Message.
  *
  */
-export interface CustomerSetCustomTypeAction {
+export interface CustomerSetCustomTypeAction extends ICustomerUpdateAction {
   readonly action: 'setCustomType'
   /**
    *	Defines the [Type](ctp:api:type:Type) that extends the Customer with [Custom Fields](/../api/projects/custom-fields).
@@ -1112,7 +1137,7 @@ export interface CustomerSetCustomTypeAction {
  *	To reflect the new Customer Group, this update action can result in [updates](/api/carts-orders-overview#cart-updates) to the most recently modified active Cart. When this occurs, the following errors can be returned: [MatchingPriceNotFound](ctp:api:type:MatchingPriceNotFoundError) and [MissingTaxRateForCountry](ctp:api:type:MissingTaxRateForCountryError).
  *
  */
-export interface CustomerSetCustomerGroupAction {
+export interface CustomerSetCustomerGroupAction extends ICustomerUpdateAction {
   readonly action: 'setCustomerGroup'
   /**
    *	Value to set.
@@ -1126,7 +1151,7 @@ export interface CustomerSetCustomerGroupAction {
  *	Sets a new ID that can be used to refer to a Customer in a human-reabable way (for use in emails, invoices, etc).
  *
  */
-export interface CustomerSetCustomerNumberAction {
+export interface CustomerSetCustomerNumberAction extends ICustomerUpdateAction {
   readonly action: 'setCustomerNumber'
   /**
    *	Value to set.
@@ -1140,7 +1165,7 @@ export interface CustomerSetCustomerNumberAction {
  *	Setting the date of birth of the Customer produces the [CustomerDateOfBirthSet](ctp:api:type:CustomerDateOfBirthSetMessage) Message.
  *
  */
-export interface CustomerSetDateOfBirthAction {
+export interface CustomerSetDateOfBirthAction extends ICustomerUpdateAction {
   readonly action: 'setDateOfBirth'
   /**
    *	Value to set.
@@ -1155,7 +1180,7 @@ export interface CustomerSetDateOfBirthAction {
  *	The action adds the `id` of the specified Address to the `billingAddressIds` if not contained already. Either `addressId` or `addressKey` is required.
  *
  */
-export interface CustomerSetDefaultBillingAddressAction {
+export interface CustomerSetDefaultBillingAddressAction extends ICustomerUpdateAction {
   readonly action: 'setDefaultBillingAddress'
   /**
    *	`id` of the [Address](ctp:api:type:Address) to become the default billing address.
@@ -1175,7 +1200,7 @@ export interface CustomerSetDefaultBillingAddressAction {
  *	The action adds the `id` of the specified address to the `shippingAddressIds` if not contained already. Either `addressId` or `addressKey` is required.
  *
  */
-export interface CustomerSetDefaultShippingAddressAction {
+export interface CustomerSetDefaultShippingAddressAction extends ICustomerUpdateAction {
   readonly action: 'setDefaultShippingAddress'
   /**
    *	`id` of the [Address](ctp:api:type:Address) to become the default shipping address.
@@ -1190,7 +1215,7 @@ export interface CustomerSetDefaultShippingAddressAction {
    */
   readonly addressKey?: string
 }
-export interface CustomerSetExternalIdAction {
+export interface CustomerSetExternalIdAction extends ICustomerUpdateAction {
   readonly action: 'setExternalId'
   /**
    *	Value to set.
@@ -1201,10 +1226,10 @@ export interface CustomerSetExternalIdAction {
   readonly externalId?: string
 }
 /**
- *	Setting the first name of the Customer produces the [CustomeFirstNameSet](ctp:api:type:CustomerFirstNameSetMessage) Message.
+ *	Setting the first name of the Customer produces the [CustomerFirstNameSet](ctp:api:type:CustomerFirstNameSetMessage) Message.
  *
  */
-export interface CustomerSetFirstNameAction {
+export interface CustomerSetFirstNameAction extends ICustomerUpdateAction {
   readonly action: 'setFirstName'
   /**
    *	Value to set. If empty, any existing value is removed.
@@ -1213,7 +1238,7 @@ export interface CustomerSetFirstNameAction {
    */
   readonly firstName?: string
 }
-export interface CustomerSetKeyAction {
+export interface CustomerSetKeyAction extends ICustomerUpdateAction {
   readonly action: 'setKey'
   /**
    *	If `key` is absent or `null`, the existing key, if any, will be removed.
@@ -1226,7 +1251,7 @@ export interface CustomerSetKeyAction {
  *	Setting the last name of the Customer produces the [CustomerLastNameSet](ctp:api:type:CustomerLastNameSetMessage) Message.
  *
  */
-export interface CustomerSetLastNameAction {
+export interface CustomerSetLastNameAction extends ICustomerUpdateAction {
   readonly action: 'setLastName'
   /**
    *	Value to set. If empty, any existing value is removed.
@@ -1235,7 +1260,7 @@ export interface CustomerSetLastNameAction {
    */
   readonly lastName?: string
 }
-export interface CustomerSetLocaleAction {
+export interface CustomerSetLocaleAction extends ICustomerUpdateAction {
   readonly action: 'setLocale'
   /**
    *	Value to set.
@@ -1245,7 +1270,7 @@ export interface CustomerSetLocaleAction {
    */
   readonly locale?: string
 }
-export interface CustomerSetMiddleNameAction {
+export interface CustomerSetMiddleNameAction extends ICustomerUpdateAction {
   readonly action: 'setMiddleName'
   /**
    *	Value to set. If empty, any existing value is removed.
@@ -1254,7 +1279,7 @@ export interface CustomerSetMiddleNameAction {
    */
   readonly middleName?: string
 }
-export interface CustomerSetSalutationAction {
+export interface CustomerSetSalutationAction extends ICustomerUpdateAction {
   readonly action: 'setSalutation'
   /**
    *	Value to set. If empty, any existing value is removed.
@@ -1268,7 +1293,7 @@ export interface CustomerSetSalutationAction {
  *	If no Stores are specified, the Customer becomes a [global Customer](/../api/customers-overview#global-versus-store-specific-customers).
  *
  */
-export interface CustomerSetStoresAction {
+export interface CustomerSetStoresAction extends ICustomerUpdateAction {
   readonly action: 'setStores'
   /**
    *	ResourceIdentifier of the Stores to set.
@@ -1281,7 +1306,7 @@ export interface CustomerSetStoresAction {
  *	Setting the title of the Customer produces the [CustomerTitleSet](ctp:api:type:CustomerTitleSetMessage) Message.
  *
  */
-export interface CustomerSetTitleAction {
+export interface CustomerSetTitleAction extends ICustomerUpdateAction {
   readonly action: 'setTitle'
   /**
    *	Value to set. If empty, any existing value is removed.
@@ -1290,7 +1315,7 @@ export interface CustomerSetTitleAction {
    */
   readonly title?: string
 }
-export interface CustomerSetVatIdAction {
+export interface CustomerSetVatIdAction extends ICustomerUpdateAction {
   readonly action: 'setVatId'
   /**
    *	Value to set.
