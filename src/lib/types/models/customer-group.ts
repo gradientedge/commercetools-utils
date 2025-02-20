@@ -4,7 +4,7 @@
  * For more information about the commercetools platform APIs, visit https://docs.commercetools.com/.
  */
 
-import { BaseResource, CreatedBy, LastModifiedBy } from './common.js'
+import { BaseResource, CreatedBy, IReference, IResourceIdentifier, LastModifiedBy } from './common.js'
 import { CustomFields, CustomFieldsDraft, FieldContainer, TypeResourceIdentifier } from './type.js'
 
 export interface CustomerGroup extends BaseResource {
@@ -128,7 +128,7 @@ export interface CustomerGroupPagedQueryResponse {
  *	[Reference](ctp:api:type:Reference) to a [CustomerGroup](ctp:api:type:CustomerGroup).
  *
  */
-export interface CustomerGroupReference {
+export interface CustomerGroupReference extends IReference {
   readonly typeId: 'customer-group'
   /**
    *	Unique identifier of the referenced [CustomerGroup](ctp:api:type:CustomerGroup).
@@ -147,7 +147,7 @@ export interface CustomerGroupReference {
  *	[ResourceIdentifier](ctp:api:type:ResourceIdentifier) to a [CustomerGroup](ctp:api:type:CustomerGroup). Either `id` or `key` is required. If both are set, an [InvalidJsonInput](/../api/errors#invalidjsoninput) error is returned.
  *
  */
-export interface CustomerGroupResourceIdentifier {
+export interface CustomerGroupResourceIdentifier extends IResourceIdentifier {
   readonly typeId: 'customer-group'
   /**
    *	Unique identifier of the referenced [CustomerGroup](ctp:api:type:CustomerGroup). Required if `key` is absent.
@@ -182,7 +182,13 @@ export type CustomerGroupUpdateAction =
   | CustomerGroupSetCustomFieldAction
   | CustomerGroupSetCustomTypeAction
   | CustomerGroupSetKeyAction
-export interface CustomerGroupChangeNameAction {
+export interface ICustomerGroupUpdateAction {
+  /**
+   *
+   */
+  readonly action: string
+}
+export interface CustomerGroupChangeNameAction extends ICustomerGroupUpdateAction {
   readonly action: 'changeName'
   /**
    *	New name of the CustomerGroup.
@@ -191,7 +197,7 @@ export interface CustomerGroupChangeNameAction {
    */
   readonly name: string
 }
-export interface CustomerGroupSetCustomFieldAction {
+export interface CustomerGroupSetCustomFieldAction extends ICustomerGroupUpdateAction {
   readonly action: 'setCustomField'
   /**
    *	Name of the [Custom Field](/../api/projects/custom-fields).
@@ -213,7 +219,7 @@ export interface CustomerGroupSetCustomFieldAction {
  *	If present, this action overwrites any existing [custom](/../api/projects/custom-fields) type and fields.
  *
  */
-export interface CustomerGroupSetCustomTypeAction {
+export interface CustomerGroupSetCustomTypeAction extends ICustomerGroupUpdateAction {
   readonly action: 'setCustomType'
   /**
    *	Defines the [Type](ctp:api:type:Type) that extends the CustomerGroup with [Custom Fields](/../api/projects/custom-fields).
@@ -229,7 +235,7 @@ export interface CustomerGroupSetCustomTypeAction {
    */
   readonly fields?: FieldContainer
 }
-export interface CustomerGroupSetKeyAction {
+export interface CustomerGroupSetKeyAction extends ICustomerGroupUpdateAction {
   readonly action: 'setKey'
   /**
    *	If `key` is absent or `null`, the existing key, if any, will be removed.

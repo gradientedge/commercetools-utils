@@ -4,7 +4,7 @@
  * For more information about the commercetools platform APIs, visit https://docs.commercetools.com/.
  */
 
-import { BaseResource, CreatedBy, LastModifiedBy, LocalizedString } from './common.js'
+import { BaseResource, CreatedBy, IReference, IResourceIdentifier, LastModifiedBy, LocalizedString } from './common.js'
 
 export interface State extends BaseResource {
   /**
@@ -126,7 +126,7 @@ export interface StateDraft {
    */
   readonly initial?: boolean
   /**
-   *	If suitable, assign predifined roles the State can fulfill in case the State's `type` is `LineItemState` or `ReviewState`.
+   *	If suitable, assign predefined roles the State can fulfill in case the State's `type` is `LineItemState` or `ReviewState`.
    *
    *
    */
@@ -186,7 +186,7 @@ export interface StatePagedQueryResponse {
  *	[Reference](ctp:api:type:Reference) to a [State](ctp:api:type:State).
  *
  */
-export interface StateReference {
+export interface StateReference extends IReference {
   readonly typeId: 'state'
   /**
    *	Unique identifier of the referenced [State](ctp:api:type:State).
@@ -205,7 +205,7 @@ export interface StateReference {
  *	[ResourceIdentifier](ctp:api:type:ResourceIdentifier) to a [State](ctp:api:type:State). Either `id` or `key` is required. If both are set, an [InvalidJsonInput](/../api/errors#invalidjsoninput) error is returned.
  *
  */
-export interface StateResourceIdentifier {
+export interface StateResourceIdentifier extends IResourceIdentifier {
   readonly typeId: 'state'
   /**
    *	Unique identifier of the referenced [State](ctp:api:type:State). Required if `key` is absent.
@@ -224,11 +224,27 @@ export interface StateResourceIdentifier {
  *	For some resource types, a State can fulfill the following predefined roles:
  *
  */
+export enum StateRoleEnumValues {
+  Return = 'Return',
+  ReviewIncludedInStatistics = 'ReviewIncludedInStatistics',
+}
+
 export type StateRoleEnum = 'Return' | 'ReviewIncludedInStatistics' | string
 /**
  *	Resource or object type the State can be assigned to.
  *
  */
+export enum StateTypeEnumValues {
+  LineItemState = 'LineItemState',
+  OrderState = 'OrderState',
+  PaymentState = 'PaymentState',
+  ProductState = 'ProductState',
+  QuoteRequestState = 'QuoteRequestState',
+  QuoteState = 'QuoteState',
+  ReviewState = 'ReviewState',
+  StagedQuoteState = 'StagedQuoteState',
+}
+
 export type StateTypeEnum =
   | 'LineItemState'
   | 'OrderState'
@@ -264,7 +280,13 @@ export type StateUpdateAction =
   | StateSetNameAction
   | StateSetRolesAction
   | StateSetTransitionsAction
-export interface StateAddRolesAction {
+export interface IStateUpdateAction {
+  /**
+   *
+   */
+  readonly action: string
+}
+export interface StateAddRolesAction extends IStateUpdateAction {
   readonly action: 'addRoles'
   /**
    *	Value to append to the array.
@@ -273,7 +295,7 @@ export interface StateAddRolesAction {
    */
   readonly roles: StateRoleEnum[]
 }
-export interface StateChangeInitialAction {
+export interface StateChangeInitialAction extends IStateUpdateAction {
   readonly action: 'changeInitial'
   /**
    *	Set to `true` for defining the State as initial State in a state machine and making it the first step in a workflow.
@@ -282,7 +304,7 @@ export interface StateChangeInitialAction {
    */
   readonly initial: boolean
 }
-export interface StateChangeKeyAction {
+export interface StateChangeKeyAction extends IStateUpdateAction {
   readonly action: 'changeKey'
   /**
    *	New value to set.
@@ -292,7 +314,7 @@ export interface StateChangeKeyAction {
    */
   readonly key: string
 }
-export interface StateChangeTypeAction {
+export interface StateChangeTypeAction extends IStateUpdateAction {
   readonly action: 'changeType'
   /**
    *	Resource or object types the State shall be assigned to.
@@ -302,7 +324,7 @@ export interface StateChangeTypeAction {
    */
   readonly type: StateTypeEnum
 }
-export interface StateRemoveRolesAction {
+export interface StateRemoveRolesAction extends IStateUpdateAction {
   readonly action: 'removeRoles'
   /**
    *	Roles to remove from the State.
@@ -311,7 +333,7 @@ export interface StateRemoveRolesAction {
    */
   readonly roles: StateRoleEnum[]
 }
-export interface StateSetDescriptionAction {
+export interface StateSetDescriptionAction extends IStateUpdateAction {
   readonly action: 'setDescription'
   /**
    *	Value to set.
@@ -321,7 +343,7 @@ export interface StateSetDescriptionAction {
    */
   readonly description: LocalizedString
 }
-export interface StateSetNameAction {
+export interface StateSetNameAction extends IStateUpdateAction {
   readonly action: 'setName'
   /**
    *	Value to set.
@@ -331,7 +353,7 @@ export interface StateSetNameAction {
    */
   readonly name: LocalizedString
 }
-export interface StateSetRolesAction {
+export interface StateSetRolesAction extends IStateUpdateAction {
   readonly action: 'setRoles'
   /**
    *	Value to set.
@@ -341,7 +363,7 @@ export interface StateSetRolesAction {
    */
   readonly roles: StateRoleEnum[]
 }
-export interface StateSetTransitionsAction {
+export interface StateSetTransitionsAction extends IStateUpdateAction {
   readonly action: 'setTransitions'
   /**
    *	Value to set.

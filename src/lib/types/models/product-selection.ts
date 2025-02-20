@@ -4,7 +4,7 @@
  * For more information about the commercetools platform APIs, visit https://docs.commercetools.com/.
  */
 
-import { BaseResource, CreatedBy, LastModifiedBy, LocalizedString } from './common.js'
+import { BaseResource, CreatedBy, IReference, IResourceIdentifier, LastModifiedBy, LocalizedString } from './common.js'
 import { ProductReference, ProductResourceIdentifier } from './product.js'
 import { CustomFields, CustomFieldsDraft, FieldContainer, TypeResourceIdentifier } from './type.js'
 
@@ -179,7 +179,8 @@ export interface ProductSelectionAssignment {
    */
   readonly productSelection: ProductSelectionReference
   /**
-   *	Define which Variants of the added Product will be included in the Product Selection.
+   *	Defines which particular Variants of the Product are included in the Product Selection.
+   *	If undefined all Variants of the referenced Product are included.
    *
    *	This field is only available for assignments to a Product Selection with `Individual` [ProductSelectionMode](ctp:api:type:ProductSelectionMode).
    *	The list of SKUs will be updated automatically on any change of those performed on the respective Product itself.
@@ -188,7 +189,8 @@ export interface ProductSelectionAssignment {
    */
   readonly variantSelection?: ProductVariantSelection
   /**
-   *	Defines which Variants of the Product will be excluded from the Product Selection.
+   *	Defines which particular Variants of the Product are excluded from the Product Selection.
+   *	If undefined all Variants of the referenced Product are excluded.
    *
    *	This field is only available for assignments to a Product Selection with `IndividualExclusion` [ProductSelectionMode](ctp:api:type:ProductSelectionMode).
    *	The list of SKUs will be updated automatically on any change of those performed on the respective Product itself.
@@ -223,6 +225,11 @@ export interface ProductSelectionDraft {
  *	Product Selections can have the following modes:
  *
  */
+export enum ProductSelectionModeValues {
+  Individual = 'Individual',
+  IndividualExclusion = 'IndividualExclusion',
+}
+
 export type ProductSelectionMode = 'Individual' | 'IndividualExclusion' | string
 /**
  *	[PagedQueryResult](/general-concepts#pagedqueryresult) containing an array of [ProductSelection](ctp:api:type:ProductSelection).
@@ -307,7 +314,7 @@ export interface ProductSelectionProductPagedQueryResponse {
  *	[Reference](ctp:api:type:Reference) to a [ProductSelection](ctp:api:type:ProductSelection).
  *
  */
-export interface ProductSelectionReference {
+export interface ProductSelectionReference extends IReference {
   readonly typeId: 'product-selection'
   /**
    *	Unique identifier of the referenced [ProductSelection](ctp:api:type:ProductSelection).
@@ -326,7 +333,7 @@ export interface ProductSelectionReference {
  *	[ResourceIdentifier](ctp:api:type:ResourceIdentifier) to a [ProductSelection](ctp:api:type:ProductSelection). Either `id` or `key` is required. If both are set, an [InvalidJsonInput](/../api/errors#invalidjsoninput) error is returned.
  *
  */
-export interface ProductSelectionResourceIdentifier {
+export interface ProductSelectionResourceIdentifier extends IResourceIdentifier {
   readonly typeId: 'product-selection'
   /**
    *	Unique identifier of the referenced [ProductSelection](ctp:api:type:ProductSelection). Required if `key` is absent.
@@ -361,6 +368,12 @@ export type ProductSelectionUpdateAction =
   | ProductSelectionSetKeyAction
   | ProductSelectionSetVariantExclusionAction
   | ProductSelectionSetVariantSelectionAction
+export interface IProductSelectionUpdateAction {
+  /**
+   *
+   */
+  readonly action: string
+}
 /**
  *	Only Product Variants with the explicitly listed SKUs are part of a Product Selection with `IndividualExclusion` [ProductSelectionMode](ctp:api:type:ProductSelectionMode).
  *
@@ -378,11 +391,19 @@ export interface ProductVariantExclusion {
  *
  */
 export type ProductVariantSelection = ProductVariantSelectionIncludeAllExcept | ProductVariantSelectionIncludeOnly
+export interface IProductVariantSelection {
+  /**
+   *	Determines whether the SKUs are to be included in, or excluded from, the Product Selection.
+   *
+   *
+   */
+  readonly type: ProductVariantSelectionTypeEnum
+}
 /**
  *	All Product Variants except the explicitly stated SKUs are part of the Product Selection.
  *
  */
-export interface ProductVariantSelectionIncludeAllExcept {
+export interface ProductVariantSelectionIncludeAllExcept extends IProductVariantSelection {
   readonly type: 'includeAllExcept'
   /**
    *	Non-empty array of SKUs representing Product Variants to be excluded from the Product Selection.
@@ -395,7 +416,7 @@ export interface ProductVariantSelectionIncludeAllExcept {
  *	Only Product Variants with explicitly stated SKUs are part of the Product Selection.
  *
  */
-export interface ProductVariantSelectionIncludeOnly {
+export interface ProductVariantSelectionIncludeOnly extends IProductVariantSelection {
   readonly type: 'includeOnly'
   /**
    *	Non-empty array of SKUs representing Product Variants to be included into the Product Selection.
@@ -404,6 +425,13 @@ export interface ProductVariantSelectionIncludeOnly {
    */
   readonly skus: string[]
 }
+export enum ProductVariantSelectionTypeEnumValues {
+  Exclusion = 'exclusion',
+  IncludeAllExcept = 'includeAllExcept',
+  IncludeOnly = 'includeOnly',
+  Inclusion = 'inclusion',
+}
+
 export type ProductVariantSelectionTypeEnum = 'exclusion' | 'includeAllExcept' | 'includeOnly' | 'inclusion' | string
 /**
  *	[PagedQueryResult](/general-concepts#pagedqueryresult) containing an array of [ProductSelectionAssignment](ctp:api:type:ProductSelectionAssignment).
@@ -450,7 +478,7 @@ export interface ProductsInStorePagedQueryResponse {
  *	If the specified Product is already assigned to the Product Selection, but the existing Product Selection has a different Product Variant Selection, a [ProductPresentWithDifferentVariantSelection](ctp:api:type:ProductPresentWithDifferentVariantSelectionError) error is returned.
  *
  */
-export interface ProductSelectionAddProductAction {
+export interface ProductSelectionAddProductAction extends IProductSelectionUpdateAction {
   readonly action: 'addProduct'
   /**
    *	ResourceIdentifier of the Product
@@ -465,7 +493,7 @@ export interface ProductSelectionAddProductAction {
    */
   readonly variantSelection?: ProductVariantSelection
 }
-export interface ProductSelectionChangeNameAction {
+export interface ProductSelectionChangeNameAction extends IProductSelectionUpdateAction {
   readonly action: 'changeName'
   /**
    *	The new name to be set for the ProductSelection.
@@ -479,7 +507,7 @@ export interface ProductSelectionChangeNameAction {
  *	If the specified Product is already assigned to the Product Selection, but the existing Product Selection has a different Product Variant Exclusion, a [ProductPresentWithDifferentVariantSelection](ctp:api:type:ProductPresentWithDifferentVariantSelectionError) error is returned.
  *
  */
-export interface ProductSelectionExcludeProductAction {
+export interface ProductSelectionExcludeProductAction extends IProductSelectionUpdateAction {
   readonly action: 'excludeProduct'
   /**
    *	ResourceIdentifier of the Product
@@ -494,7 +522,7 @@ export interface ProductSelectionExcludeProductAction {
    */
   readonly variantExclusion?: ProductVariantExclusion
 }
-export interface ProductSelectionRemoveProductAction {
+export interface ProductSelectionRemoveProductAction extends IProductSelectionUpdateAction {
   readonly action: 'removeProduct'
   /**
    *	ResourceIdentifier of the Product
@@ -502,7 +530,7 @@ export interface ProductSelectionRemoveProductAction {
    */
   readonly product: ProductResourceIdentifier
 }
-export interface ProductSelectionSetCustomFieldAction {
+export interface ProductSelectionSetCustomFieldAction extends IProductSelectionUpdateAction {
   readonly action: 'setCustomField'
   /**
    *	Name of the [Custom Field](/../api/projects/custom-fields).
@@ -519,7 +547,7 @@ export interface ProductSelectionSetCustomFieldAction {
    */
   readonly value?: any
 }
-export interface ProductSelectionSetCustomTypeAction {
+export interface ProductSelectionSetCustomTypeAction extends IProductSelectionUpdateAction {
   readonly action: 'setCustomType'
   /**
    *	Defines the [Type](ctp:api:type:Type) that extends the ProductSelection with [Custom Fields](/../api/projects/custom-fields).
@@ -535,7 +563,7 @@ export interface ProductSelectionSetCustomTypeAction {
    */
   readonly fields?: FieldContainer
 }
-export interface ProductSelectionSetKeyAction {
+export interface ProductSelectionSetKeyAction extends IProductSelectionUpdateAction {
   readonly action: 'setKey'
   /**
    *	If `key` is absent or `null`, the existing key, if any, will be removed.
@@ -550,7 +578,7 @@ export interface ProductSelectionSetKeyAction {
  *	If the specified Product is not assigned to the Product Selection, a [ProductAssignmentMissing](ctp:api:type:ProductAssignmentMissingError) error is returned.
  *
  */
-export interface ProductSelectionSetVariantExclusionAction {
+export interface ProductSelectionSetVariantExclusionAction extends IProductSelectionUpdateAction {
   readonly action: 'setVariantExclusion'
   /**
    *	ResourceIdentifier of the Product
@@ -572,7 +600,7 @@ export interface ProductSelectionSetVariantExclusionAction {
  *	If the specified Product is not assigned to the Product Selection, a [ProductAssignmentMissing](ctp:api:type:ProductAssignmentMissingError) error is returned.
  *
  */
-export interface ProductSelectionSetVariantSelectionAction {
+export interface ProductSelectionSetVariantSelectionAction extends IProductSelectionUpdateAction {
   readonly action: 'setVariantSelection'
   /**
    *	ResourceIdentifier of the Product

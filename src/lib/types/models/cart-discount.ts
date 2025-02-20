@@ -9,6 +9,8 @@ import {
   BaseResource,
   CentPrecisionMoney,
   CreatedBy,
+  IReference,
+  IResourceIdentifier,
   LastModifiedBy,
   LocalizedString,
   Money,
@@ -294,7 +296,7 @@ export interface CartDiscountPagedQueryResponse {
  *	[Reference](ctp:api:type:Reference) to a [CartDiscount](ctp:api:type:CartDiscount).
  *
  */
-export interface CartDiscountReference {
+export interface CartDiscountReference extends IReference {
   readonly typeId: 'cart-discount'
   /**
    *	Unique identifier of the referenced [CartDiscount](ctp:api:type:CartDiscount).
@@ -313,7 +315,7 @@ export interface CartDiscountReference {
  *	[ResourceIdentifier](ctp:api:type:ResourceIdentifier) to a [CartDiscount](ctp:api:type:CartDiscount). Either `id` or `key` is required. If both are set, an [InvalidJsonInput](/../api/errors#invalidjsoninput) error is returned.
  *
  */
-export interface CartDiscountResourceIdentifier {
+export interface CartDiscountResourceIdentifier extends IResourceIdentifier {
   readonly typeId: 'cart-discount'
   /**
    *	Unique identifier of the referenced [CartDiscount](ctp:api:type:CartDiscount). Required if `key` is absent.
@@ -331,15 +333,22 @@ export interface CartDiscountResourceIdentifier {
 export type CartDiscountTarget =
   | CartDiscountCustomLineItemsTarget
   | CartDiscountLineItemsTarget
+  | CartDiscountPatternTarget
   | CartDiscountShippingCostTarget
   | CartDiscountTotalPriceTarget
   | MultiBuyCustomLineItemsTarget
   | MultiBuyLineItemsTarget
+export interface ICartDiscountTarget {
+  /**
+   *
+   */
+  readonly type: string
+}
 /**
  *	Discount is applied to [CustomLineItems](ctp:api:type:CustomLineItem) matching the `predicate`.
  *
  */
-export interface CartDiscountCustomLineItemsTarget {
+export interface CartDiscountCustomLineItemsTarget extends ICartDiscountTarget {
   readonly type: 'customLineItems'
   /**
    *	Valid [CustomLineItem target predicate](/../api/projects/predicates#customlineitem-field-identifiers).
@@ -352,7 +361,7 @@ export interface CartDiscountCustomLineItemsTarget {
  *	Discount is applied to [LineItems](ctp:api:type:LineItem) matching the `predicate`.
  *
  */
-export interface CartDiscountLineItemsTarget {
+export interface CartDiscountLineItemsTarget extends ICartDiscountTarget {
   readonly type: 'lineItems'
   /**
    *	Valid [LineItem target predicate](/../api/projects/predicates#lineitem-field-identifiers).
@@ -362,17 +371,61 @@ export interface CartDiscountLineItemsTarget {
   readonly predicate: string
 }
 /**
+ *	Pattern targets can be used to model Buy and Get discounts.
+ *
+ *	Unlike [CartDiscountLineItemsTarget](#cartdiscountlineitemstarget) and [CartDiscountCustomLineItemsTarget](#cartdiscountcustomlineitemstarget), it does not apply to a (Custom) Line Item as a whole, but to individual units of a (Custom) Line Item. The discounts can apply multiple times on the same cart, but each unit can be discounted only once.
+ *
+ */
+export interface CartDiscountPatternTarget extends ICartDiscountTarget {
+  readonly type: 'pattern'
+  /**
+   *	Defines the set of units of (Custom) Line Items in a Cart that trigger a discount application.
+   *
+   *	Based on the availability of matching units, the `triggerPattern` can match multiple times, limiting the number of maximum times the discount will be applied.
+   *	To further limit the discount application, set the `maxOccurrence`.
+   *
+   *	If empty, the Discount will apply indefinitely.
+   *
+   *
+   */
+  readonly triggerPattern: PatternComponent[]
+  /**
+   *	Defines the set of units of (Custom) Line Items in a Cart on which the Discount is applied.
+   *
+   *	Based on the availability of matching units and the limits from the `triggerPattern` or `maxOccurrence`, the `targetPattern` can match multiple times.
+   *
+   *	This array cannot be empty.
+   *
+   *
+   */
+  readonly targetPattern: PatternComponent[]
+  /**
+   *	Maximum number of times the Discount can apply on a Cart.
+   *
+   *	If empty or not set, the Discount will apply indefinitely.
+   *
+   *
+   */
+  readonly maxOccurrence?: number
+  /**
+   *	Determines which of the matching units of (Custom) Line Items are discounted.
+   *
+   *
+   */
+  readonly selectionMode: SelectionMode
+}
+/**
  *	Discount is applied to the shipping costs of the [Cart](ctp:api:type:Cart).
  *
  */
-export interface CartDiscountShippingCostTarget {
+export interface CartDiscountShippingCostTarget extends ICartDiscountTarget {
   readonly type: 'shipping'
 }
 /**
  *	Discount is applied to the total price of the [Cart](ctp:api:type:Cart).
  *
  */
-export interface CartDiscountTotalPriceTarget {
+export interface CartDiscountTotalPriceTarget extends ICartDiscountTarget {
   readonly type: 'totalPrice'
 }
 export interface CartDiscountUpdate {
@@ -409,16 +462,28 @@ export type CartDiscountUpdateAction =
   | CartDiscountSetValidFromAction
   | CartDiscountSetValidFromAndUntilAction
   | CartDiscountSetValidUntilAction
+export interface ICartDiscountUpdateAction {
+  /**
+   *
+   */
+  readonly action: string
+}
 export type CartDiscountValue =
   | CartDiscountValueAbsolute
   | CartDiscountValueFixed
   | CartDiscountValueGiftLineItem
   | CartDiscountValueRelative
+export interface ICartDiscountValue {
+  /**
+   *
+   */
+  readonly type: string
+}
 /**
  *	Discounts the [CartDiscountTarget](ctp:api:type:CartDiscountTarget) by an absolute amount (not allowed for [MultiBuyLineItemsTarget](ctp:api:type:MultiBuyLineItemsTarget) and [MultiBuyCustomLineItemsTarget](ctp:api:type:MultiBuyCustomLineItemsTarget)).
  *
  */
-export interface CartDiscountValueAbsolute {
+export interface CartDiscountValueAbsolute extends ICartDiscountValue {
   readonly type: 'absolute'
   /**
    *	Cent precision money values in different currencies.
@@ -438,7 +503,13 @@ export type CartDiscountValueDraft =
   | CartDiscountValueFixedDraft
   | CartDiscountValueGiftLineItemDraft
   | CartDiscountValueRelativeDraft
-export interface CartDiscountValueAbsoluteDraft {
+export interface ICartDiscountValueDraft {
+  /**
+   *
+   */
+  readonly type: string
+}
+export interface CartDiscountValueAbsoluteDraft extends ICartDiscountValueDraft {
   readonly type: 'absolute'
   /**
    *	Money values in different currencies.
@@ -462,7 +533,7 @@ export interface CartDiscountValueAbsoluteDraft {
  *	Sets the [DiscountedLineItemPrice](ctp:api:type:DiscountedLineItemPrice) of the [CartDiscountLineItemsTarget](ctp:api:type:CartDiscountLineItemsTarget) or [CartDiscountCustomLineItemsTarget](ctp:api:type:CartDiscountCustomLineItemsTarget) to the value specified in the `money` field, if it is lower than the current Line Item price for the same currency. If the Line Item price is already discounted to a price equal to or lower than the respective price in the `money` field, this Discount is not applied. If the `quantity` of the Line Item eligible for the Discount is greater than `1`, the fixed price discount is only applied to the Line Item portion for which the `money` value is lesser than their current price.
  *
  */
-export interface CartDiscountValueFixed {
+export interface CartDiscountValueFixed extends ICartDiscountValue {
   readonly type: 'fixed'
   /**
    *	Money values in [cent precision](ctp:api:type:CentPrecisionMoney) or [high precision](ctp:api:type:HighPrecisionMoney) of different currencies.
@@ -470,12 +541,20 @@ export interface CartDiscountValueFixed {
    *
    */
   readonly money: TypedMoney[]
+  /**
+   *	Indicates how the discount is applied on [CartDiscountLineItemTarget](ctp:api:type:CartDiscountLineItemsTarget) or [CartDiscountCustomLineItemTarget](ctp:api:type:CartDiscountCustomLineItemsTarget).
+   *
+   *	For [CartDiscountPatternTarget](ctp:api:type:CartDiscountPatternTarget), the mode can also be `ProportionateDistribution` or `EvenDistribution`.
+   *
+   *
+   */
+  readonly applicationMode?: DiscountApplicationMode
 }
 /**
  *	Sets the [DiscountedLineItemPrice](ctp:api:type:DiscountedLineItemPrice) of the [CartDiscountLineItemsTarget](ctp:api:type:CartDiscountLineItemsTarget) or [CartDiscountCustomLineItemsTarget](ctp:api:type:CartDiscountCustomLineItemsTarget) to the value specified in the `money` field, if it is lower than the current Line Item price for the same currency. If the Line Item price is already discounted to a price equal to or lower than the respective price in the `money` field, this Discount is not applied.
  *
  */
-export interface CartDiscountValueFixedDraft {
+export interface CartDiscountValueFixedDraft extends ICartDiscountValueDraft {
   readonly type: 'fixed'
   /**
    *	Money values provided either in [cent precision](ctp:api:type:Money) or [high precision](ctp:api:type:HighPrecisionMoneyDraft) for different currencies.
@@ -486,8 +565,16 @@ export interface CartDiscountValueFixedDraft {
    *
    */
   readonly money: TypedMoneyDraft[]
+  /**
+   *	Determines how the discount applies on [CartDiscountLineItemTarget](ctp:api:type:CartDiscountLineItemsTarget) or [CartDiscountCustomLineItemTarget](ctp:api:type:CartDiscountCustomLineItemsTarget).
+   *
+   *	For [CartDiscountPatternTarget](ctp:api:type:CartDiscountPatternTarget), you can also set the mode to `ProportionateDistribution` or `EvenDistribution`.
+   *
+   *
+   */
+  readonly applicationMode?: DiscountApplicationMode
 }
-export interface CartDiscountValueGiftLineItem {
+export interface CartDiscountValueGiftLineItem extends ICartDiscountValue {
   readonly type: 'giftLineItem'
   /**
    *	Reference to a Product.
@@ -521,7 +608,7 @@ export interface CartDiscountValueGiftLineItem {
  *	Hence, this type can not be used in the [Change Value](ctp:api:type:CartDiscountChangeValueAction) update action.
  *
  */
-export interface CartDiscountValueGiftLineItemDraft {
+export interface CartDiscountValueGiftLineItemDraft extends ICartDiscountValueDraft {
   readonly type: 'giftLineItem'
   /**
    *	ResourceIdentifier of a Product.
@@ -554,7 +641,7 @@ export interface CartDiscountValueGiftLineItemDraft {
  *	Discounts the [CartDiscountTarget](ctp:api:type:CartDiscountTarget) relative to its price.
  *
  */
-export interface CartDiscountValueRelative {
+export interface CartDiscountValueRelative extends ICartDiscountValue {
   readonly type: 'relative'
   /**
    *	Fraction (per ten thousand) the price is reduced by. For example, `1000` will result in a 10% price reduction.
@@ -563,7 +650,7 @@ export interface CartDiscountValueRelative {
    */
   readonly permyriad: number
 }
-export interface CartDiscountValueRelativeDraft {
+export interface CartDiscountValueRelativeDraft extends ICartDiscountValueDraft {
   readonly type: 'relative'
   /**
    *	Fraction (per ten thousand) the price is reduced by. For example, `1000` will result in a 10% price reduction.
@@ -576,6 +663,12 @@ export interface CartDiscountValueRelativeDraft {
  *	This mode determines how absolute Discounts are applied on Line Items or Custom Line Items.
  *
  */
+export enum DiscountApplicationModeValues {
+  EvenDistribution = 'EvenDistribution',
+  IndividualApplication = 'IndividualApplication',
+  ProportionateDistribution = 'ProportionateDistribution',
+}
+
 export type DiscountApplicationMode =
   | 'EvenDistribution'
   | 'IndividualApplication'
@@ -585,7 +678,7 @@ export type DiscountApplicationMode =
  *	This Discount target is similar to `MultiBuyLineItems`, but is applied on Custom Line Items instead of Line Items.
  *
  */
-export interface MultiBuyCustomLineItemsTarget {
+export interface MultiBuyCustomLineItemsTarget extends ICartDiscountTarget {
   readonly type: 'multiBuyCustomLineItems'
   /**
    *	Valid [CustomLineItems target predicate](/../api/projects/predicates#customlineitem-field-identifiers). The Discount will be applied to Custom Line Items that are matched by the predicate.
@@ -620,7 +713,7 @@ export interface MultiBuyCustomLineItemsTarget {
    */
   readonly selectionMode: SelectionMode
 }
-export interface MultiBuyLineItemsTarget {
+export interface MultiBuyLineItemsTarget extends ICartDiscountTarget {
   readonly type: 'multiBuyLineItems'
   /**
    *	Valid [LineItem target predicate](/../api/projects/predicates#lineitem-field-identifiers). The Discount will be applied to Line Items that are matched by the predicate.
@@ -656,14 +749,109 @@ export interface MultiBuyLineItemsTarget {
   readonly selectionMode: SelectionMode
 }
 /**
+ *	The pattern component it used to define a set of units based on some criteria. The criteria depends on the type of component used.
+ *
+ */
+export type PatternComponent = CountOnCustomLineItemUnits | CountOnLineItemUnits
+export interface IPatternComponent {
+  /**
+   *
+   */
+  readonly type: string
+}
+export interface CountOnCustomLineItemUnits extends IPatternComponent {
+  readonly type: 'CountOnCustomLineItemUnits'
+  /**
+   *	Valid [CustomLineItem predicate](/../api/projects/predicates#customlineitem-field-identifiers) that determines the units participating in the Discount.
+   *
+   *
+   */
+  readonly predicate: string
+  /**
+   *	Minimum number of units of a Custom Line Item that match the predicate.
+   *
+   *
+   */
+  readonly minCount?: number
+  /**
+   *	Maximum number of units of a Custom Line Item that match the predicate.
+   *	There might be more units matching the predicate, but they will not be participating to the resulting set.
+   *
+   *	The value must be greater than or equal to `minCount`.
+   *	If not provided, the component will match all units that satisfy the predicate.
+   *
+   *
+   */
+  readonly maxCount?: number
+  /**
+   *	Number of units of a Custom Line Item to exclude on every application of the Discount.
+   *
+   *	Set only when configuring the `targetPattern`.
+   *
+   *	The units matched first (satisfying the pattern component) will be excluded from the resulting set.
+   *	The `minCount`and `maxCount` are considered only after the exclusion. Pattern components are matched only if any further units satisfying the pattern component exist.
+   *	For example, if 5 jeans are required but only 3 should be discounted, the `excludeCount` value must be 2.
+   *
+   *
+   */
+  readonly excludeCount?: number
+}
+export interface CountOnLineItemUnits extends IPatternComponent {
+  readonly type: 'CountOnLineItemUnits'
+  /**
+   *	Valid [LineItem predicate](/../api/projects/predicates#lineitem-field-identifiers) that determines the units participating in the Discount.
+   *
+   *
+   */
+  readonly predicate: string
+  /**
+   *	Minimum number of units of a Line Item that match the predicate.
+   *
+   *
+   */
+  readonly minCount?: number
+  /**
+   *	Maximum number of units of a Line Item that match the predicate.
+   *	There might be more units matching the predicate, but they will not be participating to the resulting set.
+   *
+   *	The value must be greater than or equal to `minCount`.
+   *	If not provided, the component will match all units that satisfy the predicate.
+   *
+   *
+   */
+  readonly maxCount?: number
+  /**
+   *	Number of units of a Line Item to exclude on every application of the Discount.
+   *
+   *	Set only when configuring the `targetPattern`.
+   *
+   *	The units matched first (satisfying the pattern component) will be excluded from the resulting set.
+   *	The `minCount`and `maxCount` are considered only after the exclusion. Pattern components are matched only if any further units satisfying the pattern component exist.
+   *	For example, if 5 jeans are required but only 3 should be discounted, the `excludeCount` value must be 2.
+   *
+   *
+   */
+  readonly excludeCount?: number
+}
+/**
  *	Defines which matching items are to be discounted.
  *
  */
+export enum SelectionModeValues {
+  Cheapest = 'Cheapest',
+  MostExpensive = 'MostExpensive',
+}
+
 export type SelectionMode = 'Cheapest' | 'MostExpensive' | string
 /**
  *	Describes how the Cart Discount interacts with other Discounts.
  *
  */
+export enum StackingModeValues {
+  Stacking = 'Stacking',
+  StopAfterThisDiscount = 'StopAfterThisDiscount',
+}
+
 export type StackingMode = 'Stacking' | 'StopAfterThisDiscount' | string
 /**
  *	If a referenced Store does not exist, a [ReferencedResourceNotFound](ctp:api:type:ReferencedResourceNotFoundError) error is returned.
@@ -671,7 +859,7 @@ export type StackingMode = 'Stacking' | 'StopAfterThisDiscount' | string
  *	This action generates a [CartDiscountStoreAdded](ctp:api:type:CartDiscountStoreAddedMessage) Message.
  *
  */
-export interface CartDiscountAddStoreAction {
+export interface CartDiscountAddStoreAction extends ICartDiscountUpdateAction {
   readonly action: 'addStore'
   /**
    *	[Store](ctp:api:type:Store) to add.
@@ -685,7 +873,7 @@ export interface CartDiscountAddStoreAction {
    */
   readonly store: StoreResourceIdentifier
 }
-export interface CartDiscountChangeCartPredicateAction {
+export interface CartDiscountChangeCartPredicateAction extends ICartDiscountUpdateAction {
   readonly action: 'changeCartPredicate'
   /**
    *	New value to set.
@@ -694,7 +882,7 @@ export interface CartDiscountChangeCartPredicateAction {
    */
   readonly cartPredicate: string
 }
-export interface CartDiscountChangeIsActiveAction {
+export interface CartDiscountChangeIsActiveAction extends ICartDiscountUpdateAction {
   readonly action: 'changeIsActive'
   /**
    *	New value to set.
@@ -706,7 +894,7 @@ export interface CartDiscountChangeIsActiveAction {
    */
   readonly isActive: boolean
 }
-export interface CartDiscountChangeNameAction {
+export interface CartDiscountChangeNameAction extends ICartDiscountUpdateAction {
   readonly action: 'changeName'
   /**
    *	New value to set.
@@ -715,7 +903,7 @@ export interface CartDiscountChangeNameAction {
    */
   readonly name: LocalizedString
 }
-export interface CartDiscountChangeRequiresDiscountCodeAction {
+export interface CartDiscountChangeRequiresDiscountCodeAction extends ICartDiscountUpdateAction {
   readonly action: 'changeRequiresDiscountCode'
   /**
    *	New value to set.
@@ -725,7 +913,7 @@ export interface CartDiscountChangeRequiresDiscountCodeAction {
    */
   readonly requiresDiscountCode: boolean
 }
-export interface CartDiscountChangeSortOrderAction {
+export interface CartDiscountChangeSortOrderAction extends ICartDiscountUpdateAction {
   readonly action: 'changeSortOrder'
   /**
    *	New value to set (between `0` and `1`).
@@ -735,7 +923,7 @@ export interface CartDiscountChangeSortOrderAction {
    */
   readonly sortOrder: string
 }
-export interface CartDiscountChangeStackingModeAction {
+export interface CartDiscountChangeStackingModeAction extends ICartDiscountUpdateAction {
   readonly action: 'changeStackingMode'
   /**
    *	New value to set.
@@ -744,7 +932,7 @@ export interface CartDiscountChangeStackingModeAction {
    */
   readonly stackingMode: StackingMode
 }
-export interface CartDiscountChangeTargetAction {
+export interface CartDiscountChangeTargetAction extends ICartDiscountUpdateAction {
   readonly action: 'changeTarget'
   /**
    *	New value to set.
@@ -758,7 +946,7 @@ export interface CartDiscountChangeTargetAction {
  *	Changing to [Gift Line Item](ctp:api:type:CartDiscountValueGiftLineItem) is not supported.
  *
  */
-export interface CartDiscountChangeValueAction {
+export interface CartDiscountChangeValueAction extends ICartDiscountUpdateAction {
   readonly action: 'changeValue'
   /**
    *	New value to set.
@@ -774,7 +962,7 @@ export interface CartDiscountChangeValueAction {
  *	This action generates a [CartDiscountStoreRemoved](ctp:api:type:CartDiscountStoreRemovedMessage) Message.
  *
  */
-export interface CartDiscountRemoveStoreAction {
+export interface CartDiscountRemoveStoreAction extends ICartDiscountUpdateAction {
   readonly action: 'removeStore'
   /**
    *	[Store](ctp:api:type:Store) to remove.
@@ -783,7 +971,7 @@ export interface CartDiscountRemoveStoreAction {
    */
   readonly store: StoreResourceIdentifier
 }
-export interface CartDiscountSetCustomFieldAction {
+export interface CartDiscountSetCustomFieldAction extends ICartDiscountUpdateAction {
   readonly action: 'setCustomField'
   /**
    *	Name of the [Custom Field](/../api/projects/custom-fields).
@@ -800,7 +988,7 @@ export interface CartDiscountSetCustomFieldAction {
    */
   readonly value?: any
 }
-export interface CartDiscountSetCustomTypeAction {
+export interface CartDiscountSetCustomTypeAction extends ICartDiscountUpdateAction {
   readonly action: 'setCustomType'
   /**
    *	Defines the [Type](ctp:api:type:Type) that extends the CartDiscount with [Custom Fields](/../api/projects/custom-fields).
@@ -816,7 +1004,7 @@ export interface CartDiscountSetCustomTypeAction {
    */
   readonly fields?: FieldContainer
 }
-export interface CartDiscountSetDescriptionAction {
+export interface CartDiscountSetDescriptionAction extends ICartDiscountUpdateAction {
   readonly action: 'setDescription'
   /**
    *	Value to set. If empty, any existing value will be removed.
@@ -825,7 +1013,7 @@ export interface CartDiscountSetDescriptionAction {
    */
   readonly description?: LocalizedString
 }
-export interface CartDiscountSetKeyAction {
+export interface CartDiscountSetKeyAction extends ICartDiscountUpdateAction {
   readonly action: 'setKey'
   /**
    *	Value to set. If empty, any existing value will be removed.
@@ -840,7 +1028,7 @@ export interface CartDiscountSetKeyAction {
  *	This action generates a [CartDiscountStoresSet](ctp:api:type:CartDiscountStoresSetMessage) Message.
  *
  */
-export interface CartDiscountSetStoresAction {
+export interface CartDiscountSetStoresAction extends ICartDiscountUpdateAction {
   readonly action: 'setStores'
   /**
    *	[Stores](ctp:api:type:Store) to set.
@@ -856,7 +1044,7 @@ export interface CartDiscountSetStoresAction {
    */
   readonly stores: StoreResourceIdentifier[]
 }
-export interface CartDiscountSetValidFromAction {
+export interface CartDiscountSetValidFromAction extends ICartDiscountUpdateAction {
   readonly action: 'setValidFrom'
   /**
    *	Value to set.
@@ -866,7 +1054,7 @@ export interface CartDiscountSetValidFromAction {
    */
   readonly validFrom?: string
 }
-export interface CartDiscountSetValidFromAndUntilAction {
+export interface CartDiscountSetValidFromAndUntilAction extends ICartDiscountUpdateAction {
   readonly action: 'setValidFromAndUntil'
   /**
    *	Value to set.
@@ -883,7 +1071,7 @@ export interface CartDiscountSetValidFromAndUntilAction {
    */
   readonly validUntil?: string
 }
-export interface CartDiscountSetValidUntilAction {
+export interface CartDiscountSetValidUntilAction extends ICartDiscountUpdateAction {
   readonly action: 'setValidUntil'
   /**
    *	Value to set.
