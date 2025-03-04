@@ -2095,15 +2095,7 @@ describe('CommercetoolsApi', () => {
     })
 
     describe('createOrderFromCart', () => {
-      it('should make a POST request to the correct endpoint with the given cart data', async () => {
-        nock('https://api.europe-west1.gcp.commercetools.com', {
-          encodedQueryParams: true,
-          reqheaders: {
-            authorization: 'Bearer test-access-token',
-          },
-        })
-          .get('/test-project-key/carts/123')
-          .reply(200, { id: '123', version: 2 })
+      it('should make a POST request to the correct endpoint with the given OrderFromCartDraft data', async () => {
         nock('https://api.europe-west1.gcp.commercetools.com', {
           encodedQueryParams: true,
           reqheaders: {
@@ -2117,20 +2109,12 @@ describe('CommercetoolsApi', () => {
           .reply(200, { success: true })
         const api = new CommercetoolsApi(defaultConfig)
 
-        const response = await api.createOrderFromCart({ id: '123' })
+        const response = await api.createOrderFromCart({ data: { id: '123', version: 2 } })
 
         expect(response).toEqual({ success: true })
       })
 
-      it('should make a POST request to the correct endpoint with the given cart data and order number', async () => {
-        nock('https://api.europe-west1.gcp.commercetools.com', {
-          encodedQueryParams: true,
-          reqheaders: {
-            authorization: 'Bearer test-access-token',
-          },
-        })
-          .get('/test-project-key/carts/123')
-          .reply(200, { id: '123', version: 2 })
+      it('should make a POST request to the correct endpoint with the given OrderFromCartDraft data with optional data', async () => {
         nock('https://api.europe-west1.gcp.commercetools.com', {
           encodedQueryParams: true,
           reqheaders: {
@@ -2145,7 +2129,7 @@ describe('CommercetoolsApi', () => {
           .reply(200, { success: true })
         const api = new CommercetoolsApi(defaultConfig)
 
-        const response = await api.createOrderFromCart({ id: '123', orderNumber: 'ABC' })
+        const response = await api.createOrderFromCart({ data: { id: '123', version: 2, orderNumber: 'ABC' } })
 
         expect(response).toEqual({ success: true })
       })

@@ -1208,23 +1208,15 @@ export class CommercetoolsApi {
   }
 
   /**
-   * Create an order from the given cart id. The cart id and version are automatically
-   * retrieved by looking up the cart:
+   * Create an order from the given OrderFromCartDraft:
    * https://docs.commercetools.com/api/projects/orders#create-order
    */
-  async createOrderFromCart(
-    options: CommonStoreEnabledRequestOptions & { id: string; orderNumber?: string },
-  ): Promise<Order> {
-    const cart = await this.getCartById(options)
+  async createOrderFromCart(options: CommonStoreEnabledRequestOptions & { data: OrderFromCartDraft }): Promise<Order> {
     return this.request<OrderFromCartDraft, Order>({
       ...this.extractCommonRequestOptions(options),
       path: this.applyStore('/orders', options.storeKey),
       method: 'POST',
-      data: {
-        version: cart.version,
-        id: cart.id,
-        ...(options.orderNumber && { orderNumber: options.orderNumber }),
-      },
+      data: options.data,
     })
   }
 
