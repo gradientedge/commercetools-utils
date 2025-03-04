@@ -2121,6 +2121,34 @@ describe('CommercetoolsApi', () => {
 
         expect(response).toEqual({ success: true })
       })
+
+      it('should make a POST request to the correct endpoint with the given cart data and order number', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com', {
+          encodedQueryParams: true,
+          reqheaders: {
+            authorization: 'Bearer test-access-token',
+          },
+        })
+          .get('/test-project-key/carts/123')
+          .reply(200, { id: '123', version: 2 })
+        nock('https://api.europe-west1.gcp.commercetools.com', {
+          encodedQueryParams: true,
+          reqheaders: {
+            authorization: 'Bearer test-access-token',
+          },
+        })
+          .post('/test-project-key/orders', {
+            id: '123',
+            version: 2,
+            orderNumber: 'ABC',
+          })
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const response = await api.createOrderFromCart({ id: '123', orderNumber: 'ABC' })
+
+        expect(response).toEqual({ success: true })
+      })
     })
 
     describe('importOrder', () => {

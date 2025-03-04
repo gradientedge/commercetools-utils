@@ -1212,7 +1212,9 @@ export class CommercetoolsApi {
    * retrieved by looking up the cart:
    * https://docs.commercetools.com/api/projects/orders#create-order
    */
-  async createOrderFromCart(options: CommonStoreEnabledRequestOptions & { id: string }): Promise<Order> {
+  async createOrderFromCart(
+    options: CommonStoreEnabledRequestOptions & { id: string; orderNumber?: string },
+  ): Promise<Order> {
     const cart = await this.getCartById(options)
     return this.request<OrderFromCartDraft, Order>({
       ...this.extractCommonRequestOptions(options),
@@ -1221,6 +1223,7 @@ export class CommercetoolsApi {
       data: {
         version: cart.version,
         id: cart.id,
+        ...(options.orderNumber && { orderNumber: options.orderNumber }),
       },
     })
   }
