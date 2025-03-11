@@ -4,6 +4,7 @@ import { CommercetoolsError } from '../error/index.js'
 import { REGION_URLS } from '../auth/constants.js'
 import { CommercetoolsRequest, RegionEndpoints, RequestExecutor } from '../types.js'
 import { ensureNonEmptyString } from '../utils/index.js'
+import { v4 as uuid } from 'uuid'
 
 import type {
   Cart,
@@ -2667,6 +2668,8 @@ export class CommercetoolsApi {
     if (typeof options.correlationId === 'string' && options.correlationId !== '') {
       headers['X-Correlation-ID'] = options.correlationId
       delete options.correlationId
+    } else {
+      headers['X-Correlation-ID'] = uuid()
     }
 
     if (options.params && Object.keys(options.params).length) {

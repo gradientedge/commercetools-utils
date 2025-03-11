@@ -12,6 +12,7 @@ import { REGION_URLS } from './constants.js'
 import { base64EncodeForBasicAuth } from './utils.js'
 import { RegionEndpoints, RequestExecutor } from '../types.js'
 import { getRequestExecutor } from '../request/request-executor.js'
+import { v4 as uuid } from 'uuid'
 
 /**
  * Provides an easy to use set of methods for communicating with the commercetools
@@ -167,6 +168,8 @@ export class CommercetoolsAuthApi {
     if (options.correlationId && options.correlationId !== '') {
       headers['X-Correlation-ID'] = options.correlationId
       delete options.correlationId
+    } else {
+      headers['X-Correlation-ID'] = uuid()
     }
 
     if (options.body) {

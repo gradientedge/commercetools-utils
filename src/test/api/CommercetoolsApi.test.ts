@@ -3971,6 +3971,26 @@ describe('CommercetoolsApi', () => {
         url: 'https://api.europe-west1.gcp.commercetools.com/test-project-key/test',
       })
     })
+
+    it('should generate an `X-Correlation-ID` HTTP header automatically when one is not provided', async () => {
+      const api = new CommercetoolsApi(defaultConfig)
+
+      const result = await api.getRequestOptions({
+        path: '/test',
+        method: 'GET',
+        headers: {},
+        accessToken: 'mock-access-token',
+      })
+
+      expect(result).toEqual({
+        headers: {
+          Authorization: 'Bearer mock-access-token',
+          'X-Correlation-ID': expect.any(String),
+        },
+        method: 'GET',
+        url: 'https://api.europe-west1.gcp.commercetools.com/test-project-key/test',
+      })
+    })
   })
 
   describe('applyStore', () => {
