@@ -62,42 +62,72 @@ export interface CategoryOrderHints {
 }
 export interface FacetRange {
   /**
+   *	The range's lower endpoint.
+   *
+   *	`0` represents -∞.
+   *
    *
    */
   readonly from: number
   /**
+   *	The range's lower endpoint.
+   *
+   *	An empty string represents -∞.
+   *
    *
    */
   readonly fromStr: string
   /**
+   *	The range's upper endpoint.
+   *
+   *	`0` represents +∞.
+   *
    *
    */
   readonly to: number
   /**
+   *	The range's upper endpoint.
+   *
+   *	An empty string represents +∞.
+   *
    *
    */
   readonly toStr: string
   /**
+   *	Number of [ProductVariants](ctp:api:type:ProductVariant) for which the values in a field fall into the specified range.
+   *
    *
    */
   readonly count: number
   /**
+   *	Number of [Products](ctp:api:type:Product) for which the values in a field fall into the specified range.
+   *
+   *	Present only if the `counting products` [extension](/projects/product-projection-search#counting-products) is enabled.
+   *
    *
    */
   readonly productCount?: number
   /**
+   *	Sum of all values contained in the range.
+   *
    *
    */
   readonly total: number
   /**
+   *	Minimum value within the range.
+   *
    *
    */
   readonly min: number
   /**
+   *	Maximum value within the range.
+   *
    *
    */
   readonly max: number
   /**
+   *	Arithmetic mean of the values within the range.
+   *
    *
    */
   readonly mean: number
@@ -114,14 +144,21 @@ export interface FacetResults {
 }
 export interface FacetTerm {
   /**
+   *	Value for the field specified in the [term facet expression](/../api/projects/product-projection-search#term-facet-expression) for which at least one [ProductVariant](ctp:api:type:ProductVariant) could be found.
+   *
    *
    */
   readonly term: any
   /**
+   *	Number of [ProductVariants](ctp:api:type:ProductVariant) for which the `term` applies.
+   *
    *
    */
   readonly count: number
   /**
+   *	Number of [Products](ctp:api:type:Product) for which the `term` applies.
+   *	Only available if the `counting products` [extension](/../api/projects/product-projection-search#counting-products) is enabled.
+   *
    *
    */
   readonly productCount?: number
@@ -132,14 +169,20 @@ export enum FacetTypesValues {
   Terms = 'terms',
 }
 
-export type FacetTypes = 'filter' | 'range' | 'terms' | string
+export type FacetTypes = 'filter' | 'range' | 'terms' | (string & {})
 export interface FilteredFacetResult extends IFacetResult {
   readonly type: 'filter'
   /**
+   *	Number of [ProductVariants](ctp:api:type:ProductVariant) matching the value specified in [filtered facet expression](/../api/projects/product-projection-search#filtered-facet-expression).
+   *
    *
    */
   readonly count: number
   /**
+   *	Number of [Products](ctp:api:type:Product) matching the value specified in [filtered facet expression](/../api/projects/product-projection-search#filtered-facet-expression).
+   *
+   *	Present only if the `counting products` [extension](/projects/product-projection-search#counting-products) is enabled.
+   *
    *
    */
   readonly productCount?: number
@@ -337,7 +380,7 @@ export interface ProductData {
    */
   readonly variants: ProductVariant[]
   /**
-   *	Used by [Product Suggestions](/projects/products-suggestions), but is also considered for a [full text search](/projects/products-search#full-text-search).
+   *	Used by [Product Suggestions](/projects/products-suggestions), but is also considered for a [full text search](/projects/product-projection-search#full-text-search).
    *
    *
    */
@@ -387,7 +430,7 @@ export interface ProductDraft {
    */
   readonly categories?: CategoryResourceIdentifier[]
   /**
-   *	Numerical values to allow ordering of Products within a specified Category.
+   *	Numerical values to allow ordering of Products within specified Categories. If the referenced Categories are not also assigned in the `categories` field, an [InvalidOperation](ctp:api:type:InvalidOperationError) error is returned.
    *
    *
    */
@@ -429,7 +472,7 @@ export interface ProductDraft {
    */
   readonly taxCategory?: TaxCategoryResourceIdentifier
   /**
-   *	Used by [Product Suggestions](/projects/products-suggestions), but is also considered for a [full text search](/projects/products-search#full-text-search).
+   *	Used by [Product Suggestions](/projects/products-suggestions), but is also considered for a [full text search](/projects/product-projection-search#full-text-search).
    *
    *
    */
@@ -503,7 +546,7 @@ export enum ProductPriceModeEnumValues {
   Standalone = 'Standalone',
 }
 
-export type ProductPriceModeEnum = 'Embedded' | 'Standalone' | string
+export type ProductPriceModeEnum = 'Embedded' | 'Standalone' | (string & {})
 export interface ProductProjection extends BaseResource {
   /**
    *	Unique identifier of the [Product](ctp:api:type:Product).
@@ -683,35 +726,51 @@ export interface ProductProjectionPagedQueryResponse {
    */
   readonly results: ProductProjection[]
 }
+/**
+ *	The response returned to a [Product Projection Search](/../api/projects/product-projection-search#product-projection-search) request.
+ *	The object contains the [query results](/../api/projects/product-projection-search#query-results) with Product Projections where at least one ProductVariant matches the search query, as well as the [facet results](/../api/projects/product-projection-search#facet-results), if requested.
+ *
+ */
 export interface ProductProjectionPagedSearchResponse {
   /**
-   *	Number of [results requested](/../api/general-concepts#limit).
+   *	The maximum number of results returned on a [page](/../api/projects/product-projection-search#pagination).
    *
    *
    */
   readonly limit: number
   /**
-   *
-   */
-  readonly count: number
-  /**
-   *
-   */
-  readonly total?: number
-  /**
-   *	Number of [elements skipped](/../api/general-concepts#offset).
+   *	The starting point for the retrieved [paginated](/../api/projects/product-projection-search#pagination) result.
    *
    *
    */
   readonly offset: number
   /**
+   *	Actual number of results returned.
+   *
+   *
+   */
+  readonly count: number
+  /**
+   *	Total number of results matching the query.
+   *
+   *
+   */
+  readonly total?: number
+  /**
+   *	[ProductProjections](ctp:api:type:ProductProjection) where at least one [ProductVariant](ctp:api:type:ProductVariant) matches the search query, provided with the `text.{language}` and/or `filter.query` or `filter` query parameter.
+   *	If the query parameter `markMatchingVariants=true` was provided with the request, the [matching variants](/../api/projects/product-projection-search#matching-variants) are marked as such.
+   *
    *
    */
   readonly results: ProductProjection[]
   /**
+   *	Facet results for each [facet expression](/../api/projects/product-projection-search#facets) specified in the search request.
+   *
+   *	Only present if at least one `facet` parameter was provided with the search request.
+   *
    *
    */
-  readonly facets: FacetResults
+  readonly facets?: FacetResults
 }
 /**
  *	[Reference](ctp:api:type:Reference) to a [Product](ctp:api:type:Product).
@@ -1036,6 +1095,8 @@ export interface ProductVariantDraft {
 export interface RangeFacetResult extends IFacetResult {
   readonly type: 'range'
   /**
+   *	Statistical data over values for `date`, `time`, `datetime`, `number`, and `money` type fields.
+   *
    *
    */
   readonly ranges: FacetRange[]
@@ -1055,7 +1116,7 @@ export interface SearchKeyword {
   readonly suggestTokenizer?: SuggestTokenizer
 }
 /**
- *	Search keywords are JSON objects primarily used by [Product Suggestions](/projects/products-suggestions), but are also considered for a [full text search](/projects/products-search#full-text-search).
+ *	Search keywords are JSON objects primarily used by [Product Suggestions](/projects/products-suggestions), but are also considered for a [full text search](/projects/product-projection-search#full-text-search).
  *	The keys are of type [Locale](ctp:api:type:Locale), and the values are an array of [SearchKeyword](ctp:api:type:SearchKeyword).
  *
  */
@@ -1095,26 +1156,47 @@ export interface SuggestionResult {
 export interface TermFacetResult extends IFacetResult {
   readonly type: 'terms'
   /**
+   *	Data type to which the facet is applied.
+   *
    *
    */
   readonly dataType: TermFacetResultType
   /**
+   *	Number of [ProductVariants](ctp:api:type:ProductVariant) that have no value for the specified [term facet expression](/../api/projects/product-projection-search#term-facet-expression).
+   *
    *
    */
   readonly missing: number
   /**
+   *	Number of terms matching the [term facet expression](/../api/projects/product-projection-search#term-facet-expression).
+   *
+   *	- If the expression refers to Product fields like `categories.id` and `reviewRatingStatistics.count`, the value represents the number of Products.
+   *	- If the expression is defined for fields specific to Product Variants, for example, `variants.attributes.{name}`, the value represents the number of Product Variants matching the expression.
+   *
    *
    */
   readonly total: number
   /**
+   *	Number of terms not represented in this object (such as the number of terms beyond the [limit](/limits#product-projection-search)).
+   *
    *
    */
   readonly other: number
   /**
+   *	Values for the field specified in [term facet expression](/../api/projects/product-projection-search#term-facet-expression) for which at least one [ProductVariant](ctp:api:type:ProductVariant) could be found.
+   *
+   *	By default, facet terms are returned in a descending order of their `count`.
+   *
+   *	If the term facet expression specifies to count [Products](ctp:api:type:Product) through the `counting products` [extension](/projects/product-projection-search#counting-products), then facet terms are returned in a descending order of their `productCount`.
+   *
    *
    */
   readonly terms: FacetTerm[]
 }
+/**
+ *	Data type to which the facet is applied.
+ *
+ */
 export enum TermFacetResultTypeValues {
   Boolean = 'boolean',
   Date = 'date',
@@ -1124,7 +1206,7 @@ export enum TermFacetResultTypeValues {
   Time = 'time',
 }
 
-export type TermFacetResultType = 'boolean' | 'date' | 'datetime' | 'number' | 'text' | 'time' | string
+export type TermFacetResultType = 'boolean' | 'date' | 'datetime' | 'number' | 'text' | 'time' | (string & {})
 /**
  *	Creates tokens by splitting the `text` field in [SearchKeyword](ctp:api:type:SearchKeyword) by whitespaces.
  *
@@ -2021,7 +2103,7 @@ export interface ProductSetAttributeInAllVariantsAction extends IProductUpdateAc
 export interface ProductSetCategoryOrderHintAction extends IProductUpdateAction {
   readonly action: 'setCategoryOrderHint'
   /**
-   *	The `id` of the Category to add the `orderHint`.
+   *	The `id` of the Category to add the `orderHint`. If this Category is not assigned to the Product, an [InvalidOperation](ctp:api:type:InvalidOperationError) error is returned.
    *
    *
    */
@@ -2406,7 +2488,7 @@ export interface ProductTransitionStateAction extends IProductUpdateAction {
   readonly force?: boolean
 }
 /**
- *	Removes the current [projection](/../api/projects/productProjections#current--staged) of the Product. The staged projection is unaffected. To retrieve unpublished Products, the `staged` parameter must be set to `false` when [querying](ctp:api:endpoint:/{projectKey}/product-projections:GET)/[searching](/projects/products-search#product-projection-search) Product Projections. Produces the [ProductUnpublished](ctp:api:type:ProductUnpublishedMessage) Message.
+ *	Removes the current [projection](/../api/projects/productProjections#current--staged) of the Product. The staged projection is unaffected. To retrieve unpublished Products, the `staged` parameter must be set to `false` when [querying](ctp:api:endpoint:/{projectKey}/product-projections:GET)/[searching](/projects/product-projection-search#product-projection-search) Product Projections. Produces the [ProductUnpublished](ctp:api:type:ProductUnpublishedMessage) Message.
  *
  *	When a Product is unpublished, any associated Line Items already present in a Cart remain unaffected and can still be ordered. To prevent this, do the following:
  *

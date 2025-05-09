@@ -228,7 +228,7 @@ export interface IAssociateRoleUpdateAction {
   readonly action: string
 }
 /**
- *	Permissions grant granular access to [Approval Rules](ctp:api:type:ApprovalRule), [Approval Flows](ctp:api:type:ApprovalFlow), [Business Units](ctp:api:type:BusinessUnit), [Carts](ctp:api:type:Cart), [Orders](ctp:api:type:Order), [Quotes](ctp:api:type:Quote), and [Quote Requests](ctp:api:type:QuoteRequest).
+ *	Permissions grant granular access to [Approval Rules](ctp:api:type:ApprovalRule), [Approval Flows](ctp:api:type:ApprovalFlow), [Business Units](ctp:api:type:BusinessUnit), [Carts](ctp:api:type:Cart), [Orders](ctp:api:type:Order), [Quotes](ctp:api:type:Quote), [Quote Requests](ctp:api:type:QuoteRequest), and [Shopping Lists](ctp:api:type:ShoppingList).
  *
  */
 export enum PermissionValues {
@@ -240,14 +240,18 @@ export enum PermissionValues {
   CreateMyOrdersFromMyCarts = 'CreateMyOrdersFromMyCarts',
   CreateMyOrdersFromMyQuotes = 'CreateMyOrdersFromMyQuotes',
   CreateMyQuoteRequestsFromMyCarts = 'CreateMyQuoteRequestsFromMyCarts',
+  CreateMyShoppingLists = 'CreateMyShoppingLists',
   CreateOrdersFromOthersCarts = 'CreateOrdersFromOthersCarts',
   CreateOrdersFromOthersQuotes = 'CreateOrdersFromOthersQuotes',
   CreateOthersCarts = 'CreateOthersCarts',
+  CreateOthersShoppingLists = 'CreateOthersShoppingLists',
   CreateQuoteRequestsFromOthersCarts = 'CreateQuoteRequestsFromOthersCarts',
   DeclineMyQuotes = 'DeclineMyQuotes',
   DeclineOthersQuotes = 'DeclineOthersQuotes',
   DeleteMyCarts = 'DeleteMyCarts',
+  DeleteMyShoppingLists = 'DeleteMyShoppingLists',
   DeleteOthersCarts = 'DeleteOthersCarts',
+  DeleteOthersShoppingLists = 'DeleteOthersShoppingLists',
   ReassignMyQuotes = 'ReassignMyQuotes',
   ReassignOthersQuotes = 'ReassignOthersQuotes',
   RenegotiateMyQuotes = 'RenegotiateMyQuotes',
@@ -259,18 +263,22 @@ export enum PermissionValues {
   UpdateMyCarts = 'UpdateMyCarts',
   UpdateMyOrders = 'UpdateMyOrders',
   UpdateMyQuoteRequests = 'UpdateMyQuoteRequests',
+  UpdateMyShoppingLists = 'UpdateMyShoppingLists',
   UpdateOthersCarts = 'UpdateOthersCarts',
   UpdateOthersOrders = 'UpdateOthersOrders',
   UpdateOthersQuoteRequests = 'UpdateOthersQuoteRequests',
+  UpdateOthersShoppingLists = 'UpdateOthersShoppingLists',
   UpdateParentUnit = 'UpdateParentUnit',
   ViewMyCarts = 'ViewMyCarts',
   ViewMyOrders = 'ViewMyOrders',
   ViewMyQuoteRequests = 'ViewMyQuoteRequests',
   ViewMyQuotes = 'ViewMyQuotes',
+  ViewMyShoppingLists = 'ViewMyShoppingLists',
   ViewOthersCarts = 'ViewOthersCarts',
   ViewOthersOrders = 'ViewOthersOrders',
   ViewOthersQuoteRequests = 'ViewOthersQuoteRequests',
   ViewOthersQuotes = 'ViewOthersQuotes',
+  ViewOthersShoppingLists = 'ViewOthersShoppingLists',
 }
 
 export type Permission =
@@ -282,14 +290,18 @@ export type Permission =
   | 'CreateMyOrdersFromMyCarts'
   | 'CreateMyOrdersFromMyQuotes'
   | 'CreateMyQuoteRequestsFromMyCarts'
+  | 'CreateMyShoppingLists'
   | 'CreateOrdersFromOthersCarts'
   | 'CreateOrdersFromOthersQuotes'
   | 'CreateOthersCarts'
+  | 'CreateOthersShoppingLists'
   | 'CreateQuoteRequestsFromOthersCarts'
   | 'DeclineMyQuotes'
   | 'DeclineOthersQuotes'
   | 'DeleteMyCarts'
+  | 'DeleteMyShoppingLists'
   | 'DeleteOthersCarts'
+  | 'DeleteOthersShoppingLists'
   | 'ReassignMyQuotes'
   | 'ReassignOthersQuotes'
   | 'RenegotiateMyQuotes'
@@ -301,19 +313,23 @@ export type Permission =
   | 'UpdateMyCarts'
   | 'UpdateMyOrders'
   | 'UpdateMyQuoteRequests'
+  | 'UpdateMyShoppingLists'
   | 'UpdateOthersCarts'
   | 'UpdateOthersOrders'
   | 'UpdateOthersQuoteRequests'
+  | 'UpdateOthersShoppingLists'
   | 'UpdateParentUnit'
   | 'ViewMyCarts'
   | 'ViewMyOrders'
   | 'ViewMyQuoteRequests'
   | 'ViewMyQuotes'
+  | 'ViewMyShoppingLists'
   | 'ViewOthersCarts'
   | 'ViewOthersOrders'
   | 'ViewOthersQuoteRequests'
   | 'ViewOthersQuotes'
-  | string
+  | 'ViewOthersShoppingLists'
+  | (string & {})
 /**
  *	Adding a Permission to an [AssociateRole](ctp:api:type:AssociateRole) generates an [AssociateRolePermissionAdded](ctp:api:type:AssociateRolePermissionAddedMessage) Message.
  *

@@ -82,7 +82,7 @@ export interface ShoppingList extends BaseResource {
    */
   readonly store?: StoreKeyReference
   /**
-   *	[Reference](ctp:api:type:Reference) to the Business Unit the Shopping List belongs to.
+   *	[Reference](ctp:api:type:Reference) to the Business Unit the Shopping List belongs to. Only available for [B2B](/../offering/composable-commerce#composable-commerce-for-b2b)-enabled Projects.
    *
    *
    */
@@ -180,7 +180,7 @@ export interface ShoppingListDraft {
    */
   readonly store?: StoreResourceIdentifier
   /**
-   *	[ResourceIdentifier](ctp:api:type:ResourceIdentifier) of the Business Unit the Shopping List should belong to. When the `customer` of the Shopping List is set, the [Customer](ctp:api:type:Customer) must be an [Associate](ctp:api:type:Associate) of the Business Unit.
+   *	[ResourceIdentifier](ctp:api:type:ResourceIdentifier) of the Business Unit the Shopping List should belong to. When the `customer` of the Shopping List is set, the [Customer](ctp:api:type:Customer) must be an [Associate](ctp:api:type:Associate) of the Business Unit. Only available for [B2B](/../offering/composable-commerce#composable-commerce-for-b2b)-enabled Projects.
    *
    *
    */
@@ -248,6 +248,14 @@ export interface ShoppingListLineItem {
    *
    */
   readonly productType: ProductTypeReference
+  /**
+   *	Whether the related [Product](ctp:api:type:Product) is published or not.
+   *
+   *	This data is updated in an [eventual consistent manner](/general-concepts#eventual-consistency) when the Product's published status changes.
+   *
+   *
+   */
+  readonly published: boolean
   /**
    *	Number of Products in the ShoppingListLineItem.
    *
