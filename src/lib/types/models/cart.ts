@@ -46,6 +46,8 @@ import { ShoppingListResourceIdentifier } from './shopping-list.js'
 import { StoreKeyReference, StoreResourceIdentifier } from './store.js'
 import { SubRate, TaxCategoryReference, TaxCategoryResourceIdentifier, TaxRate } from './tax-category.js'
 import { CustomFields, CustomFieldsDraft, FieldContainer, TypeResourceIdentifier } from './type.js'
+import { PriceSelectionMode } from './recurring-order.js'
+import { RecurrencePolicyResourceIdentifier } from './recurrence-policy.js'
 
 export interface Cart extends BaseResource {
   /**
@@ -91,7 +93,7 @@ export interface Cart extends BaseResource {
    */
   readonly anonymousId?: string
   /**
-   *	[Reference](ctp:api:type:Reference) to a Business Unit the Cart belongs to.
+   *	[Reference](ctp:api:type:Reference) to a Business Unit the Cart belongs to. Only available for [B2B](/../offering/composable-commerce#composable-commerce-for-b2b)-enabled Projects.
    *
    *
    */
@@ -287,6 +289,12 @@ export interface Cart extends BaseResource {
    */
   readonly custom?: CustomFields
   /**
+   *	Indicates if a combination of discount types can apply on a Cart.
+   *
+   *
+   */
+  readonly discountTypeCombination?: DiscountTypeCombination
+  /**
    *	Number of days after which an active Cart is deleted since its last modification. Configured in [Project settings](ctp:api:type:CartsConfiguration).
    *
    *
@@ -345,8 +353,8 @@ export interface CartDraft {
   /**
    *	[ResourceIdentifier](ctp:api:type:ResourceIdentifier) to the Customer Group of the Customer that the Cart belongs to. Used for [Line Item price selection](/../api/pricing-and-discounts-overview#line-item-price-selection).
    *
-   *	It is automatically set if the Customer referenced in `customerId` belongs to a Customer Group.
-   *	It can also be set explicitly when no `customerId` is present.
+   *	You can set either a `customerId` or a `customerGroup`.
+   *	If the Customer referenced in `customerId` belongs to a Customer Group then `customerGroup` is set automatically.
    *
    *
    */
@@ -358,7 +366,7 @@ export interface CartDraft {
    */
   readonly anonymousId?: string
   /**
-   *	[ResourceIdentifier](ctp:api:type:ResourceIdentifier) to the Business Unit the Cart should belong to. When the `customerId` of the Cart is also set, the [Customer](ctp:api:type:Customer) must be an [Associate](ctp:api:type:Associate) of the Business Unit.
+   *	[ResourceIdentifier](ctp:api:type:ResourceIdentifier) to the Business Unit the Cart should belong to. When the `customerId` of the Cart is also set, the [Customer](ctp:api:type:Customer) must be an [Associate](ctp:api:type:Associate) of the Business Unit. Only available for [B2B](/../offering/composable-commerce#composable-commerce-for-b2b)-enabled Projects.
    *
    *
    */
@@ -517,7 +525,7 @@ export enum CartOriginValues {
   Quote = 'Quote',
 }
 
-export type CartOrigin = 'Customer' | 'Merchant' | 'Quote' | string
+export type CartOrigin = 'Customer' | 'Merchant' | 'Quote' | 'RecurringOrder' | (string & {})
 /**
  *	[PagedQueryResult](/../api/general-concepts#pagedqueryresult) with results containing an array of [Cart](ctp:api:type:Cart).
  *
@@ -607,7 +615,7 @@ export enum CartStateValues {
   Ordered = 'Ordered',
 }
 
-export type CartState = 'Active' | 'Frozen' | 'Merged' | 'Ordered' | string
+export type CartState = 'Active' | 'Frozen' | 'Merged' | 'Ordered' | (string & {})
 export interface CartUpdate {
   /**
    *	Expected version of the Cart on which the changes apply.
@@ -796,6 +804,13 @@ export interface CustomLineItem {
    *
    */
   readonly discountedPricePerQuantity: DiscountedLineItemPriceForQuantity[]
+
+  /**
+   * \[BETA\]
+   * Recurring Order and frequency data.
+   */
+  readonly recurrenceInfo?: CustomLineItemRecurrenceInfo
+
   /**
    *	Custom Fields of the Custom Line Item.
    *
@@ -880,7 +895,36 @@ export interface CustomLineItemDraft {
    *
    */
   readonly priceMode?: CustomLineItemPriceMode
+
+  /**
+   * \[BETA\]
+   * Recurring Order and frequency data.
+   */
+  readonly recurrenceInfo?: CustomLineItemRecurrenceInfoDraft
 }
+
+/**
+ * \[BETA\]
+ * Information about recurring orders and frequencies.
+ */
+export interface CustomLineItemRecurrenceInfo {
+  /**
+   * ResourceIdentifier to a RecurrencePolicy.
+   */
+  readonly recurrencePolicy?: RecurrencePolicyResourceIdentifier
+}
+
+/**
+ * \[BETA\]
+ * Information about recurring orders and frequencies.
+ */
+export interface CustomLineItemRecurrenceInfoDraft {
+  /**
+   * ResourceIdentifier to a RecurrencePolicy.
+   */
+  readonly recurrencePolicy?: RecurrencePolicyResourceIdentifier
+}
+
 /**
  *	Determines if Cart Discounts can be applied to a Custom Line Item in the Cart.
  *
@@ -890,7 +934,7 @@ export enum CustomLineItemPriceModeValues {
   Standard = 'Standard',
 }
 
-export type CustomLineItemPriceMode = 'External' | 'Standard' | string
+export type CustomLineItemPriceMode = 'External' | 'Standard' | (string & {})
 export interface CustomShippingDraft {
   /**
    *	User-defined unique identifier of the custom Shipping Method in the Cart with `Multiple` [ShippingMode](ctp:api:type:ShippingMode).
@@ -1049,7 +1093,7 @@ export type DiscountCodeState =
   | 'MaxApplicationReached'
   | 'NotActive'
   | 'NotValid'
-  | string
+  | (string & {})
 export interface DiscountOnTotalPrice {
   /**
    *	Money value of the discount on the total price of the Cart or Order.
@@ -1065,6 +1109,8 @@ export interface DiscountOnTotalPrice {
   readonly includedDiscounts: DiscountedTotalPricePortion[]
   /**
    *	Money value of the discount on the total net price of the Cart or Order.
+   *
+   *	The same percentage of discount applies as on the `discountedAmount`.
    *	Present only when `taxedPrice` of the Cart or Order exists.
    *
    *
@@ -1072,11 +1118,33 @@ export interface DiscountOnTotalPrice {
   readonly discountedNetAmount?: TypedMoney
   /**
    *	Money value of the discount on the total gross price of the Cart or Order.
+   *
+   *	The same percentage of discount applies as on the `discountedAmount`.
    *	Present only when `taxedPrice` of the Cart or Order exists.
    *
    *
    */
   readonly discountedGrossAmount?: TypedMoney
+}
+export type DiscountTypeCombination = BestDeal | Stacking
+export interface IDiscountTypeCombination {
+  /**
+   *
+   */
+  readonly type: string
+}
+/**
+ *	Indicates the best deal logic applies to a Cart or Order and indicates the discount type that offers the best deal.
+ *
+ */
+export interface BestDeal extends IDiscountTypeCombination {
+  readonly type: 'BestDeal'
+  /**
+   *	Discount type that offers the best deal; the value can be `product-discount` or `cart-discount`.
+   *
+   *
+   */
+  readonly chosenDiscountType: string
 }
 export interface DiscountedLineItemPortion {
   /**
@@ -1242,7 +1310,7 @@ export enum InventoryModeValues {
   TrackOnly = 'TrackOnly',
 }
 
-export type InventoryMode = 'None' | 'ReserveOnOrder' | 'TrackOnly' | string
+export type InventoryMode = 'None' | 'ReserveOnOrder' | 'TrackOnly' | (string & {})
 export interface ItemShippingDetails {
   /**
    *	Holds information on the quantity of Line Items or Custom Line Items and the address it is shipped.
@@ -1463,6 +1531,13 @@ export interface LineItem {
    *
    */
   readonly shippingDetails?: ItemShippingDetails
+
+  /**
+   * \[BETA\]
+   * Recurring Order and frequency data.
+   */
+  readonly recurrenceInfo?: LineItemRecurrenceInfo
+
   /**
    *	Custom Fields of the Line Item.
    *
@@ -1597,7 +1672,7 @@ export enum LineItemModeValues {
   Standard = 'Standard',
 }
 
-export type LineItemMode = 'GiftLineItem' | 'Standard' | string
+export type LineItemMode = 'GiftLineItem' | 'Standard' | (string & {})
 /**
  *	This mode indicates how the price is set for the Line Item.
  *
@@ -1608,7 +1683,40 @@ export enum LineItemPriceModeValues {
   Platform = 'Platform',
 }
 
-export type LineItemPriceMode = 'ExternalPrice' | 'ExternalTotal' | 'Platform' | string
+export type LineItemPriceMode = 'ExternalPrice' | 'ExternalTotal' | 'Platform' | (string & {})
+
+/**
+ * \[BETA\]
+ * Information about recurring orders and frequencies.
+ */
+export interface LineItemRecurrenceInfo {
+  /**
+   * ResourceIdentifier to a RecurrencePolicy.
+   */
+  readonly recurrencePolicy?: RecurrencePolicyResourceIdentifier
+
+  /**
+   * Determines how the price of a line item will be selected during order creation.
+   */
+  readonly priceSelectionMode?: PriceSelectionMode
+}
+
+/**
+ * \[BETA\]
+ * Information about recurring orders and frequencies.
+ */
+export interface LineItemRecurrenceInfoDraft {
+  /**
+   * ResourceIdentifier to a RecurrencePolicy.
+   */
+  readonly recurrencePolicy?: RecurrencePolicyResourceIdentifier
+
+  /**
+   * Determines how the price of a line item will be selected during order creation.
+   */
+  readonly priceSelectionMode?: PriceSelectionMode
+}
+
 export interface MethodExternalTaxRateDraft {
   /**
    *	User-defined unique identifier of the Shipping Method in a Cart with `Multiple` [ShippingMode](ctp:api:type:ShippingMode).
@@ -1679,7 +1787,7 @@ export enum RoundingModeValues {
   HalfUp = 'HalfUp',
 }
 
-export type RoundingMode = 'HalfDown' | 'HalfEven' | 'HalfUp' | string
+export type RoundingMode = 'HalfDown' | 'HalfEven' | 'HalfUp' | (string & {})
 export interface Shipping {
   /**
    *	User-defined unique identifier of the Shipping in a Cart with `Multiple` [ShippingMode](ctp:api:type:ShippingMode).
@@ -1843,13 +1951,13 @@ export enum ShippingMethodStateValues {
   MatchesCart = 'MatchesCart',
 }
 
-export type ShippingMethodState = 'DoesNotMatchCart' | 'MatchesCart' | string
+export type ShippingMethodState = 'DoesNotMatchCart' | 'MatchesCart' | (string & {})
 export enum ShippingModeValues {
   Multiple = 'Multiple',
   Single = 'Single',
 }
 
-export type ShippingMode = 'Multiple' | 'Single' | string
+export type ShippingMode = 'Multiple' | 'Single' | (string & {})
 export type ShippingRateInput = ClassificationShippingRateInput | ScoreShippingRateInput
 export interface IShippingRateInput {
   /**
@@ -1910,6 +2018,13 @@ export interface ScoreShippingRateInputDraft extends IShippingRateInputDraft {
   readonly score: number
 }
 /**
+ *	Indicates both Product Discounts and Cart Discounts apply to a Cart and Order.
+ *
+ */
+export interface Stacking extends IDiscountTypeCombination {
+  readonly type: 'Stacking'
+}
+/**
  *	Determines in which [Tax calculation mode](/carts-orders-overview#tax-calculation-mode) taxed prices are calculated.
  *
  */
@@ -1918,7 +2033,7 @@ export enum TaxCalculationModeValues {
   UnitPriceLevel = 'UnitPriceLevel',
 }
 
-export type TaxCalculationMode = 'LineItemLevel' | 'UnitPriceLevel' | string
+export type TaxCalculationMode = 'LineItemLevel' | 'UnitPriceLevel' | (string & {})
 /**
  *	Indicates how taxes are set on the Cart.
  *
@@ -1930,7 +2045,7 @@ export enum TaxModeValues {
   Platform = 'Platform',
 }
 
-export type TaxMode = 'Disabled' | 'External' | 'ExternalAmount' | 'Platform' | string
+export type TaxMode = 'Disabled' | 'External' | 'ExternalAmount' | 'Platform' | (string & {})
 /**
  *	The tax portions are calculated from the [TaxRates](ctp:api:type:TaxRate).
  *	If a Tax Rate has [SubRates](ctp:api:type:SubRate), they are used and can be identified by name.
@@ -2896,13 +3011,14 @@ export interface CartSetBusinessUnitAction extends ICartUpdateAction {
   readonly businessUnit: BusinessUnitResourceIdentifier
 }
 /**
- *	Can be used if the Cart has the `ExternalAmount` [TaxMode](ctp:api:type:TaxMode). This update action adds the `taxedPrice` field to the Cart and must be used after any price-affecting change occurs within the Cart.
+ *	Can be used if the Cart has the `ExternalAmount` [TaxMode](ctp:api:type:TaxMode). This update action adds the `taxedPrice` field to the Cart. It sets the `totalGross` amount, and Composable Commerce calculates the `totalNet` and `totalTax` values based on the provided `externalTotalGross`.
+ *	You must use this update action after any price-affecting change occurs within the Cart.
  *
  */
 export interface CartSetCartTotalTaxAction extends ICartUpdateAction {
   readonly action: 'setCartTotalTax'
   /**
-   *	The Cart's total gross price becoming the `totalGross` field (`totalNet` + taxes) on the Cart's `taxedPrice`.
+   *	The total gross amount of the Cart, including tax. This value is used to calculate the `totalNet` and `totalTax` fields of the Cart's `taxedPrice`.
    *
    *
    */
@@ -3798,4 +3914,4 @@ export enum ProductPublishScopeValues {
   Prices = 'Prices',
 }
 
-export type ProductPublishScope = 'All' | 'Prices' | string
+export type ProductPublishScope = 'All' | 'Prices' | (string & {})

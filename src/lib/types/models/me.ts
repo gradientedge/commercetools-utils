@@ -9,7 +9,6 @@ import {
   AssociateRoleAssignmentDraft,
   BusinessUnitResourceIdentifier,
   BusinessUnitType,
-  BusinessUnitUpdateAction,
 } from './business-unit.js'
 import {
   CartReference,
@@ -137,7 +136,7 @@ export interface MyBusinessUnitUpdate {
    *
    *
    */
-  readonly actions: BusinessUnitUpdateAction[]
+  readonly actions: MyBusinessUnitUpdateAction[]
 }
 export type MyBusinessUnitUpdateAction =
   | MyBusinessUnitAddAddressAction
@@ -185,7 +184,7 @@ export interface MyCartDraft {
    */
   readonly customerEmail?: string
   /**
-   *	[ResourceIdentifier](ctp:api:type:ResourceIdentifier) to the Business Unit the Cart should belong to. The [Customer](ctp:api:type:Customer) must be an [Associate](ctp:api:type:Associate) of the Business Unit.
+   *	[ResourceIdentifier](ctp:api:type:ResourceIdentifier) to the Business Unit the Cart should belong to. The [Customer](ctp:api:type:Customer) must be an [Associate](ctp:api:type:Associate) of the Business Unit. Only available for [B2B](/../offering/composable-commerce#composable-commerce-for-b2b)-enabled Projects.
    *
    *
    */
@@ -913,7 +912,7 @@ export enum MyQuoteStateValues {
   Declined = 'Declined',
 }
 
-export type MyQuoteState = 'Accepted' | 'Declined' | string
+export type MyQuoteState = 'Accepted' | 'Declined' | (string & {})
 export interface MyQuoteUpdate {
   /**
    *	Expected version of the [Quote](ctp:api:type:Quote) to which the changes should be applied.

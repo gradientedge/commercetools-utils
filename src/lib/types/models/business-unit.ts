@@ -4,7 +4,12 @@
  * For more information about the commercetools platform APIs, visit https://docs.commercetools.com/.
  */
 
-import { AssociateRoleKeyReference, AssociateRoleResourceIdentifier } from './associate-role.js'
+import {
+  AssociateRole,
+  AssociateRoleKeyReference,
+  AssociateRoleResourceIdentifier,
+  Permission,
+} from './associate-role.js'
 import {
   Address,
   BaseAddress,
@@ -84,7 +89,7 @@ export enum AssociateRoleInheritanceModeValues {
   Enabled = 'Enabled',
 }
 
-export type AssociateRoleInheritanceMode = 'Disabled' | 'Enabled' | string
+export type AssociateRoleInheritanceMode = 'Disabled' | 'Enabled' | (string & {})
 /**
  *	Generic type to model the fields that all types of Business Units have in common.
  *
@@ -142,9 +147,9 @@ export interface IBusinessUnit {
   /**
    *	References to [Stores](ctp:api:type:Store) the Business Unit is associated with. Only present when `storeMode` is `Explicit`.
    *
-   *	If the Business Unit has Stores defined, then all of its [Carts](ctp:api:type:Cart), [Orders](ctp:api:type:Order), [Quotes](ctp:api:type:Quote), or [Quote Requests](ctp:api:type:QuoteRequest) must belong to one of the Business Unit's Stores.
+   *	If the Business Unit has Stores defined, then all of its [Carts](ctp:api:type:Cart), [Orders](ctp:api:type:Order), [Quotes](ctp:api:type:Quote), [Quote Requests](ctp:api:type:QuoteRequest), or [Shopping Lists](ctp:api:type:ShoppingList) must belong to one of the Business Unit's Stores.
    *
-   *	If the Business Unit has no Stores, then all of its [Carts](ctp:api:type:Cart), [Orders](ctp:api:type:Order), [Quotes](ctp:api:type:Quote), or [Quote Requests](ctp:api:type:QuoteRequest) must not belong to any Store.
+   *	If the Business Unit has no Stores, then all of its [Carts](ctp:api:type:Cart), [Orders](ctp:api:type:Order), [Quotes](ctp:api:type:Quote), [Quote Requests](ctp:api:type:QuoteRequest), or [Shopping Lists](ctp:api:type:ShoppingList) must not belong to any Store.
    *
    *
    */
@@ -262,7 +267,7 @@ export enum BusinessUnitApprovalRuleModeValues {
   ExplicitAndFromParent = 'ExplicitAndFromParent',
 }
 
-export type BusinessUnitApprovalRuleMode = 'Explicit' | 'ExplicitAndFromParent' | string
+export type BusinessUnitApprovalRuleMode = 'Explicit' | 'ExplicitAndFromParent' | (string & {})
 /**
  *	Determines whether a Business Unit can inherit Associates from a parent.
  *
@@ -272,7 +277,37 @@ export enum BusinessUnitAssociateModeValues {
   ExplicitAndFromParent = 'ExplicitAndFromParent',
 }
 
-export type BusinessUnitAssociateMode = 'Explicit' | 'ExplicitAndFromParent' | string
+export type BusinessUnitAssociateMode = 'Explicit' | 'ExplicitAndFromParent' | (string & {})
+/**
+ *	Information about all roles and permissions of an Associate in a [BusinessUnit](ctp:api:type:BusinessUnit).
+ *
+ */
+export interface BusinessUnitAssociateResponse {
+  /**
+   *	The Customer that acts as an Associate in the Business Unit.
+   *
+   *
+   */
+  readonly customer: CustomerReference
+  /**
+   *	Roles assigned to Associates in the Business Unit.
+   *
+   *
+   */
+  readonly associateRoles: AssociateRole[]
+  /**
+   *	Roles inherited by Associates from the parent Business Unit.
+   *
+   *
+   */
+  readonly inheritedAssociateRoles: AssociateRole[]
+  /**
+   *	Permissions the Associate has in the Business Unit.
+   *
+   *
+   */
+  readonly permissions: Permission[]
+}
 /**
  *	Generic draft type to model those fields all Business Units have in common. The additional fields required for creating a [Company](ctp:api:type:Company) or [Division](ctp:api:type:Division) are represented on [CompanyDraft](ctp:api:type:CompanyDraft) and [DivisionDraft](ctp:api:type:DivisionDraft).
  *
@@ -295,9 +330,9 @@ export interface IBusinessUnitDraft {
    *	Sets the [Stores](ctp:api:type:Store) the Business Unit is associated with. Can only be set when `storeMode` is `Explicit`.
    *	Defaults to empty for [Companies](ctp:api:type:BusinessUnitType) and not set for [Divisions](ctp:api:type:BusinessUnitType).
    *
-   *	If the Business Unit has Stores defined, then all of its [Carts](ctp:api:type:Cart), [Orders](ctp:api:type:Order), [Quotes](ctp:api:type:Quote), or [Quote Requests](ctp:api:type:QuoteRequest) must belong to one of the Business Unit's Stores.
+   *	If the Business Unit has Stores defined, then all of its [Carts](ctp:api:type:Cart), [Orders](ctp:api:type:Order), [Quotes](ctp:api:type:Quote), [Quote Requests](ctp:api:type:QuoteRequest), or [Shopping Lists](ctp:api:type:ShoppingList) must belong to one of the Business Unit's Stores.
    *
-   *	If the Business Unit has no Stores, then all of its [Carts](ctp:api:type:Cart), [Orders](ctp:api:type:Order), [Quotes](ctp:api:type:Quote), or [Quote Requests](ctp:api:type:QuoteRequest) must not belong to any Store.
+   *	If the Business Unit has no Stores, then all of its [Carts](ctp:api:type:Cart), [Orders](ctp:api:type:Order), [Quotes](ctp:api:type:Quote), [Quote Requests](ctp:api:type:QuoteRequest), or [Shopping Lists](ctp:api:type:ShoppingList) must not belong to any Store.
    *
    *
    */
@@ -487,7 +522,7 @@ export enum BusinessUnitStatusValues {
   Inactive = 'Inactive',
 }
 
-export type BusinessUnitStatus = 'Active' | 'Inactive' | string
+export type BusinessUnitStatus = 'Active' | 'Inactive' | (string & {})
 /**
  *	Defines whether the Stores of the Business Unit are set directly on the Business Unit or are inherited from its parent unit.
  *
@@ -497,7 +532,7 @@ export enum BusinessUnitStoreModeValues {
   FromParent = 'FromParent',
 }
 
-export type BusinessUnitStoreMode = 'Explicit' | 'FromParent' | string
+export type BusinessUnitStoreMode = 'Explicit' | 'FromParent' | (string & {})
 /**
  *	The type of the Business Unit indicating its position in a hierarchy.
  *
@@ -507,7 +542,7 @@ export enum BusinessUnitTypeValues {
   Division = 'Division',
 }
 
-export type BusinessUnitType = 'Company' | 'Division' | string
+export type BusinessUnitType = 'Company' | 'Division' | (string & {})
 export interface BusinessUnitUpdate {
   /**
    *	Expected version of the BusinessUnit on which the changes should be applied.
@@ -551,6 +586,7 @@ export type BusinessUnitUpdateAction =
   | BusinessUnitSetDefaultShippingAddressAction
   | BusinessUnitSetStoreModeAction
   | BusinessUnitSetStoresAction
+  | BusinessUnitSetUnitTypeAction
 export interface IBusinessUnitUpdateAction {
   /**
    *
@@ -615,9 +651,9 @@ export interface Company extends IBusinessUnit {
   /**
    *	References to [Stores](ctp:api:type:Store) the Business Unit is associated with. Only present when `storeMode` is `Explicit`.
    *
-   *	If the Business Unit has Stores defined, then all of its [Carts](ctp:api:type:Cart), [Orders](ctp:api:type:Order), [Quotes](ctp:api:type:Quote), or [Quote Requests](ctp:api:type:QuoteRequest) must belong to one of the Business Unit's Stores.
+   *	If the Business Unit has Stores defined, then all of its [Carts](ctp:api:type:Cart), [Orders](ctp:api:type:Order), [Quotes](ctp:api:type:Quote), [Quote Requests](ctp:api:type:QuoteRequest), or [Shopping Lists](ctp:api:type:ShoppingList) must belong to one of the Business Unit's Stores.
    *
-   *	If the Business Unit has no Stores, then all of its [Carts](ctp:api:type:Cart), [Orders](ctp:api:type:Order), [Quotes](ctp:api:type:Quote), or [Quote Requests](ctp:api:type:QuoteRequest) must not belong to any Store.
+   *	If the Business Unit has no Stores, then all of its [Carts](ctp:api:type:Cart), [Orders](ctp:api:type:Order), [Quotes](ctp:api:type:Quote), [Quote Requests](ctp:api:type:QuoteRequest), or [Shopping Lists](ctp:api:type:ShoppingList) must not belong to any Store.
    *
    *
    */
@@ -741,9 +777,9 @@ export interface CompanyDraft extends IBusinessUnitDraft {
    *	Sets the [Stores](ctp:api:type:Store) the Business Unit is associated with. Can only be set when `storeMode` is `Explicit`.
    *	Defaults to empty for [Companies](ctp:api:type:BusinessUnitType) and not set for [Divisions](ctp:api:type:BusinessUnitType).
    *
-   *	If the Business Unit has Stores defined, then all of its [Carts](ctp:api:type:Cart), [Orders](ctp:api:type:Order), [Quotes](ctp:api:type:Quote), or [Quote Requests](ctp:api:type:QuoteRequest) must belong to one of the Business Unit's Stores.
+   *	If the Business Unit has Stores defined, then all of its [Carts](ctp:api:type:Cart), [Orders](ctp:api:type:Order), [Quotes](ctp:api:type:Quote), [Quote Requests](ctp:api:type:QuoteRequest), or [Shopping Lists](ctp:api:type:ShoppingList) must belong to one of the Business Unit's Stores.
    *
-   *	If the Business Unit has no Stores, then all of its [Carts](ctp:api:type:Cart), [Orders](ctp:api:type:Order), [Quotes](ctp:api:type:Quote), or [Quote Requests](ctp:api:type:QuoteRequest) must not belong to any Store.
+   *	If the Business Unit has no Stores, then all of its [Carts](ctp:api:type:Cart), [Orders](ctp:api:type:Order), [Quotes](ctp:api:type:Quote), [Quote Requests](ctp:api:type:QuoteRequest), or [Shopping Lists](ctp:api:type:ShoppingList) must not belong to any Store.
    *
    *
    */
@@ -885,9 +921,9 @@ export interface Division extends IBusinessUnit {
   /**
    *	References to [Stores](ctp:api:type:Store) the Business Unit is associated with. Only present when `storeMode` is `Explicit`.
    *
-   *	If the Business Unit has Stores defined, then all of its [Carts](ctp:api:type:Cart), [Orders](ctp:api:type:Order), [Quotes](ctp:api:type:Quote), or [Quote Requests](ctp:api:type:QuoteRequest) must belong to one of the Business Unit's Stores.
+   *	If the Business Unit has Stores defined, then all of its [Carts](ctp:api:type:Cart), [Orders](ctp:api:type:Order), [Quotes](ctp:api:type:Quote), [Quote Requests](ctp:api:type:QuoteRequest), or [Shopping Lists](ctp:api:type:ShoppingList) must belong to one of the Business Unit's Stores.
    *
-   *	If the Business Unit has no Stores, then all of its [Carts](ctp:api:type:Cart), [Orders](ctp:api:type:Order), [Quotes](ctp:api:type:Quote), or [Quote Requests](ctp:api:type:QuoteRequest) must not belong to any Store.
+   *	If the Business Unit has no Stores, then all of its [Carts](ctp:api:type:Cart), [Orders](ctp:api:type:Order), [Quotes](ctp:api:type:Quote), [Quote Requests](ctp:api:type:QuoteRequest), or [Shopping Lists](ctp:api:type:ShoppingList) must not belong to any Store.
    *
    *
    */
@@ -1012,9 +1048,9 @@ export interface DivisionDraft extends IBusinessUnitDraft {
    *	Sets the [Stores](ctp:api:type:Store) the Business Unit is associated with. Can only be set when `storeMode` is `Explicit`.
    *	Defaults to empty for [Companies](ctp:api:type:BusinessUnitType) and not set for [Divisions](ctp:api:type:BusinessUnitType).
    *
-   *	If the Business Unit has Stores defined, then all of its [Carts](ctp:api:type:Cart), [Orders](ctp:api:type:Order), [Quotes](ctp:api:type:Quote), or [Quote Requests](ctp:api:type:QuoteRequest) must belong to one of the Business Unit's Stores.
+   *	If the Business Unit has Stores defined, then all of its [Carts](ctp:api:type:Cart), [Orders](ctp:api:type:Order), [Quotes](ctp:api:type:Quote), [Quote Requests](ctp:api:type:QuoteRequest), or [Shopping Lists](ctp:api:type:ShoppingList) must belong to one of the Business Unit's Stores.
    *
-   *	If the Business Unit has no Stores, then all of its [Carts](ctp:api:type:Cart), [Orders](ctp:api:type:Order), [Quotes](ctp:api:type:Quote), or [Quote Requests](ctp:api:type:QuoteRequest) must not belong to any Store.
+   *	If the Business Unit has no Stores, then all of its [Carts](ctp:api:type:Cart), [Orders](ctp:api:type:Order), [Quotes](ctp:api:type:Quote), [Quote Requests](ctp:api:type:QuoteRequest), or [Shopping Lists](ctp:api:type:ShoppingList) must not belong to any Store.
    *
    *
    */
@@ -1290,13 +1326,16 @@ export interface BusinessUnitChangeNameAction extends IBusinessUnitUpdateAction 
   readonly name: string
 }
 /**
- *	Changing the parent of a [Business Unit](ctp:api:type:BusinessUnit) generates a [BusinessUnitParentChanged](ctp:api:type:BusinessUnitParentChangedMessage) Message.
+ *	This action generates a [BusinessUnitParentChanged](ctp:api:type:BusinessUnitParentChangedMessage) Message.
  *
  */
 export interface BusinessUnitChangeParentUnitAction extends IBusinessUnitUpdateAction {
   readonly action: 'changeParentUnit'
   /**
-   *	New parent unit of the [Business Unit](ctp:api:type:BusinessUnit). The new parent unit must have the same top-level unit as the old parent unit.
+   *	New parent unit of the [Business Unit](ctp:api:type:BusinessUnit).
+   *	It must be associated with the same Stores, as the old parent unit.
+   *
+   *	The Business Unit `inheritedAssociates` and `inheritedStores` field values will be [eventually consistent](/../api/general-concepts#eventual-consistency).
    *
    *
    */
@@ -1598,4 +1637,25 @@ export interface BusinessUnitSetStoresAction extends IBusinessUnitUpdateAction {
    *
    */
   readonly stores: StoreResourceIdentifier[]
+}
+/**
+ *	This action generates a [BusinessUnitTypeSet](ctp:api:type:BusinessUnitTypeSetMessage) Message.
+ *
+ */
+export interface BusinessUnitSetUnitTypeAction extends IBusinessUnitUpdateAction {
+  readonly action: 'setUnitType'
+  /**
+   *	New type of the [Business Unit](ctp:api:type:BusinessUnit).
+   *
+   *	If `unitType="Company"`, the Business Unit `storeMode`, `associateMode`, and `approvalRuleMode` field values must be `Explicit`.
+   *
+   *
+   */
+  readonly unitType: BusinessUnitType
+  /**
+   *	New parent unit for the [Business Unit](ctp:api:type:BusinessUnit), if `unitType="Division"`.
+   *
+   *
+   */
+  readonly parentUnit?: BusinessUnitResourceIdentifier
 }

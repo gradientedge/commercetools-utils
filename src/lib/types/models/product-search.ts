@@ -116,19 +116,25 @@ export interface ProductSearchProjectionParams {
    */
   readonly priceCurrency?: string
   /**
-   *	The country used for [Product price selection](/../api/pricing-and-discounts-overview#product-price-selection). Can only be used **in conjunction with** the `priceCurrency` parameter.
+   *	The country used for [Product price selection](/../api/pricing-and-discounts-overview#product-price-selection). It can be used only *in conjunction with* the `priceCurrency` parameter.
    *
    *
    */
   readonly priceCountry?: string
   /**
-   *	`id` of an existing [CustomerGroup](ctp:api:type:CustomerGroup) used for [Product price selection](/../api/pricing-and-discounts-overview#product-price-selection). Can only be used **in conjunction with** the `priceCurrency` parameter.
+   *	`id` of an existing [CustomerGroup](ctp:api:type:CustomerGroup) used for [Product price selection](/../api/pricing-and-discounts-overview#product-price-selection). It can be used only *in conjunction with* the `priceCurrency` parameter.
    *
    *
    */
   readonly priceCustomerGroup?: string
   /**
-   *	`id` of an existing [Channel](ctp:api:type:Channel) used for [Product price selection](/../api/pricing-and-discounts-overview#product-price-selection). Can only be used **in conjunction with** the `priceCurrency` parameter.
+   *	IDs of existing [CustomerGroups](ctp:api:type:CustomerGroup) used for [Product price selection](/../api/pricing-and-discounts-overview#product-price-selection), when using [multiple Customer Groups](/../api/customers-overview#customer-groups). It can be used only *in conjunction with* the `priceCurrency` parameter.
+   *
+   *
+   */
+  readonly priceCustomerGroupAssignments?: string[]
+  /**
+   *	`id` of an existing [Channel](ctp:api:type:Channel) used for [Product price selection](/../api/pricing-and-discounts-overview#product-price-selection). It can be used only *in conjunction with* the `priceCurrency` parameter.
    *
    *
    */
@@ -141,10 +147,11 @@ export interface ProductSearchProjectionParams {
   readonly localeProjection?: string[]
   /**
    *	`key` of an existing [Store](ctp:api:type:Store).
-   *	If the Store has defined some languages, countries, distribution or supply Channels,
+   *	If the Store has defined `languages`, `countries`, `distributionChannels`, or `supplyChannels`,
    *	they are used for projections based on [locale](ctp:api:type:ProductProjectionLocales), [price](ctp:api:type:ProductProjectionPrices),
    *	and [inventory](ctp:api:type:ProductProjectionInventoryEntries).
-   *	If the Store has defined [Product Selections](ctp:api:type:ProductSelection) or [Product Tailoring](ctp:api:type:ProductTailoring), they have no effect on the results of this query.
+   *	For Projects with active [Product Selections](/../api/projects/product-selections), the API does not take the [availability of the Product in the specified Store](/../api/projects/stores#products-available-in-store) into account.
+   *	[Product Tailoring](/../api/projects/product-tailoring) modifies the product information returned in API responses, but evaluating [query expressions](/../api/search-query-language#simple-expressions) is restricted to the original product information.
    *
    *
    */
@@ -232,7 +239,7 @@ export enum ProductSearchFacetCountLevelEnumValues {
   Variants = 'variants',
 }
 
-export type ProductSearchFacetCountLevelEnum = 'products' | 'variants' | string
+export type ProductSearchFacetCountLevelEnum = 'products' | 'variants' | (string & {})
 export interface ProductSearchFacetCountValue {
   /**
    *	Name of the count facet to appear in the [ProductSearchFacetResultCount](ctp:api:type:ProductSearchFacetResultCount).
@@ -260,7 +267,7 @@ export enum ProductSearchFacetDistinctBucketSortByValues {
   Key = 'key',
 }
 
-export type ProductSearchFacetDistinctBucketSortBy = 'count' | 'key' | string
+export type ProductSearchFacetDistinctBucketSortBy = 'count' | 'key' | (string & {})
 export interface ProductSearchFacetDistinctBucketSortExpression {
   /**
    *	Defines whether to sort by bucket count or key.
@@ -473,4 +480,4 @@ export enum ProductSearchFacetScopeEnumValues {
   Query = 'query',
 }
 
-export type ProductSearchFacetScopeEnum = 'all' | 'query' | string
+export type ProductSearchFacetScopeEnum = 'all' | 'query' | (string & {})
