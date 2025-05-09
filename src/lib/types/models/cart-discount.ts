@@ -382,9 +382,9 @@ export interface CartDiscountPatternTarget extends ICartDiscountTarget {
    *	Defines the set of units of (Custom) Line Items in a Cart that trigger a discount application.
    *
    *	Based on the availability of matching units, the `triggerPattern` can match multiple times, limiting the number of maximum times the discount will be applied.
-   *	To further limit the discount application, set the `maxOccurrence`.
+   *	The units matched in the `triggerPattern` are excluded and not considered for the `targetPattern`.
    *
-   *	If empty, the Discount will apply indefinitely.
+   *	To further limit the discount application, set the `maxOccurrence`.
    *
    *
    */
@@ -423,6 +423,7 @@ export interface CartDiscountShippingCostTarget extends ICartDiscountTarget {
 }
 /**
  *	Discount is applied to the total price of the [Cart](ctp:api:type:Cart).
+ *	The same percentage of discount applies on the [Cart](ctp:api:type:Cart) or [Order](ctp:api:type:Order) `taxedPrice`.
  *
  */
 export interface CartDiscountTotalPriceTarget extends ICartDiscountTarget {
@@ -513,9 +514,9 @@ export interface CartDiscountValueAbsoluteDraft extends ICartDiscountValueDraft 
   readonly type: 'absolute'
   /**
    *	Money values in different currencies.
-   *	An absolute Cart Discount will match a price only if the array contains a value with the same currency. For example, if it contains 10€ and 15$, the matching € price will be decreased by 10€ and the matching $ price will be decreased by 15$. If the array has multiple values of the same currency, the API returns an [InvalidOperation](ctp:api:type:InvalidOperationError) error.
+   *	An absolute Cart Discount will match a price only if the array contains a value with the same currency. For example, if it contains 10€ and 15$, the matching € price will be decreased by 10€ and the matching $ price will be decreased by 15$.
    *
-   *	If the array is empty, the discount does not apply.
+   *	If the array is empty or has multiple values of the same currency, the API returns an [InvalidOperation](ctp:api:type:InvalidOperationError) error.
    *
    *
    */
@@ -558,9 +559,9 @@ export interface CartDiscountValueFixedDraft extends ICartDiscountValueDraft {
   readonly type: 'fixed'
   /**
    *	Money values provided either in [cent precision](ctp:api:type:Money) or [high precision](ctp:api:type:HighPrecisionMoneyDraft) for different currencies.
-   *	A fixed Cart Discount will match a price only if the array contains a value with the same currency. For example, if it contains 10€ and 15$, the matching € price will be discounted by 10€ and the matching $ price will be discounted to 15$. If the array has multiple values of the same currency, the API returns an [InvalidOperation](ctp:api:type:InvalidOperationError) error.
+   *	A fixed Cart Discount will match a price only if the array contains a value with the same currency. For example, if it contains 10€ and 15$, the matching € price will be discounted by 10€ and the matching $ price will be discounted to 15$.
    *
-   *	If the array is empty, the discount does not apply.
+   *	If the array is empty or has multiple values of the same currency, the API returns an [InvalidOperation](ctp:api:type:InvalidOperationError) error.
    *
    *
    */
@@ -673,7 +674,7 @@ export type DiscountApplicationMode =
   | 'EvenDistribution'
   | 'IndividualApplication'
   | 'ProportionateDistribution'
-  | string
+  | (string & {})
 /**
  *	This Discount target is similar to `MultiBuyLineItems`, but is applied on Custom Line Items instead of Line Items.
  *
@@ -792,7 +793,7 @@ export interface CountOnCustomLineItemUnits extends IPatternComponent {
    *	The `minCount`and `maxCount` are considered only after the exclusion. Pattern components are matched only if any further units satisfying the pattern component exist.
    *	For example, if 5 jeans are required but only 3 should be discounted, the `excludeCount` value must be 2.
    *
-   *
+   *	@deprecated
    */
   readonly excludeCount?: number
 }
@@ -829,7 +830,7 @@ export interface CountOnLineItemUnits extends IPatternComponent {
    *	The `minCount`and `maxCount` are considered only after the exclusion. Pattern components are matched only if any further units satisfying the pattern component exist.
    *	For example, if 5 jeans are required but only 3 should be discounted, the `excludeCount` value must be 2.
    *
-   *
+   *	@deprecated
    */
   readonly excludeCount?: number
 }
@@ -842,7 +843,7 @@ export enum SelectionModeValues {
   MostExpensive = 'MostExpensive',
 }
 
-export type SelectionMode = 'Cheapest' | 'MostExpensive' | string
+export type SelectionMode = 'Cheapest' | 'MostExpensive' | (string & {})
 /**
  *	Describes how the Cart Discount interacts with other Discounts.
  *
@@ -852,7 +853,7 @@ export enum StackingModeValues {
   StopAfterThisDiscount = 'StopAfterThisDiscount',
 }
 
-export type StackingMode = 'Stacking' | 'StopAfterThisDiscount' | string
+export type StackingMode = 'Stacking' | 'StopAfterThisDiscount' | (string & {})
 /**
  *	If a referenced Store does not exist, a [ReferencedResourceNotFound](ctp:api:type:ReferencedResourceNotFoundError) error is returned.
  *

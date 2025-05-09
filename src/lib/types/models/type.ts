@@ -86,7 +86,7 @@ export type CustomFieldReferenceValue =
   | 'shipping-method'
   | 'state'
   | 'zone'
-  | string
+  | (string & {})
 /**
  *	Serves as value of the `custom` field on a resource or data type customized with a [Type](ctp:api:type:Type).
  *
@@ -364,7 +364,7 @@ export type ResourceTypeId =
   | 'standalone-price'
   | 'store'
   | 'transaction'
-  | string
+  | (string & {})
 export interface Type extends BaseResource {
   /**
    *	Unique identifier of the Type.
@@ -547,7 +547,7 @@ export enum TypeTextInputHintValues {
   SingleLine = 'SingleLine',
 }
 
-export type TypeTextInputHint = 'MultiLine' | 'SingleLine' | string
+export type TypeTextInputHint = 'MultiLine' | 'SingleLine' | (string & {})
 export interface TypeUpdate {
   /**
    *	Expected version of the type on which the changes should be applied.
