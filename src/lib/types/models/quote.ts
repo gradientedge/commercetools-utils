@@ -256,7 +256,7 @@ export interface Quote extends BaseResource {
    */
   readonly purchaseOrderNumber?: string
   /**
-   *	The [BusinessUnit](ctp:api:type:BusinessUnit) for the Quote.
+   *	The [BusinessUnit](ctp:api:type:BusinessUnit) for the Quote. Only available for [B2B](/../offering/composable-commerce#composable-commerce-for-b2b)-enabled Projects.
    *
    *
    */
@@ -402,7 +402,7 @@ export type QuoteState =
   | 'Pending'
   | 'RenegotiationAddressed'
   | 'Withdrawn'
-  | string
+  | (string & {})
 export interface QuoteUpdate {
   /**
    *	Expected version of the [Quote](ctp:api:type:Quote) to which the changes should be applied.
