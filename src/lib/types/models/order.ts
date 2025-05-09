@@ -150,6 +150,7 @@ import { StateReference, StateResourceIdentifier } from './state.js'
 import { StoreKeyReference, StoreResourceIdentifier } from './store.js'
 import { TaxCategoryResourceIdentifier, TaxRate } from './tax-category.js'
 import { CustomFields, CustomFieldsDraft, FieldContainer, TypeResourceIdentifier } from './type.js'
+import { RecurringOrderReference } from './recurring-order.js'
 
 export type StagedOrderUpdateAction =
   | StagedOrderAddCustomLineItemAction
@@ -1050,6 +1051,12 @@ export interface Order extends BaseResource {
    *
    */
   readonly createdBy?: CreatedBy
+
+  /**
+   * \[BETA\]
+   * Reference to the RecurringOrder that generated this Order.
+   */
+  readonly recurringOrder?: RecurringOrderReference
 }
 export type _Order = Order | StagedOrder
 export interface OrderFromCartDraft {
