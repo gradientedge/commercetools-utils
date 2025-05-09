@@ -58,6 +58,11 @@ import { TaxCategory, TaxCategoryReference, TaxCategoryResourceIdentifier } from
 import { CustomFields, CustomFieldsDraft, Type, TypeReference, TypeResourceIdentifier } from './type.js'
 import { Zone, ZoneReference, ZoneResourceIdentifier } from './zone.js'
 
+/**
+ *	Each query endpoint returns a paged query response containing the actual resources matching the query predicate plus information about [pagination](#pagination).
+ *	This documents the fields all query responses have in common, for specific response types, see the respective API reference pages.
+ *
+ */
 export interface PagedQueryResponse {
   /**
    *	Number of [results requested](/../api/general-concepts#limit).
@@ -88,10 +93,15 @@ export interface PagedQueryResponse {
    */
   readonly total?: number
   /**
+   *	The resources matching the query predicate.
+   *	Each query endpoint returns resources of its specific type.
+   *
    *
    */
   readonly results: BaseResource[]
   /**
+   *	Object containing supplementary information about the results.
+   *
    *
    */
   readonly meta?: any
@@ -259,7 +269,7 @@ export enum AttributionSourceValues {
   Import = 'Import',
 }
 
-export type AttributionSource = 'Export' | 'Import' | string
+export type AttributionSource = 'Export' | 'Import' | (string & {})
 /**
  *	Polymorphic base type that represents a postal address and contact details.
  *	Depending on the read or write action, it can be either [Address](ctp:api:type:Address) or [AddressDraft](ctp:api:type:AddressDraft) that
@@ -534,7 +544,7 @@ export interface ClientLogging {
    */
   readonly anonymousId?: string
   /**
-   *	Indicates the [Customer](ctp:api:type:Customer) who created or modified the resource in the context of a [Business Unit](ctp:api:type:BusinessUnit). Only present when an Associate acts on behalf of a company using the [associate endpoints](/associates-overview#on-the-associate-endpoints).
+   *	Indicates the [Customer](ctp:api:type:Customer) who created or modified the resource in the context of a [Business Unit](ctp:api:type:BusinessUnit). Only available for [B2B](/../offering/composable-commerce#composable-commerce-for-b2b)-enabled Projects when an Associate acts on behalf of a company using the [associate endpoints](/associates-overview#on-the-associate-endpoints).
    *
    *
    */
@@ -576,7 +586,7 @@ export interface CreatedBy extends ClientLogging {
    */
   readonly attributedTo?: Attribution
   /**
-   *	Indicates the [Customer](ctp:api:type:Customer) who created the resource in the context of a [Business Unit](ctp:api:type:BusinessUnit). Only present when an Associate acts on behalf of a company using the [associate endpoints](/associates-overview#on-the-associate-endpoints).
+   *	Indicates the [Customer](ctp:api:type:Customer) who created the resource in the context of a [Business Unit](ctp:api:type:BusinessUnit). Only available for [B2B](/../offering/composable-commerce#composable-commerce-for-b2b)-enabled Project when an Associate acts on behalf of a company using the [associate endpoints](/associates-overview#on-the-associate-endpoints).
    *
    *
    */
@@ -718,7 +728,7 @@ export interface LastModifiedBy extends ClientLogging {
    */
   readonly attributedTo?: Attribution
   /**
-   *	Indicates the [Customer](ctp:api:type:Customer) who modified the resource in the context of a [Business Unit](ctp:api:type:BusinessUnit). Only present when an Associate acts on behalf of a company using the [associate endpoints](/associates-overview#on-the-associate-endpoints).
+   *	Indicates the [Customer](ctp:api:type:Customer) who modified the resource in the context of a [Business Unit](ctp:api:type:BusinessUnit). Only available for [B2B](/../offering/composable-commerce#composable-commerce-for-b2b)-enabled Projects when an Associate acts on behalf of a company using the [associate endpoints](/associates-overview#on-the-associate-endpoints).
    *
    *
    */
@@ -760,7 +770,7 @@ export enum MoneyTypeValues {
   HighPrecision = 'highPrecision',
 }
 
-export type MoneyType = 'centPrecision' | 'highPrecision' | string
+export type MoneyType = 'centPrecision' | 'highPrecision' | (string & {})
 /**
  *	The representation for prices embedded in [LineItems](ctp:api:type:LineItem) and in [ProductVariants](ctp:api:type:ProductVariant) when the [ProductPriceMode](ctp:api:type:ProductPriceModeEnum) is `Embedded`.
  *	For the `Standalone` ProductPriceMode refer to [StandalonePrice](ctp:api:type:StandalonePrice).
@@ -1171,7 +1181,7 @@ export type ReferenceTypeId =
   | 'tax-category'
   | 'type'
   | 'zone'
-  | string
+  | (string & {})
 /**
  *	Draft type to create a [Reference](ctp:api:type:Reference) or a [KeyReference](ctp:api:type:KeyReference) to a resource. Provide either the `id` or (wherever supported) the `key` of the resource to reference, but depending on the API endpoint the response returns either a Reference or a KeyReference. For example, the field `parent` of a [CategoryDraft](ctp:api:type:CategoryDraft) takes a ResourceIdentifier for its value while the value of the corresponding field of a [Category](ctp:api:type:Category) is a Reference.
  *

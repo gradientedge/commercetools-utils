@@ -15,6 +15,7 @@ import {
   DiscountCodeInfo,
   DiscountedLineItemPortionDraft,
   DiscountOnTotalPrice,
+  DiscountTypeCombination,
   InventoryMode,
   ItemShippingDetailsDraft,
   LineItem,
@@ -79,6 +80,7 @@ import {
   StagedOrderSetBillingAddressAction,
   StagedOrderSetBillingAddressCustomFieldAction,
   StagedOrderSetBillingAddressCustomTypeAction,
+  StagedOrderSetBusinessUnitAction,
   StagedOrderSetCountryAction,
   StagedOrderSetCustomerEmailAction,
   StagedOrderSetCustomerGroupAction,
@@ -180,6 +182,7 @@ export type StagedOrderUpdateAction =
   | StagedOrderSetBillingAddressAction
   | StagedOrderSetBillingAddressCustomFieldAction
   | StagedOrderSetBillingAddressCustomTypeAction
+  | StagedOrderSetBusinessUnitAction
   | StagedOrderSetCountryAction
   | StagedOrderSetCustomFieldAction
   | StagedOrderSetCustomLineItemCustomFieldAction
@@ -328,13 +331,13 @@ export type OrderSearchCustomType =
   | 'SetType.TimeType'
   | 'StringType'
   | 'TimeType'
-  | string
+  | (string & {})
 export enum OrderSearchMatchTypeValues {
   All = 'all',
   Any = 'any',
 }
 
-export type OrderSearchMatchType = 'all' | 'any' | string
+export type OrderSearchMatchType = 'all' | 'any' | (string & {})
 export interface OrderSearchQueryExpressionValue {
   /**
    *
@@ -423,13 +426,13 @@ export enum OrderSearchSortModeValues {
   Sum = 'sum',
 }
 
-export type OrderSearchSortMode = 'avg' | 'max' | 'min' | 'sum' | string
+export type OrderSearchSortMode = 'avg' | 'max' | 'min' | 'sum' | (string & {})
 export enum OrderSearchSortOrderValues {
   Asc = 'asc',
   Desc = 'desc',
 }
 
-export type OrderSearchSortOrder = 'asc' | 'desc' | string
+export type OrderSearchSortOrder = 'asc' | 'desc' | (string & {})
 export interface OrderSearchStringValue extends OrderSearchQueryExpressionValue {
   /**
    *
@@ -767,7 +770,7 @@ export interface Order extends BaseResource {
    */
   readonly anonymousId?: string
   /**
-   *	[Reference](ctp:api:type:Reference) to a Business Unit the Order belongs to.
+   *	[Reference](ctp:api:type:Reference) to a Business Unit the Order belongs to. Only available for [B2B](/../offering/composable-commerce#composable-commerce-for-b2b)-enabled Projects.
    *
    *
    */
@@ -1000,6 +1003,12 @@ export interface Order extends BaseResource {
    */
   readonly returnInfo?: ReturnInfo[]
   /**
+   *	Indicates if a combination of discount types can apply on an Order.
+   *
+   *
+   */
+  readonly discountTypeCombination?: DiscountTypeCombination
+  /**
    *	Internal-only field.
    *	@deprecated
    */
@@ -1203,7 +1212,7 @@ export interface OrderImportDraft {
   readonly customerGroup?: CustomerGroupResourceIdentifier
   /**
    *	[ResourceIdentifier](ctp:api:type:ResourceIdentifier) to the Business Unit the Order should belong to.
-   *	When the `customerId` of the Order is also set, the [Customer](ctp:api:type:Customer) must be an [Associate](ctp:api:type:Associate) of the Business Unit.
+   *	When the `customerId` of the Order is also set, the [Customer](ctp:api:type:Customer) must be an [Associate](ctp:api:type:Associate) of the Business Unit. Only available for [B2B](/../offering/composable-commerce#composable-commerce-for-b2b)-enabled Projects.
    *
    *
    */
@@ -1549,7 +1558,7 @@ export enum OrderStateValues {
   Open = 'Open',
 }
 
-export type OrderState = 'Cancelled' | 'Complete' | 'Confirmed' | 'Open' | string
+export type OrderState = 'Cancelled' | 'Complete' | 'Confirmed' | 'Open' | (string & {})
 export interface OrderUpdate {
   /**
    *	Expected version of the Order on which the changes should be applied.
@@ -1583,6 +1592,7 @@ export type OrderUpdateAction =
   | OrderSetBillingAddressAction
   | OrderSetBillingAddressCustomFieldAction
   | OrderSetBillingAddressCustomTypeAction
+  | OrderSetBusinessUnitAction
   | OrderSetCustomFieldAction
   | OrderSetCustomLineItemCustomFieldAction
   | OrderSetCustomLineItemCustomTypeAction
@@ -1754,7 +1764,7 @@ export enum PaymentStateValues {
   Pending = 'Pending',
 }
 
-export type PaymentState = 'BalanceDue' | 'CreditOwed' | 'Failed' | 'Paid' | 'Pending' | string
+export type PaymentState = 'BalanceDue' | 'CreditOwed' | 'Failed' | 'Paid' | 'Pending' | (string & {})
 /**
  *	Contains the Product Variant to be used in the [LineItemImportDraft](ctp:api:type:LineItemImportDraft).
  *
@@ -2088,7 +2098,7 @@ export enum ReturnPaymentStateValues {
   Refunded = 'Refunded',
 }
 
-export type ReturnPaymentState = 'Initial' | 'NonRefundable' | 'NotRefunded' | 'Refunded' | string
+export type ReturnPaymentState = 'Initial' | 'NonRefundable' | 'NotRefunded' | 'Refunded' | (string & {})
 export enum ReturnShipmentStateValues {
   Advised = 'Advised',
   BackInStock = 'BackInStock',
@@ -2096,7 +2106,7 @@ export enum ReturnShipmentStateValues {
   Unusable = 'Unusable',
 }
 
-export type ReturnShipmentState = 'Advised' | 'BackInStock' | 'Returned' | 'Unusable' | string
+export type ReturnShipmentState = 'Advised' | 'BackInStock' | 'Returned' | 'Unusable' | (string & {})
 /**
  *	Indicates the shipment status of the Order.
  *
@@ -2121,7 +2131,7 @@ export type ShipmentState =
   | 'Pending'
   | 'Ready'
   | 'Shipped'
-  | string
+  | (string & {})
 /**
  *	Becomes the `shippingInfo` of the imported Order.
  *
@@ -2617,6 +2627,23 @@ export interface OrderSetBillingAddressCustomTypeAction extends IOrderUpdateActi
    *
    */
   readonly fields?: FieldContainer
+}
+/**
+ *	Updates the Business Unit on the Order. Setting the Order's `businessUnit` does not recalculate prices or discounts on the Order.
+ *
+ *	Produces the [OrderBusinessUnitSet](ctp:api:type:OrderBusinessUnitSetMessage) Message.
+ *
+ */
+export interface OrderSetBusinessUnitAction extends IOrderUpdateAction {
+  readonly action: 'setBusinessUnit'
+  /**
+   *	New Business Unit to assign to the Order. If empty, any existing value is removed.
+   *
+   *	If the referenced Business Unit does not exist, a [ReferencedResourceNotFound](ctp:api:type:ReferencedResourceNotFoundError) error is returned.
+   *
+   *
+   */
+  readonly businessUnit?: BusinessUnitResourceIdentifier
 }
 export interface OrderSetCustomFieldAction extends IOrderUpdateAction {
   readonly action: 'setCustomField'

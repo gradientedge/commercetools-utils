@@ -150,7 +150,7 @@ export interface AssociateMissingPermissionError extends IErrorObject {
   [key: string]: any
   /**
    *	- When an action is performed by an Associate: `"Associate '$idOfAssociate' has no rights to $action in business-unit '$idOrKeyOfBusinessUnit'. Needs '$requiredPermission'."`
-   *	- When an action is performed for another Associate, like [viewing their Cart](/projects/associate-carts#get-cart-in-businessunit): `"Associate '$idOfAssociate' has no rights to $action for customer '$idOfCustomer' in business-unit '$idOrKeyOfBusinessUnit'. Needs '$requiredPermission'."`
+   *	- When an action is performed for another Associate, like [viewing their Cart](/projects/associate-carts#get-cart-in-businessunit-as-associate): `"Associate '$idOfAssociate' has no rights to $action for customer '$idOfCustomer' in business-unit '$idOrKeyOfBusinessUnit'. Needs '$requiredPermission'."`
    *	- When viewing an entity: `"Associate '$idOfAssociate' has no rights to $action in business-unit '$idOrKeyOfBusinessUnit'. Needs '$requiredViewMyPermission' or '$requiredViewOthersPermission'."`
    *
    *
@@ -1021,11 +1021,16 @@ export interface GeneralError extends IErrorObject {
    */
   readonly message: string
 }
+/**
+ *	This error occurs when your [API Client](/../api/projects/api-clients) does not have the [OAuth scope](/../api/scopes) required for the endpoint.
+ *	Use an API Client with the required permissions for this endpoint instead.
+ *
+ */
 export interface InsufficientScopeError extends IErrorObject {
   readonly code: 'insufficient_scope'
   [key: string]: any
   /**
-   *	Plain text description of the cause of the error.
+   *	`"Insufficient scope. One of the following scopes is missing:"`
    *
    *
    */
@@ -1497,7 +1502,7 @@ export interface NoMatchingProductDiscountFoundError extends IErrorObject {
   readonly message: string
 }
 /**
- *	Returned if the requested resource was not found or the Product Search index is [inactive](/../api/projects/product-search#activation-of-the-feature).
+ *	Returned if the requested resource was not found or the Product Search index is [inactive](/../api/projects/product-search#activate-the-product-search-api).
  *
  */
 export interface ObjectNotFoundError extends IErrorObject {
@@ -2018,7 +2023,7 @@ export interface StoreCartDiscountsLimitReachedError extends IErrorObject {
   readonly stores: StoreKeyReference[]
 }
 /**
- *	Returned when a [Discount predicate](/../api/predicates/predicate-operators), [API Extension predicate](/../api/predicates/query#use-predicates-in-conditional-api-extensions), or [search query](/../api/projects/products-search) does not have the correct syntax.
+ *	Returned when a [Discount predicate](/../api/predicates/predicate-operators), [API Extension predicate](/../api/predicates/query#use-predicates-in-conditional-api-extensions), or [search query](/../api/projects/product-projection-search) does not have the correct syntax.
  *
  */
 export interface SyntaxErrorError extends IErrorObject {
@@ -2775,6 +2780,11 @@ export interface GraphQLGeneralError extends IGraphQLErrorObject {
   readonly code: 'General'
   [key: string]: any
 }
+/**
+ *	This error occurs when your [API Client](/../api/projects/api-clients) does not have the [OAuth scope](/../api/scopes) required for the endpoint.
+ *	Use an API Client with the required permissions for this endpoint instead.
+ *
+ */
 export interface GraphQLInsufficientScopeError extends IGraphQLErrorObject {
   readonly code: 'insufficient_scope'
   [key: string]: any
@@ -3126,7 +3136,7 @@ export interface GraphQLNoMatchingProductDiscountFoundError extends IGraphQLErro
   [key: string]: any
 }
 /**
- *	Returned if the requested resource was not found or the Product Search index is [inactive](/../api/projects/product-search#activation-of-the-feature).
+ *	Returned if the requested resource was not found or the Product Search index is [inactive](/../api/projects/product-search#activate-the-product-search-api).
  *
  */
 export interface GraphQLObjectNotFoundError extends IGraphQLErrorObject {
@@ -3502,7 +3512,7 @@ export interface GraphQLStoreCartDiscountsLimitReachedError extends IGraphQLErro
   readonly stores: StoreKeyReference[]
 }
 /**
- *	Returned when a [Discount predicate](/../api/predicates/predicate-operators), [API Extension predicate](/../api/predicates/query#use-predicates-in-conditional-api-extensions), or [search query](/../api/projects/products-search) does not have the correct syntax.
+ *	Returned when a [Discount predicate](/../api/predicates/predicate-operators), [API Extension predicate](/../api/predicates/query#use-predicates-in-conditional-api-extensions), or [search query](/../api/projects/product-projection-search) does not have the correct syntax.
  *
  */
 export interface GraphQLSyntaxErrorError extends IGraphQLErrorObject {
