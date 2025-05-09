@@ -94,6 +94,11 @@ import type {
 } from '@commercetools/platform-sdk'
 
 import { getRequestExecutor } from '../request/request-executor.js'
+import {
+  RecurrencePolicy,
+  RecurrencePolicyPagedQueryResponse,
+  RecurrencePolicyUpdateAction,
+} from '../types/models/recurrence-policy.js'
 
 export interface FetchOptions<T = any> {
   /**
@@ -2765,5 +2770,90 @@ export class CommercetoolsApi {
           errors.map((error) => `• ${error}`).join('\n'),
       )
     }
+  }
+
+  /**
+   * Get a recurrence policy by id
+   * https://next-docs-subscriptions-docs.commercetools.vercel.app/api/projects/recurrence-policies#recurrencepolicy
+   */
+  getRecurrencePolicyById(options: CommonRequestOptions & { id: string }): Promise<RecurrencePolicy> {
+    ensureNonEmptyString({ value: options.id, name: 'id' })
+
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/recurrence-policies/${encodeURIComponent(options.id)}`,
+      method: 'GET',
+    })
+  }
+
+  /**
+   * Query recurrence policies
+   * https://next-docs-subscriptions-docs.commercetools.vercel.app/api/projects/recurrence-policies#recurrencepolicy
+   */
+  queryRecurrencePolicies(options?: CommonRequestOptions): Promise<RecurrencePolicyPagedQueryResponse> {
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: '/recurrence-policies',
+      method: 'GET',
+    })
+  }
+
+  /**
+   * Check if a recurrence policy exists by id
+   * https://next-docs-subscriptions-docs.commercetools.vercel.app/api/projects/recurrence-policies#recurrencepolicy
+   */
+  async checkRecurrencePolicyExistsById(options: CommonRequestOptions & { id: string }): Promise<boolean> {
+    ensureNonEmptyString({ value: options.id, name: 'id' })
+
+    try {
+      await this.request({
+        ...this.extractCommonRequestOptions(options),
+        path: `/recurrence-policies/${encodeURIComponent(options.id)}`,
+        method: 'HEAD',
+      })
+      return true
+    } catch (error) {
+      if (CommercetoolsError.isInstance(error) && error.status === 404) {
+        return false
+      }
+      throw error
+    }
+  }
+
+  /**
+   * Check if recurrence policies exist by query predicate
+   * https://next-docs-subscriptions-docs.commercetools.vercel.app/api/projects/recurrence-policies#recurrencepolicy
+   */
+  async checkRecurrencePolicyExists(options?: CommonRequestOptions): Promise<boolean> {
+    try {
+      await this.request({
+        ...this.extractCommonRequestOptions(options),
+        path: `/recurrence-policies`,
+        method: 'HEAD',
+      })
+      return true
+    } catch (error) {
+      if (CommercetoolsError.isInstance(error) && error.status === 404) {
+        return false
+      }
+      throw error
+    }
+  }
+
+  /**
+   * Update a recurrence policy by id
+   * https://next-docs-subscriptions-docs.commercetools.vercel.app/api/projects/recurrence-policies#recurrencepolicy
+   */
+  updateRecurrencePolicyById(
+    options: CommonRequestOptions & { id: string; data: { version: number; actions: RecurrencePolicyUpdateAction[] } },
+  ): Promise<RecurrencePolicy> {
+    ensureNonEmptyString({ value: options.id, name: 'id' })
+
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/recurrence-policies/${encodeURIComponent(options.id)}`,
+      method: 'POST',
+      data: options.data,
+    })
   }
 }
