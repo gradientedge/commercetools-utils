@@ -21,7 +21,7 @@ export enum BusinessUnitIndexingStatusValues {
   Scheduled = 'Scheduled',
 }
 
-export type BusinessUnitIndexingStatus = 'Failed' | 'Indexing' | 'Ready' | 'Scheduled' | string
+export type BusinessUnitIndexingStatus = 'Failed' | 'Indexing' | 'Ready' | 'Scheduled' | (string & {})
 /**
  *	The current indexing status of Customer Search.
  *
@@ -33,7 +33,7 @@ export enum CustomerIndexingStatusValues {
   Scheduled = 'Scheduled',
 }
 
-export type CustomerIndexingStatus = 'Failed' | 'Indexing' | 'Ready' | 'Scheduled' | string
+export type CustomerIndexingStatus = 'Failed' | 'Indexing' | 'Ready' | 'Scheduled' | (string & {})
 export interface BusinessUnitConfiguration {
   /**
    *	Status of Business Units created using the [My Business Unit endpoint](ctp:api:endpoint:/{projectKey}/me/business-units:POST).
@@ -55,7 +55,7 @@ export enum BusinessUnitConfigurationStatusValues {
   Inactive = 'Inactive',
 }
 
-export type BusinessUnitConfigurationStatus = 'Active' | 'Inactive' | string
+export type BusinessUnitConfigurationStatus = 'Active' | 'Inactive' | (string & {})
 /**
  *	Specifies the status of the [Business Unit Search](/../api/projects/business-unit-search) index.
  *	You can change the status using the [Change Business Unit Search Status](ctp:api:type:ProjectChangeBusinessUnitSearchStatusAction) update action.
@@ -66,7 +66,7 @@ export enum BusinessUnitSearchStatusValues {
   Deactivated = 'Deactivated',
 }
 
-export type BusinessUnitSearchStatus = 'Activated' | 'Deactivated' | string
+export type BusinessUnitSearchStatus = 'Activated' | 'Deactivated' | (string & {})
 export interface CartsConfiguration {
   /**
    *	Default value for the `deleteDaysAfterLastModification` parameter of the [CartDraft](ctp:api:type:CartDraft) and [MyCartDraft](ctp:api:type:MyCartDraft).
@@ -94,7 +94,7 @@ export enum CustomerSearchStatusValues {
   Deactivated = 'Deactivated',
 }
 
-export type CustomerSearchStatus = 'Activated' | 'Deactivated' | string
+export type CustomerSearchStatus = 'Activated' | 'Deactivated' | (string & {})
 /**
  *	Represents a RFC 7662 compliant [OAuth 2.0 Token Introspection](https://datatracker.ietf.org/doc/html/rfc7662) endpoint. For more information, see [Requesting an access token using an external OAuth 2.0 server](/../api/authorization#request-an-access-token-using-an-external-oauth-server).
  *
@@ -122,13 +122,13 @@ export enum OrderSearchStatusValues {
   Deactivated = 'Deactivated',
 }
 
-export type OrderSearchStatus = 'Activated' | 'Deactivated' | string
+export type OrderSearchStatus = 'Activated' | 'Deactivated' | (string & {})
 export enum ProductSearchIndexingModeValues {
   ProductProjectionsSearch = 'ProductProjectionsSearch',
   ProductsSearch = 'ProductsSearch',
 }
 
-export type ProductSearchIndexingMode = 'ProductProjectionsSearch' | 'ProductsSearch' | string
+export type ProductSearchIndexingMode = 'ProductProjectionsSearch' | 'ProductsSearch' | (string & {})
 export interface Project {
   /**
    *	Current version of the Project.
@@ -265,7 +265,7 @@ export interface IProjectUpdateAction {
  */
 export interface SearchIndexingConfiguration {
   /**
-   *	Configuration for the [Product Projection Search](/../api/projects/products-search) and [Product Suggestions](/../api/projects/products-suggestions) endpoints.
+   *	Configuration for the [Product Projection Search](/../api/projects/product-projection-search) and [Product Suggestions](/../api/projects/products-suggestions) endpoints.
    *
    */
   readonly products?: SearchIndexingConfigurationValues
@@ -299,7 +299,7 @@ export enum SearchIndexingConfigurationStatusValues {
   Indexing = 'Indexing',
 }
 
-export type SearchIndexingConfigurationStatus = 'Activated' | 'Deactivated' | 'Indexing' | string
+export type SearchIndexingConfigurationStatus = 'Activated' | 'Deactivated' | 'Indexing' | (string & {})
 export interface SearchIndexingConfigurationValues {
   /**
    *	Current status of resource indexing. Present on Projects from 1 February 2019.
@@ -466,14 +466,14 @@ export interface ProjectChangeOrderSearchStatusAction extends IProjectUpdateActi
 export interface ProjectChangeProductSearchIndexingEnabledAction extends IProjectUpdateAction {
   readonly action: 'changeProductSearchIndexingEnabled'
   /**
-   *	- If `false`, the indexing of [Product](ctp:api:type:Product) information will stop and the [Product Projection Search](/../api/projects/products-search) as well as the [Product Suggestions](/../api/projects/products-suggestions) endpoint will not be available anymore for this Project. The Project's [SearchIndexingConfiguration](ctp:api:type:SearchIndexingConfiguration) `status` for `products` will be changed to `"Deactivated"`.
-   *	- If `true`, the indexing of [Product](ctp:api:type:Product) information will start and the [Product Projection Search](/../api/projects/products-search) as well as the [Product Suggestions](/../api/projects/products-suggestions) endpoint will become available soon after for this Project. Proportional to the amount of information being indexed, the Project's [SearchIndexingConfiguration](ctp:api:type:SearchIndexingConfiguration) `status` for `products` will be shown as `"Indexing"` during this time. As soon as the indexing has finished, the configuration status will be changed to `"Activated"` making the aforementioned endpoints fully available for this Project.
+   *	- If `false`, the indexing of [Product](ctp:api:type:Product) information will stop and the [Product Projection Search](/../api/projects/product-projection-search) as well as the [Product Suggestions](/../api/projects/products-suggestions) endpoint will not be available anymore for this Project. The Project's [SearchIndexingConfiguration](ctp:api:type:SearchIndexingConfiguration) `status` for `products` will be changed to `"Deactivated"`.
+   *	- If `true`, the indexing of [Product](ctp:api:type:Product) information will start and the [Product Projection Search](/../api/projects/product-projection-search) as well as the [Product Suggestions](/../api/projects/products-suggestions) endpoint will become available soon after for this Project. Proportional to the amount of information being indexed, the Project's [SearchIndexingConfiguration](ctp:api:type:SearchIndexingConfiguration) `status` for `products` will be shown as `"Indexing"` during this time. As soon as the indexing has finished, the configuration status will be changed to `"Activated"` making the aforementioned endpoints fully available for this Project.
    *
    *
    */
   readonly enabled: boolean
   /**
-   *	Controls whether the action should apply to [Product Projection Search](/../api/projects/products-search) or to [Product Search](/../api/projects/product-search).
+   *	Controls whether the action should apply to [Product Projection Search](/../api/projects/product-projection-search) or to [Product Search](/../api/projects/product-search).
    *
    *
    */

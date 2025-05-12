@@ -17,12 +17,12 @@ export enum AttributeConstraintEnumValues {
   Unique = 'Unique',
 }
 
-export type AttributeConstraintEnum = 'CombinationUnique' | 'None' | 'SameForAll' | 'Unique' | string
+export type AttributeConstraintEnum = 'CombinationUnique' | 'None' | 'SameForAll' | 'Unique' | (string & {})
 export enum AttributeConstraintEnumDraftValues {
   None = 'None',
 }
 
-export type AttributeConstraintEnumDraft = 'None' | string
+export type AttributeConstraintEnumDraft = 'None' | (string & {})
 /**
  *	Describes a Product Attribute and allows you to define meta-information associated with the Attribute (like whether it should be searchable, or its constraints).
  *
@@ -67,7 +67,7 @@ export interface AttributeDefinition {
    */
   readonly inputHint: TextInputHint
   /**
-   *	If `true`, the Attribute's values are available in the [Product Projection Search](/../api/projects/products-search) or the [Product Search](/../api/projects/product-search) API for use in full-text search queries, filters, and facets.
+   *	If `true`, the Attribute's values are available in the [Product Search](/../api/projects/product-search) or the [Product Projection Search](/../api/projects/product-projection-search) API for use in full-text search queries, filters, and facets.
    *
    *	Which exact features are available with this flag depends on the specific [AttributeType](ctp:api:type:AttributeType).
    *	The maximum size of a searchable field is **restricted** by the [Field content size limit](/../api/limits#field-content-size).
@@ -128,7 +128,7 @@ export interface AttributeDefinitionDraft {
    */
   readonly inputHint?: TextInputHint
   /**
-   *	Set to `true` if the Attribute's values should be available in the [Product Projection Search](/../api/projects/products-search) or the [Product Search](/../api/projects/product-search) API and can be used in full-text search queries, filters, and facets.
+   *	Set to `true` if the Attribute's values should be available in the [Product Search](/../api/projects/product-search) or the [Product Projection Search](/../api/projects/product-projection-search) API and can be used in full-text search queries, filters, and facets.
    *	Which exact features are available with this flag depends on the specific [AttributeType](ctp:api:type:AttributeType).
    *	The maximum size of a searchable field is **restricted** by the [Field content size limit](/../api/limits#field-content-size).
    *	This constraint is enforced at both Product creation and Product update.
@@ -213,7 +213,7 @@ export type AttributeReferenceTypeId =
   | 'shipping-method'
   | 'state'
   | 'zone'
-  | string
+  | (string & {})
 /**
  *	Umbrella type for specific attribute types discriminated by property `name`.
  */
@@ -238,15 +238,23 @@ export interface IAttributeType {
   readonly name: string
 }
 /**
- *	Attribute type for Boolean values. Valid values for the Attribute are `true` and `false` (JSON Boolean).
+ *	Attribute type for boolean values. Valid values for the Attribute are `true` and `false`.
  *
  */
 export interface AttributeBooleanType extends IAttributeType {
   readonly name: 'boolean'
 }
+/**
+ *	Attribute type for [DateTime](ctp:api:type:DateTime) type values.
+ *
+ */
 export interface AttributeDateTimeType extends IAttributeType {
   readonly name: 'datetime'
 }
+/**
+ *	Attribute type for [Date](ctp:api:type:Date) type values.
+ *
+ */
 export interface AttributeDateType extends IAttributeType {
   readonly name: 'date'
 }
@@ -264,7 +272,7 @@ export interface AttributeEnumType extends IAttributeType {
   readonly values: AttributePlainEnumValue[]
 }
 /**
- *	Attribute type for [LocalizedString](ctp:api:type:LocalizedString) values.
+ *	Attribute type for [LocalizedString](ctp:api:type:LocalizedString) type values.
  *
  */
 export interface AttributeLocalizableTextType extends IAttributeType {
@@ -283,6 +291,10 @@ export interface AttributeLocalizedEnumType extends IAttributeType {
    */
   readonly values: AttributeLocalizedEnumValue[]
 }
+/**
+ *	Attribute type for [Money](ctp:api:type:Money) type values.
+ *
+ */
 export interface AttributeMoneyType extends IAttributeType {
   readonly name: 'money'
 }
@@ -299,9 +311,17 @@ export interface AttributeNestedType extends IAttributeType {
    */
   readonly typeReference: ProductTypeReference
 }
+/**
+ *	Attribute type for numeric values.
+ *
+ */
 export interface AttributeNumberType extends IAttributeType {
   readonly name: 'number'
 }
+/**
+ *	Attribute type for [Reference](ctp:api:type:Reference) type values.
+ *
+ */
 export interface AttributeReferenceType extends IAttributeType {
   readonly name: 'reference'
   /**
@@ -324,12 +344,16 @@ export interface AttributeSetType extends IAttributeType {
   readonly elementType: AttributeType
 }
 /**
- *	Attribute type for plain text values.
+ *	Attribute type for plain text string values.
  *
  */
 export interface AttributeTextType extends IAttributeType {
   readonly name: 'text'
 }
+/**
+ *	Attribute type for [Time](ctp:api:type:Time) type values.
+ *
+ */
 export interface AttributeTimeType extends IAttributeType {
   readonly name: 'time'
 }
@@ -547,7 +571,7 @@ export enum TextInputHintValues {
   SingleLine = 'SingleLine',
 }
 
-export type TextInputHint = 'MultiLine' | 'SingleLine' | string
+export type TextInputHint = 'MultiLine' | 'SingleLine' | (string & {})
 export interface ProductTypeAddAttributeDefinitionAction extends IProductTypeUpdateAction {
   readonly action: 'addAttributeDefinition'
   /**
