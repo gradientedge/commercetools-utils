@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@commercetools/platform-sdk':
-        specifier: 8.5.0
-        version: 8.5.0
+        specifier: 8.9.0
+        version: 8.9.0
       '@tshttp/status':
         specifier: 2.0.0
         version: 2.0.0
@@ -301,28 +301,12 @@ packages:
     resolution: {integrity: sha512-ooWCrlZP11i8GImSjTHYHLkvFDP48nS4+204nGb1RiX/WXYHmJA2III9/e2DWVabCESdW7hBAEzHRqUn9OUVvQ==}
     engines: {node: '>=0.1.90'}
 
-  '@commercetools/platform-sdk@8.5.0':
-    resolution: {integrity: sha512-lotww0wdrdroiHilwYdRq8DUUuZjiY7IG3Hv1kDHcJkF1eXPYk2dRCKYxtBybBRugZLAmXg0eBgGmI82CvOPsA==}
+  '@commercetools/platform-sdk@8.9.0':
+    resolution: {integrity: sha512-dvL70nKH9prT2flDe8fFteGtAoqiqukPlmXM50GY5FHV+HOXqUqWERgrDA/ZZFKA2UfFUgskM1FB4ZH+FVVr/w==}
     engines: {node: '>=18'}
 
-  '@commercetools/sdk-client-v2@3.0.0':
-    resolution: {integrity: sha512-AU0qyd41lv3l7X/e17mwRbtqGUMCJrCP25/ca3CMGvLGYGLx8zFu5zUYggOyEMTkViwG3NlY83zTTG0/YoUo8Q==}
-    engines: {node: '>=18'}
-
-  '@commercetools/sdk-middleware-auth@7.0.1':
-    resolution: {integrity: sha512-XLRm+o3Yd0mkVoyzsOA98PUu0U0ajQdBHMhZ8N2XMOtL4OY8zsgT8ap5JneXV8zWZNiwIYYAYoUDwBlLZh2lAQ==}
-    engines: {node: '>=14'}
-
-  '@commercetools/sdk-middleware-http@7.0.4':
-    resolution: {integrity: sha512-YpBDTA1NqjfwqPxrll6FzDc0A7hLSRwd9OLGMlPcvUG2Je1ks8Pe34pLdPqz7jgdURwfFXRBmXxPhezDzMbnZA==}
-    engines: {node: '>=14'}
-
-  '@commercetools/sdk-middleware-logger@3.0.0':
-    resolution: {integrity: sha512-DhMXAA2yIch/AaGxy7st85Z1HFmeLtHWGkr9z5rX4xKjan4PHGB/IE5saAR+SNGHhs6+1Lp8vZEHDo3tFqVLmg==}
-    engines: {node: '>=14'}
-
-  '@commercetools/ts-client@3.2.0':
-    resolution: {integrity: sha512-qJbHAedwsNHQW+XaZkzj9Cui2+tZAc73FX/MKvd2679nIyyoEEflrAtaOQ3YYPRQYrGkxk+27d15GlvS7/w1/g==}
+  '@commercetools/ts-client@3.3.0':
+    resolution: {integrity: sha512-qqbtvIVcvDS3xd1kUYfYoMUhGLPcY4TCP2WzTvrEHEs/MhrZqUhZUKcblxxY5/d8pROARlbl+XrYnKdFaZxO3g==}
     engines: {node: '>=18'}
 
   '@commitlint/config-validator@19.5.0':
@@ -3790,31 +3774,11 @@ snapshots:
   '@colors/colors@1.5.0':
     optional: true
 
-  '@commercetools/platform-sdk@8.5.0':
+  '@commercetools/platform-sdk@8.9.0':
     dependencies:
-      '@commercetools/sdk-client-v2': 3.0.0
-      '@commercetools/sdk-middleware-auth': 7.0.1
-      '@commercetools/sdk-middleware-http': 7.0.4
-      '@commercetools/sdk-middleware-logger': 3.0.0
-      '@commercetools/ts-client': 3.2.0
-    transitivePeerDependencies:
-      - encoding
+      '@commercetools/ts-client': 3.3.0
 
-  '@commercetools/sdk-client-v2@3.0.0':
-    dependencies:
-      buffer: 6.0.3
-
-  '@commercetools/sdk-middleware-auth@7.0.1':
-    dependencies:
-      node-fetch: 2.7.0
-    transitivePeerDependencies:
-      - encoding
-
-  '@commercetools/sdk-middleware-http@7.0.4': {}
-
-  '@commercetools/sdk-middleware-logger@3.0.0': {}
-
-  '@commercetools/ts-client@3.2.0':
+  '@commercetools/ts-client@3.3.0':
     dependencies:
       buffer: 6.0.3
 
