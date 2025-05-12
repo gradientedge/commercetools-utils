@@ -46,6 +46,8 @@ import { ShoppingListResourceIdentifier } from './shopping-list.js'
 import { StoreKeyReference, StoreResourceIdentifier } from './store.js'
 import { SubRate, TaxCategoryReference, TaxCategoryResourceIdentifier, TaxRate } from './tax-category.js'
 import { CustomFields, CustomFieldsDraft, FieldContainer, TypeResourceIdentifier } from './type.js'
+import { PriceSelectionMode } from './recurring-order.js'
+import { RecurrencePolicyResourceIdentifier } from './recurrence-policy.js'
 
 export interface Cart extends BaseResource {
   /**
@@ -523,7 +525,7 @@ export enum CartOriginValues {
   Quote = 'Quote',
 }
 
-export type CartOrigin = 'Customer' | 'Merchant' | 'Quote' | (string & {})
+export type CartOrigin = 'Customer' | 'Merchant' | 'Quote' | 'RecurringOrder' | (string & {})
 /**
  *	[PagedQueryResult](/../api/general-concepts#pagedqueryresult) with results containing an array of [Cart](ctp:api:type:Cart).
  *
@@ -802,6 +804,13 @@ export interface CustomLineItem {
    *
    */
   readonly discountedPricePerQuantity: DiscountedLineItemPriceForQuantity[]
+
+  /**
+   * \[BETA\]
+   * Recurring Order and frequency data.
+   */
+  readonly recurrenceInfo?: CustomLineItemRecurrenceInfo
+
   /**
    *	Custom Fields of the Custom Line Item.
    *
@@ -886,7 +895,36 @@ export interface CustomLineItemDraft {
    *
    */
   readonly priceMode?: CustomLineItemPriceMode
+
+  /**
+   * \[BETA\]
+   * Recurring Order and frequency data.
+   */
+  readonly recurrenceInfo?: CustomLineItemRecurrenceInfoDraft
 }
+
+/**
+ * \[BETA\]
+ * Information about recurring orders and frequencies.
+ */
+export interface CustomLineItemRecurrenceInfo {
+  /**
+   * ResourceIdentifier to a RecurrencePolicy.
+   */
+  readonly recurrencePolicy?: RecurrencePolicyResourceIdentifier
+}
+
+/**
+ * \[BETA\]
+ * Information about recurring orders and frequencies.
+ */
+export interface CustomLineItemRecurrenceInfoDraft {
+  /**
+   * ResourceIdentifier to a RecurrencePolicy.
+   */
+  readonly recurrencePolicy?: RecurrencePolicyResourceIdentifier
+}
+
 /**
  *	Determines if Cart Discounts can be applied to a Custom Line Item in the Cart.
  *
@@ -1493,6 +1531,13 @@ export interface LineItem {
    *
    */
   readonly shippingDetails?: ItemShippingDetails
+
+  /**
+   * \[BETA\]
+   * Recurring Order and frequency data.
+   */
+  readonly recurrenceInfo?: LineItemRecurrenceInfo
+
   /**
    *	Custom Fields of the Line Item.
    *
@@ -1639,6 +1684,39 @@ export enum LineItemPriceModeValues {
 }
 
 export type LineItemPriceMode = 'ExternalPrice' | 'ExternalTotal' | 'Platform' | (string & {})
+
+/**
+ * \[BETA\]
+ * Information about recurring orders and frequencies.
+ */
+export interface LineItemRecurrenceInfo {
+  /**
+   * ResourceIdentifier to a RecurrencePolicy.
+   */
+  readonly recurrencePolicy?: RecurrencePolicyResourceIdentifier
+
+  /**
+   * Determines how the price of a line item will be selected during order creation.
+   */
+  readonly priceSelectionMode?: PriceSelectionMode
+}
+
+/**
+ * \[BETA\]
+ * Information about recurring orders and frequencies.
+ */
+export interface LineItemRecurrenceInfoDraft {
+  /**
+   * ResourceIdentifier to a RecurrencePolicy.
+   */
+  readonly recurrencePolicy?: RecurrencePolicyResourceIdentifier
+
+  /**
+   * Determines how the price of a line item will be selected during order creation.
+   */
+  readonly priceSelectionMode?: PriceSelectionMode
+}
+
 export interface MethodExternalTaxRateDraft {
   /**
    *	User-defined unique identifier of the Shipping Method in a Cart with `Multiple` [ShippingMode](ctp:api:type:ShippingMode).
