@@ -176,7 +176,7 @@ export enum RecurringOrderState {
 }
 
 /**
- * Configuration for skipping orders in a RecurringOrder.
+ * Defines how the next orders are going to be skipped.
  */
 export interface SkipConfiguration {
   /**
@@ -198,7 +198,7 @@ export interface SkipConfiguration {
 }
 
 /**
- * Draft for skip configuration.
+ * Configuration that uses a counter to track the amount of orders that will be skipped.
  */
 export interface SkipConfigurationDraft {
   /**
@@ -209,13 +209,6 @@ export interface SkipConfigurationDraft {
    * Amount of orders that are going to be skipped.
    */
   readonly totalToSkip: number
-}
-
-/**
- * Draft for counter-based skip configuration.
- */
-export interface CounterDraft extends SkipConfigurationDraft {
-  readonly type: 'counter'
 }
 
 /**
