@@ -94,6 +94,17 @@ import type {
 } from '@commercetools/platform-sdk'
 
 import { getRequestExecutor } from '../request/request-executor.js'
+import {
+  RecurrencePolicy,
+  RecurrencePolicyPagedQueryResponse,
+  RecurrencePolicyUpdateAction,
+} from '../types/models/recurrence-policy.js'
+import {
+  RecurringOrder,
+  RecurringOrderDraft,
+  RecurringOrderPagedQueryResponse,
+  RecurringOrderUpdateAction,
+} from '../types/models/recurring-order.js'
 
 export interface FetchOptions<T = any> {
   /**
@@ -2765,5 +2776,188 @@ export class CommercetoolsApi {
           errors.map((error) => `• ${error}`).join('\n'),
       )
     }
+  }
+
+  /**
+   * Get a recurrence policy by id
+   * https://next-docs-subscriptions-docs.commercetools.vercel.app/api/projects/recurrence-policies#recurrencepolicy
+   */
+  getRecurrencePolicyById(options: CommonRequestOptions & { id: string }): Promise<RecurrencePolicy> {
+    ensureNonEmptyString({ value: options.id, name: 'id' })
+
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/recurrence-policies/${encodeURIComponent(options.id)}`,
+      method: 'GET',
+    })
+  }
+
+  /**
+   * Query recurrence policies
+   * https://next-docs-subscriptions-docs.commercetools.vercel.app/api/projects/recurrence-policies#recurrencepolicy
+   */
+  queryRecurrencePolicies(options?: CommonRequestOptions): Promise<RecurrencePolicyPagedQueryResponse> {
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: '/recurrence-policies',
+      method: 'GET',
+    })
+  }
+
+  /**
+   * Check if a recurrence policy exists by id
+   * https://next-docs-subscriptions-docs.commercetools.vercel.app/api/projects/recurrence-policies#recurrencepolicy
+   */
+  async checkRecurrencePolicyExistsById(options: CommonRequestOptions & { id: string }): Promise<boolean> {
+    ensureNonEmptyString({ value: options.id, name: 'id' })
+
+    try {
+      await this.request({
+        ...this.extractCommonRequestOptions(options),
+        path: `/recurrence-policies/${encodeURIComponent(options.id)}`,
+        method: 'HEAD',
+      })
+      return true
+    } catch (error) {
+      if (CommercetoolsError.isInstance(error) && error.status === 404) {
+        return false
+      }
+      throw error
+    }
+  }
+
+  /**
+   * Check if recurrence policies exist by query predicate
+   * https://next-docs-subscriptions-docs.commercetools.vercel.app/api/projects/recurrence-policies#recurrencepolicy
+   */
+  async checkRecurrencePolicyExists(options?: CommonRequestOptions): Promise<boolean> {
+    try {
+      await this.request({
+        ...this.extractCommonRequestOptions(options),
+        path: `/recurrence-policies`,
+        method: 'HEAD',
+      })
+      return true
+    } catch (error) {
+      if (CommercetoolsError.isInstance(error) && error.status === 404) {
+        return false
+      }
+      throw error
+    }
+  }
+
+  /**
+   * Update a recurrence policy by id
+   * https://next-docs-subscriptions-docs.commercetools.vercel.app/api/projects/recurrence-policies#recurrencepolicy
+   */
+  updateRecurrencePolicyById(
+    options: CommonRequestOptions & { id: string; data: { version: number; actions: RecurrencePolicyUpdateAction[] } },
+  ): Promise<RecurrencePolicy> {
+    ensureNonEmptyString({ value: options.id, name: 'id' })
+
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/recurrence-policies/${encodeURIComponent(options.id)}`,
+      method: 'POST',
+      data: options.data,
+    })
+  }
+
+  /**
+   * Get a recurring order by id
+   * https://next-docs-subscriptions-docs.commercetools.vercel.app/api/projects/recurring-orders
+   */
+  getRecurringOrderById(options: CommonRequestOptions & { id: string }): Promise<RecurringOrder> {
+    ensureNonEmptyString({ value: options.id, name: 'id' })
+
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/recurring-orders/${encodeURIComponent(options.id)}`,
+      method: 'GET',
+    })
+  }
+
+  /**
+   * Query recurring orders
+   * https://next-docs-subscriptions-docs.commercetools.vercel.app/api/projects/recurring-orders
+   */
+  queryRecurringOrders(options?: CommonRequestOptions): Promise<RecurringOrderPagedQueryResponse> {
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: '/recurring-orders',
+      method: 'GET',
+    })
+  }
+
+  /**
+   * Check if a recurring order exists by id
+   * https://next-docs-subscriptions-docs.commercetools.vercel.app/api/projects/recurring-orders
+   */
+  async checkRecurringOrderExistsById(options: CommonRequestOptions & { id: string }): Promise<boolean> {
+    ensureNonEmptyString({ value: options.id, name: 'id' })
+
+    try {
+      await this.request({
+        ...this.extractCommonRequestOptions(options),
+        path: `/recurring-orders/${encodeURIComponent(options.id)}`,
+        method: 'HEAD',
+      })
+      return true
+    } catch (error) {
+      if (CommercetoolsError.isInstance(error) && error.status === 404) {
+        return false
+      }
+      throw error
+    }
+  }
+
+  /**
+   * Check if recurring orders exist by query predicate
+   * https://next-docs-subscriptions-docs.commercetools.vercel.app/api/projects/recurring-orders
+   */
+  async checkRecurringOrderExists(options?: CommonRequestOptions): Promise<boolean> {
+    try {
+      await this.request({
+        ...this.extractCommonRequestOptions(options),
+        path: `/recurring-orders`,
+        method: 'HEAD',
+      })
+      return true
+    } catch (error) {
+      if (CommercetoolsError.isInstance(error) && error.status === 404) {
+        return false
+      }
+      throw error
+    }
+  }
+
+  /**
+   * Create a recurring order
+   * https://next-docs-subscriptions-docs.commercetools.vercel.app/api/projects/recurring-orders
+   */
+  createRecurringOrder(options: CommonRequestOptions & { data: RecurringOrderDraft }): Promise<RecurringOrder> {
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/recurring-orders`,
+      method: 'POST',
+      data: options.data,
+    })
+  }
+
+  /**
+   * Update a recurring order by id
+   * https://next-docs-subscriptions-docs.commercetools.vercel.app/api/projects/recurring-orders
+   */
+  updateRecurringOrderById(
+    options: CommonRequestOptions & { id: string; data: { version: number; actions: RecurringOrderUpdateAction[] } },
+  ): Promise<RecurringOrder> {
+    ensureNonEmptyString({ value: options.id, name: 'id' })
+
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/recurring-orders/${encodeURIComponent(options.id)}`,
+      method: 'POST',
+      data: options.data,
+    })
   }
 }
