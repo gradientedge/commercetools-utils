@@ -57,6 +57,7 @@ import { Subscription } from './subscription.js'
 import { TaxCategory, TaxCategoryReference, TaxCategoryResourceIdentifier } from './tax-category.js'
 import { CustomFields, CustomFieldsDraft, Type, TypeReference, TypeResourceIdentifier } from './type.js'
 import { Zone, ZoneReference, ZoneResourceIdentifier } from './zone.js'
+import { RecurrencePolicyReference, RecurrencePolicyResourceIdentifier } from './recurrence-policy.js'
 
 /**
  *	Each query endpoint returns a paged query response containing the actual resources matching the query predicate plus information about [pagination](#pagination).
@@ -846,6 +847,12 @@ export interface Price {
    *
    */
   readonly custom?: CustomFields
+
+  /**
+   * \[BETA\]
+   * RecurrencePolicy for which this Price is valid.
+   */
+  readonly recurrencePolicy?: RecurrencePolicyReference
 }
 /**
  *	The draft representation for prices to be embedded into [ProductVariantDrafts](ctp:api:type:ProductVariantDraft) when the [ProductPriceMode](ctp:api:type:ProductPriceModeEnum) is `Embedded`. For the `Standalone` ProductPriceMode use [StandalonePriceDraft](ctp:api:type:StandalonePriceDraft).
@@ -922,6 +929,12 @@ export interface PriceDraft {
    *
    */
   readonly custom?: CustomFieldsDraft
+
+  /**
+   * \[BETA\]
+   * RecurrencePolicy for which this Price is valid.
+   */
+  readonly recurrencePolicy?: RecurrencePolicyResourceIdentifier
 }
 /**
  *	A Price tier is selected instead of the default Price when a certain quantity of the [ProductVariant](ctp:api:type:ProductVariant) is [added to a Cart](/projects/carts#add-lineitem) and ordered.

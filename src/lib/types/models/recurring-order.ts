@@ -5,6 +5,7 @@ import { BusinessUnitKeyReference } from './business-unit.js'
 import { StateReference, StateResourceIdentifier } from './state.js'
 import { CustomerReference } from './customer.js'
 import { CustomFields, CustomFieldsDraft, FieldContainer, TypeResourceIdentifier } from './type.js'
+import { RecurrencePolicySchedule } from './recurrence-policy.js'
 
 /**
  * Represents a recurring order that automates the reordering process for a customer.
@@ -217,24 +218,6 @@ export interface SkipConfigurationDraft {
 export enum PriceSelectionMode {
   Fixed = 'Fixed',
   Dynamic = 'Dynamic',
-}
-
-/**
- * Schedule for recurring orders.
- */
-export interface RecurrencePolicySchedule {
-  /**
-   * Type of schedule.
-   */
-  readonly type: 'standard'
-  /**
-   * Value of the interval.
-   */
-  readonly value: number
-  /**
-   * Unit of the interval.
-   */
-  readonly intervalUnit: 'Days' | 'Weeks' | 'Months' | 'Years'
 }
 
 /**
