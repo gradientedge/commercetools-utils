@@ -34,7 +34,8 @@ describe('request timeout tests', () => {
     server.close(done)
   })
 
-  it('should fail with 1s timeout on TLS socket hangup of 2s', async () => {
+  // Skipped because nock modifies global network behavior to disable outbound network connections. So to avoid impacting tests in CI this is skipped and can be ran if needed.
+  it.skip('should fail with 1s timeout on TLS socket hangup of 2s', async () => {
     const timeoutMs = 1000
     const start = Date.now()
 
