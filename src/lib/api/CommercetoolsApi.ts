@@ -12,7 +12,6 @@ import type {
   CartDiscountPagedQueryResponse,
   CartDraft,
   CartPagedQueryResponse,
-  CartUpdateAction,
   Category,
   CategoryDraft,
   CategoryPagedQueryResponse,
@@ -94,6 +93,7 @@ import type {
 } from '@commercetools/platform-sdk'
 
 import { getRequestExecutor } from '../request/request-executor.js'
+import { CartUpdateAction } from '../types/models/cart.js'
 import {
   RecurrencePolicy,
   RecurrencePolicyPagedQueryResponse,
