@@ -668,6 +668,7 @@ export type CartUpdateAction =
   | CartSetCustomFieldAction
   | CartSetCustomLineItemCustomFieldAction
   | CartSetCustomLineItemCustomTypeAction
+  | CartSetCustomLineItemRecurrenceInfoAction
   | CartSetCustomLineItemShippingDetailsAction
   | CartSetCustomLineItemTaxAmountAction
   | CartSetCustomLineItemTaxRateAction
@@ -686,6 +687,7 @@ export type CartUpdateAction =
   | CartSetLineItemDistributionChannelAction
   | CartSetLineItemInventoryModeAction
   | CartSetLineItemPriceAction
+  | CartSetLineItemRecurrenceInfoAction
   | CartSetLineItemShippingDetailsAction
   | CartSetLineItemSupplyChannelAction
   | CartSetLineItemTaxAmountAction
@@ -3121,6 +3123,21 @@ export interface CartSetCustomLineItemCustomTypeAction extends ICartUpdateAction
    */
   readonly fields?: FieldContainer
 }
+/**
+ * \[BETA\]
+ * Recurring frequency data.
+ */
+export interface CartSetCustomLineItemRecurrenceInfoAction extends ICartUpdateAction {
+  readonly action: 'setLineItemRecurrenceInfo'
+  readonly customLineItemId: string
+  readonly recurrenceInfo: null | {
+    recurrencePolicy: {
+      id: string
+      typeId: 'recurrence-policy'
+    }
+    priceSelectionMode: 'Dynamic' | 'Fixed'
+  }
+}
 export interface CartSetCustomLineItemShippingDetailsAction extends ICartUpdateAction {
   readonly action: 'setCustomLineItemShippingDetails'
   /**
@@ -3530,6 +3547,21 @@ export interface CartSetLineItemPriceAction extends ICartUpdateAction {
    *
    */
   readonly externalPrice?: _Money
+}
+/**
+ * \[BETA\]
+ * Recurring frequency data.
+ */
+export interface CartSetLineItemRecurrenceInfoAction extends ICartUpdateAction {
+  readonly action: 'setLineItemRecurrenceInfo'
+  readonly lineItemId: string
+  readonly recurrenceInfo: null | {
+    recurrencePolicy: {
+      id: string
+      typeId: 'recurrence-policy'
+    }
+    priceSelectionMode: 'Dynamic' | 'Fixed'
+  }
 }
 export interface CartSetLineItemShippingDetailsAction extends ICartUpdateAction {
   readonly action: 'setLineItemShippingDetails'
