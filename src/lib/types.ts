@@ -98,6 +98,9 @@ export interface CommercetoolsRequestResponseStats {
   accumulativeDurationMs: number
   durationMs: number
   retries: number
+  activeSockets: number
+  freeSocketCount: number
+  queuedRequests: number
 }
 
 export interface RequestExecutor<T = any> {
