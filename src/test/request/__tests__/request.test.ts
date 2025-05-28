@@ -354,6 +354,9 @@ describe('request', () => {
               stats: {
                 durationMs: expect.any(Number),
                 accumulativeDurationMs: expect.any(Number),
+                activeSockets: expect.any(Number),
+                freeSocketCount: expect.any(Number),
+                queuedRequests: expect.any(Number),
                 retries: 0,
               },
             })
@@ -407,6 +410,9 @@ describe('request', () => {
                 durationMs: expect.any(Number),
                 retries: 0,
                 accumulativeDurationMs: expect.any(Number),
+                activeSockets: expect.any(Number),
+                freeSocketCount: expect.any(Number),
+                queuedRequests: expect.any(Number),
               },
             })
             expect(mockOnAfterResponse).toHaveBeenNthCalledWith(2, {
@@ -436,6 +442,9 @@ describe('request', () => {
               stats: {
                 durationMs: expect.any(Number),
                 accumulativeDurationMs: expect.any(Number),
+                activeSockets: expect.any(Number),
+                freeSocketCount: expect.any(Number),
+                queuedRequests: expect.any(Number),
                 retries: 1,
               },
             })
@@ -481,6 +490,9 @@ describe('request', () => {
               stats: {
                 durationMs: expect.any(Number),
                 accumulativeDurationMs: expect.any(Number),
+                activeSockets: expect.any(Number),
+                freeSocketCount: expect.any(Number),
+                queuedRequests: expect.any(Number),
                 retries: 0,
               },
             })
@@ -522,6 +534,9 @@ describe('request', () => {
               stats: {
                 durationMs: expect.any(Number),
                 accumulativeDurationMs: expect.any(Number),
+                activeSockets: expect.any(Number),
+                freeSocketCount: expect.any(Number),
+                queuedRequests: expect.any(Number),
                 retries: 0,
               },
             })

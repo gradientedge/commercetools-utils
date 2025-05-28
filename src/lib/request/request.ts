@@ -1,4 +1,10 @@
-import { buildUserAgent, calculateDelay, convertAxiosError, convertAxiosResponse } from '../utils/index.js'
+import {
+  buildUserAgent,
+  calculateDelay,
+  convertAxiosError,
+  convertAxiosResponse,
+  getSocketStats,
+} from '../utils/index.js'
 import { AxiosInstance } from 'axios'
 import { CommercetoolsRetryConfig } from '../api/index.js'
 import { CommercetoolsHooks, CommercetoolsRequest } from '../types.js'
@@ -42,6 +48,8 @@ export async function request<T = any>(options: RequestOptions): Promise<T> {
       await new Promise((resolve) => setTimeout(resolve, delay))
     }
 
+    const preRequestSocketStats = getSocketStats(axiosInstance.defaults.httpsAgent)
+
     try {
       if (onBeforeRequest) {
         const customRequestConfig = await onBeforeRequest(requestConfig)
@@ -70,6 +78,7 @@ export async function request<T = any>(options: RequestOptions): Promise<T> {
             accumulativeDurationMs: totalDurationMs,
             durationMs: endTime - startTime,
             retries: retryCount,
+            ...preRequestSocketStats,
           }),
         )
       }
@@ -82,6 +91,7 @@ export async function request<T = any>(options: RequestOptions): Promise<T> {
           accumulativeDurationMs: totalDurationMs,
           durationMs: startTime ? endTime - startTime : 0,
           retries: retryCount,
+          ...preRequestSocketStats,
         })
         if (convertedError) {
           onAfterResponse(convertedError)
