@@ -17,16 +17,35 @@ export interface RequestOptions extends CommercetoolsHooks {
   axiosInstance: AxiosInstance
   retry: CommercetoolsRetryConfig
   request: CommercetoolsRequest
+  aggregateTimeoutMs?: number
   timeoutMs?: number
+  abortController?: AbortController
 }
 
 export async function request<T = any>(options: RequestOptions): Promise<T> {
-  const { retry: retryConfig, onBeforeRequest, onAfterResponse, axiosInstance } = options
+  const { retry: retryConfig, onBeforeRequest, onAfterResponse, axiosInstance, aggregateTimeoutMs } = options
   const timeout = options.timeoutMs ?? DEFAULT_REQUEST_TIMEOUT_MS
   const additionalHeaders: Record<string, string> = {}
-  let requestConfig = plainClone(options.request)
+  const requestConfig: CommercetoolsRequest = plainClone(options.request)
   let retryCount = 0
   let lastError: any
+  let aggregateTimeoutId: NodeJS.Timeout | undefined
+  let abortController: AbortController | undefined = options.abortController
+  let isAbortedDueToAggregateTimeout = false
+
+  // We only need to create an AbortController if we have an aggregate timeout
+  if (aggregateTimeoutMs && !abortController) {
+    abortController = new AbortController()
+  }
+
+  // If we have an aggregate timeout, we set up a timeout to abort the request.
+  // This timeout gets cleared if the request completes before the timeout.
+  if (aggregateTimeoutMs && abortController) {
+    aggregateTimeoutId = setTimeout(() => {
+      isAbortedDueToAggregateTimeout = true
+      abortController.abort()
+    }, aggregateTimeoutMs)
+  }
 
   const headerNames = Object.keys(requestConfig.headers ?? {}).map((headerName) => headerName.toLowerCase())
   if (!headerNames.includes('user-agent')) {
@@ -54,7 +73,10 @@ export async function request<T = any>(options: RequestOptions): Promise<T> {
       if (onBeforeRequest) {
         const customRequestConfig = await onBeforeRequest(requestConfig)
         if (customRequestConfig) {
-          requestConfig = customRequestConfig
+          requestConfig.url = customRequestConfig.url
+          requestConfig.method = customRequestConfig.method
+          requestConfig.params = customRequestConfig.params
+          requestConfig.headers = customRequestConfig.headers
         }
       }
 
@@ -67,6 +89,7 @@ export async function request<T = any>(options: RequestOptions): Promise<T> {
           ...additionalHeaders,
         },
         timeout,
+        signal: abortController?.signal,
       })
 
       endTime = Date.now()
@@ -100,6 +123,14 @@ export async function request<T = any>(options: RequestOptions): Promise<T> {
       if (isRetryableError(error)) {
         lastError = error
       } else {
+        if (aggregateTimeoutId) {
+          clearTimeout(aggregateTimeoutId)
+        }
+        if (isAbortedDueToAggregateTimeout) {
+          throw transformError(error, 'Request aborted due to aggregate timeout')
+        } else if (error.code === 'ERR_CANCELED' && abortController?.signal.aborted) {
+          throw transformError(error, 'Request aborted')
+        }
         throw transformError(error)
       }
     }

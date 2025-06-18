@@ -414,7 +414,7 @@ describe('CommercetoolsAuthApi', () => {
         expect(e).toBeInstanceOf(CommercetoolsError)
         expect(e.toJSON()).toMatchObject({
           data: {
-            code: 'ECONNABORTED',
+            code: 'ETIMEDOUT',
             request: {
               headers: {
                 authorization: '********',

@@ -192,6 +192,16 @@ export interface FetchOptions<T = any> {
   correlationId?: string
 
   /**
+   * The aggregate timeout in milliseconds (aggregate time spent across the original request and retries)
+   */
+  aggregateTimeoutMs?: number
+
+  /**
+   * The request timeout in milliseconds
+   */
+  timeoutMs?: number
+
+  /**
    * Request retry configuration
    *
    * The request retry configuration can be set on the `CommercetoolsApi`
@@ -201,6 +211,11 @@ export interface FetchOptions<T = any> {
    * constructor configuration, then no retries will take place.
    */
   retry?: CommercetoolsRetryConfig
+
+  /**
+   * An optional AbortController that can be used to abort the request
+   */
+  abortController?: AbortController
 }
 
 /**
@@ -218,9 +233,24 @@ export interface CommonRequestOptions {
   params?: Record<string, undefined | string | boolean | number | (string | boolean | number)[]>
 
   /**
+   * The aggregate timeout in milliseconds (aggregate time spent across the original request and retries)
+   */
+  aggregateTimeoutMs?: number
+
+  /**
+   * The request timeout in milliseconds
+   */
+  timeoutMs?: number
+
+  /**
    * Retry configuration
    */
   retry?: CommercetoolsRetryConfig
+
+  /**
+   * An optional AbortController that can be used to abort the request
+   */
+  abortController?: AbortController
 }
 
 /**
@@ -2707,6 +2737,9 @@ export class CommercetoolsApi {
       correlationId: options.correlationId,
       params: options.params,
       retry: options.retry,
+      aggregateTimeoutMs: options.aggregateTimeoutMs,
+      timeoutMs: options.timeoutMs,
+      abortController: options.abortController,
     }
   }
 
