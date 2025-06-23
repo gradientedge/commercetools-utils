@@ -7,6 +7,7 @@ import { DEFAULT_RETRY_CONFIG } from '../constants.js'
 
 export interface GetRequestExecutorProps extends CommercetoolsHooks {
   httpsAgent?: https.Agent
+  aggregateTimeoutMs?: number
   timeoutMs?: number
   retry?: Partial<CommercetoolsRetryConfig>
   systemIdentifier?: string
@@ -22,9 +23,18 @@ export function getRequestExecutor(props: GetRequestExecutorProps): RequestExecu
       axiosInstance,
       onBeforeRequest: props.onBeforeRequest,
       onAfterResponse: props.onAfterResponse,
-      request: { ...requestConfig, headers },
-      retry: { ...DEFAULT_RETRY_CONFIG, ...props.retry },
-      timeoutMs: props.timeoutMs,
+      request: {
+        ...requestConfig,
+        headers,
+      },
+      retry: {
+        ...DEFAULT_RETRY_CONFIG,
+        ...props.retry,
+        ...requestConfig.retry,
+      },
+      aggregateTimeoutMs: requestConfig.aggregateTimeoutMs ?? props.aggregateTimeoutMs,
+      timeoutMs: requestConfig.timeoutMs ?? props.timeoutMs,
+      abortController: requestConfig.abortController,
     })
   }
 }

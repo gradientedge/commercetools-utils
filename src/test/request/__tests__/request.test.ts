@@ -1,4 +1,5 @@
 import { beforeEach, jest } from '@jest/globals'
+import { setTimeout as sleep } from 'node:timers/promises'
 import nock from 'nock'
 import { request, RequestOptions } from '../../../lib/request/index.js'
 import axios from 'axios'
@@ -58,7 +59,7 @@ describe('request', () => {
     })
   })
 
-  describe('Headers and Parameters', function () {
+  describe('Headers and parameters', function () {
     it('should send all specified HTTP headers when making a request', async () => {
       const scope = nock('https://localhost')
         .matchHeader('User-Agent', 'test-user-agent')
@@ -101,6 +102,45 @@ describe('request', () => {
       await expect(request(requestConfig)).rejects.toThrowError('timeout of 11ms exceeded')
 
       scope.isDone()
+    })
+  })
+
+  describe('Aggregate timeout', () => {
+    it('should throw an aggregate timeout error after exceeding the aggregate timeout limit', async () => {
+      const scope1 = nock('https://localhost').get('/test').delay(600).reply(500, { success: true })
+      const scope2 = nock('https://localhost').get('/test').delay(600).reply(200, { success: true })
+      const requestConfig = getRequestConfig()
+      requestConfig.retry = {
+        maxRetries: 3,
+        delayMs: 10,
+        jitter: false,
+      }
+      requestConfig.timeoutMs = 800
+      requestConfig.aggregateTimeoutMs = 1000
+
+      await expect(request(requestConfig)).rejects.toThrowError('Request aborted due to aggregate timeout')
+
+      scope1.isDone()
+      scope2.isDone()
+    })
+  })
+
+  describe('Abort controller', () => {
+    it('should throw an error indicating that the request was cancelled', async () => {
+      const scope1 = nock('https://localhost').get('/test').delay(1000).reply(500, { success: true })
+
+      const abortController = new AbortController()
+      const requestConfig = getRequestConfig()
+      requestConfig.timeoutMs = 2000
+      requestConfig.aggregateTimeoutMs = 4000
+      requestConfig.abortController = abortController
+
+      const promise = request(requestConfig)
+      await sleep(100)
+      abortController.abort('Manual abort')
+
+      await expect(() => promise).rejects.toThrowError('Request aborted')
+      scope1.isDone()
     })
   })
 

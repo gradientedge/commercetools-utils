@@ -8,6 +8,14 @@ import https from 'https'
  */
 export function createAxiosInstance(options: { httpsAgent?: https.Agent }): AxiosInstance {
   return axios.create({
-    httpsAgent: options?.httpsAgent ?? new https.Agent(DEFAULT_HTTPS_AGENT_CONFIG),
+    transitional: {
+      clarifyTimeoutError: true,
+    },
+    httpsAgent:
+      options?.httpsAgent ??
+      new https.Agent({
+        ...DEFAULT_HTTPS_AGENT_CONFIG,
+        keepAliveMsecs: 1000,
+      }),
   })
 }

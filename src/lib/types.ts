@@ -53,7 +53,11 @@ export interface CommercetoolsHooks {
    * The {@see requestConfig} parameter can be manipulated if you wish to
    * modify/add headers or any other request data.
    */
-  onBeforeRequest?: (requestConfig: CommercetoolsRequest) => Promise<CommercetoolsRequest> | CommercetoolsRequest
+  onBeforeRequest?: (
+    requestConfig: CommercetoolsRequest,
+  ) =>
+    | Promise<Omit<CommercetoolsRequest, 'aggregateTimeoutMs' | 'timeoutMs' | 'abortController' | 'retry'>>
+    | Omit<CommercetoolsRequest, 'aggregateTimeoutMs' | 'timeoutMs' | 'abortController' | 'retry'>
 
   /**
    * If passed in, will be called once a request has been made and the
@@ -71,6 +75,10 @@ export interface CommercetoolsRequest {
   params?: Record<string, string | number | boolean>
   headers: Record<string, string>
   data?: any
+  retry?: Partial<CommercetoolsRetryConfig>
+  aggregateTimeoutMs?: number
+  timeoutMs?: number
+  abortController?: AbortController
 }
 
 /**

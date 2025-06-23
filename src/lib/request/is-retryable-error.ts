@@ -11,6 +11,12 @@ export function isRetryableError(error: any): boolean {
   if (!error.isAxiosError) {
     return true
   }
+  // If the error code is 'ERR_CANCELED', it means the request was aborted.
+  // This can happen if the request was cancelled by the user or due to a timeout.
+  // We should not retry in this case.
+  if (error.code === 'ERR_CANCELED') {
+    return false
+  }
   // If axios makes a request successfully, the `request` property will
   // be defined. Equally, if it received a response, the `response` property
   // will be defined. If either is not defined then we assume there was

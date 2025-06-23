@@ -36,9 +36,9 @@ export class CommercetoolsError extends Error {
   /**
    * Utility for converting an AxiosError in to a CommercetoolsError.
    */
-  public static fromAxiosError(e: AxiosError): CommercetoolsError {
+  public static fromAxiosError(e: AxiosError, messageOverride?: string): CommercetoolsError {
     return new CommercetoolsError(
-      e.message,
+      messageOverride ?? e.message,
       {
         code: e.code,
         request: {
