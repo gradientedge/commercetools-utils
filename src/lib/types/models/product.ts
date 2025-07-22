@@ -53,9 +53,7 @@ export interface Attribute {
   readonly value: any
 }
 /**
- *	JSON object where the key is a [Category](ctp:api:type:Category) `id` and the value is an order hint.
- *	Allows controlling the order of Products and how they appear in Categories. Products with no order hint have an order score below `0`. Order hints are non-unique.
- *	If a subset of Products have the same value for order hint in a specific category, the behavior is undetermined.
+ *	JSON object where the keys are [Category](ctp:api:type:Category) `id`, and the values are order hint values: strings representing a number between `0` and `1`, but not ending in `0`. Order hints allow controlling the order of Products and how they appear in Categories. Products without order hints have an order score below `0`. Order hints are not unique. If a subset of Products have the same value for order hint in a specific category, the behavior is undetermined.
  */
 export interface CategoryOrderHints {
   [key: string]: string
@@ -380,11 +378,17 @@ export interface ProductData {
    */
   readonly variants: ProductVariant[]
   /**
-   *	Used by [Product Suggestions](/projects/products-suggestions), but is also considered for a [full text search](/projects/product-projection-search#full-text-search).
+   *	Used by [Search Term Suggestions](/projects/search-term-suggestions), but is also considered for a [full text search](/projects/product-projection-search#full-text-search) in the Product Projection Search API.
    *
    *
    */
   readonly searchKeywords: SearchKeywords
+  /**
+   *	Attributes according to the respective [AttributeDefinition](ctp:api:type:AttributeDefinition).
+   *
+   *
+   */
+  readonly attributes: Attribute[]
 }
 export interface ProductDraft {
   /**
@@ -472,7 +476,7 @@ export interface ProductDraft {
    */
   readonly taxCategory?: TaxCategoryResourceIdentifier
   /**
-   *	Used by [Product Suggestions](/projects/products-suggestions), but is also considered for a [full text search](/projects/product-projection-search#full-text-search).
+   *	Used by [Search Term Suggestions](/projects/search-term-suggestions), but is also considered for a [full text search](/projects/product-projection-search#full-text-search) in the Product Projection Search API.
    *
    *
    */
@@ -495,6 +499,12 @@ export interface ProductDraft {
    *
    */
   readonly priceMode?: ProductPriceModeEnum
+  /**
+   *	Attributes according to the respective [AttributeDefinition](ctp:api:type:AttributeDefinitionDraft).
+   *
+   *
+   */
+  readonly attributes?: Attribute[]
 }
 /**
  *	[PagedQueryResult](/../api/general-concepts#pagedqueryresult) with `results` containing an array of [Product](ctp:api:type:Product).
@@ -636,7 +646,7 @@ export interface ProductProjection extends BaseResource {
    */
   readonly metaKeywords?: LocalizedString
   /**
-   *	Used by [Product Suggestions](/../api/projects/products-suggestions), but is also considered for a [full text search](ctp:api:type:FullTextSearch).
+   *	Used by [Search Term Suggestions](/../api/projects/search-term-suggestions), but is also considered for a [full text search](/projects/product-projection-search#full-text-search) in the Product Projection Search API.
    *
    *
    */
@@ -689,6 +699,12 @@ export interface ProductProjection extends BaseResource {
    *
    */
   readonly priceMode?: ProductPriceModeEnum
+  /**
+   *	Attributes according to the respective [AttributeDefinition](ctp:api:type:AttributeDefinitionDraft).
+   *
+   *
+   */
+  readonly attributes: Attribute[]
 }
 export interface ProductProjectionPagedQueryResponse {
   /**
@@ -866,6 +882,7 @@ export type ProductUpdateAction =
   | ProductSetPriceKeyAction
   | ProductSetPriceModeAction
   | ProductSetPricesAction
+  | ProductSetProductAttributeAction
   | ProductSetProductPriceCustomFieldAction
   | ProductSetProductPriceCustomTypeAction
   | ProductSetProductVariantKeyAction
@@ -967,6 +984,13 @@ export interface ProductVariant {
    *
    */
   readonly scopedPriceDiscounted?: boolean
+  /**
+   *	Only available when [Product price selection](/../api/pricing-and-discounts-overview#product-price-selection) is used.
+   *	Cannot be used in a [Query Predicate](ctp:api:type:QueryPredicate).
+   *
+   *
+   */
+  readonly recurrencePrices?: Price[]
 }
 /**
  *	The [InventoryEntry](ctp:api:type:InventoryEntry) information of the Product Variant. If there is a supply [Channel](ctp:api:type:Channel) for the InventoryEntry, then `channels` is returned. If not, then `isOnStock`, `restockableInDays`, and `availableQuantity` are returned.
@@ -1043,7 +1067,7 @@ export interface ProductVariantChannelAvailability {
   readonly version: number
 }
 /**
- *	JSON object where the key is a supply [Channel](ctp:api:type:Channel) `id` and the value is the [ProductVariantChannelAvailability](ctp:api:type:ProductVariantChannelAvailability) of the [InventoryEntry](ctp:api:type:InventoryEntry).
+ *	JSON object where the keys are supply [Channel](/projects/channels) `id`, and the values are [ProductVariantChannelAvailability](/projects/products#productvariantchannelavailability).
  *
  */
 export interface ProductVariantChannelAvailabilityMap {
@@ -1116,7 +1140,7 @@ export interface SearchKeyword {
   readonly suggestTokenizer?: SuggestTokenizer
 }
 /**
- *	Search keywords are JSON objects primarily used by [Product Suggestions](/projects/products-suggestions), but are also considered for a [full text search](/projects/product-projection-search#full-text-search).
+ *	Search keywords are JSON objects primarily used by [Search Term Suggestions](/projects/search-term-suggestions), but are also considered for a [full text search](/projects/product-projection-search#full-text-search) in the Product Projection Search API.
  *	The keys are of type [Locale](ctp:api:type:Locale), and the values are an array of [SearchKeyword](ctp:api:type:SearchKeyword).
  *
  */
@@ -2035,7 +2059,7 @@ export interface ProductSetAttributeAction extends IProductUpdateAction {
    */
   readonly sku?: string
   /**
-   *	The name of the Attribute to set.
+   *	Name of the Attribute to set.
    *
    *
    */
@@ -2045,9 +2069,7 @@ export interface ProductSetAttributeAction extends IProductUpdateAction {
    *
    *	The [AttributeType](ctp:api:type:AttributeType) determines the format of the Attribute `value` to be provided:
    *
-   *	- For [Enum Type](ctp:api:type:AttributeEnumType) and [Localized Enum Type](ctp:api:type:AttributeLocalizedEnumType),
-   *	  use the `key` of the [Plain Enum Value](ctp:api:type:AttributePlainEnumValue) or [Localized Enum Value](ctp:api:type:AttributeLocalizedEnumValue) objects,
-   *	  or the complete objects as `value`.
+   *	- For [Enum Type](ctp:api:type:AttributeEnumType) and [Localized Enum Type](ctp:api:type:AttributeLocalizedEnumType), use the `key` of the [Plain Enum Value](ctp:api:type:AttributePlainEnumValue) or [Localized Enum Value](ctp:api:type:AttributeLocalizedEnumValue) object or the complete object as `value`.
    *	- For [Localizable Text Type](ctp:api:type:AttributeLocalizableTextType), use the [LocalizedString](ctp:api:type:LocalizedString) object as `value`.
    *	- For [Money Type](ctp:api:type:AttributeMoneyType) Attributes, use the [Money](ctp:api:type:Money) object as `value`.
    *	- For [Set Type](ctp:api:type:AttributeSetType) Attributes, use the entire `set` object  as `value`.
@@ -2058,20 +2080,20 @@ export interface ProductSetAttributeAction extends IProductUpdateAction {
    */
   readonly value?: any
   /**
-   *	If `true`, only the staged Attribute is set. If `false`, both current and staged Attribute is set.
+   *	If `true`, only the staged Attribute is set. If `false`, both the current and staged Attributes are set.
    *
    *
    */
   readonly staged?: boolean
 }
 /**
- *	Adds, removes, or changes a Product Attribute in all Product Variants at the same time.
+ *	Adds, removes, or changes a Variant Attribute in all Product Variants at the same time.
  *	This action is useful for setting values for Attributes with the [Constraint](ctp:api:type:AttributeConstraintEnum) `SameForAll`.
  */
 export interface ProductSetAttributeInAllVariantsAction extends IProductUpdateAction {
   readonly action: 'setAttributeInAllVariants'
   /**
-   *	The name of the Attribute to set.
+   *	Name of the Attribute to set.
    *
    *
    */
@@ -2320,6 +2342,36 @@ export interface ProductSetPricesAction extends IProductUpdateAction {
   readonly prices: PriceDraft[]
   /**
    *	If `true`, only the staged ProductVariant is updated. If `false`, both the current and staged ProductVariant are updated.
+   *
+   *
+   */
+  readonly staged?: boolean
+}
+export interface ProductSetProductAttributeAction extends IProductUpdateAction {
+  readonly action: 'setProductAttribute'
+  /**
+   *	Name of the Product Attribute to set.
+   *
+   *
+   */
+  readonly name: string
+  /**
+   *	Value to set for the Attribute. If empty, any existing value will be removed.
+   *
+   *	The [AttributeType](ctp:api:type:AttributeType) determines the format of the Attribute `value` to be provided:
+   *
+   *	- For [Enum Type](ctp:api:type:AttributeEnumType) and [Localized Enum Type](ctp:api:type:AttributeLocalizedEnumType), use the `key` of the [Plain Enum Value](ctp:api:type:AttributePlainEnumValue) or [Localized Enum Value](ctp:api:type:AttributeLocalizedEnumValue) object or the complete object as `value`.
+   *	- For [Localizable Text Type](ctp:api:type:AttributeLocalizableTextType), use the [LocalizedString](ctp:api:type:LocalizedString) object as `value`.
+   *	- For [Money Type](ctp:api:type:AttributeMoneyType) Attributes, use the [Money](ctp:api:type:Money) object as `value`.
+   *	- For [Set Type](ctp:api:type:AttributeSetType) Attributes, use the entire `set` object  as `value`.
+   *	- For [Nested Type](ctp:api:type:AttributeNestedType) Attributes, use the list of values of all Attributes of the nested Product as `value`.
+   *	- For [Reference Type](ctp:api:type:AttributeReferenceType) Attributes, use the [Reference](ctp:api:type:Reference) object as `value`.
+   *
+   *
+   */
+  readonly value?: any
+  /**
+   *	If `true`, only the staged Attribute is set. If `false`, both the current and staged Attributes are set.
    *
    *
    */

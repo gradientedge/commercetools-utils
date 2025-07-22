@@ -33,12 +33,14 @@ import {
 } from './customer.js'
 import { CustomerGroup, CustomerGroupReference, CustomerGroupResourceIdentifier } from './customer-group.js'
 import { DiscountCode, DiscountCodeReference, DiscountCodeResourceIdentifier } from './discount-code.js'
+import { DiscountGroup, DiscountGroupReference, DiscountGroupResourceIdentifier } from './discount-group.js'
 import { Extension } from './extension.js'
 import { InventoryEntry, InventoryEntryReference, InventoryEntryResourceIdentifier } from './inventory.js'
 import { Message } from './message.js'
 import { OrderReference, _Order } from './order.js'
 import { OrderEdit, OrderEditReference, OrderEditResourceIdentifier } from './order-edit.js'
 import { Payment, PaymentReference, PaymentResourceIdentifier } from './payment.js'
+import { PaymentMethod, PaymentMethodReference } from './payment-method.js'
 import { Product, ProductProjection, ProductReference, ProductResourceIdentifier } from './product.js'
 import { ProductDiscount, ProductDiscountReference, ProductDiscountResourceIdentifier } from './product-discount.js'
 import { ProductSelection, ProductSelectionReference, ProductSelectionResourceIdentifier } from './product-selection.js'
@@ -46,6 +48,8 @@ import { ProductTailoring, ProductTailoringReference, ProductTailoringResourceId
 import { ProductType, ProductTypeReference, ProductTypeResourceIdentifier } from './product-type.js'
 import { Quote, QuoteReference, QuoteResourceIdentifier } from './quote.js'
 import { QuoteRequest, QuoteRequestReference, QuoteRequestResourceIdentifier } from './quote-request.js'
+import { RecurrencePolicy, RecurrencePolicyReference, RecurrencePolicyResourceIdentifier } from './recurrence-policy.js'
+import { RecurringOrder, RecurringOrderReference, RecurringOrderResourceIdentifier } from './recurring-order.js'
 import { Review, ReviewReference, ReviewResourceIdentifier } from './review.js'
 import { ShippingMethod, ShippingMethodReference, ShippingMethodResourceIdentifier } from './shipping-method.js'
 import { ShoppingList, ShoppingListReference, ShoppingListResourceIdentifier } from './shopping-list.js'
@@ -57,7 +61,6 @@ import { Subscription } from './subscription.js'
 import { TaxCategory, TaxCategoryReference, TaxCategoryResourceIdentifier } from './tax-category.js'
 import { CustomFields, CustomFieldsDraft, Type, TypeReference, TypeResourceIdentifier } from './type.js'
 import { Zone, ZoneReference, ZoneResourceIdentifier } from './zone.js'
-import { RecurrencePolicyReference, RecurrencePolicyResourceIdentifier } from './recurrence-policy.js'
 
 /**
  *	Each query endpoint returns a paged query response containing the actual resources matching the query predicate plus information about [pagination](#pagination).
@@ -125,7 +128,7 @@ export interface UpdateAction {
 }
 export interface Asset {
   /**
-   *	Unique identifier of the Asset.
+   *	Unique identifier of the Asset. Not required when importing Assets using the [Import API](/import-export/import-resources).
    *
    *
    */
@@ -490,12 +493,14 @@ export type _BaseResource =
   | Customer
   | CustomerGroup
   | DiscountCode
+  | DiscountGroup
   | Extension
   | InventoryEntry
   | Message
   | _Order
   | OrderEdit
   | Payment
+  | PaymentMethod
   | Product
   | ProductDiscount
   | ProductProjection
@@ -504,6 +509,8 @@ export type _BaseResource =
   | ProductType
   | Quote
   | QuoteRequest
+  | RecurrencePolicy
+  | RecurringOrder
   | Review
   | ShippingMethod
   | ShoppingList
@@ -847,10 +854,10 @@ export interface Price {
    *
    */
   readonly custom?: CustomFields
-
   /**
-   * \[BETA\]
-   * RecurrencePolicy for which this Price is valid.
+   *	[Recurrence Policy](ctp:api:type:RecurrencePolicy) for which this Price is valid.
+   *
+   *
    */
   readonly recurrencePolicy?: RecurrencePolicyReference
 }
@@ -929,10 +936,10 @@ export interface PriceDraft {
    *
    */
   readonly custom?: CustomFieldsDraft
-
   /**
-   * \[BETA\]
-   * RecurrencePolicy for which this Price is valid.
+   *	[RecurrencePolicy](ctp:api:type:RecurrencePolicy) for which this Price is valid.
+   *
+   *
    */
   readonly recurrencePolicy?: RecurrencePolicyResourceIdentifier
 }
@@ -1071,9 +1078,11 @@ export type Reference =
   | CustomerReference
   | DirectDiscountReference
   | DiscountCodeReference
+  | DiscountGroupReference
   | InventoryEntryReference
   | OrderEditReference
   | OrderReference
+  | PaymentMethodReference
   | PaymentReference
   | ProductDiscountReference
   | ProductReference
@@ -1082,6 +1091,8 @@ export type Reference =
   | ProductTypeReference
   | QuoteReference
   | QuoteRequestReference
+  | RecurrencePolicyReference
+  | RecurringOrderReference
   | ReviewReference
   | ShippingMethodReference
   | ShoppingListReference
@@ -1126,12 +1137,14 @@ export enum ReferenceTypeIdValues {
   CustomerPasswordToken = 'customer-password-token',
   DirectDiscount = 'direct-discount',
   DiscountCode = 'discount-code',
+  DiscountGroup = 'discount-group',
   Extension = 'extension',
   InventoryEntry = 'inventory-entry',
   KeyValueDocument = 'key-value-document',
   Order = 'order',
   OrderEdit = 'order-edit',
   Payment = 'payment',
+  PaymentMethod = 'payment-method',
   Product = 'product',
   ProductDiscount = 'product-discount',
   ProductPrice = 'product-price',
@@ -1140,6 +1153,8 @@ export enum ReferenceTypeIdValues {
   ProductType = 'product-type',
   Quote = 'quote',
   QuoteRequest = 'quote-request',
+  RecurrencePolicy = 'recurrence-policy',
+  RecurringOrder = 'recurring-order',
   Review = 'review',
   ShippingMethod = 'shipping-method',
   ShoppingList = 'shopping-list',
@@ -1169,12 +1184,14 @@ export type ReferenceTypeId =
   | 'customer-password-token'
   | 'direct-discount'
   | 'discount-code'
+  | 'discount-group'
   | 'extension'
   | 'inventory-entry'
   | 'key-value-document'
   | 'order'
   | 'order-edit'
   | 'payment'
+  | 'payment-method'
   | 'product'
   | 'product-discount'
   | 'product-price'
@@ -1183,6 +1200,8 @@ export type ReferenceTypeId =
   | 'product-type'
   | 'quote'
   | 'quote-request'
+  | 'recurrence-policy'
+  | 'recurring-order'
   | 'review'
   | 'shipping-method'
   | 'shopping-list'
@@ -1212,6 +1231,7 @@ export type ResourceIdentifier =
   | CustomerGroupResourceIdentifier
   | CustomerResourceIdentifier
   | DiscountCodeResourceIdentifier
+  | DiscountGroupResourceIdentifier
   | InventoryEntryResourceIdentifier
   | OrderEditResourceIdentifier
   | PaymentResourceIdentifier
@@ -1222,6 +1242,8 @@ export type ResourceIdentifier =
   | ProductTypeResourceIdentifier
   | QuoteRequestResourceIdentifier
   | QuoteResourceIdentifier
+  | RecurrencePolicyResourceIdentifier
+  | RecurringOrderResourceIdentifier
   | ReviewResourceIdentifier
   | ShippingMethodResourceIdentifier
   | ShoppingListResourceIdentifier

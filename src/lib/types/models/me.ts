@@ -27,11 +27,13 @@ import { DiscountCodeReference } from './discount-code.js'
 import { OrderReference } from './order.js'
 import {
   PaymentMethodInfo,
+  PaymentMethodInfoDraft,
   PaymentResourceIdentifier,
   Transaction,
   TransactionDraft,
   TransactionType,
 } from './payment.js'
+import { CustomLineItemRecurrenceInfoDraft, LineItemRecurrenceInfoDraft } from './recurring-order.js'
 import { ShippingMethodResourceIdentifier } from './shipping-method.js'
 import { ShoppingListLineItemDraft, TextLineItemDraft } from './shopping-list.js'
 import { StoreResourceIdentifier } from './store.js'
@@ -267,7 +269,7 @@ export interface MyCartDraft {
    */
   readonly locale?: string
   /**
-   *	Number of days after which a Cart with `Active` [CartState](ctp:api:type:CartState) is deleted since its last modification.
+   *	Number of days after the last modification before a Cart is deleted.
    *	If not provided, the default value for this field configured in [Project settings](ctp:api:type:CartsConfiguration) is assigned.
    *
    *	Create a [ChangeSubscription](ctp:api:type:ChangeSubscription) for Carts to receive a [ResourceDeletedDeliveryPayload](ctp:api:type:ResourceDeletedDeliveryPayload) upon deletion of the Cart.
@@ -315,12 +317,14 @@ export type MyCartUpdateAction =
   | MyCartSetBusinessUnitAction
   | MyCartSetCountryAction
   | MyCartSetCustomFieldAction
+  | MyCartSetCustomLineItemRecurrenceInfoAction
   | MyCartSetCustomTypeAction
   | MyCartSetCustomerEmailAction
   | MyCartSetDeleteDaysAfterLastModificationAction
   | MyCartSetLineItemCustomFieldAction
   | MyCartSetLineItemCustomTypeAction
   | MyCartSetLineItemDistributionChannelAction
+  | MyCartSetLineItemRecurrenceInfoAction
   | MyCartSetLineItemShippingDetailsAction
   | MyCartSetLineItemSupplyChannelAction
   | MyCartSetLocaleAction
@@ -680,6 +684,12 @@ export interface MyLineItemDraft {
    */
   readonly shippingDetails?: ItemShippingDetailsDraft
   /**
+   *	Recurring Order and frequency data.
+   *
+   *
+   */
+  readonly recurrenceInfo?: LineItemRecurrenceInfoDraft
+  /**
    *	Custom Fields for the Cart.
    *
    *
@@ -784,7 +794,7 @@ export interface MyPaymentDraft {
    *
    *
    */
-  readonly paymentMethodInfo?: PaymentMethodInfo
+  readonly paymentMethodInfo?: PaymentMethodInfoDraft
   /**
    *	Custom Fields for the Payment.
    *
@@ -857,6 +867,9 @@ export type MyPaymentUpdateAction =
   | MyPaymentAddTransactionAction
   | MyPaymentChangeAmountPlannedAction
   | MyPaymentSetCustomFieldAction
+  | MyPaymentSetMethodInfoCustomFieldAction
+  | MyPaymentSetMethodInfoCustomTypeAction
+  | MyPaymentSetMethodInfoInterfaceAccountAction
   | MyPaymentSetMethodInfoInterfaceAction
   | MyPaymentSetMethodInfoMethodAction
   | MyPaymentSetMethodInfoNameAction
@@ -975,7 +988,7 @@ export interface MyShoppingListDraft {
    */
   readonly custom?: CustomFieldsDraft
   /**
-   *	Number of days after which the ShoppingList will be automatically deleted if it has not been modified. If not set, the [default value](ctp:api:type:ShoppingListsConfiguration) configured in the [Project](ctp:api:type:Project) is used.
+   *	Number of days after the last modification before a ShoppingList is deleted. If not set, the [default value](ctp:api:type:ShoppingListsConfiguration) configured in the [Project](ctp:api:type:Project) is used.
    *
    *
    */
@@ -1516,6 +1529,12 @@ export interface MyCartAddLineItemAction extends IMyCartUpdateAction {
    */
   readonly shippingDetails?: ItemShippingDetailsDraft
   /**
+   *	Recurring Order and frequency data.
+   *
+   *
+   */
+  readonly recurrenceInfo?: LineItemRecurrenceInfoDraft
+  /**
    *	Custom Fields for the Line Item.
    *
    *
@@ -1620,7 +1639,7 @@ export interface MyCartChangeTaxModeAction extends IMyCartUpdateAction {
   readonly taxMode: TaxMode
 }
 /**
- *	This update action does not set any Cart field in particular, but it triggers several [Cart updates](/../api/carts-orders-overview#cart-updates)
+ *	This update action does not set any Cart field in particular, but it triggers several [Cart updates](/../api/carts-orders-overview#update-a-cart)
  *	to bring prices and discounts to the latest state. Those can become stale over time when no Cart updates have been performed for a while and
  *	prices on related Products have changed in the meanwhile.
  *
@@ -1771,6 +1790,33 @@ export interface MyCartSetCustomFieldAction extends IMyCartUpdateAction {
    */
   readonly value?: any
 }
+/**
+ *	Sets the recurrence information on the [CustomLineItem](ctp:api:type:CustomLineItem).
+ *	If the Cart is already associated with a Recurring Order, this action will fail.
+ *
+ */
+export interface MyCartSetCustomLineItemRecurrenceInfoAction extends IMyCartUpdateAction {
+  readonly action: 'setCustomLineItemRecurrenceInfo'
+  /**
+   *	`id` of the [CustomLineItem](ctp:api:type:CustomLineItem) to update. Either `customLineItemId` or `customLineItemKey` is required.
+   *
+   *
+   */
+  readonly customLineItemId?: string
+  /**
+   *	`key` of the [CustomLineItem](ctp:api:type:CustomLineItem) to update. Either `customLineItemId` or `customLineItemKey` is required.
+   *
+   *
+   */
+  readonly customLineItemKey?: string
+  /**
+   *	Value to set.
+   *	If empty, any existing value will be removed.
+   *
+   *
+   */
+  readonly recurrenceInfo?: CustomLineItemRecurrenceInfoDraft
+}
 export interface MyCartSetCustomTypeAction extends IMyCartUpdateAction {
   readonly action: 'setCustomType'
   /**
@@ -1798,7 +1844,7 @@ export interface MyCartSetCustomerEmailAction extends IMyCartUpdateAction {
   readonly email?: string
 }
 /**
- *	Number of days after which a Cart with `Active` [CartState](ctp:api:type:CartState) is deleted since its last modification.
+ *	Number of days after the last modification before a Cart is deleted.
  *
  *	If a [ChangeSubscription](ctp:api:type:ChangeSubscription) exists for Carts, a [ResourceDeletedDeliveryPayload](ctp:api:type:ResourceDeletedDeliveryPayload) is sent.
  *
@@ -1897,6 +1943,33 @@ export interface MyCartSetLineItemDistributionChannelAction extends IMyCartUpdat
    */
   readonly distributionChannel?: ChannelResourceIdentifier
 }
+/**
+ *	Sets the recurrence information on the [LineItem](ctp:api:type:LineItem).
+ *	If the Cart is already associated with a Recurring Order, this action will fail.
+ *
+ */
+export interface MyCartSetLineItemRecurrenceInfoAction extends IMyCartUpdateAction {
+  readonly action: 'setLineItemRecurrenceInfo'
+  /**
+   *	`id` of the [LineItem](ctp:api:type:LineItem) to update. Either `lineItemId` or `lineItemKey` is required.
+   *
+   *
+   */
+  readonly lineItemId?: string
+  /**
+   *	`key` of the [LineItem](ctp:api:type:LineItem) to update. Either `lineItemId` or `lineItemKey` is required.
+   *
+   *
+   */
+  readonly lineItemKey?: string
+  /**
+   *	Value to set.
+   *	If empty, any existing value will be removed.
+   *
+   *
+   */
+  readonly recurrenceInfo?: LineItemRecurrenceInfoDraft
+}
 export interface MyCartSetLineItemShippingDetailsAction extends IMyCartUpdateAction {
   readonly action: 'setLineItemShippingDetails'
   /**
@@ -1920,7 +1993,7 @@ export interface MyCartSetLineItemShippingDetailsAction extends IMyCartUpdateAct
   readonly shippingDetails?: ItemShippingDetailsDraft
 }
 /**
- *	Performing this action has no impact on inventory that should be reserved.
+ *	Performing this action does not reserve stock. Stock is only reserved at Order creation if the [InventoryMode](ctp:api:type:InventoryMode) of the Cart is `TrackOnly` or `ReserveOnOrder`.
  *
  */
 export interface MyCartSetLineItemSupplyChannelAction extends IMyCartUpdateAction {
@@ -2400,6 +2473,60 @@ export interface MyPaymentSetCustomFieldAction extends IMyPaymentUpdateAction {
    */
   readonly value?: any
 }
+/**
+ *	Adding a Custom Field to a PaymentMethodInfo generates the [PaymentMethodInfoCustomFieldAdded](ctp:api:type:PaymentMethodInfoCustomFieldAddedMessage) Message, removing one generates the [PaymentMethodInfoCustomFieldRemoved](ctp:api:type:PaymentMethodInfoCustomFieldRemovedMessage) Message, and updating an existing one generates the [PaymentMethodInfoCustomFieldChanged](ctp:api:type:PaymentMethodInfoCustomFieldChangedMessage) Message.
+ *
+ */
+export interface MyPaymentSetMethodInfoCustomFieldAction extends IMyPaymentUpdateAction {
+  readonly action: 'setMethodInfoCustomField'
+  /**
+   *	Name of the [Custom Field](/../api/projects/custom-fields).
+   *
+   *
+   */
+  readonly name: string
+  /**
+   *	If `value` is absent or `null`, this field will be removed if it exists.
+   *	If `value` is provided, it is set for the field defined by `name`.
+   *	Trying to remove a field that does not exist will fail with an [InvalidOperation](ctp:api:type:InvalidOperationError) error.
+   *
+   *
+   */
+  readonly value?: any
+}
+/**
+ *	Adding or updating a Custom Type on a PaymentMethodInfo generates the [PaymentMethodInfoCustomTypeSet](ctp:api:type:PaymentMethodInfoCustomTypeSetMessage) Message, removing one generates the [PaymentMethodInfoCustomTypeRemoved](ctp:api:type:PaymentMethodInfoCustomTypeRemovedMessage) Message.
+ *
+ */
+export interface MyPaymentSetMethodInfoCustomTypeAction extends IMyPaymentUpdateAction {
+  readonly action: 'setMethodInfoCustomType'
+  /**
+   *	Defines the [Type](ctp:api:type:Type) that extends the `paymentMethodInfo` with [Custom Fields](/../api/projects/custom-fields).
+   *
+   *
+   */
+  readonly type?: TypeResourceIdentifier
+  /**
+   *	Sets the [Custom Fields](/../api/projects/custom-fields) fields for the `paymentMethodInfo`.
+   *
+   *
+   */
+  readonly fields?: FieldContainer
+}
+/**
+ *	This action generates the [PaymentMethodInfoInterfaceAccountSet](ctp:api:type:PaymentMethodInfoInterfaceAccountSetMessage) Message.
+ *
+ */
+export interface MyPaymentSetMethodInfoInterfaceAccountAction extends IMyPaymentUpdateAction {
+  readonly action: 'setMethodInfoInterfaceAccount'
+  /**
+   *	New account or instance of the payment interface.
+   *	If empty, any existing value will be removed.
+   *
+   *
+   */
+  readonly interfaceAccount?: string
+}
 export interface MyPaymentSetMethodInfoInterfaceAction extends IMyPaymentUpdateAction {
   readonly action: 'setMethodInfoInterface'
   /**
@@ -2713,10 +2840,14 @@ export interface MyShoppingListSetCustomTypeAction extends IMyShoppingListUpdate
    */
   readonly fields?: FieldContainer
 }
+/**
+ *	Number of days after the last modification before a Shopping List is deleted.
+ *
+ */
 export interface MyShoppingListSetDeleteDaysAfterLastModificationAction extends IMyShoppingListUpdateAction {
   readonly action: 'setDeleteDaysAfterLastModification'
   /**
-   *	Value to set. If empty, any existing value will be removed.
+   *	Value to set. If not provided, the default value for this field configured in [Project settings](ctp:api:type:ShoppingListsConfiguration) is assigned.
    *
    *
    */

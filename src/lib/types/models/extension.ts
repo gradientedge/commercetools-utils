@@ -211,6 +211,7 @@ export enum ExtensionResourceTypeIdValues {
   CustomerGroup = 'customer-group',
   Order = 'order',
   Payment = 'payment',
+  PaymentMethod = 'payment-method',
   Quote = 'quote',
   QuoteRequest = 'quote-request',
   ShoppingList = 'shopping-list',
@@ -224,6 +225,7 @@ export type ExtensionResourceTypeId =
   | 'customer-group'
   | 'order'
   | 'payment'
+  | 'payment-method'
   | 'quote'
   | 'quote-request'
   | 'shopping-list'

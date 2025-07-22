@@ -62,6 +62,8 @@ export enum ChangeSubscriptionResourceTypeIdValues {
   ProductType = 'product-type',
   Quote = 'quote',
   QuoteRequest = 'quote-request',
+  RecurrencePolicy = 'recurrence-policy',
+  RecurringOrder = 'recurring-order',
   Review = 'review',
   ShippingMethod = 'shipping-method',
   ShoppingList = 'shopping-list',
@@ -103,6 +105,8 @@ export type ChangeSubscriptionResourceTypeId =
   | 'product-type'
   | 'quote'
   | 'quote-request'
+  | 'recurrence-policy'
+  | 'recurring-order'
   | 'review'
   | 'shipping-method'
   | 'shopping-list'
@@ -327,7 +331,7 @@ export interface EventBridgeDestination extends IDestination {
  */
 export interface EventSubscription {
   /**
-   *	Unique identifier for the type of resource, for example, `import-api`.
+   *	Unique identifier for the type of resource.
    *
    *
    */
@@ -335,7 +339,7 @@ export interface EventSubscription {
   /**
    *	Must contain valid event types for the resource.
    *	For example, for resource type `import-api` the event type `ImportContainerCreated` is valid.
-   *	If no `types` are given, the Subscription will receive all events for this resource.
+   *	If no `types` are given, the Subscription will receive all events for the defined resource type.
    *
    *
    */
@@ -346,15 +350,25 @@ export interface EventSubscription {
  *
  */
 export enum EventSubscriptionResourceTypeIdValues {
+  Checkout = 'checkout',
   ImportApi = 'import-api',
 }
 
-export type EventSubscriptionResourceTypeId = 'import-api' | (string & {})
+export type EventSubscriptionResourceTypeId = 'checkout' | 'import-api' | (string & {})
 /**
  *	Type of events supported by [EventSubscriptions](ctp:api:type:EventSubscription).
  *
  */
 export enum EventTypeValues {
+  CheckoutOrderCreationFailed = 'CheckoutOrderCreationFailed',
+  CheckoutPaymentAuthorizationCancelled = 'CheckoutPaymentAuthorizationCancelled',
+  CheckoutPaymentAuthorizationFailed = 'CheckoutPaymentAuthorizationFailed',
+  CheckoutPaymentAuthorized = 'CheckoutPaymentAuthorized',
+  CheckoutPaymentCancelAuthorizationFailed = 'CheckoutPaymentCancelAuthorizationFailed',
+  CheckoutPaymentChargeFailed = 'CheckoutPaymentChargeFailed',
+  CheckoutPaymentCharged = 'CheckoutPaymentCharged',
+  CheckoutPaymentRefundFailed = 'CheckoutPaymentRefundFailed',
+  CheckoutPaymentRefunded = 'CheckoutPaymentRefunded',
   ImportContainerCreated = 'ImportContainerCreated',
   ImportContainerDeleted = 'ImportContainerDeleted',
   ImportOperationRejected = 'ImportOperationRejected',
@@ -364,6 +378,15 @@ export enum EventTypeValues {
 }
 
 export type EventType =
+  | 'CheckoutOrderCreationFailed'
+  | 'CheckoutPaymentAuthorizationCancelled'
+  | 'CheckoutPaymentAuthorizationFailed'
+  | 'CheckoutPaymentAuthorized'
+  | 'CheckoutPaymentCancelAuthorizationFailed'
+  | 'CheckoutPaymentChargeFailed'
+  | 'CheckoutPaymentCharged'
+  | 'CheckoutPaymentRefundFailed'
+  | 'CheckoutPaymentRefunded'
   | 'ImportContainerCreated'
   | 'ImportContainerDeleted'
   | 'ImportOperationRejected'
@@ -600,12 +623,6 @@ export interface Subscription extends BaseResource {
    */
   readonly createdBy?: CreatedBy
   /**
-   *	Changes subscribed to.
-   *
-   *
-   */
-  readonly changes: ChangeSubscription[]
-  /**
    *	Messaging service to which the notifications are sent.
    *
    *
@@ -623,6 +640,12 @@ export interface Subscription extends BaseResource {
    *
    */
   readonly messages: MessageSubscription[]
+  /**
+   *	Changes subscribed to.
+   *
+   *
+   */
+  readonly changes: ChangeSubscription[]
   /**
    *	Events subscribed to.
    *
@@ -643,16 +666,10 @@ export interface Subscription extends BaseResource {
   readonly status: SubscriptionHealthStatus
 }
 /**
- *	Either `messages` or `changes` must be set.
+ *	Either `messages`, `changes`, or `events` must be set.
  *
  */
 export interface SubscriptionDraft {
-  /**
-   *	Changes to be subscribed to.
-   *
-   *
-   */
-  readonly changes?: ChangeSubscription[]
   /**
    *	Messaging service to which the notifications are sent.
    *
@@ -671,6 +688,12 @@ export interface SubscriptionDraft {
    *
    */
   readonly messages?: MessageSubscription[]
+  /**
+   *	Changes to be subscribed to.
+   *
+   *
+   */
+  readonly changes?: ChangeSubscription[]
   /**
    *	Events to be subscribed to.
    *
@@ -1086,7 +1109,7 @@ export interface SubscriptionSetEventsAction extends ISubscriptionUpdateAction {
    *
    *
    */
-  readonly messages?: EventSubscription[]
+  readonly events?: EventSubscription[]
 }
 export interface SubscriptionSetKeyAction extends ISubscriptionUpdateAction {
   readonly action: 'setKey'

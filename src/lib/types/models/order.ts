@@ -64,6 +64,7 @@ import {
   StagedOrderChangeLineItemQuantityAction,
   StagedOrderChangeOrderStateAction,
   StagedOrderChangePaymentStateAction,
+  StagedOrderChangePriceRoundingModeAction,
   StagedOrderChangeShipmentStateAction,
   StagedOrderChangeTaxCalculationModeAction,
   StagedOrderChangeTaxModeAction,
@@ -145,12 +146,12 @@ import {
 import { PaymentReference, PaymentResourceIdentifier } from './payment.js'
 import { Attribute } from './product.js'
 import { QuoteReference, QuoteResourceIdentifier } from './quote.js'
+import { RecurringOrderReference } from './recurring-order.js'
 import { ShippingMethodResourceIdentifier, ShippingRateDraft } from './shipping-method.js'
 import { StateReference, StateResourceIdentifier } from './state.js'
 import { StoreKeyReference, StoreResourceIdentifier } from './store.js'
 import { TaxCategoryResourceIdentifier, TaxRate } from './tax-category.js'
 import { CustomFields, CustomFieldsDraft, FieldContainer, TypeResourceIdentifier } from './type.js'
-import { RecurringOrderReference } from './recurring-order.js'
 
 export type StagedOrderUpdateAction =
   | StagedOrderAddCustomLineItemAction
@@ -167,6 +168,7 @@ export type StagedOrderUpdateAction =
   | StagedOrderChangeLineItemQuantityAction
   | StagedOrderChangeOrderStateAction
   | StagedOrderChangePaymentStateAction
+  | StagedOrderChangePriceRoundingModeAction
   | StagedOrderChangeShipmentStateAction
   | StagedOrderChangeTaxCalculationModeAction
   | StagedOrderChangeTaxModeAction
@@ -807,13 +809,15 @@ export interface Order extends BaseResource {
    *	- For `Platform` [TaxMode](ctp:api:type:TaxMode), it is automatically set when a [shipping address is set](ctp:api:type:OrderSetShippingAddressAction).
    *	- For `External` [TaxMode](ctp:api:type:TaxMode), it is automatically set when `shippingAddress` and external Tax Rates for all Line Items, Custom Line Items, and Shipping Methods in the Cart are set.
    *
-   *	If a discount applies on `totalPrice`, this field holds the discounted values.
+   *	If a discount applies on `totalPrice`, this field holds the proportionally discounted value.
    *
    *
    */
   readonly taxedPrice?: TaxedPrice
   /**
    *	Sum of the `taxedPrice` field of [ShippingInfo](ctp:api:type:ShippingInfo) across all Shipping Methods.
+   *
+   *	If a discount applies on `totalPrice`, this field holds the proportionally discounted value.
    *
    *
    */
@@ -823,6 +827,11 @@ export interface Order extends BaseResource {
    *
    */
   readonly discountOnTotalPrice?: DiscountOnTotalPrice
+  /**
+   *	Indicates how the total prices on [LineItems](ctp:api:type:LineItem) and [CustomLineItems](ctp:api:type:CustomLineItem) are rounded when calculated.
+   *
+   */
+  readonly priceRoundingMode?: RoundingMode
   /**
    *	Indicates how Tax Rates are set.
    *
@@ -966,6 +975,12 @@ export interface Order extends BaseResource {
    */
   readonly quote?: QuoteReference
   /**
+   *	[Reference](ctp:api:type:Reference) to the RecurringOrder that generated this Order.
+   *
+   *
+   */
+  readonly recurringOrder?: RecurringOrderReference
+  /**
    *	Current status of the Order.
    *
    *
@@ -1051,12 +1066,6 @@ export interface Order extends BaseResource {
    *
    */
   readonly createdBy?: CreatedBy
-
-  /**
-   * \[BETA\]
-   * Reference to the RecurringOrder that generated this Order.
-   */
-  readonly recurringOrder?: RecurringOrderReference
 }
 export type _Order = Order | StagedOrder
 export interface OrderFromCartDraft {
@@ -1262,6 +1271,12 @@ export interface OrderImportDraft {
    *
    */
   readonly taxedPrice?: TaxedPriceDraft
+  /**
+   *	Determines how the total prices on [LineItems](ctp:api:type:LineItem) and [CustomLineItems](ctp:api:type:CustomLineItem) are rounded when calculated.
+   *
+   *
+   */
+  readonly priceRoundingMode?: RoundingMode
   /**
    *	Determines how monetary values are rounded when calculating taxes for `taxedPrice`.
    *

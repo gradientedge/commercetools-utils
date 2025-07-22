@@ -66,7 +66,8 @@ export interface ShoppingList extends BaseResource {
    */
   readonly textLineItems: TextLineItem[]
   /**
-   *	Number of days after which the ShoppingList will be automatically deleted if it has not been modified.
+   *	Number of days after the last modification before a ShoppingList is deleted. If not set, the [default value](ctp:api:type:ShoppingListsConfiguration) configured in the [Project](ctp:api:type:Project) is used.
+   *
    *
    */
   readonly deleteDaysAfterLastModification?: number
@@ -156,7 +157,7 @@ export interface ShoppingListDraft {
    */
   readonly anonymousId?: string
   /**
-   *	Number of days after which the ShoppingList will be automatically deleted if it has not been modified. If not set, the [default value](ctp:api:type:ShoppingListsConfiguration) configured in the [Project](ctp:api:type:Project) is used.
+   *	Number of days after the last modification before a ShoppingList is deleted. If not set, the [default value](ctp:api:type:ShoppingListsConfiguration) configured in the [Project](ctp:api:type:Project) is used.
    *
    *
    */
@@ -269,7 +270,7 @@ export interface ShoppingListLineItem {
    */
   readonly variantId?: number
   /**
-   *	Data of the [ProductVariant](ctp:api:type:ProductVariant).
+   *	Data of the [ProductVariant](ctp:api:type:ProductVariant).  This data includes all the Product Attributes and Variant Attributes to ensure the full Attribute context of the Product Variant.
    *
    *	Returned when expanded using `expand=lineItems[*].variant`. You cannot expand only a single element of the array.
    *
@@ -540,6 +541,8 @@ export interface TextLineItemDraft {
  *	The [ProductVariant](ctp:api:type:ProductVariant) to be included in the ShoppingListLineItem must be specified using the `productID` and `variantID`, or by the `sku`.
  *	If the ShoppingList already contains a ShoppingListLineItem for the same Product Variant with the same Custom Fields, then only the quantity of the existing ShoppingListLineItem is increased.
  *	A ShoppingListLineItem with an empty `variantId` is not considered the same as a ShoppingListLineItem with a `variantId` currently referring to the Master Variant.
+ *
+ *	Product Attributes are merged with Variant Attributes to ensure the full Attribute context of the Product Variant.
  *
  *	Produces the [Shopping List Line Item Added](ctp:api:type:ShoppingListLineItemAddedMessage) Message.
  *
@@ -832,10 +835,14 @@ export interface ShoppingListSetCustomerAction extends IShoppingListUpdateAction
    */
   readonly customer?: CustomerResourceIdentifier
 }
+/**
+ *	Number of days after the last modification before a Shopping List is deleted.
+ *
+ */
 export interface ShoppingListSetDeleteDaysAfterLastModificationAction extends IShoppingListUpdateAction {
   readonly action: 'setDeleteDaysAfterLastModification'
   /**
-   *	Value to set. If empty, any existing value will be removed.
+   *	Value to set. If not provided, the default value for this field configured in [Project settings](ctp:api:type:ShoppingListsConfiguration) is assigned.
    *
    *
    */
