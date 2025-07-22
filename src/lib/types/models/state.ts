@@ -241,6 +241,7 @@ export enum StateTypeEnumValues {
   ProductState = 'ProductState',
   QuoteRequestState = 'QuoteRequestState',
   QuoteState = 'QuoteState',
+  RecurringOrderState = 'RecurringOrderState',
   ReviewState = 'ReviewState',
   StagedQuoteState = 'StagedQuoteState',
 }
@@ -252,6 +253,7 @@ export type StateTypeEnum =
   | 'ProductState'
   | 'QuoteRequestState'
   | 'QuoteState'
+  | 'RecurringOrderState'
   | 'ReviewState'
   | 'StagedQuoteState'
   | (string & {})

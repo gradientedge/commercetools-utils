@@ -1,5 +1,14 @@
 import { CommercetoolsApiConfig, CommercetoolsRetryConfig } from './types.js'
-import { CommercetoolsAuth } from '../index.js'
+import {
+  CommercetoolsAuth,
+  RecurrencePolicy,
+  RecurrencePolicyPagedQueryResponse,
+  RecurrencePolicyUpdateAction,
+  RecurringOrder,
+  RecurringOrderDraft,
+  RecurringOrderPagedQueryResponse,
+  RecurringOrderUpdateAction,
+} from '../index.js'
 import { CommercetoolsError } from '../error/index.js'
 import { REGION_URLS } from '../auth/constants.js'
 import { CommercetoolsRequest, RegionEndpoints, RequestExecutor } from '../types.js'
@@ -94,17 +103,6 @@ import type {
 
 import { getRequestExecutor } from '../request/request-executor.js'
 import { CartUpdateAction } from '../types/models/cart.js'
-import {
-  RecurrencePolicy,
-  RecurrencePolicyPagedQueryResponse,
-  RecurrencePolicyUpdateAction,
-} from '../types/models/recurrence-policy.js'
-import {
-  RecurringOrder,
-  RecurringOrderDraft,
-  RecurringOrderPagedQueryResponse,
-  RecurringOrderUpdateAction,
-} from '../types/models/recurring-order.js'
 
 export interface FetchOptions<T = any> {
   /**

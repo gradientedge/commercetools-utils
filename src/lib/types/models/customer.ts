@@ -190,6 +190,14 @@ export interface Customer extends BaseResource {
    */
   readonly customerGroup?: CustomerGroupReference
   /**
+   *	Customer Groups that the Customer belongs to.
+   *
+   *	Used for [Line Item price selection](/../api/pricing-and-discounts-overview#line-item-price-selection).
+   *
+   *
+   */
+  readonly customerGroupAssignments?: CustomerGroupAssignment[]
+  /**
    *	Custom Fields for the Customer.
    *
    *
@@ -222,12 +230,6 @@ export interface Customer extends BaseResource {
    *
    */
   readonly authenticationMode: AuthenticationMode
-  /**
-   *	Customer Groups that the Customer belongs to.
-   *
-   *
-   */
-  readonly customerGroupAssignments?: CustomerGroupAssignment[]
 }
 export interface CustomerChangePassword {
   /**
@@ -273,6 +275,12 @@ export interface CustomerCreateEmailToken {
    *
    */
   readonly ttlMinutes: number
+  /**
+   *	If set to `true`, all email tokens issued previously for the Customer will be invalidated.
+   *
+   *
+   */
+  readonly invalidateOlderTokens?: boolean
 }
 export interface CustomerCreatePasswordResetToken {
   /**
@@ -287,6 +295,12 @@ export interface CustomerCreatePasswordResetToken {
    *
    */
   readonly ttlMinutes?: number
+  /**
+   *	If set to `true`, all password tokens issued previously for the Customer will be invalidated.
+   *
+   *
+   */
+  readonly invalidateOlderTokens?: boolean
 }
 export interface CustomerDraft {
   /**
@@ -431,9 +445,19 @@ export interface CustomerDraft {
   /**
    *	Sets the [CustomerGroup](ctp:api:type:CustomerGroup) for the Customer.
    *
+   *	For new projects, use `customerGroupAssignments` instead. It supports assigning Customers to multiple Customer Groups and provides greater flexibility in complex pricing scenarios.
+   *
    *
    */
   readonly customerGroup?: CustomerGroupResourceIdentifier
+  /**
+   *	Customer Groups to assign the Customer to.
+   *
+   *	Used for [Line Item price selection](/../api/pricing-and-discounts-overview#line-item-price-selection).
+   *
+   *
+   */
+  readonly customerGroupAssignments?: CustomerGroupAssignmentDraft[]
   /**
    *	Custom Fields for the Customer.
    *
@@ -469,12 +493,6 @@ export interface CustomerDraft {
    *
    */
   readonly authenticationMode?: AuthenticationMode
-  /**
-   *	Customer Groups to assign the Customer to.
-   *
-   *
-   */
-  readonly customerGroupAssignments?: CustomerGroupAssignmentDraft[]
 }
 /**
  *	[Reference](ctp:api:type:Reference) to a [CustomerToken](ctp:api:type:CustomerToken) for email verification.
@@ -718,6 +736,12 @@ export interface CustomerToken {
    *
    */
   readonly expiresAt: string
+  /**
+   *	If `true`, all tokens issued previously for the Customer will be invalidated.
+   *
+   *
+   */
+  readonly invalidateOlderTokens: boolean
   /**
    *	Date and time (UTC) the token was initially created.
    *
@@ -1191,7 +1215,7 @@ export interface CustomerSetCustomTypeAction extends ICustomerUpdateAction {
 /**
  *	Setting the Customer Group of the Customer produces the [CustomerGroupSet](ctp:api:type:CustomerGroupSetMessage) Message.
  *
- *	To reflect the new Customer Group, this update action can result in [updates](/api/carts-orders-overview#cart-updates) to the most recently modified active Cart. When this occurs, the following errors can be returned: [MatchingPriceNotFound](ctp:api:type:MatchingPriceNotFoundError) and [MissingTaxRateForCountry](ctp:api:type:MissingTaxRateForCountryError).
+ *	To reflect the new Customer Group, this update action can result in [updates](/api/carts-orders-overview#update-a-cart) to the most recently modified active Cart. When this occurs, the following errors can be returned: [MatchingPriceNotFound](ctp:api:type:MatchingPriceNotFoundError) and [MissingTaxRateForCountry](ctp:api:type:MissingTaxRateForCountryError).
  *
  */
 export interface CustomerSetCustomerGroupAction extends ICustomerUpdateAction {

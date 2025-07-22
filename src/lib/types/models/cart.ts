@@ -37,6 +37,12 @@ import { ProductVariant } from './product.js'
 import { ProductTailoringUpdateAction } from './product-tailoring.js'
 import { ProductTypeReference } from './product-type.js'
 import {
+  CustomLineItemRecurrenceInfo,
+  CustomLineItemRecurrenceInfoDraft,
+  LineItemRecurrenceInfo,
+  LineItemRecurrenceInfoDraft,
+} from './recurring-order.js'
+import {
   ShippingMethodReference,
   ShippingMethodResourceIdentifier,
   ShippingRate,
@@ -46,8 +52,6 @@ import { ShoppingListResourceIdentifier } from './shopping-list.js'
 import { StoreKeyReference, StoreResourceIdentifier } from './store.js'
 import { SubRate, TaxCategoryReference, TaxCategoryResourceIdentifier, TaxRate } from './tax-category.js'
 import { CustomFields, CustomFieldsDraft, FieldContainer, TypeResourceIdentifier } from './type.js'
-import { PriceSelectionMode } from './recurring-order.js'
-import { RecurrencePolicyResourceIdentifier } from './recurrence-policy.js'
 
 export interface Cart extends BaseResource {
   /**
@@ -136,13 +140,15 @@ export interface Cart extends BaseResource {
    *	- For a Cart with `Platform` [TaxMode](ctp:api:type:TaxMode), it is automatically set when a [shipping address is set](ctp:api:type:CartSetShippingAddressAction). For Carts with `Multiple` [ShippingMode](ctp:api:type:ShippingMode), all Line Items and Custom Line Items must be fully distributed between the Shipping Methods (via `shippingDetails`), otherwise `taxedPrice` is not automatically set.
    *	- For a Cart with `External` [TaxMode](ctp:api:type:TaxMode), it is automatically set when `shippingAddress` and external Tax Rates for all Line Items, Custom Line Items, and Shipping Methods in the Cart are set. For Carts with `Multiple` [ShippingMode](ctp:api:type:ShippingMode), all allocations must have their respective tax rates present in `perMethodTaxRate`, otherwise `taxedPrice` is not automatically set.
    *
-   *	If a discount applies on `totalPrice`, this field holds the discounted values.
+   *	If a discount applies on `totalPrice`, this field holds the proportionally discounted value.
    *
    *
    */
   readonly taxedPrice?: TaxedPrice
   /**
    *	Sum of the `taxedPrice` field of [ShippingInfo](ctp:api:type:ShippingInfo) across all Shipping Methods.
+   *
+   *	If a discount applies on `totalPrice`, this field holds the proportionally discounted value.
    *
    */
   readonly taxedShippingPrice?: TaxedPrice
@@ -158,7 +164,13 @@ export interface Cart extends BaseResource {
    */
   readonly taxMode: TaxMode
   /**
-   *	Indicates how monetary values are rounded when calculating taxes for `taxedPrice`.
+   *	Indicates how the total prices on [LineItems](ctp:api:type:LineItem) and [CustomLineItems](ctp:api:type:CustomLineItem) are rounded when calculated. Configured in [Project settings](ctp:api:type:CartsConfiguration).
+   *
+   *
+   */
+  readonly priceRoundingMode: RoundingMode
+  /**
+   *	Indicates how monetary values are rounded when calculating taxes for `taxedPrice`. Configured in [Project settings](ctp:api:type:CartsConfiguration).
    *
    *
    */
@@ -295,7 +307,7 @@ export interface Cart extends BaseResource {
    */
   readonly discountTypeCombination?: DiscountTypeCombination
   /**
-   *	Number of days after which an active Cart is deleted since its last modification. Configured in [Project settings](ctp:api:type:CartsConfiguration).
+   *	Number of days after the last modification before a Cart is deleted. Configured in [Project settings](ctp:api:type:CartsConfiguration).
    *
    *
    */
@@ -402,7 +414,13 @@ export interface CartDraft {
    */
   readonly externalTaxRateForShippingMethod?: ExternalTaxRateDraft
   /**
-   *	Determines how monetary values are rounded when calculating taxes for `taxedPrice`.
+   *	Determines how the total prices on [LineItems](ctp:api:type:LineItem) and [CustomLineItems](ctp:api:type:CustomLineItem) are rounded when calculated. If not set, the [default value](ctp:api:type:CartsConfiguration) configured in the [Project](ctp:api:type:Project) is used.
+   *
+   *
+   */
+  readonly priceRoundingMode?: RoundingMode
+  /**
+   *	Determines how monetary values are rounded when calculating taxes for `taxedPrice`. If not set, the [default value](ctp:api:type:CartsConfiguration) configured in the [Project](ctp:api:type:Project) is used.
    *
    *
    */
@@ -500,7 +518,7 @@ export interface CartDraft {
    */
   readonly origin?: CartOrigin
   /**
-   *	Number of days after which an active Cart is deleted since its last modification.
+   *	Number of days after the last modification before a Cart is deleted.
    *	If not provided, the default value for this field configured in [Project settings](ctp:api:type:CartsConfiguration) is assigned.
    *
    *	Create a [ChangeSubscription](ctp:api:type:ChangeSubscription) for Carts to receive a [ResourceDeletedDeliveryPayload](ctp:api:type:ResourceDeletedDeliveryPayload) upon deletion of the Cart.
@@ -523,6 +541,7 @@ export enum CartOriginValues {
   Customer = 'Customer',
   Merchant = 'Merchant',
   Quote = 'Quote',
+  RecurringOrder = 'RecurringOrder',
 }
 
 export type CartOrigin = 'Customer' | 'Merchant' | 'Quote' | 'RecurringOrder' | (string & {})
@@ -647,6 +666,7 @@ export type CartUpdateAction =
   | CartChangeCustomLineItemQuantityAction
   | CartChangeLineItemQuantityAction
   | CartChangeLineItemsOrderAction
+  | CartChangePriceRoundingModeAction
   | CartChangeTaxCalculationModeAction
   | CartChangeTaxModeAction
   | CartChangeTaxRoundingModeAction
@@ -776,7 +796,7 @@ export interface CustomLineItem {
    */
   readonly quantity: number
   /**
-   *	State of the Custom Line Item in the [Cart](ctp:api:type:Cart) or [Order](ctp:api:type:Order).
+   *	Tracks specific quantities of the Custom Line Item within a given State. When a Custom Line Item is added to a Cart, its full quantity is set to the built-in "Initial" state. State transitions for Custom Line Items are managed on the [Order](ctp:api:type:Order).
    *
    *
    */
@@ -806,13 +826,6 @@ export interface CustomLineItem {
    *
    */
   readonly discountedPricePerQuantity: DiscountedLineItemPriceForQuantity[]
-
-  /**
-   * \[BETA\]
-   * Recurring Order and frequency data.
-   */
-  readonly recurrenceInfo?: CustomLineItemRecurrenceInfo
-
   /**
    *	Custom Fields of the Custom Line Item.
    *
@@ -831,6 +844,12 @@ export interface CustomLineItem {
    *
    */
   readonly priceMode: CustomLineItemPriceMode
+  /**
+   *	Recurring Order and frequency data.
+   *
+   *
+   */
+  readonly recurrenceInfo?: CustomLineItemRecurrenceInfo
 }
 export interface CustomLineItemDraft {
   /**
@@ -897,36 +916,13 @@ export interface CustomLineItemDraft {
    *
    */
   readonly priceMode?: CustomLineItemPriceMode
-
   /**
-   * \[BETA\]
-   * Recurring Order and frequency data.
+   *	Recurring Order and frequency data.
+   *
+   *
    */
   readonly recurrenceInfo?: CustomLineItemRecurrenceInfoDraft
 }
-
-/**
- * \[BETA\]
- * Information about recurring orders and frequencies.
- */
-export interface CustomLineItemRecurrenceInfo {
-  /**
-   * ResourceIdentifier to a RecurrencePolicy.
-   */
-  readonly recurrencePolicy?: RecurrencePolicyResourceIdentifier
-}
-
-/**
- * \[BETA\]
- * Information about recurring orders and frequencies.
- */
-export interface CustomLineItemRecurrenceInfoDraft {
-  /**
-   * ResourceIdentifier to a RecurrencePolicy.
-   */
-  readonly recurrencePolicy?: RecurrencePolicyResourceIdentifier
-}
-
 /**
  *	Determines if Cart Discounts can be applied to a Custom Line Item in the Cart.
  *
@@ -1076,10 +1072,13 @@ export interface DiscountCodeInfo {
 /**
  *	Indicates the state of a Discount Code in a Cart.
  *
- *	If an Order is created from a Cart with a state other than `MatchesCart`, a [DiscountCodeNonApplicable](ctp:api:type:DiscountCodeNonApplicableError) error is returned.
+ *	If an Order is created from a Cart with a state other than `MatchesCart` or `ApplicationStoppedByGroupBestDeal`, a [DiscountCodeNonApplicable](ctp:api:type:DiscountCodeNonApplicableError) error is returned.
+ *
+ *	For Orders created from a Cart with a `ApplicationStoppedByGroupBestDeal` state, the discount code is not applied.
  *
  */
 export enum DiscountCodeStateValues {
+  ApplicationStoppedByGroupBestDeal = 'ApplicationStoppedByGroupBestDeal',
   ApplicationStoppedByPreviousDiscount = 'ApplicationStoppedByPreviousDiscount',
   DoesNotMatchCart = 'DoesNotMatchCart',
   MatchesCart = 'MatchesCart',
@@ -1089,6 +1088,7 @@ export enum DiscountCodeStateValues {
 }
 
 export type DiscountCodeState =
+  | 'ApplicationStoppedByGroupBestDeal'
   | 'ApplicationStoppedByPreviousDiscount'
   | 'DoesNotMatchCart'
   | 'MatchesCart'
@@ -1478,7 +1478,7 @@ export interface LineItem {
    */
   readonly taxedPricePortions: MethodTaxedPrice[]
   /**
-   *	State of the Line Item in the [Cart](ctp:api:type:Cart) or the [Order](ctp:api:type:Order).
+   *	Tracks specific quantities of the Line Item within a given State. When a Line Item is added to a Cart, its full quantity is set to the built-in "Initial" state. State transitions for Line Items are managed on the [Order](ctp:api:type:Order).
    *
    *
    */
@@ -1533,13 +1533,6 @@ export interface LineItem {
    *
    */
   readonly shippingDetails?: ItemShippingDetails
-
-  /**
-   * \[BETA\]
-   * Recurring Order and frequency data.
-   */
-  readonly recurrenceInfo?: LineItemRecurrenceInfo
-
   /**
    *	Custom Fields of the Line Item.
    *
@@ -1558,9 +1551,16 @@ export interface LineItem {
    *
    */
   readonly lastModifiedAt?: string
+  /**
+   *	Recurring Order and frequency data.
+   *
+   *
+   */
+  readonly recurrenceInfo?: LineItemRecurrenceInfo
 }
 /**
  *	For Product Variant identification, either the `productId` and `variantId`, or `sku` must be provided.
+ *	Product Attributes are merged with Variant Attributes to ensure the full Attribute context of the Product Variant.
  *
  */
 export interface LineItemDraft {
@@ -1664,6 +1664,12 @@ export interface LineItemDraft {
    *
    */
   readonly custom?: CustomFieldsDraft
+  /**
+   *	Recurring Order and frequency data.
+   *
+   *
+   */
+  readonly recurrenceInfo?: LineItemRecurrenceInfoDraft
 }
 /**
  *	Indicates how a Line Item was added to a Cart.
@@ -1686,39 +1692,6 @@ export enum LineItemPriceModeValues {
 }
 
 export type LineItemPriceMode = 'ExternalPrice' | 'ExternalTotal' | 'Platform' | (string & {})
-
-/**
- * \[BETA\]
- * Information about recurring orders and frequencies.
- */
-export interface LineItemRecurrenceInfo {
-  /**
-   * ResourceIdentifier to a RecurrencePolicy.
-   */
-  readonly recurrencePolicy?: RecurrencePolicyResourceIdentifier
-
-  /**
-   * Determines how the price of a line item will be selected during order creation.
-   */
-  readonly priceSelectionMode?: PriceSelectionMode
-}
-
-/**
- * \[BETA\]
- * Information about recurring orders and frequencies.
- */
-export interface LineItemRecurrenceInfoDraft {
-  /**
-   * ResourceIdentifier to a RecurrencePolicy.
-   */
-  readonly recurrencePolicy?: RecurrencePolicyResourceIdentifier
-
-  /**
-   * Determines how the price of a line item will be selected during order creation.
-   */
-  readonly priceSelectionMode?: PriceSelectionMode
-}
-
 export interface MethodExternalTaxRateDraft {
   /**
    *	User-defined unique identifier of the Shipping Method in a Cart with `Multiple` [ShippingMode](ctp:api:type:ShippingMode).
@@ -2268,6 +2241,12 @@ export interface CartAddCustomLineItemAction extends ICartUpdateAction {
    *
    */
   readonly priceMode?: CustomLineItemPriceMode
+  /**
+   *	Recurring Order and frequency data.
+   *
+   *
+   */
+  readonly recurrenceInfo?: CustomLineItemRecurrenceInfoDraft
 }
 /**
  *	To add a custom Shipping Method (independent of the [ShippingMethods](ctp:api:type:ShippingMethod) managed through
@@ -2483,6 +2462,12 @@ export interface CartAddLineItemAction extends ICartUpdateAction {
    *
    */
   readonly shippingDetails?: ItemShippingDetailsDraft
+  /**
+   *	Recurring Order and frequency data.
+   *
+   *
+   */
+  readonly recurrenceInfo?: LineItemRecurrenceInfoDraft
   /**
    *	Custom Fields for the Line Item.
    *
@@ -2767,7 +2752,20 @@ export interface CartChangeLineItemsOrderAction extends ICartUpdateAction {
   readonly lineItemOrder: string[]
 }
 /**
- *	Changing the tax calculation mode leads to [recalculation of taxes](/../api/carts-orders-overview#cart-tax-calculation).
+ *	Changing the price rounding mode leads to [recalculation of taxes](/../api/carts-orders-overview#taxes).
+ *
+ */
+export interface CartChangePriceRoundingModeAction extends ICartUpdateAction {
+  readonly action: 'changePriceRoundingMode'
+  /**
+   *	New value to set.
+   *
+   *
+   */
+  readonly priceRoundingMode: RoundingMode
+}
+/**
+ *	Changing the tax calculation mode leads to [recalculation of taxes](/../api/carts-orders-overview#taxes).
  *
  */
 export interface CartChangeTaxCalculationModeAction extends ICartUpdateAction {
@@ -2794,7 +2792,7 @@ export interface CartChangeTaxModeAction extends ICartUpdateAction {
   readonly taxMode: TaxMode
 }
 /**
- *	Changing the tax rounding mode leads to [recalculation of taxes](/../api/carts-orders-overview#cart-tax-calculation).
+ *	Changing the tax rounding mode leads to [recalculation of taxes](/../api/carts-orders-overview#taxes).
  *
  */
 export interface CartChangeTaxRoundingModeAction extends ICartUpdateAction {
@@ -2815,7 +2813,7 @@ export interface CartFreezeCartAction extends ICartUpdateAction {
   readonly action: 'freezeCart'
 }
 /**
- *	This update action does not set any Cart field in particular, but it triggers several [Cart updates](/../api/carts-orders-overview#cart-updates)
+ *	This update action does not set any Cart field in particular, but it triggers several [Cart updates](/../api/carts-orders-overview#update-a-cart)
  *	to bring prices and discounts to the latest state. Those can become stale over time when no Cart updates have been performed for a while and
  *	prices on related Products have changed in the meanwhile.
  *
@@ -2826,8 +2824,8 @@ export interface CartFreezeCartAction extends ICartUpdateAction {
 export interface CartRecalculateAction extends ICartUpdateAction {
   readonly action: 'recalculate'
   /**
-   *	- Leave empty or set to `false` to only update the Prices and TaxRates of the Line Items.
-   *	- Set to `true` to update the Line Items' product data (like `name`, `variant` and `productType`) also.
+   *	- Leave empty or set as `false` to update only the Prices and TaxRates of the Line Items.
+   *	- Set as `true` to update the Product data (such as `name`, `variant`, `productType`, and Product Attributes) of the Line Items.
    *
    *
    */
@@ -3124,19 +3122,31 @@ export interface CartSetCustomLineItemCustomTypeAction extends ICartUpdateAction
   readonly fields?: FieldContainer
 }
 /**
- * \[BETA\]
- * Recurring frequency data.
+ *	Sets the recurrence information on the [CustomLineItem](ctp:api:type:CustomLineItem).
+ *	If the Cart is already associated with a Recurring Order, this action will fail.
+ *
  */
 export interface CartSetCustomLineItemRecurrenceInfoAction extends ICartUpdateAction {
-  readonly action: 'setLineItemRecurrenceInfo'
-  readonly customLineItemId: string
-  readonly recurrenceInfo: null | {
-    recurrencePolicy: {
-      id: string
-      typeId: 'recurrence-policy'
-    }
-    priceSelectionMode: 'Dynamic' | 'Fixed'
-  }
+  readonly action: 'setCustomLineItemRecurrenceInfo'
+  /**
+   *	`id` of the [CustomLineItem](ctp:api:type:CustomLineItem) to update. Either `customLineItemId` or `customLineItemKey` is required.
+   *
+   *
+   */
+  readonly customLineItemId?: string
+  /**
+   *	`key` of the [CustomLineItem](ctp:api:type:CustomLineItem) to update. Either `customLineItemId` or `customLineItemKey` is required.
+   *
+   *
+   */
+  readonly customLineItemKey?: string
+  /**
+   *	Value to set.
+   *	If empty, any existing value will be removed.
+   *
+   *
+   */
+  readonly recurrenceInfo?: CustomLineItemRecurrenceInfoDraft
 }
 export interface CartSetCustomLineItemShippingDetailsAction extends ICartUpdateAction {
   readonly action: 'setCustomLineItemShippingDetails'
@@ -3298,7 +3308,7 @@ export interface CartSetCustomerEmailAction extends ICartUpdateAction {
  *	This update action can only be used if a Customer is not assigned to the Cart.
  *	If a Customer is already assigned, the Cart uses the Customer Group of the assigned Customer.
  *
- *	To reflect the new Customer Group, this update action can result in [updates to the Cart](/api/carts-orders-overview#cart-updates). When this occurs, the following errors can be returned: [MatchingPriceNotFound](ctp:api:type:MatchingPriceNotFoundError) and [MissingTaxRateForCountry](ctp:api:type:MissingTaxRateForCountryError).
+ *	To reflect the new Customer Group, this update action can result in [updates to the Cart](/api/carts-orders-overview#update-a-cart). When this occurs, the following errors can be returned: [MatchingPriceNotFound](ctp:api:type:MatchingPriceNotFoundError) and [MissingTaxRateForCountry](ctp:api:type:MissingTaxRateForCountryError).
  *
  */
 export interface CartSetCustomerGroupAction extends ICartUpdateAction {
@@ -3330,7 +3340,7 @@ export interface CartSetCustomerIdAction extends ICartUpdateAction {
   readonly customerId?: string
 }
 /**
- *	Number of days after which a Cart with `Active` [CartState](ctp:api:type:CartState) is deleted since its last modification.
+ *	Number of days after the last modification before a Cart is deleted.
  *
  *	If a [ChangeSubscription](ctp:api:type:ChangeSubscription) exists for Carts, a [ResourceDeletedDeliveryPayload](ctp:api:type:ResourceDeletedDeliveryPayload) is sent.
  *
@@ -3549,19 +3559,31 @@ export interface CartSetLineItemPriceAction extends ICartUpdateAction {
   readonly externalPrice?: _Money
 }
 /**
- * \[BETA\]
- * Recurring frequency data.
+ *	Sets the recurrence information on the [LineItem](ctp:api:type:LineItem).
+ *	If the Cart is already associated with a Recurring Order, this action will fail.
+ *
  */
 export interface CartSetLineItemRecurrenceInfoAction extends ICartUpdateAction {
   readonly action: 'setLineItemRecurrenceInfo'
-  readonly lineItemId: string
-  readonly recurrenceInfo: null | {
-    recurrencePolicy: {
-      id: string
-      typeId: 'recurrence-policy'
-    }
-    priceSelectionMode: 'Dynamic' | 'Fixed'
-  }
+  /**
+   *	`id` of the [LineItem](ctp:api:type:LineItem) to update. Either `lineItemId` or `lineItemKey` is required.
+   *
+   *
+   */
+  readonly lineItemId?: string
+  /**
+   *	`key` of the [LineItem](ctp:api:type:LineItem) to update. Either `lineItemId` or `lineItemKey` is required.
+   *
+   *
+   */
+  readonly lineItemKey?: string
+  /**
+   *	Value to set.
+   *	If empty, any existing value will be removed.
+   *
+   *
+   */
+  readonly recurrenceInfo?: LineItemRecurrenceInfoDraft
 }
 export interface CartSetLineItemShippingDetailsAction extends ICartUpdateAction {
   readonly action: 'setLineItemShippingDetails'
@@ -3586,7 +3608,7 @@ export interface CartSetLineItemShippingDetailsAction extends ICartUpdateAction 
   readonly shippingDetails?: ItemShippingDetailsDraft
 }
 /**
- *	Performing this action has no impact on inventory that should be reserved.
+ *	Performing this action does not reserve stock. Stock is only reserved at Order creation if the [InventoryMode](ctp:api:type:InventoryMode) of the Cart is `TrackOnly` or `ReserveOnOrder`.
  *
  */
 export interface CartSetLineItemSupplyChannelAction extends ICartUpdateAction {
@@ -3832,7 +3854,7 @@ export interface CartSetShippingMethodAction extends ICartUpdateAction {
    *	Value to set.
    *	If empty, any existing value is removed.
    *
-   *	If the referenced Shipping Method has a predicate that does not match the Cart, an [InvalidOperation](ctp:api:type:InvalidOperationError) error is returned.
+   *	If the referenced Shipping Method is inactive, or has a predicate that does not match the Cart, an [InvalidOperation](ctp:api:type:InvalidOperationError) error is returned.
    *
    *
    */

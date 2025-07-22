@@ -55,6 +55,7 @@ import {
   TrackingData,
 } from './order.js'
 import { PaymentResourceIdentifier } from './payment.js'
+import { CustomLineItemRecurrenceInfoDraft, LineItemRecurrenceInfoDraft } from './recurring-order.js'
 import { ShippingMethodResourceIdentifier, ShippingRateDraft } from './shipping-method.js'
 import { ShoppingListResourceIdentifier } from './shopping-list.js'
 import { StateResourceIdentifier } from './state.js'
@@ -564,6 +565,12 @@ export interface StagedOrderAddCustomLineItemAction extends IStagedOrderUpdateAc
    *
    */
   readonly custom?: CustomFieldsDraft
+  /**
+   *	Recurring Order and frequency data.
+   *
+   *
+   */
+  readonly recurrenceInfo?: CustomLineItemRecurrenceInfoDraft
 }
 /**
  *	A [Delivery](ctp:api:type:Delivery) can only be added to an [Order](ctp:api:type:Order) if
@@ -756,6 +763,12 @@ export interface StagedOrderAddLineItemAction extends IStagedOrderUpdateAction {
    *
    */
   readonly custom?: CustomFieldsDraft
+  /**
+   *	Recurring Order and frequency data.
+   *
+   *
+   */
+  readonly recurrenceInfo?: LineItemRecurrenceInfoDraft
 }
 /**
  *	To add a Parcel, at least one [Delivery](ctp:api:type:Delivery) must exist.
@@ -1000,6 +1013,19 @@ export interface StagedOrderChangePaymentStateAction extends IStagedOrderUpdateA
   readonly paymentState: PaymentState
 }
 /**
+ *	Changing the price rounding mode leads to [recalculation of taxes](/../api/carts-orders-overview#taxes).
+ *
+ */
+export interface StagedOrderChangePriceRoundingModeAction extends IStagedOrderUpdateAction {
+  readonly action: 'changePriceRoundingMode'
+  /**
+   *	New value to set.
+   *
+   *
+   */
+  readonly priceRoundingMode: RoundingMode
+}
+/**
  *	Produces the [Order Shipment State Changed](ctp:api:type:OrderShipmentStateChangedMessage) Message.
  *
  */
@@ -1013,7 +1039,7 @@ export interface StagedOrderChangeShipmentStateAction extends IStagedOrderUpdate
   readonly shipmentState: ShipmentState
 }
 /**
- *	Changing the tax calculation mode leads to [recalculation of taxes](/../api/carts-orders-overview#cart-tax-calculation).
+ *	Changing the tax calculation mode leads to [recalculation of taxes](/../api/carts-orders-overview#taxes).
  *
  */
 export interface StagedOrderChangeTaxCalculationModeAction extends IStagedOrderUpdateAction {
@@ -1040,7 +1066,7 @@ export interface StagedOrderChangeTaxModeAction extends IStagedOrderUpdateAction
   readonly taxMode: TaxMode
 }
 /**
- *	Changing the tax rounding mode leads to [recalculation of taxes](/../api/carts-orders-overview#cart-tax-calculation).
+ *	Changing the tax rounding mode leads to [recalculation of taxes](/../api/carts-orders-overview#taxes).
  *
  */
 export interface StagedOrderChangeTaxRoundingModeAction extends IStagedOrderUpdateAction {
@@ -1566,7 +1592,7 @@ export interface StagedOrderSetCustomerEmailAction extends IStagedOrderUpdateAct
  *	This update action can only be used if a Customer is not assigned to a Cart.
  *	If a Customer is already assigned, the Cart uses the Customer Group of the assigned Customer.
  *
- *	To reflect the new Customer Group, this update action can result in [updates to the Cart](/../api/carts-orders-overview#cart-updates). When this occurs, the following errors can be returned: [MatchingPriceNotFound](ctp:api:type:MatchingPriceNotFoundError) and [MissingTaxRateForCountry](ctp:api:type:MissingTaxRateForCountryError).
+ *	To reflect the new Customer Group, this update action can result in [updates to the Cart](/../api/carts-orders-overview#update-a-cart). When this occurs, the following errors can be returned: [MatchingPriceNotFound](ctp:api:type:MatchingPriceNotFoundError) and [MissingTaxRateForCountry](ctp:api:type:MissingTaxRateForCountryError).
  *
  */
 export interface StagedOrderSetCustomerGroupAction extends IStagedOrderUpdateAction {

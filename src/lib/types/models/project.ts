@@ -5,6 +5,7 @@
  */
 
 import { AssociateRoleKeyReference, AssociateRoleResourceIdentifier } from './associate-role.js'
+import { RoundingMode } from './cart.js'
 import { LastModifiedBy } from './common.js'
 import { MessagesConfiguration, MessagesConfigurationDraft } from './message.js'
 import { ShippingRateTierType } from './shipping-method.js'
@@ -83,6 +84,20 @@ export interface CartsConfiguration {
    *
    */
   readonly countryTaxRateFallbackEnabled?: boolean
+  /**
+   *	Default value for the `priceRoundingMode` parameter of the [CartDraft](ctp:api:type:CartDraft).
+   *	Indicates how the total prices on [LineItems](ctp:api:type:LineItem) and [CustomLineItems](ctp:api:type:CustomLineItem) are rounded when calculated.
+   *
+   *
+   */
+  readonly priceRoundingMode?: RoundingMode
+  /**
+   *	Default value for the `taxRoundingMode` parameter of the [CartDraft](ctp:api:type:CartDraft).
+   *	Indicates how monetary values are rounded when calculating taxes for `taxedPrice`.
+   *
+   *
+   */
+  readonly taxRoundingMode?: RoundingMode
 }
 /**
  *	Specifies the status of the [Customer Search](/../api/projects/customer-search) index.
@@ -248,8 +263,10 @@ export type ProjectUpdateAction =
   | ProjectChangeMessagesConfigurationAction
   | ProjectChangeNameAction
   | ProjectChangeOrderSearchStatusAction
+  | ProjectChangePriceRoundingModeAction
   | ProjectChangeProductSearchIndexingEnabledAction
   | ProjectChangeShoppingListsConfigurationAction
+  | ProjectChangeTaxRoundingModeAction
   | ProjectSetBusinessUnitAssociateRoleOnCreationAction
   | ProjectSetExternalOAuthAction
   | ProjectSetShippingRateInputTypeAction
@@ -265,7 +282,7 @@ export interface IProjectUpdateAction {
  */
 export interface SearchIndexingConfiguration {
   /**
-   *	Configuration for the [Product Projection Search](/../api/projects/product-projection-search) and [Product Suggestions](/../api/projects/products-suggestions) endpoints.
+   *	Configuration for the [Product Projection Search](/../api/projects/product-projection-search) and [Search Term Suggestions](/../api/projects/search-term-suggestions) APIs.
    *
    */
   readonly products?: SearchIndexingConfigurationValues
@@ -463,11 +480,19 @@ export interface ProjectChangeOrderSearchStatusAction extends IProjectUpdateActi
    */
   readonly status: OrderSearchStatus
 }
+export interface ProjectChangePriceRoundingModeAction extends IProjectUpdateAction {
+  readonly action: 'changePriceRoundingMode'
+  /**
+   *	Project-level default rounding mode for calculating the total prices on [LineItems](ctp:api:type:LineItem) and [CustomLineItems](ctp:api:type:CustomLineItem). See [CartsConfiguration](ctp:api:type:CartsConfiguration).
+   *
+   */
+  readonly priceRoundingMode: RoundingMode
+}
 export interface ProjectChangeProductSearchIndexingEnabledAction extends IProjectUpdateAction {
   readonly action: 'changeProductSearchIndexingEnabled'
   /**
-   *	- If `false`, the indexing of [Product](ctp:api:type:Product) information will stop and the [Product Projection Search](/../api/projects/product-projection-search) as well as the [Product Suggestions](/../api/projects/products-suggestions) endpoint will not be available anymore for this Project. The Project's [SearchIndexingConfiguration](ctp:api:type:SearchIndexingConfiguration) `status` for `products` will be changed to `"Deactivated"`.
-   *	- If `true`, the indexing of [Product](ctp:api:type:Product) information will start and the [Product Projection Search](/../api/projects/product-projection-search) as well as the [Product Suggestions](/../api/projects/products-suggestions) endpoint will become available soon after for this Project. Proportional to the amount of information being indexed, the Project's [SearchIndexingConfiguration](ctp:api:type:SearchIndexingConfiguration) `status` for `products` will be shown as `"Indexing"` during this time. As soon as the indexing has finished, the configuration status will be changed to `"Activated"` making the aforementioned endpoints fully available for this Project.
+   *	- If `false`, the indexing of [Product](ctp:api:type:Product) information will stop and the [Product Projection Search](/../api/projects/product-projection-search) as well as the [Search Term Suggestions](/../api/projects/search-term-suggestions) API will no longer be available for this Project. The Project's [SearchIndexingConfiguration](ctp:api:type:SearchIndexingConfiguration) `status` for `products` will be changed to `"Deactivated"`.
+   *	- If `true`, the indexing of [Product](ctp:api:type:Product) information will start and the [Product Projection Search](/../api/projects/product-projection-search) as well as the [Search Term Suggestions](/../api/projects/search-term-suggestions) API will become available soon after for this Project. Proportional to the amount of information being indexed, the Project's [SearchIndexingConfiguration](ctp:api:type:SearchIndexingConfiguration) `status` for `products` will be shown as `"Indexing"` during this time. As soon as the indexing has finished, the configuration status will be changed to `"Activated"` making the aforementioned APIs fully available for this Project.
    *
    *
    */
@@ -487,6 +512,14 @@ export interface ProjectChangeShoppingListsConfigurationAction extends IProjectU
    *
    */
   readonly shoppingListsConfiguration: ShoppingListsConfiguration
+}
+export interface ProjectChangeTaxRoundingModeAction extends IProjectUpdateAction {
+  readonly action: 'changeTaxRoundingMode'
+  /**
+   *	Project-level default rounding mode for tax calculation. See [CartsConfiguration](ctp:api:type:CartsConfiguration).
+   *
+   */
+  readonly taxRoundingMode: RoundingMode
 }
 export interface ProjectSetBusinessUnitAssociateRoleOnCreationAction extends IProjectUpdateAction {
   readonly action: 'setMyBusinessUnitAssociateRoleOnCreation'

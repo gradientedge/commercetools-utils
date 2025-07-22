@@ -20,8 +20,8 @@ import {
   _Money,
 } from './common.js'
 import { CustomerGroupReference, CustomerGroupResourceIdentifier } from './customer-group.js'
-import { CustomFields, CustomFieldsDraft, FieldContainer, TypeResourceIdentifier } from './type.js'
 import { RecurrencePolicyReference, RecurrencePolicyResourceIdentifier } from './recurrence-policy.js'
+import { CustomFields, CustomFieldsDraft, FieldContainer, TypeResourceIdentifier } from './type.js'
 
 export interface StagedPriceDraft {
   /**
@@ -169,10 +169,10 @@ export interface StandalonePrice extends BaseResource {
    *
    */
   readonly active: boolean
-
   /**
-   * \[BETA\]
-   * RecurrencePolicy for which this Price is valid.
+   *	[RecurrencePolicy](ctp:api:type:RecurrencePolicy) for which this Price is valid.
+   *
+   *
    */
   readonly recurrencePolicy?: RecurrencePolicyReference
 }
@@ -247,6 +247,12 @@ export interface StandalonePriceDraft {
    */
   readonly custom?: CustomFieldsDraft
   /**
+   *	[RecurrencePolicy](ctp:api:type:RecurrencePolicy) for which this Price is valid.
+   *
+   *
+   */
+  readonly recurrencePolicy?: RecurrencePolicyResourceIdentifier
+  /**
    *	Staged changes for the StandalonePrice.
    *
    *
@@ -258,12 +264,6 @@ export interface StandalonePriceDraft {
    *
    */
   readonly active?: boolean
-
-  /**
-   * \[BETA\]
-   * RecurrencePolicy for which this Price is valid.
-   */
-  readonly recurrencePolicy?: RecurrencePolicyResourceIdentifier
 }
 /**
  *	[PagedQueryResult](/general-concepts#pagedqueryresult) with `results` containing an array of [StandalonePrice](ctp:api:type:StandalonePrice).
