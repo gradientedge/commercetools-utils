@@ -8,9 +8,6 @@ importers:
 
   .:
     dependencies:
-      '@commercetools/platform-sdk':
-        specifier: 8.9.0
-        version: 8.9.0
       '@tshttp/status':
         specifier: 2.0.0
         version: 2.0.0
@@ -300,14 +297,6 @@ packages:
   '@colors/colors@1.5.0':
     resolution: {integrity: sha512-ooWCrlZP11i8GImSjTHYHLkvFDP48nS4+204nGb1RiX/WXYHmJA2III9/e2DWVabCESdW7hBAEzHRqUn9OUVvQ==}
     engines: {node: '>=0.1.90'}
-
-  '@commercetools/platform-sdk@8.9.0':
-    resolution: {integrity: sha512-dvL70nKH9prT2flDe8fFteGtAoqiqukPlmXM50GY5FHV+HOXqUqWERgrDA/ZZFKA2UfFUgskM1FB4ZH+FVVr/w==}
-    engines: {node: '>=18'}
-
-  '@commercetools/ts-client@3.3.0':
-    resolution: {integrity: sha512-qqbtvIVcvDS3xd1kUYfYoMUhGLPcY4TCP2WzTvrEHEs/MhrZqUhZUKcblxxY5/d8pROARlbl+XrYnKdFaZxO3g==}
-    engines: {node: '>=18'}
 
   '@commitlint/config-validator@19.5.0':
     resolution: {integrity: sha512-CHtj92H5rdhKt17RmgALhfQt95VayrUo2tSqY9g2w+laAXyk7K/Ef6uPm9tn5qSIwSmrLjKaXK9eiNuxmQrDBw==}
@@ -1016,9 +1005,6 @@ packages:
 
   buffer@5.7.1:
     resolution: {integrity: sha512-EHcyIPBQ4BSGlvjB16k5KgAJ27CIsHY/2JBmCRReo48y9rQ3MaUzWX3KVlBa4U7MyX02HdVj0K7C3WaB3ju7FQ==}
-
-  buffer@6.0.3:
-    resolution: {integrity: sha512-FTiCpNxtwiZZHEZbcbTIcZjERVICn9yq/pDFkTl95/AxzD1naBctN7YO68riM/gLSDY7sdrMby8hofADYuuqOA==}
 
   cachedir@2.3.0:
     resolution: {integrity: sha512-A+Fezp4zxnit6FanDmv9EqXNAi3vt9DWp51/71UEhXukb7QUuvtv9344h91dyAxuTLoSYJFU299qzR3tzwPAhw==}
@@ -3774,14 +3760,6 @@ snapshots:
   '@colors/colors@1.5.0':
     optional: true
 
-  '@commercetools/platform-sdk@8.9.0':
-    dependencies:
-      '@commercetools/ts-client': 3.3.0
-
-  '@commercetools/ts-client@3.3.0':
-    dependencies:
-      buffer: 6.0.3
-
   '@commitlint/config-validator@19.5.0':
     dependencies:
       '@commitlint/types': 19.5.0
@@ -4715,11 +4693,6 @@ snapshots:
   buffer-from@1.1.2: {}
 
   buffer@5.7.1:
-    dependencies:
-      base64-js: 1.5.1
-      ieee754: 1.2.1
-
-  buffer@6.0.3:
     dependencies:
       base64-js: 1.5.1
       ieee754: 1.2.1

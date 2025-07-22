@@ -1,4 +1,4 @@
-import { Attribute } from '@commercetools/platform-sdk'
+import { Attribute } from '../types/models/index.js'
 
 /**
  * Options interface for {@see getAttributeValue}

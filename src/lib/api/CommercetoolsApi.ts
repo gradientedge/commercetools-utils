@@ -99,7 +99,7 @@ import type {
   TaxCategoryPagedQueryResponse,
   Type,
   TypePagedQueryResponse,
-} from '@commercetools/platform-sdk'
+} from '../types/models/index.js'
 
 import { getRequestExecutor } from '../request/request-executor.js'
 import { CartUpdateAction } from '../types/models/cart.js'
