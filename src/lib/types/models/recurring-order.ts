@@ -5,7 +5,7 @@ import { BusinessUnitKeyReference } from './business-unit.js'
 import { StateReference, StateResourceIdentifier } from './state.js'
 import { CustomerReference } from './customer.js'
 import { CustomFields, CustomFieldsDraft, FieldContainer, TypeResourceIdentifier } from './type.js'
-import { RecurrencePolicySchedule } from './recurrence-policy.js'
+import { RecurrencePolicyResourceIdentifier, RecurrencePolicySchedule } from './recurrence-policy.js'
 
 /**
  * Represents a recurring order that automates the reordering process for a customer.
@@ -230,6 +230,7 @@ export type RecurringOrderUpdateAction =
   | RecurringOrderSetCustomFieldAction
   | RecurringOrderSetCustomTypeAction
   | RecurringOrderSetSkipConfigurationAction
+  | RecurringOrderSetScheduleAction
 
 /**
  * Update action to set the key of a RecurringOrder.
@@ -281,4 +282,12 @@ export interface RecurringOrderSetSkipConfigurationAction {
   readonly action: 'setOrderSkipConfiguration'
   readonly skipConfiguration: SkipConfigurationDraft
   readonly updatedExpiresAt?: string
+}
+
+/**
+ * Update action to set the schedule of a RecurringOrder.
+ */
+export interface RecurringOrderSetScheduleAction {
+  readonly action: 'setSchedule'
+  readonly recurrencePolicy: RecurrencePolicyResourceIdentifier
 }
