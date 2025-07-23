@@ -362,7 +362,7 @@ export enum RecurringOrderStateValues {
   Paused = 'Paused',
 }
 
-export type RecurringOrderState = 'Active' | 'Canceled' | 'Expired' | 'Failed' | 'Paused' | (string & {})
+export type RecurringOrderState = 'Active' | 'Canceled' | 'Expired' | 'Failed' | 'Paused'
 /**
  *	Defines the new state for the Recurring Order—for possible values, see [RecurringOrderActive](ctp:api:type:RecurringOrderActive), [RecurringOrderPaused](ctp:api:type:RecurringOrderPaused), [RecurringOrderExpired](ctp:api:type:RecurringOrderExpired), and [RecurringOrderCanceled](ctp:api:type:RecurringOrderCanceled).
  *
