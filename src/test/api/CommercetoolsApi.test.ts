@@ -3304,6 +3304,329 @@ describe('CommercetoolsApi', () => {
         expect(() => api.getDiscountCodeById({ id: ' ' })).toThrow(`The string parameter 'id' cannot be empty`)
       })
     })
+
+    describe('getDiscountCodeByKey', () => {
+      it('should make a GET request to the correct endpoint', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com', {
+          reqheaders: {
+            authorization: 'Bearer test-access-token',
+          },
+        })
+          .get('/test-project-key/discount-codes/key=my-discount-code')
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const order = await api.getDiscountCodeByKey({ key: 'my-discount-code' })
+
+        expect(order).toEqual({ success: true })
+      })
+
+      it('should throw an error when an empty key is being passed as a parameter', async () => {
+        const api = new CommercetoolsApi(defaultConfig)
+
+        await expect(() => api.getDiscountCodeByKey({ key: ' ' })).toThrow(`The string parameter 'key' cannot be empty`)
+      })
+    })
+
+    describe('createDiscountCode', () => {
+      it('should make a POST request to the correct endpoint with all expected data and params', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com')
+          .post('/test-project-key/discount-codes', { code: 'test-code', cartDiscounts: [] })
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const product = await api.createDiscountCode({
+          data: {
+            code: 'test-code',
+            cartDiscounts: [],
+          },
+        })
+
+        expect(product).toEqual({ success: true })
+      })
+    })
+
+    describe('updateDiscountCodeById', () => {
+      it('should make a POST request to the correct endpoint with all expected data and params', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com', {
+          reqheaders: {
+            authorization: 'Bearer test-access-token',
+          },
+        })
+          .post('/test-project-key/discount-codes/spoof-path%2Fmy-discount-code-id', { version: 1, actions: [] })
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const discountCode = await api.updateDiscountCodeById({
+          id: 'spoof-path/my-discount-code-id',
+          data: { version: 1, actions: [] },
+        })
+
+        expect(discountCode).toEqual({ success: true })
+      })
+
+      it('should throw an error when an empty ID is being passed as a parameter', async () => {
+        const api = new CommercetoolsApi(defaultConfig)
+
+        await expect(() => api.updateDiscountCodeById({ id: ' ', data: { version: 1, actions: [] } })).toThrow(
+          `The string parameter 'id' cannot be empty`,
+        )
+      })
+    })
+
+    describe('updateDiscountCodeByKey', () => {
+      it('should make a POST request to the correct endpoint with all expected data and params', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com', {
+          reqheaders: {
+            authorization: 'Bearer test-access-token',
+          },
+        })
+          .post('/test-project-key/discount-codes/key=my-discount-code', { version: 1, actions: [] })
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const discountCode = await api.updateDiscountCodeByKey({
+          key: 'my-discount-code',
+          data: { version: 1, actions: [] },
+        })
+
+        expect(discountCode).toEqual({ success: true })
+      })
+
+      it('should throw an error when an empty key is being passed as a parameter', async () => {
+        const api = new CommercetoolsApi(defaultConfig)
+
+        await expect(() => api.updateDiscountCodeByKey({ key: ' ', data: { version: 1, actions: [] } })).toThrow(
+          `The string parameter 'key' cannot be empty`,
+        )
+      })
+    })
+
+    describe('queryDiscountCodes', () => {
+      it('should make a GET request to the correct endpoint', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com', {
+          reqheaders: {
+            authorization: 'Bearer test-access-token',
+          },
+        })
+          .get('/test-project-key/discount-codes')
+          .query({ limit: 10 })
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const order = await api.queryDiscountCodes({ params: { limit: 10 } })
+
+        expect(order).toEqual({ success: true })
+      })
+    })
+
+    describe('deleteDiscountCodeById', () => {
+      it('should make a DELETE request to the correct endpoint with all expected data and params', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com', {
+          reqheaders: {
+            authorization: 'Bearer test-access-token',
+          },
+        })
+          .delete('/test-project-key/discount-codes/spoof-path%2Fdiscount-code-id')
+          .query({ version: 1 })
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const discountCode = await api.deleteDiscountCodeById({ id: 'spoof-path/discount-code-id', version: 1 })
+
+        expect(discountCode).toEqual({ success: true })
+      })
+
+      it('should throw an error when an empty ID is being passed as a parameter', async () => {
+        const api = new CommercetoolsApi(defaultConfig)
+
+        await expect(() => api.deleteDiscountCodeById({ id: ' ', version: 1 })).toThrow(
+          `The string parameter 'id' cannot be empty`,
+        )
+      })
+    })
+
+    describe('deleteDiscountCodeByKey', () => {
+      it('should make a DELETE request to the correct endpoint with all expected data and params', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com', {
+          reqheaders: {
+            authorization: 'Bearer test-access-token',
+          },
+        })
+          .delete('/test-project-key/discount-codes/key=spoof-path%2Fdiscount-code-key')
+          .query({ version: 1 })
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const discountCode = await api.deleteDiscountCodeByKey({ key: 'spoof-path/discount-code-key', version: 1 })
+
+        expect(discountCode).toEqual({ success: true })
+      })
+
+      it('should throw an error when an empty ID is being passed as a parameter', async () => {
+        const api = new CommercetoolsApi(defaultConfig)
+
+        await expect(() => api.deleteDiscountCodeByKey({ key: ' ', version: 1 })).toThrow(
+          `The string parameter 'key' cannot be empty`,
+        )
+      })
+    })
+
+    describe('checkDiscountCodeExistsById', () => {
+      it('should make a HEAD request to the correct endpoint, passing the provided data', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com', {
+          reqheaders: {
+            authorization: 'Bearer test-access-token',
+          },
+        })
+          .head('/test-project-key/discount-codes/discount-code-id')
+          .reply(200)
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const result = await api.checkDiscountCodeExistsById({ id: 'discount-code-id' })
+
+        expect(result).toBe(true)
+      })
+
+      it('should return a false if 404 is the return status code', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com', {
+          reqheaders: {
+            authorization: 'Bearer test-access-token',
+          },
+        })
+          .head('/test-project-key/discount-codes/discount-code-id')
+          .reply(404)
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const result = await api.checkDiscountCodeExistsById({ id: 'discount-code-id' })
+
+        expect(result).toBe(false)
+      })
+
+      it('should throw an error if the status code is >= 300 and not a 404', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com', {
+          reqheaders: {
+            authorization: 'Bearer test-access-token',
+          },
+        })
+          .head('/test-project-key/discount-codes/discount-code-id')
+          .reply(500)
+          .persist()
+        const api = new CommercetoolsApi(defaultConfig)
+
+        await expect(() => api.checkDiscountCodeExistsById({ id: 'discount-code-id' })).rejects.toThrow(
+          'Request failed with status code 500',
+        )
+      })
+    })
+
+    describe('checkDiscountCodeExistsByKey', () => {
+      it('should make a HEAD request to the correct endpoint, passing the provided data', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com', {
+          reqheaders: {
+            authorization: 'Bearer test-access-token',
+          },
+        })
+          .head('/test-project-key/discount-codes/key=discount-code-key')
+          .reply(200)
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const result = await api.checkDiscountCodeExistsByKey({ key: 'discount-code-key' })
+
+        expect(result).toBe(true)
+      })
+
+      it('should return a false if 404 is the return status code', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com', {
+          reqheaders: {
+            authorization: 'Bearer test-access-token',
+          },
+        })
+          .head('/test-project-key/discount-codes/key=discount-code-key')
+          .reply(404)
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const result = await api.checkDiscountCodeExistsByKey({ key: 'discount-code-key' })
+
+        expect(result).toBe(false)
+      })
+
+      it('should throw an error if the status code is >= 300 and not a 404', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com', {
+          reqheaders: {
+            authorization: 'Bearer test-access-token',
+          },
+        })
+          .head('/test-project-key/discount-codes/key=discount-code-key')
+          .reply(500)
+          .persist()
+        const api = new CommercetoolsApi(defaultConfig)
+
+        await expect(() => api.checkDiscountCodeExistsByKey({ key: 'discount-code-key' })).rejects.toThrow(
+          'Request failed with status code 500',
+        )
+      })
+    })
+
+    describe('checkDiscountCodeExists', () => {
+      it('should make a HEAD request to the correct endpoint, passing the provided data', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com', {
+          reqheaders: {
+            authorization: 'Bearer test-access-token',
+          },
+        })
+          .head('/test-project-key/discount-codes?where=some-predicate')
+          .reply(200)
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const result = await api.checkDiscountCodeExists({
+          params: {
+            where: 'some-predicate',
+          },
+        })
+
+        expect(result).toBe(true)
+      })
+
+      it('should return a false if 404 is the return status code', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com', {
+          reqheaders: {
+            authorization: 'Bearer test-access-token',
+          },
+        })
+          .head('/test-project-key/discount-codes?where=some-predicate')
+          .reply(404)
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const result = await api.checkDiscountCodeExists({
+          params: {
+            where: 'some-predicate',
+          },
+        })
+
+        expect(result).toBe(false)
+      })
+
+      it('should throw an error if the status code is >= 300 and not a 404', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com', {
+          reqheaders: {
+            authorization: 'Bearer test-access-token',
+          },
+        })
+          .head('/test-project-key/discount-codes?where=some-predicate')
+          .reply(500)
+          .persist()
+        const api = new CommercetoolsApi(defaultConfig)
+
+        await expect(() =>
+          api.checkDiscountCodeExists({
+            params: {
+              where: 'some-predicate',
+            },
+          }),
+        ).rejects.toThrow('Request failed with status code 500')
+      })
+    })
   })
 
   describe('Cart Discounts', () => {

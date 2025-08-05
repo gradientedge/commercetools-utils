@@ -1,6 +1,9 @@
 import { CommercetoolsApiConfig, CommercetoolsRetryConfig } from './types.js'
 import {
   CommercetoolsAuth,
+  DiscountCodeDraft,
+  DiscountCodePagedQueryResponse,
+  DiscountCodeUpdate,
   RecurrencePolicy,
   RecurrencePolicyPagedQueryResponse,
   RecurrencePolicyUpdateAction,
@@ -2144,6 +2147,18 @@ export class CommercetoolsApi {
   }
 
   /**
+   * Create a discount code:
+   * https://docs.commercetools.com/api/projects/discountCodes#create-discountcode
+   */
+  createDiscountCode(options: CommonRequestOptions & { data: DiscountCodeDraft }): Promise<DiscountCode> {
+    return this.request({
+      path: `/discount-codes`,
+      method: 'POST',
+      data: options.data,
+    })
+  }
+
+  /**
    * Get a discount code by id:
    * https://docs.commercetools.com/api/projects/discountCodes#get-discountcode-by-id
    */
@@ -2155,6 +2170,166 @@ export class CommercetoolsApi {
       path: `/discount-codes/${encodeURIComponent(options.id)}`,
       method: 'GET',
     })
+  }
+
+  /**
+   * Get a discount code by key:
+   * https://docs.commercetools.com/api/projects/discountCodes#get-discountcode-by-key
+   */
+  getDiscountCodeByKey(options: CommonRequestOptions & { key: string }): Promise<DiscountCode> {
+    ensureNonEmptyString({ value: options.key, name: 'key' })
+
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/discount-codes/key=${encodeURIComponent(options.key)}`,
+      method: 'GET',
+    })
+  }
+
+  /**
+   * Update a discount code by id:
+   * https://docs.commercetools.com/api/projects/discountCodes#update-discountcode-by-id
+   */
+  updateDiscountCodeById(
+    options: CommonRequestOptions & { id: string; data: DiscountCodeUpdate },
+  ): Promise<DiscountCode> {
+    ensureNonEmptyString({ value: options.id, name: 'id' })
+
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/discount-codes/${encodeURIComponent(options.id)}`,
+      method: 'POST',
+      data: options.data,
+    })
+  }
+
+  /**
+   * Update a discount code by key:
+   * https://docs.commercetools.com/api/projects/discountCodes#update-discountcode-by-key
+   */
+  updateDiscountCodeByKey(
+    options: CommonRequestOptions & { key: string; data: DiscountCodeUpdate },
+  ): Promise<DiscountCode> {
+    ensureNonEmptyString({ value: options.key, name: 'key' })
+
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/discount-codes/key=${encodeURIComponent(options.key)}`,
+      method: 'POST',
+      data: options.data,
+    })
+  }
+
+  /**
+   * Query discount codes:
+   * https://docs.commercetools.com/api/projects/discountCodes#query-discountcodes
+   */
+  queryDiscountCodes(options?: CommonRequestOptions): Promise<DiscountCodePagedQueryResponse> {
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/discount-codes`,
+      method: 'GET',
+    })
+  }
+
+  /**
+   * Delete a discount code by id:
+   * https://docs.commercetools.com/api/projects/discountCodes#delete-discountcode-by-id
+   */
+  deleteDiscountCodeById(options: CommonRequestOptions & { id: string; version: number }): Promise<DiscountCode> {
+    ensureNonEmptyString({ value: options.id, name: 'id' })
+
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/discount-codes/${encodeURIComponent(options.id)}`,
+      method: 'DELETE',
+      params: {
+        ...options.params,
+        version: options.version,
+      },
+    })
+  }
+
+  /**
+   * Delete a discount code by key:
+   * https://docs.commercetools.com/api/projects/discountCodes#delete-discountcode-by-key
+   */
+  deleteDiscountCodeByKey(options: CommonRequestOptions & { key: string; version: number }): Promise<DiscountCode> {
+    ensureNonEmptyString({ value: options.key, name: 'key' })
+
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/discount-codes/key=${encodeURIComponent(options.key)}`,
+      method: 'DELETE',
+      params: {
+        ...options.params,
+        version: options.version,
+      },
+    })
+  }
+
+  /**
+   * Check if a discount code exists by id:
+   * https://docs.commercetools.com/api/projects/discountCodes#check-if-discountcode-exists-by-id
+   */
+  async checkDiscountCodeExistsById(options: CommonRequestOptions & { id: string }): Promise<boolean> {
+    ensureNonEmptyString({ value: options.id, name: 'id' })
+
+    try {
+      await this.request({
+        ...this.extractCommonRequestOptions(options),
+        path: `/discount-codes/${encodeURIComponent(options.id)}`,
+        method: 'HEAD',
+      })
+      return true
+    } catch (error) {
+      if (CommercetoolsError.isInstance(error) && error.status === 404) {
+        return false
+      }
+      throw error
+    }
+  }
+
+  /**
+   * Check if a discount code exists by key:
+   * https://docs.commercetools.com/api/projects/discountCodes#check-if-discountcode-exists-by-key
+   */
+  async checkDiscountCodeExistsByKey(options: CommonRequestOptions & { key: string }): Promise<boolean> {
+    ensureNonEmptyString({ value: options.key, name: 'key' })
+
+    try {
+      await this.request({
+        ...this.extractCommonRequestOptions(options),
+        path: `/discount-codes/key=${encodeURIComponent(options.key)}`,
+        method: 'HEAD',
+      })
+      return true
+    } catch (error) {
+      if (CommercetoolsError.isInstance(error) && error.status === 404) {
+        return false
+      }
+      throw error
+    }
+  }
+
+  /**
+   * Check if a discount code exists by query predicate
+   * https://docs.commercetools.com/api/projects/discountCodes#check-if-discountcode-exists-by-query-predicate
+   */
+  async checkDiscountCodeExists(options?: CommonRequestOptions): Promise<boolean> {
+    try {
+      await this.request({
+        ...this.extractCommonRequestOptions(options),
+        path: `/discount-codes`,
+        method: 'HEAD',
+      })
+      return true
+    } catch (error) {
+      if (CommercetoolsError.isInstance(error) && error.status === 404) {
+        return false
+      }
+      throw error
+    }
   }
 
   /**
