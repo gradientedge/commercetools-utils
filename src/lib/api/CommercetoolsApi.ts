@@ -3166,4 +3166,22 @@ export class CommercetoolsApi {
       data: options.data,
     })
   }
+
+  /**
+   * Delete a recurring order by id
+   * https://docs.commercetools.com/api/projects/recurring-orders#delete-recurringorder-by-id
+   */
+  deleteRecurringOrderById(options: CommonRequestOptions & { id: string; version: number }): Promise<RecurringOrder> {
+    ensureNonEmptyString({ value: options.id, name: 'id' })
+
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/recurring-orders/${encodeURIComponent(options.id)}`,
+      method: 'DELETE',
+      params: {
+        ...options.params,
+        version: options.version,
+      },
+    })
+  }
 }

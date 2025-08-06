@@ -4228,6 +4228,22 @@ describe('CommercetoolsApi', () => {
     })
   })
 
+  describe('Recurring orders', () => {
+    describe('deleteRecurringOrderById', () => {
+      it('should make a DELETE request to the correct endpoint with all expected data and params', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com')
+          .delete('/test-project-key/recurring-orders/recurring-order-id')
+          .query({ version: 4 })
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const category = await api.deleteRecurringOrderById({ id: 'recurring-order-id', version: 4 })
+
+        expect(category).toEqual({ success: true })
+      })
+    })
+  })
+
   describe('graphql', () => {
     it('should call the /graphql endpoint with the data passed in, using the client access token', async () => {
       nock('https://api.europe-west1.gcp.commercetools.com', {
