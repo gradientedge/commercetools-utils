@@ -3070,6 +3070,46 @@ export class CommercetoolsApi {
   }
 
   /**
+   * Delete a recurrence policy by id
+   * https://docs.commercetools.com/api/projects/recurrence-policies#delete-recurrencepolicy-by-id
+   */
+  deleteRecurrencePolicyById(
+    options: CommonRequestOptions & { id: string; version: number },
+  ): Promise<RecurrencePolicy> {
+    ensureNonEmptyString({ value: options.id, name: 'id' })
+
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/recurrence-policies/${encodeURIComponent(options.id)}`,
+      method: 'DELETE',
+      params: {
+        ...options.params,
+        version: options.version,
+      },
+    })
+  }
+
+  /**
+   * Delete a recurrence policy by key
+   * https://docs.commercetools.com/api/projects/recurrence-policies#delete-recurrencepolicy-by-key
+   */
+  deleteRecurrencePolicyByKey(
+    options: CommonRequestOptions & { key: string; version: number },
+  ): Promise<RecurrencePolicy> {
+    ensureNonEmptyString({ value: options.key, name: 'key' })
+
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/recurrence-policies/key=${encodeURIComponent(options.key)}`,
+      method: 'DELETE',
+      params: {
+        ...options.params,
+        version: options.version,
+      },
+    })
+  }
+
+  /**
    * Get a recurring order by id
    * https://next-docs-subscriptions-docs.commercetools.vercel.app/api/projects/recurring-orders
    */

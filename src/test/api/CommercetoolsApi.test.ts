@@ -4228,6 +4228,36 @@ describe('CommercetoolsApi', () => {
     })
   })
 
+  describe('Recurring policies', () => {
+    describe('deleteRecurringPolicyById', () => {
+      it('should make a DELETE request to the correct endpoint with all expected data and params', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com')
+          .delete('/test-project-key/recurrence-policies/recurring-policy-id')
+          .query({ version: 4 })
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const category = await api.deleteRecurrencePolicyById({ id: 'recurring-policy-id', version: 4 })
+
+        expect(category).toEqual({ success: true })
+      })
+    })
+
+    describe('deleteRecurringPolicyByKey', () => {
+      it('should make a DELETE request to the correct endpoint with all expected data and params', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com')
+          .delete('/test-project-key/recurrence-policies/key=recurring-policy-key')
+          .query({ version: 4 })
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const category = await api.deleteRecurrencePolicyByKey({ key: 'recurring-policy-key', version: 4 })
+
+        expect(category).toEqual({ success: true })
+      })
+    })
+  })
+
   describe('Recurring orders', () => {
     describe('deleteRecurringOrderById', () => {
       it('should make a DELETE request to the correct endpoint with all expected data and params', async () => {
