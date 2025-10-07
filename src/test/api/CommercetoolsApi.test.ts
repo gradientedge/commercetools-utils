@@ -4360,6 +4360,49 @@ describe('CommercetoolsApi', () => {
         url: 'https://api.europe-west1.gcp.commercetools.com/test-project-key/test',
       })
     })
+
+    it('should add in an `X-External-User-ID` HTTP header automatically when the `externalUserId` property is populated', async () => {
+      const api = new CommercetoolsApi(defaultConfig)
+
+      const result = await api.getRequestOptions({
+        path: '/test',
+        method: 'GET',
+        headers: {},
+        accessToken: 'mock-access-token',
+        externalUserId: 'my-external-user-id',
+      })
+
+      expect(result).toEqual({
+        headers: {
+          Authorization: 'Bearer mock-access-token',
+          'X-Correlation-ID': expect.any(String),
+          'X-External-User-ID': 'my-external-user-id',
+        },
+        method: 'GET',
+        url: 'https://api.europe-west1.gcp.commercetools.com/test-project-key/test',
+      })
+    })
+
+    it('should not add in an `X-External-User-ID` HTTP header when the `externalUserId` property is not populated', async () => {
+      const api = new CommercetoolsApi(defaultConfig)
+
+      const result = await api.getRequestOptions({
+        path: '/test',
+        method: 'GET',
+        headers: {},
+        accessToken: 'mock-access-token',
+      })
+
+      expect(result).toEqual({
+        headers: {
+          Authorization: 'Bearer mock-access-token',
+          'X-Correlation-ID': expect.any(String),
+          'X-External-User-ID': undefined,
+        },
+        method: 'GET',
+        url: 'https://api.europe-west1.gcp.commercetools.com/test-project-key/test',
+      })
+    })
   })
 
   describe('applyStore', () => {

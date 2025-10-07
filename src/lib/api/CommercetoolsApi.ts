@@ -193,6 +193,12 @@ export interface FetchOptions<T = any> {
   correlationId?: string
 
   /**
+   * An optional identifier used to identify the id of an external user making the request:
+   * https://docs.commercetools.com/api/general-concepts#external-user-ids
+   */
+  externalUserId?: string
+
+  /**
    * The aggregate timeout in milliseconds (aggregate time spent across the original request and retries)
    */
   aggregateTimeoutMs?: number
@@ -227,6 +233,12 @@ export interface CommonRequestOptions {
    * A unique id used to track the source of a request.
    */
   correlationId?: string
+
+  /**
+   * An optional identifier used to identify the id of an external user making the request:
+   * https://docs.commercetools.com/api/general-concepts#external-user-ids
+   */
+  externalUserId?: string
 
   /**
    * Query string parameters. For repeated param=value in the query string, define an array with values
@@ -2877,6 +2889,10 @@ export class CommercetoolsApi {
     const headers: Record<string, string> = {
       ...options.headers,
       Authorization: `Bearer ${accessToken}`,
+    }
+
+    if (options.externalUserId) {
+      headers['X-External-User-ID'] = options.externalUserId
     }
 
     if (typeof options.correlationId === 'string' && options.correlationId !== '') {
