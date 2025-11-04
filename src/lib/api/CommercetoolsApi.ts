@@ -63,6 +63,10 @@ import type {
   MyPaymentPagedQueryResponse,
   MyPaymentUpdate,
   Order,
+  OrderEdit,
+  OrderEditDraft,
+  OrderEditPagedQueryResponse,
+  OrderEditUpdate,
   OrderFromCartDraft,
   OrderImportDraft,
   OrderPagedQueryResponse,
@@ -89,6 +93,7 @@ import type {
   ShippingMethod,
   ShippingMethodPagedQueryResponse,
   StandalonePrice,
+  StagedOrderUpdateAction,
   StandalonePriceDraft,
   StandalonePricePagedQueryResponse,
   StandalonePriceUpdate,
@@ -3233,6 +3238,345 @@ export class CommercetoolsApi {
     return this.request({
       ...this.extractCommonRequestOptions(options),
       path: `/recurring-orders/${encodeURIComponent(options.id)}`,
+      method: 'DELETE',
+      params: {
+        ...options.params,
+        version: options.version,
+      },
+    })
+  }
+
+  /**
+   * Retrieves an OrderEdit with the provided id.
+   * https://docs.commercetools.com/api/projects/order-edits#get-orderedit-by-id
+   */
+  getOrderEditById(options: CommonRequestOptions & { id: string }): Promise<OrderEdit> {
+    ensureNonEmptyString({ value: options.id, name: 'id' })
+
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/orders/edits/${encodeURIComponent(options.id)}`,
+      method: 'GET',
+    })
+  }
+
+  /**
+   * Retrieves an OrderEdit with the provided key.
+   * https://docs.commercetools.com/api/projects/order-edits#get-orderedit-by-key
+   */
+  getOrderEditByKey(options: CommonRequestOptions & { key: string }): Promise<OrderEdit> {
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/orders/edits/key=${encodeURIComponent(options.key)}`,
+      method: 'GET',
+    })
+  }
+
+  /**
+   * Query OrderEdits.
+   * Retrieves OrderEdits in the Project.
+   * https://docs.commercetools.com/api/projects/order-edits#query-orderedits
+   */
+  queryOrderEdits(options?: CommonRequestOptions): Promise<OrderEditPagedQueryResponse> {
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: '/orders/edits',
+      method: 'GET',
+    })
+  }
+
+  /**
+   * Check if an order edit exists by id
+   * https://docs.commercetools.com/api/projects/order-edits#check-if-orderedit-exists-by-id
+   */
+  async checkOrderEditExistsById(options: CommonStoreEnabledRequestOptions & { id: string }): Promise<boolean> {
+    ensureNonEmptyString({ value: options.id, name: 'id' })
+
+    try {
+      await this.request({
+        ...this.extractCommonRequestOptions(options),
+        path: this.applyStore(`/orders/edits/${encodeURIComponent(options.id)}`, options.storeKey),
+        method: 'HEAD',
+      })
+      return true
+    } catch (error) {
+      if (CommercetoolsError.isInstance(error) && error.status === 404) {
+        return false
+      }
+      throw error
+    }
+  }
+
+  /**
+   * Check if an order edit exists by key
+   * https://docs.commercetools.com/api/projects/order-edits#check-if-orderedit-exists-by-key
+   */
+  async checkOrderEditExistsByKey(options: CommonStoreEnabledRequestOptions & { key: string }): Promise<boolean> {
+    ensureNonEmptyString({ value: options.key, name: 'key' })
+
+    try {
+      await this.request({
+        ...this.extractCommonRequestOptions(options),
+        path: this.applyStore(`/orders/edits/key=${encodeURIComponent(options.key)}`, options.storeKey),
+        method: 'HEAD',
+      })
+      return true
+    } catch (error) {
+      if (CommercetoolsError.isInstance(error) && error.status === 404) {
+        return false
+      }
+      throw error
+    }
+  }
+
+  /**
+   * Check if an order edit code exists by query predicate
+   * https://docs.commercetools.com/api/projects/order-edits#check-if-orderedit-exists-by-query-predicate
+   */
+  async checkOrderEditExists(options?: CommonRequestOptions): Promise<boolean> {
+    try {
+      await this.request({
+        ...this.extractCommonRequestOptions(options),
+        path: `/orders/edits`,
+        method: 'HEAD',
+      })
+      return true
+    } catch (error) {
+      if (CommercetoolsError.isInstance(error) && error.status === 404) {
+        return false
+      }
+      throw error
+    }
+  }
+
+  /**
+   * Create an OrderEdit.
+   * https://docs.commercetools.com/api/projects/order-edits#create-orderedit
+   */
+  createOrderEdit(options: CommonRequestOptions & { data: OrderEditDraft }): Promise<OrderEdit> {
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/orders/edits`,
+      method: 'POST',
+      data: options.data,
+    })
+  }
+
+  /**
+   * Update an OrderEdit by id:
+   * https://docs.commercetools.com/api/projects/order-edits#update-orderedit-by-id
+   */
+  updateOrderEditById(options: CommonRequestOptions & { id: string; data: OrderEditUpdate }): Promise<OrderEdit> {
+    ensureNonEmptyString({ value: options.id, name: 'id' })
+
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/orders/edits/${encodeURIComponent(options.id)}`,
+      method: 'POST',
+      data: options.data,
+    })
+  }
+
+  /**
+   * Update an OrderEdit by key:
+   * https://docs.commercetools.com/api/projects/order-edits#update-orderedit-by-key
+   */
+  updateOrderEditByKey(options: CommonRequestOptions & { key: string; data: OrderEditUpdate }): Promise<OrderEdit> {
+    ensureNonEmptyString({ value: options.key, name: 'key' })
+
+    return this.request({
+      path: `/orders/edits/key=${encodeURIComponent(options.key)}`,
+      method: 'POST',
+      data: options.data,
+    })
+  }
+
+  /**
+   * Add staged actions to an OrderEdit by id without replacing existing staged actions:
+   * https://docs.commercetools.com/api/projects/order-edits#stagedorderupdateactions
+   */
+  addStagedActionsToOrderEditById(
+    options: CommonRequestOptions & {
+      id: string
+      version: number
+      stagedActions: StagedOrderUpdateAction[]
+    },
+  ): Promise<OrderEdit> {
+    ensureNonEmptyString({ value: options.id, name: 'id' })
+
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/orders/edits/${encodeURIComponent(options.id)}`,
+      method: 'POST',
+      data: {
+        version: options.version,
+        actions: options.stagedActions.map((stagedAction) => ({
+          action: 'addStagedAction',
+          stagedAction,
+        })),
+      },
+    })
+  }
+
+  /**
+   * Add staged actions to an OrderEdit by key without replacing existing staged actions:
+   * https://docs.commercetools.com/api/projects/order-edits#stagedorderupdateactions
+   */
+  addStagedActionsToOrderEditByKey(
+    options: CommonRequestOptions & {
+      key: string
+      version: number
+      stagedActions: StagedOrderUpdateAction[]
+    },
+  ): Promise<OrderEdit> {
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/orders/edits/key=${encodeURIComponent(options.key)}`,
+      method: 'POST',
+      data: {
+        version: options.version,
+        actions: options.stagedActions.map((stagedAction) => ({
+          action: 'addStagedAction',
+          stagedAction,
+        })),
+      },
+    })
+  }
+
+  /**
+   * Set all staged actions for an OrderEdit by id (replaces existing staged actions):
+   * https://docs.commercetools.com/api/projects/order-edits#stagedorderupdateactions
+   */
+  setStagedActionsForOrderEditById(
+    options: CommonRequestOptions & {
+      id: string
+      version: number
+      stagedActions: StagedOrderUpdateAction[]
+    },
+  ): Promise<OrderEdit> {
+    ensureNonEmptyString({ value: options.id, name: 'id' })
+
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/orders/edits/${encodeURIComponent(options.id)}`,
+      method: 'POST',
+      data: {
+        version: options.version,
+        actions: [
+          {
+            action: 'setStagedActions',
+            stagedActions: options.stagedActions,
+          },
+        ],
+      },
+    })
+  }
+
+  /**
+   * Set all staged actions for an OrderEdit by key (replaces existing staged actions):
+   * https://docs.commercetools.com/api/projects/order-edits#stagedorderupdateactions
+   */
+  setStagedActionsForOrderEditByKey(
+    options: CommonRequestOptions & {
+      key: string
+      version: number
+      stagedActions: StagedOrderUpdateAction[]
+    },
+  ): Promise<OrderEdit> {
+    ensureNonEmptyString({ value: options.key, name: 'key' })
+
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/orders/edits/key=${encodeURIComponent(options.key)}`,
+      method: 'POST',
+      data: {
+        version: options.version,
+        actions: [
+          {
+            action: 'setStagedActions',
+            stagedActions: options.stagedActions,
+          },
+        ],
+      },
+    })
+  }
+
+  /**
+   * Apply staged actions from an OrderEdit to the Order by id:
+   * https://docs.commercetools.com/api/projects/order-edits#apply-orderedit-by-id
+   */
+  applyOrderEditById(
+    options: CommonRequestOptions & {
+      id: string
+      version: number
+      editVersion: number
+    },
+  ): Promise<Order> {
+    ensureNonEmptyString({ value: options.id, name: 'id' })
+
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/orders/edits/${encodeURIComponent(options.id)}/apply`,
+      method: 'POST',
+      data: {
+        editVersion: options.editVersion,
+        resourceVersion: options.version,
+      },
+    })
+  }
+
+  /**
+   * Apply staged actions from an OrderEdit to the Order by key:
+   * https://docs.commercetools.com/api/projects/order-edits#apply-orderedit-by-key
+   */
+  applyOrderEditByKey(
+    options: CommonRequestOptions & {
+      key: string
+      version: number
+      editVersion: number
+    },
+  ): Promise<Order> {
+    ensureNonEmptyString({ value: options.key, name: 'key' })
+
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/orders/edits/key=${encodeURIComponent(options.key)}/apply`,
+      method: 'POST',
+      data: {
+        editVersion: options.editVersion,
+        resourceVersion: options.version,
+      },
+    })
+  }
+
+  /**
+   * Delete an OrderEdit by id
+   * https://docs.commercetools.com/api/projects/order-edits#delete-orderedit-by-id
+   */
+  deleteOrderEditById(options: CommonRequestOptions & { id: string; version: number }): Promise<OrderEdit> {
+    ensureNonEmptyString({ value: options.id, name: 'id' })
+
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/orders/edits/${encodeURIComponent(options.id)}`,
+      method: 'DELETE',
+      params: {
+        ...options.params,
+        version: options.version,
+      },
+    })
+  }
+
+  /**
+   * Delete an OrderEdit by key
+   * https://docs.commercetools.com/api/projects/order-edits#delete-orderedit-by-key
+   */
+  deleteOrderEditByKey(options: CommonRequestOptions & { key: string; version: number }): Promise<OrderEdit> {
+    ensureNonEmptyString({ value: options.key, name: 'key' })
+
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/orders/edits/key=${encodeURIComponent(options.key)}`,
       method: 'DELETE',
       params: {
         ...options.params,

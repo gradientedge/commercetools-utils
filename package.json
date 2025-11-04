@@ -30,6 +30,7 @@
     "build:commonjs": "tsc --build tsconfig-cjs.json",
     "build:watch": "tsc --build --incremental --watch",
     "test": "TZ=UTC NODE_OPTIONS=\"$NODE_OPTIONS --experimental-vm-modules\" jest",
+    "test:coverage": "TZ=UTC NODE_OPTIONS=\"$NODE_OPTIONS --experimental-vm-modules\" jest --coverage",
     "prepack": "echo '{\"type\": \"commonjs\"}' > dist/cjs/package.json",
     "postpack": "rm -f dist/cjs/package.json"
   },
