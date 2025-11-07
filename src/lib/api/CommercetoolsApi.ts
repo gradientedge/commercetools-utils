@@ -3526,30 +3526,6 @@ export class CommercetoolsApi {
   }
 
   /**
-   * Apply staged actions from an OrderEdit to the Order by key:
-   * https://docs.commercetools.com/api/projects/order-edits#apply-orderedit-by-key
-   */
-  applyOrderEditByKey(
-    options: CommonRequestOptions & {
-      key: string
-      version: number
-      editVersion: number
-    },
-  ): Promise<Order> {
-    ensureNonEmptyString({ value: options.key, name: 'key' })
-
-    return this.request({
-      ...this.extractCommonRequestOptions(options),
-      path: `/orders/edits/key=${encodeURIComponent(options.key)}/apply`,
-      method: 'POST',
-      data: {
-        editVersion: options.editVersion,
-        resourceVersion: options.version,
-      },
-    })
-  }
-
-  /**
    * Delete an OrderEdit by id
    * https://docs.commercetools.com/api/projects/order-edits#delete-orderedit-by-id
    */

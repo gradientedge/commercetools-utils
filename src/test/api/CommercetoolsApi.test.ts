@@ -5190,49 +5190,6 @@ describe('CommercetoolsApi', () => {
       })
     })
 
-    describe('applyOrderEditByKey', () => {
-      it('should make a POST request to the correct endpoint with all expected data and params', async () => {
-        const expectedResponse = {
-          id: 'test-order-id',
-          version: 2,
-          orderState: 'Confirmed' as const,
-          totalPrice: { centAmount: 1000, currencyCode: 'EUR' },
-        }
-
-        nock('https://api.europe-west1.gcp.commercetools.com', {
-          reqheaders: {
-            authorization: 'Bearer test-access-token',
-          },
-        })
-          .post('/test-project-key/orders/edits/key=my-order-edit-key/apply', {
-            editVersion: 2,
-            resourceVersion: 1,
-          })
-          .reply(200, expectedResponse)
-        const api = new CommercetoolsApi(defaultConfig)
-
-        const result = await api.applyOrderEditByKey({
-          key: 'my-order-edit-key',
-          version: 1,
-          editVersion: 2,
-        })
-
-        expect(result).toEqual(expectedResponse)
-      })
-
-      it('should throw an error when an empty key is being passed as a parameter', async () => {
-        const api = new CommercetoolsApi(defaultConfig)
-
-        await expect(() =>
-          api.applyOrderEditByKey({
-            key: ' ',
-            version: 1,
-            editVersion: 2,
-          }),
-        ).toThrow(`The string parameter 'key' cannot be empty`)
-      })
-    })
-
     describe('deleteOrderEditById', () => {
       it('should make a DELETE request to the correct endpoint with all expected data and params', async () => {
         const expectedResponse = {
