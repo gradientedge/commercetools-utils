@@ -93,7 +93,6 @@ import type {
   ShippingMethod,
   ShippingMethodPagedQueryResponse,
   StandalonePrice,
-  StagedOrderUpdateAction,
   StandalonePriceDraft,
   StandalonePricePagedQueryResponse,
   StandalonePriceUpdate,
@@ -3392,117 +3391,7 @@ export class CommercetoolsApi {
   }
 
   /**
-   * Add staged actions to an OrderEdit by id without replacing existing staged actions:
-   * https://docs.commercetools.com/api/projects/order-edits#stagedorderupdateactions
-   */
-  addStagedActionsToOrderEditById(
-    options: CommonRequestOptions & {
-      id: string
-      version: number
-      stagedActions: StagedOrderUpdateAction[]
-    },
-  ): Promise<OrderEdit> {
-    ensureNonEmptyString({ value: options.id, name: 'id' })
-
-    return this.request({
-      ...this.extractCommonRequestOptions(options),
-      path: `/orders/edits/${encodeURIComponent(options.id)}`,
-      method: 'POST',
-      data: {
-        version: options.version,
-        actions: options.stagedActions.map((stagedAction) => ({
-          action: 'addStagedAction',
-          stagedAction,
-        })),
-      },
-    })
-  }
-
-  /**
-   * Add staged actions to an OrderEdit by key without replacing existing staged actions:
-   * https://docs.commercetools.com/api/projects/order-edits#stagedorderupdateactions
-   */
-  addStagedActionsToOrderEditByKey(
-    options: CommonRequestOptions & {
-      key: string
-      version: number
-      stagedActions: StagedOrderUpdateAction[]
-    },
-  ): Promise<OrderEdit> {
-    return this.request({
-      ...this.extractCommonRequestOptions(options),
-      path: `/orders/edits/key=${encodeURIComponent(options.key)}`,
-      method: 'POST',
-      data: {
-        version: options.version,
-        actions: options.stagedActions.map((stagedAction) => ({
-          action: 'addStagedAction',
-          stagedAction,
-        })),
-      },
-    })
-  }
-
-  /**
-   * Set all staged actions for an OrderEdit by id (replaces existing staged actions):
-   * https://docs.commercetools.com/api/projects/order-edits#stagedorderupdateactions
-   */
-  setStagedActionsForOrderEditById(
-    options: CommonRequestOptions & {
-      id: string
-      version: number
-      stagedActions: StagedOrderUpdateAction[]
-    },
-  ): Promise<OrderEdit> {
-    ensureNonEmptyString({ value: options.id, name: 'id' })
-
-    return this.request({
-      ...this.extractCommonRequestOptions(options),
-      path: `/orders/edits/${encodeURIComponent(options.id)}`,
-      method: 'POST',
-      data: {
-        version: options.version,
-        actions: [
-          {
-            action: 'setStagedActions',
-            stagedActions: options.stagedActions,
-          },
-        ],
-      },
-    })
-  }
-
-  /**
-   * Set all staged actions for an OrderEdit by key (replaces existing staged actions):
-   * https://docs.commercetools.com/api/projects/order-edits#stagedorderupdateactions
-   */
-  setStagedActionsForOrderEditByKey(
-    options: CommonRequestOptions & {
-      key: string
-      version: number
-      stagedActions: StagedOrderUpdateAction[]
-    },
-  ): Promise<OrderEdit> {
-    ensureNonEmptyString({ value: options.key, name: 'key' })
-
-    return this.request({
-      ...this.extractCommonRequestOptions(options),
-      path: `/orders/edits/key=${encodeURIComponent(options.key)}`,
-      method: 'POST',
-      data: {
-        version: options.version,
-        actions: [
-          {
-            action: 'setStagedActions',
-            stagedActions: options.stagedActions,
-          },
-        ],
-      },
-    })
-  }
-
-  /**
-   * Apply staged actions from an OrderEdit to the Order by id:
+   * Apply actions from an OrderEdit to the Order by id:
    * https://docs.commercetools.com/api/projects/order-edits#apply-orderedit-by-id
    */
   applyOrderEditById(
