@@ -4506,4 +4506,452 @@ describe('CommercetoolsApi', () => {
       ).not.toThrowError()
     })
   })
+
+  describe('OrderEdit', () => {
+    describe('getOrderEditById', () => {
+      it('should make a GET request to the correct endpoint', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com')
+          .get('/test-project-key/orders/edits/spoof-path%2Fmy-order-edit-id')
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const response = await api.getOrderEditById({ id: 'spoof-path/my-order-edit-id' })
+
+        expect(response).toEqual({ success: true })
+      })
+
+      it('should throw an error when an empty ID is being passed as a parameter', async () => {
+        const api = new CommercetoolsApi(defaultConfig)
+
+        await expect(() => api.getOrderEditById({ id: ' ' })).toThrow(`The string parameter 'id' cannot be empty`)
+      })
+    })
+
+    describe('getOrderEditByKey', () => {
+      it('should make a GET request to the correct endpoint', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com')
+          .get('/test-project-key/orders/edits/key=spoof-path%2Fmy-order-edit-key')
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const response = await api.getOrderEditByKey({ key: 'spoof-path/my-order-edit-key' })
+
+        expect(response).toEqual({ success: true })
+      })
+    })
+
+    describe('queryOrderEdits', () => {
+      it('should make a GET request to the correct endpoint when no parameters are passed', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com', {
+          encodedQueryParams: true,
+        })
+          .get('/test-project-key/orders/edits')
+          .reply(200, singleItemResponse)
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const response = await api.queryOrderEdits()
+
+        expect(response).toEqual(singleItemResponse)
+      })
+
+      it('should make a GET request to the correct endpoint with the passed in parameters in the querystring', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com', {
+          encodedQueryParams: true,
+        })
+          .get('/test-project-key/orders/edits?where=resource(id%3D%22some-order-id%22)')
+          .reply(200, singleItemResponse)
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const response = await api.queryOrderEdits({
+          params: {
+            where: 'resource(id="some-order-id")',
+          },
+        })
+
+        expect(response).toEqual(singleItemResponse)
+      })
+    })
+
+    describe('checkOrderEditExistsById', () => {
+      // Test case 1: Mock a 200 request -> expect true
+      it('should make a HEAD request to the correct endpoint, passing the provided data', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com', {
+          reqheaders: {
+            authorization: 'Bearer test-access-token',
+          },
+        })
+          .head('/test-project-key/orders/edits/test-order-edit-id')
+          .reply(200)
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const result = await api.checkOrderEditExistsById({ id: 'test-order-edit-id' })
+
+        expect(result).toBe(true)
+      })
+
+      // Test case 2: Mock a 404 request -> expect false
+      it('should return a false if 404 is the return status code', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com', {
+          reqheaders: {
+            authorization: 'Bearer test-access-token',
+          },
+        })
+          .head('/test-project-key/orders/edits/test-order-edit-id')
+          .reply(404)
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const result = await api.checkOrderEditExistsById({ id: 'test-order-edit-id' })
+
+        expect(result).toBe(false)
+      })
+
+      // Test case 3: Mock a 500 request -> expect error to be thrown
+      it('should throw an error if the status code is >= 300 and not a 404', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com', {
+          reqheaders: {
+            authorization: 'Bearer test-access-token',
+          },
+        })
+          .head('/test-project-key/orders/edits/test-order-edit-id')
+          .reply(500)
+          .persist()
+        const api = new CommercetoolsApi(defaultConfig)
+
+        await expect(() => api.checkOrderEditExistsById({ id: 'test-order-edit-id' })).rejects.toThrow(
+          'Request failed with status code 500',
+        )
+      })
+
+      // Test case 4: Empty ID passed -> expect error to be thrown
+      it('should throw an error when an empty ID is being passed as a parameter', async () => {
+        const api = new CommercetoolsApi(defaultConfig)
+
+        await expect(() => api.checkOrderEditExistsById({ id: ' ' })).rejects.toThrow()
+      })
+    })
+
+    describe('checkOrderEditExistsByKey', () => {
+      // Test case 1: Mock a 200 request -> expect true
+      it('should make a HEAD request to the correct endpoint, passing the provided data', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com', {
+          reqheaders: {
+            authorization: 'Bearer test-access-token',
+          },
+        })
+          .head('/test-project-key/orders/edits/key=test-order-edit-key')
+          .reply(200)
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const result = await api.checkOrderEditExistsByKey({ key: 'test-order-edit-key' })
+
+        expect(result).toBe(true)
+      })
+
+      // Test case 2: Mock a 404 request -> expect false
+      it('should return a false if 404 is the return status code', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com', {
+          reqheaders: {
+            authorization: 'Bearer test-access-token',
+          },
+        })
+          .head('/test-project-key/orders/edits/key=test-order-edit-key')
+          .reply(404)
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const result = await api.checkOrderEditExistsByKey({ key: 'test-order-edit-key' })
+
+        expect(result).toBe(false)
+      })
+
+      // Test case 3: Mock a 500 request -> expect error to be thrown
+      it('should throw an error if the status code is >= 300 and not a 404', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com', {
+          reqheaders: {
+            authorization: 'Bearer test-access-token',
+          },
+        })
+          .head('/test-project-key/orders/edits/key=test-order-edit-key')
+          .reply(500)
+          .persist()
+        const api = new CommercetoolsApi(defaultConfig)
+
+        await expect(() => api.checkOrderEditExistsByKey({ key: 'test-order-edit-key' })).rejects.toThrow(
+          'Request failed with status code 500',
+        )
+      })
+
+      // Test case 4: Empty key passed -> expect error to be thrown
+      it('should throw an error when an empty key is being passed as a parameter', async () => {
+        const api = new CommercetoolsApi(defaultConfig)
+
+        await expect(() => api.checkOrderEditExistsByKey({ key: ' ' })).rejects.toThrow()
+      })
+    })
+
+    describe('checkOrderEditExists', () => {
+      // Test case 1: Mock a 200 request -> expect true
+      it('should make a HEAD request to the correct endpoint, passing the provided data', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com', {
+          reqheaders: {
+            authorization: 'Bearer test-access-token',
+          },
+        })
+          .head('/test-project-key/orders/edits')
+          .reply(200)
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const result = await api.checkOrderEditExists()
+
+        expect(result).toBe(true)
+      })
+
+      // Test case 2: Mock a 404 request -> expect false
+      it('should return a false if 404 is the return status code', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com', {
+          reqheaders: {
+            authorization: 'Bearer test-access-token',
+          },
+        })
+          .head('/test-project-key/orders/edits')
+          .reply(404)
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const result = await api.checkOrderEditExists()
+
+        expect(result).toBe(false)
+      })
+
+      // Test case 3: Mock a 500 request -> expect error to be thrown
+      it('should throw an error if the status code is >= 300 and not a 404', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com', {
+          reqheaders: {
+            authorization: 'Bearer test-access-token',
+          },
+        })
+          .head('/test-project-key/orders/edits')
+          .reply(500)
+          .persist()
+        const api = new CommercetoolsApi(defaultConfig)
+
+        await expect(() => api.checkOrderEditExists()).rejects.toThrow('Request failed with status code 500')
+      })
+    })
+
+    describe('createOrderEdit', () => {
+      it('should make a POST request to the correct endpoint with all expected data and params', async () => {
+        const orderEditDraft = {
+          key: 'test-order-edit-key',
+          resource: {
+            typeId: 'order' as const,
+            id: 'test-order-id',
+          },
+          comment: 'Test order edit',
+        }
+
+        nock('https://api.europe-west1.gcp.commercetools.com', {
+          reqheaders: {
+            authorization: 'Bearer test-access-token',
+          },
+        })
+          .post('/test-project-key/orders/edits', orderEditDraft)
+          .reply(200, {
+            id: 'created-order-edit-id',
+            key: 'test-order-edit-key',
+            resource: orderEditDraft.resource,
+            comment: orderEditDraft.comment,
+            version: 1,
+          })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const result = await api.createOrderEdit({ data: orderEditDraft })
+
+        expect(result).toEqual({
+          id: 'created-order-edit-id',
+          key: 'test-order-edit-key',
+          resource: orderEditDraft.resource,
+          comment: orderEditDraft.comment,
+          version: 1,
+        })
+      })
+    })
+
+    describe('updateOrderEditById', () => {
+      it('should make a POST request to the correct endpoint with all expected data and params', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com', {
+          reqheaders: {
+            authorization: 'Bearer test-access-token',
+          },
+        })
+          .post('/test-project-key/orders/edits/spoof-path%2Fmy-order-edit-id', { version: 1, actions: [] })
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const orderEdit = await api.updateOrderEditById({
+          id: 'spoof-path/my-order-edit-id',
+          data: { version: 1, actions: [] },
+        })
+
+        expect(orderEdit).toEqual({ success: true })
+      })
+
+      it('should throw an error when an empty ID is being passed as a parameter', async () => {
+        const api = new CommercetoolsApi(defaultConfig)
+
+        await expect(() => api.updateOrderEditById({ id: ' ', data: { version: 1, actions: [] } })).toThrow(
+          `The string parameter 'id' cannot be empty`,
+        )
+      })
+    })
+
+    describe('updateOrderEditByKey', () => {
+      it('should make a POST request to the correct endpoint with all expected data and params', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com', {
+          reqheaders: {
+            authorization: 'Bearer test-access-token',
+          },
+        })
+          .post('/test-project-key/orders/edits/key=my-order-edit-key', { version: 1, actions: [] })
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const orderEdit = await api.updateOrderEditByKey({
+          key: 'my-order-edit-key',
+          data: { version: 1, actions: [] },
+        })
+
+        expect(orderEdit).toEqual({ success: true })
+      })
+
+      it('should throw an error when an empty key is being passed as a parameter', async () => {
+        const api = new CommercetoolsApi(defaultConfig)
+
+        await expect(() => api.updateOrderEditByKey({ key: ' ', data: { version: 1, actions: [] } })).toThrow(
+          `The string parameter 'key' cannot be empty`,
+        )
+      })
+    })
+
+    describe('applyOrderEditById', () => {
+      it('should make a POST request to the correct endpoint with all expected data and params', async () => {
+        const expectedResponse = {
+          id: 'test-order-id',
+          version: 2,
+          orderState: 'Confirmed' as const,
+          totalPrice: { centAmount: 1000, currencyCode: 'EUR' },
+        }
+
+        nock('https://api.europe-west1.gcp.commercetools.com', {
+          reqheaders: {
+            authorization: 'Bearer test-access-token',
+          },
+        })
+          .post('/test-project-key/orders/edits/spoof-path%2Fmy-order-edit-id/apply', {
+            editVersion: 2,
+            resourceVersion: 1,
+          })
+          .reply(200, expectedResponse)
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const result = await api.applyOrderEditById({
+          id: 'spoof-path/my-order-edit-id',
+          version: 1,
+          editVersion: 2,
+        })
+
+        expect(result).toEqual(expectedResponse)
+      })
+
+      it('should throw an error when an empty ID is being passed as a parameter', async () => {
+        const api = new CommercetoolsApi(defaultConfig)
+
+        await expect(() =>
+          api.applyOrderEditById({
+            id: ' ',
+            version: 1,
+            editVersion: 2,
+          }),
+        ).toThrow(`The string parameter 'id' cannot be empty`)
+      })
+    })
+
+    describe('deleteOrderEditById', () => {
+      it('should make a DELETE request to the correct endpoint with all expected data and params', async () => {
+        const expectedResponse = {
+          id: 'test-order-edit-id',
+          version: 1,
+          key: 'test-order-edit-key',
+          resource: {
+            typeId: 'order' as const,
+            id: 'test-order-id',
+          },
+          stagedActions: [],
+        }
+
+        nock('https://api.europe-west1.gcp.commercetools.com', {
+          reqheaders: {
+            authorization: 'Bearer test-access-token',
+          },
+        })
+          .delete('/test-project-key/orders/edits/spoof-path%2Fmy-order-edit-id')
+          .query({ version: 1 })
+          .reply(200, expectedResponse)
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const result = await api.deleteOrderEditById({
+          id: 'spoof-path/my-order-edit-id',
+          version: 1,
+        })
+
+        expect(result).toEqual(expectedResponse)
+      })
+
+      it('should throw an error when an empty ID is being passed as a parameter', async () => {
+        const api = new CommercetoolsApi(defaultConfig)
+
+        await expect(() => api.deleteOrderEditById({ id: ' ', version: 1 })).toThrow(
+          `The string parameter 'id' cannot be empty`,
+        )
+      })
+    })
+
+    describe('deleteOrderEditByKey', () => {
+      it('should make a DELETE request to the correct endpoint with all expected data and params', async () => {
+        const expectedResponse = {
+          id: 'test-order-edit-id',
+          version: 1,
+          key: 'test-order-edit-key',
+          resource: {
+            typeId: 'order' as const,
+            id: 'test-order-id',
+          },
+          stagedActions: [],
+        }
+
+        nock('https://api.europe-west1.gcp.commercetools.com', {
+          reqheaders: {
+            authorization: 'Bearer test-access-token',
+          },
+        })
+          .delete('/test-project-key/orders/edits/key=my-order-edit-key')
+          .query({ version: 1 })
+          .reply(200, expectedResponse)
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const result = await api.deleteOrderEditByKey({
+          key: 'my-order-edit-key',
+          version: 1,
+        })
+
+        expect(result).toEqual(expectedResponse)
+      })
+
+      it('should throw an error when an empty key is being passed as a parameter', async () => {
+        const api = new CommercetoolsApi(defaultConfig)
+
+        await expect(() => api.deleteOrderEditByKey({ key: ' ', version: 1 })).toThrow(
+          `The string parameter 'key' cannot be empty`,
+        )
+      })
+    })
+  })
 })
