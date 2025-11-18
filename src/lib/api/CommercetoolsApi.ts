@@ -2933,6 +2933,7 @@ export class CommercetoolsApi {
       aggregateTimeoutMs: options.aggregateTimeoutMs,
       timeoutMs: options.timeoutMs,
       abortController: options.abortController,
+      externalUserId: options.externalUserId,
     }
   }
 
