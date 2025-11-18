@@ -98,6 +98,20 @@ describe('CommercetoolsApi', () => {
     })
   })
 
+  describe('extractCommonRequestOptions', () => {
+    it('should return the expected common request options', () => {
+      const api = new CommercetoolsApi(defaultConfig)
+
+      const result = api.extractCommonRequestOptions({
+        externalUserId: '123',
+      })
+
+      expect(result).toEqual({
+        externalUserId: '123',
+      })
+    })
+  })
+
   describe('Stores', () => {
     describe('getStoreById', () => {
       it('should make a GET request to the correct endpoint', async () => {
