@@ -35,6 +35,40 @@ describe('CommercetoolsAuthApi', () => {
     nock.disableNetConnect()
   })
 
+  describe('constructor', () => {
+    it('should use region-based endpoint when custom authUrl is not provided', () => {
+      const auth = new CommercetoolsAuthApi(defaultConfig)
+      expect(auth.endpoints.auth).toBe('https://auth.us-east-2.aws.commercetools.com')
+    })
+
+    it('should use custom auth endpoint when provided', () => {
+      const auth = new CommercetoolsAuthApi({
+        ...defaultConfig,
+        authUrl: 'http://localhost:4000/auth',
+      })
+      expect(auth.endpoints.auth).toBe('http://localhost:4000/auth')
+    })
+
+    it('should use custom auth and api endpoints when both are provided', () => {
+      const auth = new CommercetoolsAuthApi({
+        ...defaultConfig,
+        authUrl: 'http://localhost:4000/auth',
+        apiUrl: 'http://localhost:4000/api',
+      })
+      expect(auth.endpoints.auth).toBe('http://localhost:4000/auth')
+      expect(auth.endpoints.api).toBe('http://localhost:4000/api')
+    })
+
+    it('should fall back to region-based API endpoint when only custom authUrl is provided', () => {
+      const auth = new CommercetoolsAuthApi({
+        ...defaultConfig,
+        authUrl: 'http://localhost:4000/auth',
+      })
+      expect(auth.endpoints.auth).toBe('http://localhost:4000/auth')
+      expect(auth.endpoints.api).toBe('https://api.us-east-2.aws.commercetools.com')
+    })
+  })
+
   describe('getClientGrant', () => {
     it('should call commercetools with the expected request', async () => {
       const scope = nock('https://auth.us-east-2.aws.commercetools.com', {
@@ -43,6 +77,24 @@ describe('CommercetoolsAuthApi', () => {
         .post('/oauth/token', 'grant_type=client_credentials&scope=scope1%3Atest-project-key')
         .reply(200, defaultResponseToken)
       const auth = new CommercetoolsAuthApi(defaultConfig)
+
+      const grant = await auth.getClientGrant(['scope1'])
+
+      scope.isDone()
+      expect(grant).toEqual(defaultResponseToken)
+    })
+
+    it('should use custom auth endpoint when making requests', async () => {
+      const customAuthUrl = 'http://localhost:4000'
+      const scope = nock(customAuthUrl, {
+        encodedQueryParams: true,
+      })
+        .post('/oauth/token', 'grant_type=client_credentials&scope=scope1%3Atest-project-key')
+        .reply(200, defaultResponseToken)
+      const auth = new CommercetoolsAuthApi({
+        ...defaultConfig,
+        authUrl: customAuthUrl,
+      })
 
       const grant = await auth.getClientGrant(['scope1'])
 

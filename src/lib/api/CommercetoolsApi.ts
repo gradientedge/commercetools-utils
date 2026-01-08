@@ -313,7 +313,10 @@ export class CommercetoolsApi {
     CommercetoolsApi.validateConfig(config)
     this.config = config
     this.auth = new CommercetoolsAuth(config)
-    this.endpoints = REGION_URLS[this.config.region]
+    this.endpoints = {
+      auth: config.authUrl ?? REGION_URLS[this.config.region].auth,
+      api: config.apiUrl ?? REGION_URLS[this.config.region].api,
+    }
     this.requestExecutor = getRequestExecutor({
       timeoutMs: config.timeoutMs,
       httpsAgent: config.httpsAgent,
