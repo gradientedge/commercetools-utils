@@ -92,6 +92,29 @@ describe('CommercetoolsAuth', () => {
         clientScopes: ['scope3', 'scope4'],
       })
     })
+
+    it('should allow custom auth endpoint to be configured', () => {
+      const auth = new CommercetoolsAuth({
+        ...defaultConfig,
+        authUrl: 'http://localhost:4000/auth',
+      })
+      expect((auth as any).api.endpoints.auth).toBe('http://localhost:4000/auth')
+    })
+
+    it('should use region-based endpoint when custom authUrl is not provided', () => {
+      const auth = new CommercetoolsAuth(defaultConfig)
+      expect((auth as any).api.endpoints.auth).toBe('https://auth.us-east-2.aws.commercetools.com')
+    })
+
+    it('should allow both custom auth and api endpoints to be configured', () => {
+      const auth = new CommercetoolsAuth({
+        ...defaultConfig,
+        authUrl: 'http://localhost:4000/auth',
+        apiUrl: 'http://localhost:4000/api',
+      })
+      expect((auth as any).api.endpoints.auth).toBe('http://localhost:4000/auth')
+      expect((auth as any).api.endpoints.api).toBe('http://localhost:4000/api')
+    })
   })
 
   describe('getClientGrant', () => {
@@ -152,6 +175,32 @@ describe('CommercetoolsAuth', () => {
         scopes: ['scope1', 'scope2', 'scope3'],
         expiresIn: 172800,
         expiresAt: new Date(1578044123000),
+        customerId: '123456',
+      })
+      clock.uninstall()
+    })
+
+    it('should use custom auth endpoint when making requests', async () => {
+      const clock = FakeTimers.install({ now: new Date('2020-01-01T09:35:23.000') })
+      const customAuthUrl = 'http://localhost:4000'
+      const auth = new CommercetoolsAuth({
+        ...defaultConfig,
+        authUrl: customAuthUrl,
+      })
+      const scope = nock(customAuthUrl, {
+        encodedQueryParams: true,
+      })
+        .post('/oauth/token', 'grant_type=client_credentials&scope=defaultClientScope1%3Atest-project-key')
+        .reply(200, defaultClientGrantResponse)
+
+      const token = await auth.getClientGrant()
+
+      scope.isDone()
+      expect(token).toEqual({
+        accessToken: 'test-access-token',
+        scopes: ['scope1', 'scope2', 'scope3'],
+        expiresIn: 172800,
+        expiresAt: new Date('2020-01-03T09:35:23.000'),
         customerId: '123456',
       })
       clock.uninstall()

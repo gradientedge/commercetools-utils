@@ -96,6 +96,40 @@ describe('CommercetoolsApi', () => {
     it('should bubble up the error if `validateConfig` method throws an error', () => {
       expect(() => new CommercetoolsApi({ ...defaultConfig, projectKey: '' })).toThrowError()
     })
+
+    it('should allow custom API endpoint to be configured', () => {
+      const api = new CommercetoolsApi({
+        ...defaultConfig,
+        apiUrl: 'http://localhost:4000/api',
+      })
+      expect(api.endpoints.auth).toBe('https://auth.europe-west1.gcp.commercetools.com')
+      expect(api.endpoints.api).toBe('http://localhost:4000/api')
+    })
+
+    it('should use region-based endpoint when custom apiUrl is not provided', () => {
+      const api = new CommercetoolsApi(defaultConfig)
+      expect(api.endpoints.auth).toBe('https://auth.europe-west1.gcp.commercetools.com')
+      expect(api.endpoints.api).toBe('https://api.europe-west1.gcp.commercetools.com')
+    })
+
+    it('should allow both custom auth and api endpoints to be configured', () => {
+      const api = new CommercetoolsApi({
+        ...defaultConfig,
+        authUrl: 'http://localhost:4000/auth',
+        apiUrl: 'http://localhost:4000/api',
+      })
+      expect(api.endpoints.api).toBe('http://localhost:4000/api')
+      expect(api.endpoints.auth).toBe('http://localhost:4000/auth')
+    })
+
+    it('should pass custom endpoints to auth instance', () => {
+      const api = new CommercetoolsApi({
+        ...defaultConfig,
+        authUrl: 'http://localhost:4000/auth',
+      })
+      expect(api.auth.config.authUrl).toBe('http://localhost:4000/auth')
+      expect(api.endpoints.api).toBe('https://api.europe-west1.gcp.commercetools.com')
+    })
   })
 
   describe('extractCommonRequestOptions', () => {
@@ -157,6 +191,30 @@ describe('CommercetoolsApi', () => {
         const product = await api.queryStores()
 
         expect(product).toEqual({ success: true })
+      })
+
+      it('should use custom API endpoint when making requests', async () => {
+        const customApiUrl = 'http://localhost:4000'
+        const customAuthUrl = 'http://localhost:4000'
+        nock(customAuthUrl, {
+          encodedQueryParams: true,
+        })
+          .post('/oauth/token', 'grant_type=client_credentials&scope=defaultClientScope1%3Atest-project-key')
+          .reply(200, defaultClientGrantResponse)
+        nock(customApiUrl, {
+          encodedQueryParams: true,
+        })
+          .get('/test-project-key/stores')
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi({
+          ...defaultConfig,
+          apiUrl: customApiUrl,
+          authUrl: customAuthUrl,
+        })
+
+        const result = await api.queryStores()
+
+        expect(result).toEqual({ success: true })
       })
 
       it('should make a GET request to the correct endpoint with the passed in parameters in the querystring', async () => {

@@ -45,6 +45,22 @@ export interface CommercetoolsBaseConfig extends CommercetoolsHooks {
    * identify the source of incoming requests.
    */
   systemIdentifier?: string
+
+  /**
+   * Optional custom authentication endpoint URL.
+   * If provided, this will be used instead of the region-based auth URL.
+   * Useful for pointing to mock servers during integration tests.
+   * @example 'http://localhost:3000/auth'
+   */
+  authUrl?: string
+
+  /**
+   * Optional custom API endpoint URL.
+   * If provided, this will be used instead of the region-based API URL.
+   * Useful for pointing to mock servers during integration tests.
+   * @example 'http://localhost:3000/api'
+   */
+  apiUrl?: string
 }
 
 export interface CommercetoolsHooks {
