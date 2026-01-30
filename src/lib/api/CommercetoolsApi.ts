@@ -2128,6 +2128,42 @@ export class CommercetoolsApi {
   }
 
   /**
+   * Delete a product type by id
+   * https://docs.commercetools.com/api/projects/productTypes#delete-producttype-by-id
+   */
+  deleteProductTypeById(options: CommonRequestOptions & { id: string; version: number }): Promise<ProductType> {
+    ensureNonEmptyString({ value: options.id, name: 'id' })
+
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/product-types/${encodeURIComponent(options.id)}`,
+      method: 'DELETE',
+      params: {
+        ...options.params,
+        version: options.version,
+      },
+    })
+  }
+
+  /**
+   * Delete a product type by key
+   * https://docs.commercetools.com/api/projects/productTypes#delete-producttype-by-id
+   */
+  deleteProductTypeByKey(options: CommonRequestOptions & { key: string; version: number }): Promise<ProductType> {
+    ensureNonEmptyString({ value: options.key, name: 'key' })
+
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/product-types/key=${encodeURIComponent(options.key)}`,
+      method: 'DELETE',
+      params: {
+        ...options.params,
+        version: options.version,
+      },
+    })
+  }
+
+  /**
    * Get a type by id:
    * https://docs.commercetools.com/api/projects/types#get-type-by-id
    */
@@ -2696,6 +2732,42 @@ export class CommercetoolsApi {
       ...this.extractCommonRequestOptions(options),
       path: '/states',
       method: 'GET',
+    })
+  }
+
+  /**
+   * Delete a state by id
+   * https://docs.commercetools.com/api/projects/states#delete-state-by-id
+   */
+  deleteStateById(options: CommonRequestOptions & { id: string; version: number }): Promise<State> {
+    ensureNonEmptyString({ value: options.id, name: 'id' })
+
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/states/${encodeURIComponent(options.id)}`,
+      method: 'DELETE',
+      params: {
+        ...options.params,
+        version: options.version,
+      },
+    })
+  }
+
+  /**
+   * Delete a state by key
+   * https://docs.commercetools.com/api/projects/states#delete-state-by-key
+   */
+  deleteStateByKey(options: CommonRequestOptions & { key: string; version: number }): Promise<State> {
+    ensureNonEmptyString({ value: options.key, name: 'key' })
+
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/states/key=${encodeURIComponent(options.key)}`,
+      method: 'DELETE',
+      params: {
+        ...options.params,
+        version: options.version,
+      },
     })
   }
 
