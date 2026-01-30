@@ -11,6 +11,7 @@ import {
   RecurringOrderDraft,
   RecurringOrderPagedQueryResponse,
   RecurringOrderUpdateAction,
+  StateUpdate,
 } from '../index.js'
 import { CommercetoolsError } from '../error/index.js'
 import { REGION_URLS } from '../auth/constants.js'
@@ -2732,6 +2733,36 @@ export class CommercetoolsApi {
       ...this.extractCommonRequestOptions(options),
       path: '/states',
       method: 'GET',
+    })
+  }
+
+  /**
+   * Update a state by id
+   * https://docs.commercetools.com/api/projects/states#update-state-by-id
+   */
+  updateStateById(options: CommonRequestOptions & { id: string; data: StateUpdate }): Promise<State> {
+    ensureNonEmptyString({ value: options.id, name: 'id' })
+
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/states/${encodeURIComponent(options.id)}`,
+      method: 'POST',
+      data: options.data,
+    })
+  }
+
+  /**
+   * Update a state by key
+   * https://docs.commercetools.com/api/projects/states#update-state-by-key
+   */
+  updateStateByKey(options: CommonRequestOptions & { key: string; data: StateUpdate }): Promise<State> {
+    ensureNonEmptyString({ value: options.key, name: 'key' })
+
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/states/key=${encodeURIComponent(options.key)}`,
+      method: 'POST',
+      data: options.data,
     })
   }
 
