@@ -135,6 +135,5 @@ export async function retryOnConflict<T = any>(options: RetryOnConflictParams): 
     }
   }
 
-  // eslint-disable-next-line
   return result!
 }
