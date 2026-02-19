@@ -1,4 +1,4 @@
-import { Status } from '@tshttp/status'
+import { StatusCodes } from 'http-status-codes'
 import { CommercetoolsRetryConfig } from './api/index.js'
 
 /**
@@ -30,11 +30,11 @@ export const DEFAULT_RETRY_CONFIG: CommercetoolsRetryConfig = {
  * List of status codes which are allowed to retry
  */
 export const RETRYABLE_STATUS_CODES: number[] = [
-  Status.InternalServerError,
-  Status.NotImplemented,
-  Status.BadGateway,
-  Status.ServiceUnavailable,
-  Status.GatewayTimeout,
+  StatusCodes.INTERNAL_SERVER_ERROR,
+  StatusCodes.NOT_IMPLEMENTED,
+  StatusCodes.BAD_GATEWAY,
+  StatusCodes.SERVICE_UNAVAILABLE,
+  StatusCodes.GATEWAY_TIMEOUT,
 ]
 
 /**

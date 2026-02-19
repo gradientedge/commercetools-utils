@@ -1,5 +1,5 @@
 import { calculateDelay } from './calculate-delay.js'
-import { Status } from '@tshttp/status'
+import { StatusCodes } from 'http-status-codes'
 
 /**
  * Default maximum number of retries
@@ -129,7 +129,7 @@ export async function retryOnConflict<T>(options: RetryOnConflictParams<T>): Pro
     try {
       return await options.executeFn(attemptCount)
     } catch (e: any) {
-      if (!e.isCommercetoolsError || e.status !== Status.Conflict || attemptCount === maxAttempts) {
+      if (!e.isCommercetoolsError || e.status !== StatusCodes.CONFLICT || attemptCount === maxAttempts) {
         throw e
       }
     }

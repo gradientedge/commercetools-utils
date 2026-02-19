@@ -38,7 +38,5 @@ jobs:
           clover_file: .coverage/clover.xml
           threshold_alert: 50
           threshold_warning: 60
-      # - name: Publish Code Coverage
-      #   run: pnpx codecov
       - name: Build the documentation
         run: pnpm run docs
