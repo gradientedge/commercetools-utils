@@ -124,4 +124,86 @@ describe('retryOnConflict', () => {
     expect(mockedCalculateDelay).toBeCalledTimes(1)
     expect(mockedCalculateDelay).toHaveBeenCalledWith(1, { delayMs: 5, jitter: true })
   })
+
+  describe('type inference', () => {
+    it('should infer string return type from executeFn', async () => {
+      const mockExecuteFn = jest.fn<() => Promise<string>>()
+      mockExecuteFn.mockResolvedValue('success')
+
+      const result = await retryOnConflict({
+        executeFn: mockExecuteFn,
+      })
+
+      expect(typeof result).toBe('string')
+      expect(result).toBe('success')
+    })
+
+    it('should infer number return type from executeFn', async () => {
+      const mockExecuteFn = jest.fn<() => Promise<number>>()
+      mockExecuteFn.mockResolvedValue(42)
+
+      const result = await retryOnConflict({
+        executeFn: mockExecuteFn,
+      })
+
+      expect(typeof result).toBe('number')
+      expect(result).toBe(42)
+    })
+
+    it('should infer complex object return type from executeFn', async () => {
+      interface Product {
+        id: string
+        name: string
+        version: number
+      }
+
+      const mockProduct: Product = {
+        id: 'product-123',
+        name: 'Test Product',
+        version: 1,
+      }
+
+      const mockExecuteFn = jest.fn<() => Promise<Product>>()
+      mockExecuteFn.mockResolvedValue(mockProduct)
+
+      const result = await retryOnConflict({
+        executeFn: mockExecuteFn,
+      })
+
+      expect(result).toEqual(mockProduct)
+      expect(result.id).toBe('product-123')
+      expect(result.name).toBe('Test Product')
+      expect(result.version).toBe(1)
+    })
+
+    it('should maintain type inference with retry on conflict', async () => {
+      interface Cart {
+        id: string
+        version: number
+        totalPrice: number
+      }
+
+      const error = new CommercetoolsError('test error', {}, 409)
+      const mockCart: Cart = {
+        id: 'cart-456',
+        version: 2,
+        totalPrice: 99.99,
+      }
+
+      const mockExecuteFn = jest.fn<() => Promise<Cart>>()
+      mockExecuteFn.mockRejectedValueOnce(error)
+      mockExecuteFn.mockResolvedValue(mockCart)
+
+      const result = await retryOnConflict({
+        executeFn: mockExecuteFn,
+        maxRetries: 2,
+      })
+
+      expect(result).toEqual(mockCart)
+      expect(result.id).toBe('cart-456')
+      expect(result.version).toBe(2)
+      expect(result.totalPrice).toBe(99.99)
+      expect(mockExecuteFn).toHaveBeenCalledTimes(2)
+    })
+  })
 })
