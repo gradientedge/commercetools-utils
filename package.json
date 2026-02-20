@@ -59,6 +59,8 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.3",
     "@eslint/js": "^9.39.2",
+    "@eslint/eslintrc": "^3.3.3",
+    "@eslint/js": "^9.39.2",
     "@jest/globals": "^29.7.0",
     "@sinonjs/fake-timers": "11.3.1",
     "@swc/core": "1.15.11",
