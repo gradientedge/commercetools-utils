@@ -1,6 +1,5 @@
 [![semantic-release](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg)](https://github.com/semantic-release/semantic-release)
 [![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg)](http://commitizen.github.io/cz-cli/)
-[![Coverage][coverage]][codecov-url]
 
 # Gradient Edge commercetools utils
 
@@ -15,7 +14,7 @@ See full documentation here: [API documentation](https://gradientedge.github.io/
 
 ## How does this compare to the official commercetools SDK?
 
-We think it's easier to use and less verbose. On the flip side, the 
+We think it's easier to use and less verbose. On the flip side, the
 [official commercetools SDK](https://github.com/commercetools/commercetools-sdk-typescript) is
 more flexible and certainly more complete and up to date.
 
@@ -43,7 +42,7 @@ async function example() {
     clientId: 'your-client-id',
     clientSecret: 'your-client-secret',
     region: Region.EUROPE_GCP,
-    clientScopes: ['create_anonymous_token']
+    clientScopes: ['create_anonymous_token'],
   })
 
   let grant: CommercetoolsGrant
@@ -73,7 +72,7 @@ async function example() {
     clientId: 'your-client-id',
     clientSecret: 'your-client-secret',
     region: Region.EUROPE_GCP,
-    clientScopes: ['create_anonymous_token']
+    clientScopes: ['create_anonymous_token'],
   })
 
   let grant: CommercetoolsGrant
@@ -81,7 +80,7 @@ async function example() {
   try {
     const grant = await auth.login({
       username: 'myUsername',
-      password: 'myPassword'
+      password: 'myPassword',
     })
     console.log('Grant:', grant)
   } catch (error) {
@@ -108,7 +107,7 @@ async function example() {
     clientId: 'your-client-id',
     clientSecret: 'your-client-secret',
     region: Region.EUROPE_GCP,
-    clientScopes: ['create_anonymous_token']
+    clientScopes: ['create_anonymous_token'],
   })
 
   let grant: CommercetoolsGrant
@@ -140,7 +139,7 @@ async function example() {
     clientId: 'your-client-id',
     clientSecret: 'your-client-secret',
     region: Region.EUROPE_GCP,
-    clientScopes: ['create_anonymous_token']
+    clientScopes: ['create_anonymous_token'],
   })
 
   let grant: CommercetoolsGrant
@@ -148,7 +147,7 @@ async function example() {
   try {
     const grant = await auth.login({
       username: 'myUsername',
-      password: 'myPassword'
+      password: 'myPassword',
     })
     console.log('Grant:', grant)
   } catch (error) {
@@ -169,6 +168,3 @@ async function example() {
 
 example()
 ```
-
-[codecov-url]: https://app.codecov.io/gh/gradientedge/commercetools-utils
-[coverage]: https://codecov.io/gh/gradientedge/commercetools-utils/branch/main/graph/badge.svg
