@@ -12,6 +12,10 @@ import {
   RecurringOrderPagedQueryResponse,
   RecurringOrderUpdateAction,
   StateUpdate,
+  Subscription,
+  SubscriptionDraft,
+  SubscriptionPagedQueryResponse,
+  SubscriptionUpdate,
 } from '../index.js'
 import { CommercetoolsError } from '../error/index.js'
 import { REGION_URLS } from '../auth/constants.js'
@@ -2957,6 +2961,123 @@ export class CommercetoolsApi {
       ...this.extractCommonRequestOptions(options),
       path: `/tax-categories`,
       method: 'GET',
+    })
+  }
+
+  /**
+   * Get a subscription given its id
+   * https://docs.commercetools.com/api/projects/subscriptions#get-subscription-by-id
+   */
+  getSubscriptionById(options: CommonRequestOptions & { id: string }): Promise<Subscription> {
+    ensureNonEmptyString({ value: options.id, name: 'id' })
+
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/subscriptions/${encodeURIComponent(options.id)}`,
+      method: 'GET',
+    })
+  }
+
+  /**
+   * Get a subscription given its key
+   * https://docs.commercetools.com/api/projects/subscriptions#get-subscription-by-key
+   */
+  getSubscriptionByKey(options: CommonRequestOptions & { key: string }): Promise<Subscription> {
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/subscriptions/key=${encodeURIComponent(options.key)}`,
+      method: 'GET',
+    })
+  }
+
+  /**
+   * Query subscriptions
+   * https://docs.commercetools.com/api/projects/subscriptions#query-subscriptions
+   */
+  querySubscriptions(options?: CommonRequestOptions): Promise<SubscriptionPagedQueryResponse> {
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: '/subscriptions',
+      method: 'GET',
+    })
+  }
+
+  /**
+   * Create a subscription object:
+   * https://docs.commercetools.com/api/projects/subscriptions#create-subscription
+   */
+  createSubscription(options: CommonRequestOptions & { data: SubscriptionDraft }): Promise<Subscription> {
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: '/subscriptions',
+      method: 'POST',
+      data: options.data,
+    })
+  }
+
+  /**
+   * Update a subscription object by id:
+   * https://docs.commercetools.com/api/projects/subscriptions#update-subscription-by-id
+   */
+  updateSubscriptionById(
+    options: CommonRequestOptions & { id: string; data: SubscriptionUpdate },
+  ): Promise<Subscription> {
+    ensureNonEmptyString({ value: options.id, name: 'id' })
+
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/subscriptions/${encodeURIComponent(options.id)}`,
+      method: 'POST',
+      data: options.data,
+    })
+  }
+
+  /**
+   * Update a subscription object by key:
+   * https://docs.commercetools.com/api/projects/subscriptions#update-subscription-by-key
+   */
+  updateSubscriptionByKey(
+    options: CommonRequestOptions & { key: string; data: SubscriptionUpdate },
+  ): Promise<Subscription> {
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/subscriptions/key=${encodeURIComponent(options.key)}`,
+      method: 'POST',
+      data: options.data,
+    })
+  }
+
+  /**
+   * Delete a subscription object by id:
+   * https://docs.commercetools.com/api/projects/subscriptions#delete-subscription-by-id
+   */
+  deleteSubscriptionById(options: CommonRequestOptions & { id: string; version: number }): Promise<Subscription> {
+    ensureNonEmptyString({ value: options.id, name: 'id' })
+
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/subscriptions/${encodeURIComponent(options.id)}`,
+      method: 'DELETE',
+      params: {
+        ...options.params,
+        version: options.version,
+      },
+    })
+  }
+
+  /**
+   * Delete a subscription object by key:
+   * https://docs.commercetools.com/api/projects/subscriptions#delete-subscription-by-key
+   */
+  deleteSubscriptionByKey(options: CommonRequestOptions & { key: string; version: number }): Promise<Subscription> {
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/subscriptions/key=${encodeURIComponent(options.key)}`,
+      method: 'DELETE',
+      params: {
+        ...options.params,
+        version: options.version,
+      },
     })
   }
 
