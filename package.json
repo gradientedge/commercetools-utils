@@ -96,11 +96,11 @@
   },
   "dependencies": {
     "@tshttp/status": "2.0.0",
-    "axios": "1.13.5",
+    "axios": "1.13.6",
     "json-stringify-safe": "5.0.1",
     "qs": "6.15.0",
     "traverse": "0.6.11",
-    "uuid": "11.1.0"
+    "uuid": "13.0.0"
   },
   "pnpm": {
     "overrides": {

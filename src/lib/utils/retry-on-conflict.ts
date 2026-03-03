@@ -115,11 +115,12 @@ export interface RetryOnConflictParams<T = any> {
  * If the {@link RetryOnConflictParams.jitter} parameter is set to `true`, then a random
  * element is added to the exponential increase in retry time.
  */
-export async function retryOnConflict<T>(options: RetryOnConflictParams<T>): Promise<T> {
+export async function retryOnConflict<T>(
+  options: RetryOnConflictParams<T>,
+): Promise<Awaited<ReturnType<RetryOnConflictParams<T>['executeFn']>>> {
   const maxAttempts = (options?.maxRetries || DEFAULT_MAX_RETRIES) + 1
   const delayMs = options?.delayMs || DEFAULT_DELAY_MS
   const jitter = !!options?.jitter
-  let result: T
 
   for (let attemptCount = 1; attemptCount <= maxAttempts; attemptCount++) {
     if (attemptCount > 1) {
@@ -135,5 +136,6 @@ export async function retryOnConflict<T>(options: RetryOnConflictParams<T>): Pro
     }
   }
 
-  return result!
+  // This line is unreachable but satisfies TypeScript's control flow analysis
+  throw new Error('Unexpected: maxAttempts should have been reached')
 }
