@@ -14,6 +14,7 @@ import { OrderEditPreviewFailure } from './order-edit.js'
 import { Attribute, ProductReference } from './product.js'
 import { ProductSearchErrorResponse } from './product-search.js'
 import { ProductVariantSelection } from './product-selection.js'
+import { RecurrencePolicyReference, RecurrencePolicyResourceIdentifier } from './recurrence-policy.js'
 import { StandalonePriceReference } from './standalone-price.js'
 import { StoreKeyReference } from './store.js'
 
@@ -57,6 +58,7 @@ export type ErrorObject =
   | EnumKeyDoesNotExistError
   | EnumValueIsUsedError
   | EnumValuesMustMatchError
+  | ExactLockConflictError
   | ExpiredCustomerEmailTokenError
   | ExpiredCustomerPasswordTokenError
   | ExtensionBadResponseError
@@ -81,6 +83,7 @@ export type ErrorObject =
   | LockedFieldError
   | MatchingPriceNotFoundError
   | MaxCartDiscountsReachedError
+  | MaxDiscountGroupsReachedError
   | MaxResourceLimitExceededError
   | MaxStoreReferencesReachedError
   | MissingRoleOnChannelError
@@ -98,6 +101,7 @@ export type ErrorObject =
   | ProjectNotConfiguredForLanguagesError
   | QueryComplexityLimitExceededError
   | QueryTimedOutError
+  | RecurringOrderFailureError
   | ReferenceExistsError
   | ReferencedResourceNotFoundError
   | RequiredFieldError
@@ -112,6 +116,7 @@ export type ErrorObject =
   | ShippingMethodDoesNotMatchCartError
   | StoreCartDiscountsLimitReachedError
   | SyntaxErrorError
+  | ValidityLockConflictError
 export interface IErrorObject {
   [key: string]: any
   /**
@@ -363,12 +368,14 @@ export interface CountryNotConfiguredInStoreError extends IErrorObject {
  *
  *	The error is returned as a failed response to:
  *
- *	- [Create Cart](ctp:api:endpoint:/{projectKey}/carts:POST) and [Create Cart in Store](ctp:api:endpoint:/{projectKey}/in-store/key={storeKey}/carts:POST) requests and [Add DiscountCode](ctp:api:type:CartAddDiscountCodeAction) update action on Carts.
- *	- [Create Cart](ctp:api:endpoint:/{projectKey}/me/carts:POST) and [Create Cart in Store](ctp:api:endpoint:/{projectKey}/in-store/key={storeKey}/me/carts:POST) requests and [Add DiscountCode](ctp:api:type:MyCartAddDiscountCodeAction) update action on My Carts.
+ *	- [Create Cart](ctp:api:endpoint:/{projectKey}/carts:POST) and [Create Cart in Store](ctp:api:endpoint:/{projectKey}/in-store/key={storeKey}/carts:POST) requests.
+ *	- [Create Cart](ctp:api:endpoint:/{projectKey}/me/carts:POST) and [Create Cart in Store](ctp:api:endpoint:/{projectKey}/in-store/key={storeKey}/me/carts:POST) requests.
  *	- [Create Cart in BusinessUnit](ctp:api:endpoint:/{projectKey}/as-associate/{associateId}/in-business-unit/key={businessUnitKey}/carts:POST) request on Associate Carts.
  *	- [Create Order from Cart](ctp:api:endpoint:/{projectKey}/orders:POST) and [Create Order in Store from Cart](ctp:api:endpoint:/{projectKey}/in-store/orders:POST) requests on Orders.
  *	- [Create Order from Cart](ctp:api:endpoint:/{projectKey}/me/orders:POST) and [Create Order in Store from Cart](ctp:api:endpoint:/{projectKey}/in-store/me/orders:POST) requests on My Orders.
- *	- [Add DiscountCode](ctp:api:type:StagedOrderAddDiscountCodeAction) update action on Order Edits.
+ *	- [Add DiscountCode](ctp:api:type:CartAddDiscountCodeAction) update action on Carts, if the associated Cart Discounts are inactive or invalid, or belongs to a different Store than the Cart.
+ *	- [Add DiscountCode](ctp:api:type:MyCartAddDiscountCodeAction) update action on My Carts, if the associated Cart Discounts are inactive or invalid, or belongs to a different Store than the Cart.
+ *	- [Add DiscountCode](ctp:api:type:StagedOrderAddDiscountCodeAction) update action on Order Edits, if the associated Cart Discounts are inactive or invalid, or belongs to a different Store than the Order.
  *	- [Create Order from Cart in BusinessUnit](ctp:api:endpoint:/{projectKey}/as-associate/{associateId}/in-business-unit/key={businessUnitKey}/orders:POST) request on Associate Orders.
  *
  */
@@ -822,6 +829,74 @@ export interface AuthErrorResponse extends ErrorResponse {
    *
    */
   readonly errors: ErrorObject[]
+}
+/**
+ *	Returned when a modification is already in progress for the exact combination of SKU and price scope fields for a Standalone Price.
+ *	Retry the same request after 300 ms.
+ *
+ *	The error is returned as a failed response to:
+ *	- [Create StandalonePrice](ctp:api:endpoint:/{projectKey}/standalone-prices:POST)
+ *	- [Update StandalonePrice by ID](ctp:api:endpoint:/{projectKey}/standalone-prices/{id}:POST)
+ *	- [Update StandalonePrice by Key](ctp:api:endpoint:/{projectKey}/standalone-prices/key={key}:POST)
+ *
+ */
+export interface ExactLockConflictError extends IErrorObject {
+  readonly code: 'ExactLockConflict'
+  [key: string]: any
+  /**
+   *	`"Modification already in progress for the combination of SKU and price scope fields."`
+   *
+   *
+   */
+  readonly message: string
+  /**
+   *	SKU for which the modification conflict occurred.
+   *
+   *
+   */
+  readonly sku: string
+  /**
+   *	Currency code of the Standalone Price.
+   *
+   *
+   */
+  readonly currency: string
+  /**
+   *	Country code of the geographic location.
+   *
+   *
+   */
+  readonly country?: string
+  /**
+   *	[CustomerGroup](ctp:api:type:CustomerGroup) for which the Standalone Price is valid.
+   *
+   *
+   */
+  readonly customerGroup?: CustomerGroupResourceIdentifier
+  /**
+   *	[Channel](ctp:api:type:Channel) for which the Standalone Price is valid.
+   *
+   *
+   */
+  readonly channel?: ChannelResourceIdentifier
+  /**
+   *	Date and time (UTC) from which the Standalone Price is valid.
+   *
+   *
+   */
+  readonly validFrom?: string
+  /**
+   *	Date and time (UTC) until which the Standalone Price is valid.
+   *
+   *
+   */
+  readonly validUntil?: string
+  /**
+   *	[RecurrencePolicy](ctp:api:type:RecurrencePolicy) that applies to the Standalone Price.
+   *
+   *
+   */
+  readonly recurrencePolicy?: RecurrencePolicyReference
 }
 /**
  *	Returned when the provided email token of the Customer has expired.
@@ -1390,6 +1465,25 @@ export interface MaxCartDiscountsReachedError extends IErrorObject {
   readonly message: string
 }
 /**
+ *	Returned when a Discount Group cannot be created or activated as the [limit](/../api/limits#discount-groups) for active Discount Groups has been reached.
+ *
+ *	The error is returned as a failed response to:
+ *
+ *	- [Create DiscountGroup](ctp:api:endpoint:/{projectKey}/discount-groups:POST) request
+ *	- [Set IsActive](ctp:api:type:DiscountGroupSetIsActiveAction) update action
+ *
+ */
+export interface MaxDiscountGroupsReachedError extends IErrorObject {
+  readonly code: 'MaxDiscountGroupsReached'
+  [key: string]: any
+  /**
+   *	`"Maximum number of active discount groups reached ($max)."`
+   *
+   *
+   */
+  readonly message: string
+}
+/**
  *	Returned when a resource type cannot be created as it has reached its [limits](/../api/limits).
  *
  *	The limits must be adjusted for this resource before sending the request again.
@@ -1511,8 +1605,7 @@ export interface MissingTaxRateForCountryError extends IErrorObject {
   readonly state?: string
 }
 /**
- *	Returned when a [Money](ctp:api:type:Money) operation overflows the 64-bit integer range.
- *	See [Money usage](/types#usage) for more information.
+ *	Returned when a money operation overflows the 64-bit integer range.
  *
  */
 export interface MoneyOverflowError extends IErrorObject {
@@ -1830,6 +1923,26 @@ export interface QueryTimedOutError extends IErrorObject {
   readonly message: string
 }
 /**
+ *	Returned when a subsequent Order for a [Recurring Order](ctp:api:type:RecurringOrder) could not be processed.
+ *
+ */
+export interface RecurringOrderFailureError extends IErrorObject {
+  readonly code: 'RecurringOrderFailure'
+  [key: string]: any
+  /**
+   *	Plain text description of the error.
+   *
+   *
+   */
+  readonly message: string
+  /**
+   *	Details about the error's cause and the entities involved.
+   *
+   *
+   */
+  readonly details: any
+}
+/**
  *	Returned when a resource cannot be deleted because it is being referenced by another resource.
  *
  */
@@ -2076,6 +2189,62 @@ export interface SyntaxErrorError extends IErrorObject {
    */
   readonly message: string
 }
+/**
+ *	Returned when a modification is already in progress for the combination of SKU and price scope fields (but potentially different validity period) for a Standalone Price.
+ *	Retry the same request after 300 ms.
+ *
+ *	The error is returned as a failed response to:
+ *	- [Create StandalonePrice](ctp:api:endpoint:/{projectKey}/standalone-prices:POST)
+ *	- [Update StandalonePrice by ID](ctp:api:endpoint:/{projectKey}/standalone-prices/{id}:POST)
+ *	- [Update StandalonePrice by Key](ctp:api:endpoint:/{projectKey}/standalone-prices/key={key}:POST)
+ *
+ */
+export interface ValidityLockConflictError extends IErrorObject {
+  readonly code: 'ValidityLockConflict'
+  [key: string]: any
+  /**
+   *	`"Modification already in progress for the combination of SKU, price scope fields (but potentially different validity period). Please retry after the current operation completes."`
+   *
+   *
+   */
+  readonly message: string
+  /**
+   *	SKU for which the modification conflict occurred.
+   *
+   *
+   */
+  readonly sku: string
+  /**
+   *	Currency code of the Standalone Price.
+   *
+   *
+   */
+  readonly currency: string
+  /**
+   *	Country code of the geographic location.
+   *
+   *
+   */
+  readonly country?: string
+  /**
+   *	[CustomerGroup](ctp:api:type:CustomerGroup) for which the Standalone Price is valid.
+   *
+   *
+   */
+  readonly customerGroup?: CustomerGroupResourceIdentifier
+  /**
+   *	[Channel](ctp:api:type:Channel) for which the Standalone Price is valid.
+   *
+   *
+   */
+  readonly channel?: ChannelResourceIdentifier
+  /**
+   *	[RecurrencePolicy](ctp:api:type:RecurrencePolicy) for which the Standalone Price is valid.
+   *
+   *
+   */
+  readonly recurrencePolicy?: RecurrencePolicyResourceIdentifier
+}
 export interface VariantValues {
   /**
    *	SKU of the [ProductVariant](ctp:api:type:ProductVariant).
@@ -2124,6 +2293,7 @@ export type GraphQLErrorObject =
   | GraphQLEnumKeyDoesNotExistError
   | GraphQLEnumValueIsUsedError
   | GraphQLEnumValuesMustMatchError
+  | GraphQLExactLockConflictError
   | GraphQLExpiredCustomerEmailTokenError
   | GraphQLExpiredCustomerPasswordTokenError
   | GraphQLExtensionBadResponseError
@@ -2148,6 +2318,7 @@ export type GraphQLErrorObject =
   | GraphQLLockedFieldError
   | GraphQLMatchingPriceNotFoundError
   | GraphQLMaxCartDiscountsReachedError
+  | GraphQLMaxDiscountGroupsReachedError
   | GraphQLMaxResourceLimitExceededError
   | GraphQLMaxStoreReferencesReachedError
   | GraphQLMissingRoleOnChannelError
@@ -2165,6 +2336,7 @@ export type GraphQLErrorObject =
   | GraphQLProjectNotConfiguredForLanguagesError
   | GraphQLQueryComplexityLimitExceededError
   | GraphQLQueryTimedOutError
+  | GraphQLRecurringOrderFailureError
   | GraphQLReferenceExistsError
   | GraphQLReferencedResourceNotFoundError
   | GraphQLRequiredFieldError
@@ -2179,6 +2351,7 @@ export type GraphQLErrorObject =
   | GraphQLShippingMethodDoesNotMatchCartError
   | GraphQLStoreCartDiscountsLimitReachedError
   | GraphQLSyntaxErrorError
+  | GraphQLValidityLockConflictError
 export interface IGraphQLErrorObject {
   [key: string]: any
   /**
@@ -2369,12 +2542,14 @@ export interface GraphQLCountryNotConfiguredInStoreError extends IGraphQLErrorOb
  *
  *	The error is returned as a failed response to:
  *
- *	- [Create Cart](ctp:api:endpoint:/{projectKey}/carts:POST) and [Create Cart in Store](ctp:api:endpoint:/{projectKey}/in-store/key={storeKey}/carts:POST) requests and [Add DiscountCode](ctp:api:type:CartAddDiscountCodeAction) update action on Carts.
- *	- [Create Cart](ctp:api:endpoint:/{projectKey}/me/carts:POST) and [Create Cart in Store](ctp:api:endpoint:/{projectKey}/in-store/key={storeKey}/me/carts:POST) requests and [Add DiscountCode](ctp:api:type:MyCartAddDiscountCodeAction) update action on My Carts.
+ *	- [Create Cart](ctp:api:endpoint:/{projectKey}/carts:POST) and [Create Cart in Store](ctp:api:endpoint:/{projectKey}/in-store/key={storeKey}/carts:POST) requests.
+ *	- [Create Cart](ctp:api:endpoint:/{projectKey}/me/carts:POST) and [Create Cart in Store](ctp:api:endpoint:/{projectKey}/in-store/key={storeKey}/me/carts:POST) requests.
  *	- [Create Cart in BusinessUnit](ctp:api:endpoint:/{projectKey}/as-associate/{associateId}/in-business-unit/key={businessUnitKey}/carts:POST) request on Associate Carts.
  *	- [Create Order from Cart](ctp:api:endpoint:/{projectKey}/orders:POST) and [Create Order in Store from Cart](ctp:api:endpoint:/{projectKey}/in-store/orders:POST) requests on Orders.
  *	- [Create Order from Cart](ctp:api:endpoint:/{projectKey}/me/orders:POST) and [Create Order in Store from Cart](ctp:api:endpoint:/{projectKey}/in-store/me/orders:POST) requests on My Orders.
- *	- [Add DiscountCode](ctp:api:type:StagedOrderAddDiscountCodeAction) update action on Order Edits.
+ *	- [Add DiscountCode](ctp:api:type:CartAddDiscountCodeAction) update action on Carts, if the associated Cart Discounts are inactive or invalid, or belongs to a different Store than the Cart.
+ *	- [Add DiscountCode](ctp:api:type:MyCartAddDiscountCodeAction) update action on My Carts, if the associated Cart Discounts are inactive or invalid, or belongs to a different Store than the Cart.
+ *	- [Add DiscountCode](ctp:api:type:StagedOrderAddDiscountCodeAction) update action on Order Edits, if the associated Cart Discounts are inactive or invalid, or belongs to a different Store than the Order.
  *	- [Create Order from Cart in BusinessUnit](ctp:api:endpoint:/{projectKey}/as-associate/{associateId}/in-business-unit/key={businessUnitKey}/orders:POST) request on Associate Orders.
  *
  */
@@ -2688,6 +2863,68 @@ export interface GraphQLEnumValueIsUsedError extends IGraphQLErrorObject {
 export interface GraphQLEnumValuesMustMatchError extends IGraphQLErrorObject {
   readonly code: 'EnumValuesMustMatch'
   [key: string]: any
+}
+/**
+ *	Returned when a modification is already in progress for the exact combination of SKU and price scope fields for a Standalone Price.
+ *	Retry the same request after 300 ms.
+ *
+ *	The error is returned as a failed response to:
+ *	- [Create StandalonePrice](ctp:api:endpoint:/{projectKey}/standalone-prices:POST)
+ *	- [Update StandalonePrice by ID](ctp:api:endpoint:/{projectKey}/standalone-prices/{id}:POST)
+ *	- [Update StandalonePrice by Key](ctp:api:endpoint:/{projectKey}/standalone-prices/key={key}:POST)
+ *
+ */
+export interface GraphQLExactLockConflictError extends IGraphQLErrorObject {
+  readonly code: 'ExactLockConflict'
+  [key: string]: any
+  /**
+   *	SKU for which the modification conflict occurred.
+   *
+   *
+   */
+  readonly sku: string
+  /**
+   *	Currency code of the Standalone Price.
+   *
+   *
+   */
+  readonly currency: string
+  /**
+   *	Country code of the geographic location.
+   *
+   *
+   */
+  readonly country?: string
+  /**
+   *	[CustomerGroup](ctp:api:type:CustomerGroup) for which the Standalone Price is valid.
+   *
+   *
+   */
+  readonly customerGroup?: CustomerGroupResourceIdentifier
+  /**
+   *	[Channel](ctp:api:type:Channel) for which the Standalone Price is valid.
+   *
+   *
+   */
+  readonly channel?: ChannelResourceIdentifier
+  /**
+   *	Date and time (UTC) from which the Standalone Price is valid.
+   *
+   *
+   */
+  readonly validFrom?: string
+  /**
+   *	Date and time (UTC) until which the Standalone Price is valid.
+   *
+   *
+   */
+  readonly validUntil?: string
+  /**
+   *	[RecurrencePolicy](ctp:api:type:RecurrencePolicy) that applies to the Standalone Price.
+   *
+   *
+   */
+  readonly recurrencePolicy?: RecurrencePolicyReference
 }
 /**
  *	Returned when the provided email token of the Customer has expired.
@@ -3088,6 +3325,19 @@ export interface GraphQLMaxCartDiscountsReachedError extends IGraphQLErrorObject
   [key: string]: any
 }
 /**
+ *	Returned when a Discount Group cannot be created or activated as the [limit](/../api/limits#discount-groups) for active Discount Groups has been reached.
+ *
+ *	The error is returned as a failed response to:
+ *
+ *	- [Create DiscountGroup](ctp:api:endpoint:/{projectKey}/discount-groups:POST) request
+ *	- [Set IsActive](ctp:api:type:DiscountGroupSetIsActiveAction) update action
+ *
+ */
+export interface GraphQLMaxDiscountGroupsReachedError extends IGraphQLErrorObject {
+  readonly code: 'MaxDiscountGroupsReached'
+  [key: string]: any
+}
+/**
  *	Returned when a resource type cannot be created as it has reached its [limits](/../api/limits).
  *
  *	The limits must be adjusted for this resource before sending the request again.
@@ -3185,8 +3435,7 @@ export interface GraphQLMissingTaxRateForCountryError extends IGraphQLErrorObjec
   readonly state?: string
 }
 /**
- *	Returned when a [Money](ctp:api:type:Money) operation overflows the 64-bit integer range.
- *	See [Money usage](/types#usage) for more information.
+ *	Returned when a money operation overflows the 64-bit integer range.
  *
  */
 export interface GraphQLMoneyOverflowError extends IGraphQLErrorObject {
@@ -3425,6 +3674,20 @@ export interface GraphQLQueryTimedOutError extends IGraphQLErrorObject {
   [key: string]: any
 }
 /**
+ *	Returned when a subsequent Order for a [Recurring Order](ctp:api:type:RecurringOrder) could not be processed.
+ *
+ */
+export interface GraphQLRecurringOrderFailureError extends IGraphQLErrorObject {
+  readonly code: 'RecurringOrderFailure'
+  [key: string]: any
+  /**
+   *	Details about the error's cause and the entities involved.
+   *
+   *
+   */
+  readonly details: any
+}
+/**
  *	Returned when a resource cannot be deleted because it is being referenced by another resource.
  *
  */
@@ -3586,4 +3849,54 @@ export interface GraphQLStoreCartDiscountsLimitReachedError extends IGraphQLErro
 export interface GraphQLSyntaxErrorError extends IGraphQLErrorObject {
   readonly code: 'SyntaxError'
   [key: string]: any
+}
+/**
+ *	Returned when a modification is already in progress for the combination of SKU and price scope fields (but potentially different validity period) for a Standalone Price.
+ *	Retry the same request after 300 ms.
+ *
+ *	The error is returned as a failed response to:
+ *	- [Create StandalonePrice](ctp:api:endpoint:/{projectKey}/standalone-prices:POST)
+ *	- [Update StandalonePrice by ID](ctp:api:endpoint:/{projectKey}/standalone-prices/{id}:POST)
+ *	- [Update StandalonePrice by Key](ctp:api:endpoint:/{projectKey}/standalone-prices/key={key}:POST)
+ *
+ */
+export interface GraphQLValidityLockConflictError extends IGraphQLErrorObject {
+  readonly code: 'ValidityLockConflict'
+  [key: string]: any
+  /**
+   *	SKU for which the modification conflict occurred.
+   *
+   *
+   */
+  readonly sku: string
+  /**
+   *	Currency code of the Standalone Price.
+   *
+   *
+   */
+  readonly currency: string
+  /**
+   *	Country code of the geographic location.
+   *
+   *
+   */
+  readonly country?: string
+  /**
+   *	[CustomerGroup](ctp:api:type:CustomerGroup) for which the Standalone Price is valid.
+   *
+   *
+   */
+  readonly customerGroup?: CustomerGroupResourceIdentifier
+  /**
+   *	[Channel](ctp:api:type:Channel) for which the Standalone Price is valid.
+   *
+   *
+   */
+  readonly channel?: ChannelResourceIdentifier
+  /**
+   *	[RecurrencePolicy](ctp:api:type:RecurrencePolicy) for which the Standalone Price is valid.
+   *
+   *
+   */
+  readonly recurrencePolicy?: RecurrencePolicyResourceIdentifier
 }

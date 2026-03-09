@@ -74,6 +74,18 @@ export interface InventoryEntry extends BaseResource {
    */
   readonly availableQuantity: number
   /**
+   *	Minimum quantity that can be added to a Cart. See [Quantity limits](/../api/carts-orders-overview#quantity-limits).
+   *
+   *
+   */
+  readonly minCartQuantity?: number
+  /**
+   *	Maximum quantity that can be added to a Cart. See [Quantity limits](/../api/carts-orders-overview#quantity-limits).
+   *
+   *
+   */
+  readonly maxCartQuantity?: number
+  /**
    *	How often the InventoryEntry is restocked (in days).
    *
    */
@@ -119,6 +131,18 @@ export interface InventoryEntryDraft {
    */
   readonly quantityOnStock: number
   /**
+   *	Minimum quantity that can be added to a Cart. See [Quantity limits](/../api/carts-orders-overview#quantity-limits).
+   *
+   *
+   */
+  readonly minCartQuantity?: number
+  /**
+   *	Maximum quantity that can be added to a Cart. See [Quantity limits](/../api/carts-orders-overview#quantity-limits).
+   *
+   *
+   */
+  readonly maxCartQuantity?: number
+  /**
    *	How often the InventoryEntry is restocked (in days).
    *
    *
@@ -131,7 +155,7 @@ export interface InventoryEntryDraft {
    */
   readonly expectedDelivery?: string
   /**
-   *	Custom Fields of the InventoryEntry.
+   *	Custom Fields for the InventoryEntry.
    *
    *
    */
@@ -197,6 +221,7 @@ export type InventoryEntryUpdateAction =
   | InventoryEntrySetCustomFieldAction
   | InventoryEntrySetCustomTypeAction
   | InventoryEntrySetExpectedDeliveryAction
+  | InventoryEntrySetInventoryLimitsAction
   | InventoryEntrySetKeyAction
   | InventoryEntrySetRestockableInDaysAction
   | InventoryEntrySetSupplyChannelAction
@@ -315,6 +340,28 @@ export interface InventoryEntrySetExpectedDeliveryAction extends IInventoryEntry
    *
    */
   readonly expectedDelivery?: string
+}
+/**
+ *	Sets the inventory limits for a specific InventoryEntry. This action allows you to define minimum and maximum
+ *	quantities that can be added to a Cart. For more information, see [Quantity limits](/../api/carts-orders-overview#quantity-limits).
+ *
+ */
+export interface InventoryEntrySetInventoryLimitsAction extends IInventoryEntryUpdateAction {
+  readonly action: 'setInventoryLimits'
+  /**
+   *	Sets the minimum quantity that can be added to a Cart. If the value is absent or `null`
+   *	the inventory limit is removed.
+   *
+   *
+   */
+  readonly minCartQuantity?: number
+  /**
+   *	Sets the maximum quantity that can be added to a Cart. If the value is absent or `null`
+   *	the inventory limit is removed.
+   *
+   *
+   */
+  readonly maxCartQuantity?: number
 }
 export interface InventoryEntrySetKeyAction extends IInventoryEntryUpdateAction {
   readonly action: 'setKey'

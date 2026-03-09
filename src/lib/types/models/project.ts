@@ -71,13 +71,14 @@ export type BusinessUnitSearchStatus = 'Activated' | 'Deactivated' | (string & {
 export interface CartsConfiguration {
   /**
    *	Default value for the `deleteDaysAfterLastModification` parameter of the [CartDraft](ctp:api:type:CartDraft) and [MyCartDraft](ctp:api:type:MyCartDraft).
-   *	If a [ChangeSubscription](ctp:api:type:ChangeSubscription) for Carts exists, a [ResourceDeletedDeliveryPayload](ctp:api:type:ResourceDeletedDeliveryPayload) is sent upon deletion of a Cart.
    *
-   *	This field may not be present on Projects created before January 2020.
+   *	- If a [ChangeSubscription](ctp:api:type:ChangeSubscription) for Carts exists, a [ResourceDeletedDeliveryPayload](ctp:api:type:ResourceDeletedDeliveryPayload) is sent upon deletion of a Cart.
+   *	- Carts with [CartOrigin](ctp:api:type:CartOrigin) `Quote` or `RecurringOrder` are not affected by this configuration value.
+   *	- Changing this value doesn't affect the retention of existing Carts. To update an existing Cart's retention use [`setDeleteDaysAfterLastModification`](/projects/carts#set-deletedaysafterlastmodification) on the Carts API.
    *
    *
    */
-  readonly deleteDaysAfterLastModification?: number
+  readonly deleteDaysAfterLastModification: number
   /**
    *	Indicates if country _- no state_ Tax Rate fallback should be used when a shipping address state is not explicitly covered in the rates lists of all Tax Categories of a Cart Line Items. This field may not be present on Projects created before June 2020.
    *
@@ -110,6 +111,28 @@ export enum CustomerSearchStatusValues {
 }
 
 export type CustomerSearchStatus = 'Activated' | 'Deactivated' | (string & {})
+/**
+ *	Defines how Product Discounts and Cart Discounts are combined for Line Items in every Cart of the Project.
+ *
+ */
+export enum DiscountCombinationModeValues {
+  BestDeal = 'BestDeal',
+  Stacking = 'Stacking',
+}
+
+export type DiscountCombinationMode = 'BestDeal' | 'Stacking' | (string & {})
+/**
+ *	Holds the configuration for behavior of Product and Cart Discounts.
+ *
+ */
+export interface DiscountsConfiguration {
+  /**
+   *	Indicates how Product Discounts and Cart Discounts should be combined. Default value is `Stacking`.
+   *
+   *
+   */
+  readonly discountCombinationMode: DiscountCombinationMode
+}
 /**
  *	Represents a RFC 7662 compliant [OAuth 2.0 Token Introspection](https://datatracker.ietf.org/doc/html/rfc7662) endpoint. For more information, see [Requesting an access token using an external OAuth 2.0 server](/../api/authorization#request-an-access-token-using-an-external-oauth-server).
  *
@@ -206,7 +229,7 @@ export interface Project {
    */
   readonly carts: CartsConfiguration
   /**
-   *	Holds the configuration for the [Shopping Lists](/../api/projects/shoppingLists) feature. This field may not be present on Projects created before January 2020.
+   *	Holds the configuration for the [Shopping Lists](/../api/projects/shoppingLists) feature.
    *
    *
    */
@@ -235,6 +258,12 @@ export interface Project {
    *
    */
   readonly businessUnits?: BusinessUnitConfiguration
+  /**
+   *	Holds configuration specific to discounts, including how Product and Cart Discounts are combined in every Cart of the Project.
+   *
+   *
+   */
+  readonly discounts: DiscountsConfiguration
 }
 export interface ProjectUpdate {
   /**
@@ -268,6 +297,7 @@ export type ProjectUpdateAction =
   | ProjectChangeShoppingListsConfigurationAction
   | ProjectChangeTaxRoundingModeAction
   | ProjectSetBusinessUnitAssociateRoleOnCreationAction
+  | ProjectSetDiscountsConfigurationAction
   | ProjectSetExternalOAuthAction
   | ProjectSetShippingRateInputTypeAction
 export interface IProjectUpdateAction {
@@ -376,11 +406,10 @@ export interface CartValueType extends IShippingRateInputType {
 export interface ShoppingListsConfiguration {
   /**
    *	Default value for the `deleteDaysAfterLastModification` parameter of the [ShoppingListDraft](ctp:api:type:ShoppingListDraft).
-   *	This field may not be present on Projects created before January 2020.
    *
    *
    */
-  readonly deleteDaysAfterLastModification?: number
+  readonly deleteDaysAfterLastModification: number
 }
 export interface ProjectChangeBusinessUnitSearchStatusAction extends IProjectUpdateAction {
   readonly action: 'changeBusinessUnitSearchStatus'
@@ -529,6 +558,15 @@ export interface ProjectSetBusinessUnitAssociateRoleOnCreationAction extends IPr
    *
    */
   readonly associateRole: AssociateRoleResourceIdentifier
+}
+export interface ProjectSetDiscountsConfigurationAction extends IProjectUpdateAction {
+  readonly action: 'setDiscountsConfiguration'
+  /**
+   *	Configuration for the behavior of Cart and Product Discounts in the Project.
+   *
+   *
+   */
+  readonly discountsConfiguration: DiscountsConfiguration
 }
 export interface ProjectSetExternalOAuthAction extends IProjectUpdateAction {
   readonly action: 'setExternalOAuth'

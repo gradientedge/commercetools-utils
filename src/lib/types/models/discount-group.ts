@@ -46,6 +46,12 @@ export interface DiscountGroup extends BaseResource {
    */
   readonly sortOrder: string
   /**
+   *	A DiscountGroup must be active for its CartDiscounts to be considered during discount application.
+   *
+   *
+   */
+  readonly isActive: boolean
+  /**
    *	Date and time (UTC) the DiscountGroup was initially created.
    *
    *
@@ -97,6 +103,12 @@ export interface DiscountGroupDraft {
    *
    */
   readonly sortOrder: string
+  /**
+   *	A DiscountGroup must be active for its CartDiscounts to be considered during discount application.
+   *
+   *
+   */
+  readonly isActive?: boolean
 }
 /**
  *	[PagedQueryResult](/../api/general-concepts#pagedqueryresult) with `results` containing an array of [DiscountGroup](ctp:api:type:DiscountGroup).
@@ -197,6 +209,7 @@ export interface DiscountGroupUpdate {
 }
 export type DiscountGroupUpdateAction =
   | DiscountGroupSetDescriptionAction
+  | DiscountGroupSetIsActiveAction
   | DiscountGroupSetKeyAction
   | DiscountGroupSetNameAction
   | DiscountGroupSetSortOrderAction
@@ -215,6 +228,23 @@ export interface DiscountGroupSetDescriptionAction extends IDiscountGroupUpdateA
    *
    */
   readonly description?: LocalizedString
+}
+/**
+ *	This action generates the [DiscountGroupIsActiveSet](ctp:api:type:DiscountGroupIsActiveSetMessage) Message.
+ *
+ *	If the [limit](/../api/limits#discount-groups) for active Discount Groups has been reached, a [MaxDiscountGroupsReached](ctp:api:type:MaxDiscountGroupsReachedError) error is returned.
+ *
+ */
+export interface DiscountGroupSetIsActiveAction extends IDiscountGroupUpdateAction {
+  readonly action: 'setIsActive'
+  /**
+   *	New value to set.
+   *
+   *	A DiscountGroup must be active for its CartDiscounts to be considered during discount application.
+   *
+   *
+   */
+  readonly isActive: boolean
 }
 /**
  *	Setting a key generates the [DiscountGroupKeySet](ctp:api:type:DiscountGroupKeySetMessage) Message.

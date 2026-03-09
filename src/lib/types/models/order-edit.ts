@@ -506,6 +506,8 @@ export interface StagedOrderAddCustomLineItemAction extends IStagedOrderUpdateAc
   /**
    *	Money value of the Custom Line Item. The value can be negative.
    *
+   *	To set the money value in high precision, use [HighPrecisionMoneyDraft](ctp:api:type:HighPrecisionMoneyDraft).
+   *
    *
    */
   readonly money: _Money
@@ -576,6 +578,8 @@ export interface StagedOrderAddCustomLineItemAction extends IStagedOrderUpdateAc
  *	A [Delivery](ctp:api:type:Delivery) can only be added to an [Order](ctp:api:type:Order) if
  *	its `shippingInfo` (for `shippingMode` = `Single`), or its `shipping` (for `shippingMode` = `Multiple`) exists.
  *
+ *	Multiple Deliveries can be added to the same Order to represent split or partial shipments. However, the API doesn't validate that the cumulative quantities of Line Items or Custom Line Items across all Deliveries match or stay within the originally ordered quantities. For more information, see [Multiple Deliveries](/../api/shipping-delivery-overview#multiple-deliveries) on the Shipping and Delivery overview page.
+ *
  *	Produces the [Delivery Added](ctp:api:type:DeliveryAddedMessage) Message.
  *
  */
@@ -621,8 +625,10 @@ export interface StagedOrderAddDeliveryAction extends IStagedOrderUpdateAction {
   readonly custom?: CustomFieldsDraft
 }
 /**
- *	Adds a [DiscountCode](ctp:api:type:DiscountCode) to the Cart to activate the related [Cart Discounts](/../api/projects/cartDiscounts).
- *	Adding a Discount Code is only possible if no [DirectDiscount](ctp:api:type:DirectDiscount) has been applied to the Order.
+ *	Adds a [DiscountCode](ctp:api:type:DiscountCode) to the Order to activate the related [Cart Discounts](/../api/projects/cartDiscounts).
+ *	If the related Cart Discounts are inactive or invalid, or belong to a different Store than the Order, a [DiscountCodeNonApplicableError](ctp:api:type:DiscountCodeNonApplicableError) is returned.
+ *
+ *	A Discount Code can be added only if no [DirectDiscount](ctp:api:type:DirectDiscount) has been applied to the Order.
  *
  *	The maximum number of Discount Codes in a Cart is restricted by a [limit](/../api/limits#carts).
  *
@@ -639,7 +645,7 @@ export interface StagedOrderAddDiscountCodeAction extends IStagedOrderUpdateActi
   readonly code: string
 }
 /**
- *	Adds an address to an Order when shipping to multiple addresses is desired.
+ *	Adds an address to the `itemShippingAddresses` of an Order. Use this action when shipping is defined per item. For example, when shipping items to multiple addresses or when using different Shipping Methods, even if all items share the same address.
  *
  */
 export interface StagedOrderAddItemShippingAddressAction extends IStagedOrderUpdateAction {
@@ -728,6 +734,8 @@ export interface StagedOrderAddLineItemAction extends IStagedOrderUpdateAction {
   readonly supplyChannel?: ChannelResourceIdentifier
   /**
    *	Sets the [LineItem](ctp:api:type:LineItem) `price` value, and the `priceMode` to `ExternalPrice` [LineItemPriceMode](ctp:api:type:LineItemPriceMode).
+   *
+   *	To set the money value in high precision, use [HighPrecisionMoneyDraft](ctp:api:type:HighPrecisionMoneyDraft).
    *
    *
    */
@@ -825,6 +833,10 @@ export interface StagedOrderAddParcelToDeliveryAction extends IStagedOrderUpdate
    */
   readonly custom?: CustomFieldsDraft
 }
+/**
+ *	Produces the [Order Payment Added](ctp:api:type:OrderPaymentAddedMessage) Message.
+ *
+ */
 export interface StagedOrderAddPaymentAction extends IStagedOrderUpdateAction {
   readonly action: 'addPayment'
   /**
@@ -908,6 +920,8 @@ export interface StagedOrderChangeCustomLineItemMoneyAction extends IStagedOrder
    *	Must not be empty.
    *	Can be a negative amount.
    *
+   *	To set the money value in high precision, use [HighPrecisionMoneyDraft](ctp:api:type:HighPrecisionMoneyDraft).
+   *
    *
    */
   readonly money: _Money
@@ -974,6 +988,8 @@ export interface StagedOrderChangeLineItemQuantityAction extends IStagedOrderUpd
    *	Sets the [LineItem](ctp:api:type:LineItem) `price` to the given value when changing the quantity of a Line Item.
    *
    *	The [LineItem](ctp:api:type:LineItem) price is updated as described in [Line Item price selection](/../api/pricing-and-discounts-overview#line-item-price-selection).
+   *
+   *	To set the money value in high precision, use [HighPrecisionMoneyDraft](ctp:api:type:HighPrecisionMoneyDraft).
    *
    *
    */
@@ -1215,14 +1231,16 @@ export interface StagedOrderRemoveLineItemAction extends IStagedOrderUpdateActio
    */
   readonly lineItemKey?: string
   /**
-   *	New value to set.
-   *	If absent or `0`, the Line Item is removed from the Cart.
+   *	Amount to subtract from the LineItem quantity.
+   *	If omitted, the LineItem is removed from the Order.
    *
    *
    */
   readonly quantity?: number
   /**
    *	Sets the [LineItem](ctp:api:type:LineItem) `price` to the given value when decreasing the quantity of a Line Item with the `ExternalPrice` [LineItemPriceMode](ctp:api:type:LineItemPriceMode).
+   *
+   *	To set the money value in high precision, use [HighPrecisionMoneyDraft](ctp:api:type:HighPrecisionMoneyDraft).
    *
    *
    */
@@ -1263,6 +1281,10 @@ export interface StagedOrderRemoveParcelFromDeliveryAction extends IStagedOrderU
    */
   readonly parcelKey?: string
 }
+/**
+ *	Produces the [Order Payment Removed](ctp:api:type:OrderPaymentRemovedMessage) Message.
+ *
+ */
 export interface StagedOrderRemovePaymentAction extends IStagedOrderUpdateAction {
   readonly action: 'removePayment'
   /**
@@ -1980,6 +2002,8 @@ export interface StagedOrderSetLineItemPriceAction extends IStagedOrderUpdateAct
   /**
    *	Value to set.
    *	If `externalPrice` is not given and the `priceMode` is `ExternalPrice`, the external price is unset and the `priceMode` is set to `Platform`.
+   *
+   *	To set the money value in high precision, use [HighPrecisionMoneyDraft](ctp:api:type:HighPrecisionMoneyDraft).
    *
    *
    */

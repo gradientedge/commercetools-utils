@@ -194,6 +194,12 @@ export interface Cart extends BaseResource {
    */
   readonly cartState: CartState
   /**
+   *	Determines freezing behavior when `cartState` is `Frozen`.
+   *
+   *
+   */
+  readonly freezeStrategy?: FreezeStrategy
+  /**
    *	Billing address associated with the Cart.
    *
    *
@@ -283,7 +289,7 @@ export interface Cart extends BaseResource {
    */
   readonly country?: string
   /**
-   *	Languages of the Cart. Can only contain languages supported by the [Project](ctp:api:type:Project).
+   *	Language of the Cart. Must be one of the languages supported by the [Project](ctp:api:type:Project).
    *
    *
    */
@@ -307,11 +313,24 @@ export interface Cart extends BaseResource {
    */
   readonly discountTypeCombination?: DiscountTypeCombination
   /**
+   *	Indicates whether the Cart has been [locked](/../api/carts-orders-overview#lock-a-cart), preventing edits.
+   *
+   *
+   */
+  readonly lock?: CartLock
+  /**
    *	Number of days after the last modification before a Cart is deleted. Configured in [Project settings](ctp:api:type:CartsConfiguration).
    *
    *
    */
   readonly deleteDaysAfterLastModification?: number
+  /**
+   *	User-defined identifier of a purchase order.
+   *
+   *	It is typically set by the [Buyer](ctp:api:type:Buyer) or Merchant to track the purchase order during the [quote and order flow](/../api/quotes-overview#intended-workflow).
+   *
+   */
+  readonly purchaseOrderNumber?: string
   /**
    *	Date and time (UTC) the Cart was initially created.
    *
@@ -506,7 +525,7 @@ export interface CartDraft {
    */
   readonly country?: string
   /**
-   *	Languages of the Cart. Can only contain languages supported by the [Project](ctp:api:type:Project).
+   *	Language of the Cart. Must be one of the languages supported by the [Project](ctp:api:type:Project).
    *
    *
    */
@@ -532,7 +551,44 @@ export interface CartDraft {
    *
    */
   readonly custom?: CustomFieldsDraft
+  /**
+   *	User-defined identifier of a purchase order.
+   *
+   *	It is typically set by the [Buyer](ctp:api:type:Buyer) or Merchant to track the purchase order during the [quote and order flow](/../api/quotes-overview#intended-workflow).
+   *
+   */
+  readonly purchaseOrderNumber?: string
 }
+/**
+ *	Indicates that the Cart is [locked](/../api/carts-orders-overview#lock-a-cart) to prevent changes.
+ *	Provides metadata about when the lock was created and which
+ *	[API Client](ctp:api:type:ApiClient) initiated it.
+ *
+ */
+export interface CartLock {
+  /**
+   *	Date and time (UTC) the Cart was locked.
+   *
+   *
+   */
+  readonly createdAt: string
+  /**
+   *	`id` of the [API Client](ctp:api:type:ApiClient) that locked the Cart.
+   *
+   *
+   */
+  readonly clientId: string
+}
+/**
+ *	Determines how to manually merge an anonymous Cart with an existing Customer Cart. For more information about merge mode behaviors, merge rules, and tax recalculation, see [Merge a Cart](/../api/carts-orders-overview#merge-a-cart).
+ *
+ */
+export enum CartMergeModeValues {
+  MergeWithExistingCustomerCart = 'MergeWithExistingCustomerCart',
+  UseAsNewActiveCustomerCart = 'UseAsNewActiveCustomerCart',
+}
+
+export type CartMergeMode = 'MergeWithExistingCustomerCart' | 'UseAsNewActiveCustomerCart' | (string & {})
 /**
  *	Indicates who created the Cart.
  *
@@ -671,6 +727,7 @@ export type CartUpdateAction =
   | CartChangeTaxModeAction
   | CartChangeTaxRoundingModeAction
   | CartFreezeCartAction
+  | CartLockCartAction
   | CartRecalculateAction
   | CartRemoveCustomLineItemAction
   | CartRemoveDiscountCodeAction
@@ -714,6 +771,7 @@ export type CartUpdateAction =
   | CartSetLineItemTaxRateAction
   | CartSetLineItemTotalPriceAction
   | CartSetLocaleAction
+  | CartSetPurchaseOrderNumberAction
   | CartSetShippingAddressAction
   | CartSetShippingAddressCustomFieldAction
   | CartSetShippingAddressCustomTypeAction
@@ -724,6 +782,7 @@ export type CartUpdateAction =
   | CartSetShippingMethodTaxRateAction
   | CartSetShippingRateInputAction
   | CartUnfreezeCartAction
+  | CartUnlockCartAction
   | CartUpdateItemShippingAddressAction
 export interface ICartUpdateAction {
   /**
@@ -873,6 +932,8 @@ export interface CustomLineItemDraft {
   /**
    *	Money value of the Custom Line Item.
    *	The value can be negative.
+   *
+   *	To set the money value in high precision, use [HighPrecisionMoneyDraft](ctp:api:type:HighPrecisionMoneyDraft).
    *
    *
    */
@@ -1136,13 +1197,13 @@ export interface IDiscountTypeCombination {
   readonly type: string
 }
 /**
- *	Indicates the best deal logic applies to a Cart or Order and indicates the discount type that offers the best deal.
+ *	Indicates if a Product Discount or Cart Discount offers the best deal for a Cart or Order.
  *
  */
 export interface BestDeal extends IDiscountTypeCombination {
   readonly type: 'BestDeal'
   /**
-   *	Discount type that offers the best deal; the value can be `product-discount` or `cart-discount`.
+   *	Discount type that offers the best deal; the value can be `ProductDiscount` or `CartDiscount`.
    *
    *
    */
@@ -1180,6 +1241,8 @@ export interface DiscountedLineItemPrice {
   /**
    *	Money value of the discounted Line Item or Custom Line Item.
    *
+   *	When multiple discounts from `includedDiscounts` apply, they are applied sequentially based on the `sortOrder` of their associated [Cart Discounts](ctp:api:type:CartDiscount) (discounts with higher `sortOrder` values are applied first). The Cart's `priceRoundingMode` field ([RoundingMode](ctp:api:type:RoundingMode)) is applied after each discount calculation, so rounding occurs after each discount step rather than only once on the final cumulative amount.
+   *
    *
    */
   readonly value: TypedMoney
@@ -1199,6 +1262,8 @@ export interface DiscountedLineItemPriceForQuantity {
   readonly quantity: number
   /**
    *	Discounted price of the Line Item or Custom Line Item.
+   *
+   *	When multiple [Cart Discounts](ctp:api:type:CartDiscount) apply to the same Line Item, the discounts are applied sequentially in the order determined by their `sortOrder` values (higher values are applied first). The [price rounding mode](ctp:api:type:RoundingMode) specified by the Cart's `priceRoundingMode` field is applied after each individual discount is calculated, not after all discounts have been applied cumulatively. This means that rounding occurs at each step of the discount calculation process.
    *
    *
    */
@@ -1221,6 +1286,8 @@ export interface DiscountedTotalPricePortion {
 export interface ExternalLineItemTotalPrice {
   /**
    *	Price of the Line Item.
+   *
+   *	To set the money value in high precision, use [HighPrecisionMoneyDraft](ctp:api:type:HighPrecisionMoneyDraft).
    *
    *
    */
@@ -1302,6 +1369,16 @@ export interface ExternalTaxRateDraft {
    */
   readonly subRates?: SubRate[]
 }
+/**
+ *	Indicates how a [Cart](ctp:api:type:Cart) freeze behaves. For detailed behavior on each of these strategies, see [Freeze a Cart](/../api/carts-orders-overview#freeze-a-cart).
+ *
+ */
+export enum FreezeStrategyValues {
+  HardFreeze = 'HardFreeze',
+  SoftFreeze = 'SoftFreeze',
+}
+
+export type FreezeStrategy = 'HardFreeze' | 'SoftFreeze' | (string & {})
 /**
  *	Indicates how Line Items in a Cart are tracked.
  *
@@ -1624,6 +1701,8 @@ export interface LineItemDraft {
   /**
    *	Sets the [LineItem](ctp:api:type:LineItem) `price` value, and the `priceMode` to `ExternalPrice` [LineItemPriceMode](ctp:api:type:LineItemPriceMode).
    *
+   *	To set the money value in high precision, use [HighPrecisionMoneyDraft](ctp:api:type:HighPrecisionMoneyDraft).
+   *
    *
    */
   readonly externalPrice?: _Money
@@ -1692,6 +1771,38 @@ export enum LineItemPriceModeValues {
 }
 
 export type LineItemPriceMode = 'ExternalPrice' | 'ExternalTotal' | 'Platform' | (string & {})
+/**
+ *	Used for merging an anonymous Cart with a Customer Cart with the [Merge Cart](ctp:api:endpoint:/{projectKey}/carts/customer-id={customerId}/merge:POST) and [Merge Cart in Store](ctp:api:endpoint:/{projectKey}/in-store/key={storeKey}/carts/customer-id={customerId}/merge:POST) endpoints. Either `anonymousCart` or `anonymousId` is required.
+ *
+ */
+export interface MergeCartDraft {
+  /**
+   *	[ResourceIdentifier](ctp:api:type:ResourceIdentifier) to the anonymous [Cart](ctp:api:type:Cart) to be merged. Required if `anonymousId` is not provided.
+   *
+   *
+   */
+  readonly anonymousCart?: CartResourceIdentifier
+  /**
+   *	Determines how to merge the anonymous Cart with the existing Customer Cart.
+   *
+   *
+   */
+  readonly mergeMode?: CartMergeMode
+  /**
+   *	- If `true`, the [LineItem](ctp:api:type:LineItem) Product data (`name`, `variant`, and `productType`) of the returned Cart will be updated.
+   *	- If `false`, only the prices, discounts, and tax rates will be updated.
+   *
+   *
+   */
+  readonly updateProductData?: boolean
+  /**
+   *	Assigns the Customer to the [Carts](ctp:api:type:Cart) that have the same `anonymousId`. Required if `anonymousCart` is not provided.
+   *	If both `anonymousCart` and `anonymousId` are provided, this value must match the `anonymousId` of the anonymous [Cart](ctp:api:type:Cart) otherwise, an [InvalidOperation](ctp:api:type:InvalidOperationError) error is returned.
+   *
+   *
+   */
+  readonly anonymousId?: string
+}
 export interface MethodExternalTaxRateDraft {
   /**
    *	User-defined unique identifier of the Shipping Method in a Cart with `Multiple` [ShippingMode](ctp:api:type:ShippingMode).
@@ -2180,6 +2291,8 @@ export interface CartAddCustomLineItemAction extends ICartUpdateAction {
    *	Money value of the Custom Line Item.
    *	The value can be negative.
    *
+   *	To set the money value in high precision, use [HighPrecisionMoneyDraft](ctp:api:type:HighPrecisionMoneyDraft).
+   *
    *
    */
   readonly money: _Money
@@ -2317,8 +2430,10 @@ export interface CartAddCustomShippingMethodAction extends ICartUpdateAction {
 }
 /**
  *	Adds a [DiscountCode](ctp:api:type:DiscountCode) to the Cart to activate the related [Cart Discounts](/../api/projects/cartDiscounts).
- *	Adding a Discount Code is only possible if no [DirectDiscount](ctp:api:type:DirectDiscount) has been applied to the Cart.
- *	Discount Codes can be added to [frozen Carts](ctp:api:type:FrozenCarts), but their [DiscountCodeState](ctp:api:type:DiscountCodeState) is then `DoesNotMatchCart`.
+ *	If the related Cart Discounts are inactive or invalid, or belong to a different Store than the Cart, a [DiscountCodeNonApplicableError](ctp:api:type:DiscountCodeNonApplicableError) is returned.
+ *
+ *	A Discount Code can be added only if no [DirectDiscount](ctp:api:type:DirectDiscount) has been applied to the Cart.
+ *	For [frozen Carts](ctp:api:type:FrozenCarts), the [DiscountCodeState](ctp:api:type:DiscountCodeState) must be `DoesNotMatchCart` when adding a Discount Code.
  *
  *	The maximum number of Discount Codes in a Cart is restricted by a [limit](/../api/limits#carts).
  *
@@ -2335,7 +2450,7 @@ export interface CartAddDiscountCodeAction extends ICartUpdateAction {
   readonly code: string
 }
 /**
- *	Adds an address to a Cart when shipping to multiple addresses is desired.
+ *	Adds an address to the `itemShippingAddresses` of a Cart. Use this action when shipping is defined per item. For example, when shipping items to multiple addresses or when using different Shipping Methods, even if all items share the same address.
  *
  */
 export interface CartAddItemShippingAddressAction extends ICartUpdateAction {
@@ -2359,7 +2474,7 @@ export interface CartAddItemShippingAddressAction extends ICartUpdateAction {
  *
  *	If the Line Items do not have a Price according to the [Product](ctp:api:type:Product) `priceMode` value for a selected currency and/or country, Customer Group, or Channel, a [MatchingPriceNotFound](ctp:api:type:MatchingPriceNotFoundError) error is returned.
  *
- *	If the Line Items are added to a Cart bound to a Store with active Product Selections, the selected Product Variant must be [available in that Store](/../api/projects/stores#products-available-in-store), otherwise an [InvalidInput](ctp:api:type:InvalidInputError) error is returned.
+ *	If the Line Items are added to a Cart bound to a Store with active Product Selections, the selected Product Variant must be [available in that Store](/api/project-configuration-overview#products-available-in-store), otherwise an [InvalidInput](ctp:api:type:InvalidInputError) error is returned.
  *
  */
 export interface CartAddLineItemAction extends ICartUpdateAction {
@@ -2427,6 +2542,8 @@ export interface CartAddLineItemAction extends ICartUpdateAction {
   readonly supplyChannel?: ChannelResourceIdentifier
   /**
    *	Sets the [LineItem](ctp:api:type:LineItem) `price` value, and the `priceMode` to `ExternalPrice` [LineItemPriceMode](ctp:api:type:LineItemPriceMode).
+   *
+   *	To set the money value in high precision, use [HighPrecisionMoneyDraft](ctp:api:type:HighPrecisionMoneyDraft).
    *
    *
    */
@@ -2630,6 +2747,8 @@ export interface CartChangeCustomLineItemMoneyAction extends ICartUpdateAction {
   /**
    *	Value to set. Must not be empty. Can be a negative amount.
    *
+   *	To set the money value in high precision, use [HighPrecisionMoneyDraft](ctp:api:type:HighPrecisionMoneyDraft).
+   *
    *
    */
   readonly money: _Money
@@ -2702,6 +2821,8 @@ export interface CartChangeCustomLineItemQuantityAction extends ICartUpdateActio
  *
  *	The [LineItem](ctp:api:type:LineItem) price is set as described in [Line Item price selection](/../api/pricing-and-discounts-overview#line-item-price-selection).
  *
+ *	This action is subject to [InventoryEntry](ctp:api:type:InventoryEntry) min/max restrictions when applicable. For more information, see [Quantity limits](/../api/carts-orders-overview#quantity-limits).
+ *
  */
 export interface CartChangeLineItemQuantityAction extends ICartUpdateAction {
   readonly action: 'changeLineItemQuantity'
@@ -2730,6 +2851,8 @@ export interface CartChangeLineItemQuantityAction extends ICartUpdateAction {
    *	Sets the [LineItem](ctp:api:type:LineItem) `price` to the given value when changing the quantity of a Line Item.
    *
    *	The LineItem price is updated as described in Line Item price selection.
+   *
+   *	To set the money value in high precision, use [HighPrecisionMoneyDraft](ctp:api:type:HighPrecisionMoneyDraft).
    *
    *
    */
@@ -2805,12 +2928,34 @@ export interface CartChangeTaxRoundingModeAction extends ICartUpdateAction {
   readonly taxRoundingMode: RoundingMode
 }
 /**
- *	Changes the [CartState](ctp:api:type:CartState) from `Active` to `Frozen`. Results in a [Frozen Cart](ctp:api:type:FrozenCarts).
- *	Fails with [InvalidOperation](ctp:api:type:InvalidOperationError) error when the Cart is empty.
+ *
+ *	Freezes the Cart based on the provided [FreezeStrategy](ctp:api:type:FreezeStrategy).
+ *
+ *	The following behavior occurs:
+ *	  - Changes the Cart State from `Active` to `Frozen`.
+ *	  - Sets the corresponding [FreezeStrategy](ctp:api:type:FreezeStrategy) on the Cart's `freezeStrategy` field.
+ *	  - Produces the [CartFrozen](ctp:api:type:CartFrozenMessage) Message.
+ *
+ *	If the Cart is empty, an [InvalidOperation](ctp:api:type:InvalidOperationError) error is returned.
  *
  */
 export interface CartFreezeCartAction extends ICartUpdateAction {
   readonly action: 'freezeCart'
+  /**
+   *	Strategy that determines the freezing behavior.
+   *
+   *
+   */
+  readonly strategy?: FreezeStrategy
+}
+/**
+ *	[Locks](/../api/carts-orders-overview#lock-a-cart) a Cart, preventing all updates from API Clients without an elevated [OAuth 2.0 Scope](/../api/scopes).
+ *	This action sets the Cart's `lock` [field](/projects/carts#cart) which identifies the API Client that locked the Cart and when the lock was applied.
+ *	This action requires an additional OAuth 2.0 Scope `manage_locked_carts`.
+ *
+ */
+export interface CartLockCartAction extends ICartUpdateAction {
+  readonly action: 'lockCart'
 }
 /**
  *	This update action does not set any Cart field in particular, but it triggers several [Cart updates](/../api/carts-orders-overview#update-a-cart)
@@ -2893,14 +3038,16 @@ export interface CartRemoveLineItemAction extends ICartUpdateAction {
    */
   readonly lineItemKey?: string
   /**
-   *	Amount to subtract from the LineItem's `quantity`.
-   *	If absent, the LineItem is removed from the Cart.
+   *	Amount to subtract from the LineItem quantity.
+   *	If omitted, the LineItem is removed from the Cart.
    *
    *
    */
   readonly quantity?: number
   /**
    *	Sets the [LineItem](ctp:api:type:LineItem) `price` to the given value when decreasing the quantity of a Line Item with the `ExternalPrice` [LineItemPriceMode](ctp:api:type:LineItemPriceMode).
+   *
+   *	To set the money value in high precision, use [HighPrecisionMoneyDraft](ctp:api:type:HighPrecisionMoneyDraft).
    *
    *
    */
@@ -3244,6 +3391,9 @@ export interface CartSetCustomLineItemTaxRateAction extends ICartUpdateAction {
  *	To unset a custom Shipping Method on a Cart, use the [Set ShippingMethod](ctp:api:type:CartSetShippingMethodAction) update action
  *	without the `shippingMethod` field instead.
  *
+ *	This update is not allowed when the Cart is [frozen](/../api/carts-orders-overview#freeze-a-cart) with
+ *	the `HardFreeze` [FreezeStrategy](ctp:api:type:FreezeStrategy).
+ *
  */
 export interface CartSetCustomShippingMethodAction extends ICartUpdateAction {
   readonly action: 'setCustomShippingMethod'
@@ -3341,6 +3491,8 @@ export interface CartSetCustomerIdAction extends ICartUpdateAction {
 }
 /**
  *	Number of days after the last modification before a Cart is deleted.
+ *
+ *	Carts with [CartOrigin](ctp:api:type:CartOrigin) `RecurringOrder` are not affected by this update action.
  *
  *	If a [ChangeSubscription](ctp:api:type:ChangeSubscription) exists for Carts, a [ResourceDeletedDeliveryPayload](ctp:api:type:ResourceDeletedDeliveryPayload) is sent.
  *
@@ -3554,6 +3706,8 @@ export interface CartSetLineItemPriceAction extends ICartUpdateAction {
    *	Value to set.
    *	If `externalPrice` is not given and the `priceMode` is `ExternalPrice`, the external price is unset and the `priceMode` is set to `Platform`.
    *
+   *	To set the money value in high precision, use [HighPrecisionMoneyDraft](ctp:api:type:HighPrecisionMoneyDraft).
+   *
    *
    */
   readonly externalPrice?: _Money
@@ -3609,6 +3763,8 @@ export interface CartSetLineItemShippingDetailsAction extends ICartUpdateAction 
 }
 /**
  *	Performing this action does not reserve stock. Stock is only reserved at Order creation if the [InventoryMode](ctp:api:type:InventoryMode) of the Cart is `TrackOnly` or `ReserveOnOrder`.
+ *
+ *	This action is subject to [InventoryEntry](ctp:api:type:InventoryEntry) min/max restrictions when applicable. For more information, see [Quantity limits](/../api/carts-orders-overview#quantity-limits).
  *
  */
 export interface CartSetLineItemSupplyChannelAction extends ICartUpdateAction {
@@ -3702,6 +3858,7 @@ export interface CartSetLineItemTaxRateAction extends ICartUpdateAction {
 }
 /**
  *	Sets the [LineItem](ctp:api:type:LineItem) `totalPrice` and `price`, and changes the `priceMode` to `ExternalTotal` [LineItemPriceMode](ctp:api:type:LineItemPriceMode).
+ *	Cannot be used on Gift Line Items (see [LineItemMode](ctp:api:type:LineItemMode)).
  *
  */
 export interface CartSetLineItemTotalPriceAction extends ICartUpdateAction {
@@ -3736,6 +3893,20 @@ export interface CartSetLocaleAction extends ICartUpdateAction {
    *
    */
   readonly locale?: string
+}
+/**
+ *	Updates the `purchaseOrderNumber` field and produces the [CartPurchaseOrderNumberSet](ctp:api:type:CartPurchaseOrderNumberSetMessage) Message.
+ *
+ */
+export interface CartSetPurchaseOrderNumberAction extends ICartUpdateAction {
+  readonly action: 'setPurchaseOrderNumber'
+  /**
+   *	Value to set.
+   *	If empty, any existing value is removed.
+   *
+   *
+   */
+  readonly purchaseOrderNumber?: string
 }
 /**
  *	Setting the shipping address also sets the [TaxRate](ctp:api:type:TaxRate) of Line Items and calculates the [TaxedPrice](ctp:api:type:TaxedPrice).
@@ -3847,6 +4018,8 @@ export interface CartSetShippingCustomTypeAction extends ICartUpdateAction {
 /**
  *	To set the Cart's Shipping Method the Cart must have the `Single` [ShippingMode](ctp:api:type:ShippingMode) and a `shippingAddress`.
  *
+ *	This update is not allowed when the Cart is [frozen](/../api/carts-orders-overview#freeze-a-cart) with the `HardFreeze` [FreezeStrategy](ctp:api:type:FreezeStrategy).
+ *
  */
 export interface CartSetShippingMethodAction extends ICartUpdateAction {
   readonly action: 'setShippingMethod'
@@ -3928,9 +4101,19 @@ export interface CartSetShippingRateInputAction extends ICartUpdateAction {
  *	Changes the [CartState](ctp:api:type:CartState) from `Frozen` to `Active`. Reactivates a [Frozen Cart](ctp:api:type:FrozenCarts).
  *	This action updates all prices in the Cart according to latest Prices on related Product Variants and Shipping Methods and by applying all discounts currently being active and applicable for the Cart.
  *
+ *	Unfreezing a Cart produces the [CartUnfrozen](ctp:api:type:CartUnfrozenMessage) Message.
+ *
  */
 export interface CartUnfreezeCartAction extends ICartUpdateAction {
   readonly action: 'unfreezeCart'
+}
+/**
+ *	Unlocks a Cart, removing all update restrictions that are in place while a Cart is [locked](/../api/carts-orders-overview#lock-a-cart).
+ *	This action requires an additional OAuth 2.0 Scope `manage_locked_carts`.
+ *
+ */
+export interface CartUnlockCartAction extends ICartUpdateAction {
+  readonly action: 'unlockCart'
 }
 /**
  *	Updates an address in `itemShippingAddresses` by keeping the Address `key`.

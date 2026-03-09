@@ -33,7 +33,7 @@ import {
   TransactionDraft,
   TransactionType,
 } from './payment.js'
-import { CustomLineItemRecurrenceInfoDraft, LineItemRecurrenceInfoDraft } from './recurring-order.js'
+import { LineItemRecurrenceInfoDraft } from './recurring-order.js'
 import { ShippingMethodResourceIdentifier } from './shipping-method.js'
 import { ShoppingListLineItemDraft, TextLineItemDraft } from './shopping-list.js'
 import { StoreResourceIdentifier } from './store.js'
@@ -262,8 +262,7 @@ export interface MyCartDraft {
    */
   readonly country?: string
   /**
-   *	Languages of the Cart.
-   *	Can only contain languages supported by the [Project](ctp:api:type:Project).
+   *	Language of the Cart. Must be one of the languages supported by the [Project](ctp:api:type:Project).
    *
    *
    */
@@ -317,14 +316,12 @@ export type MyCartUpdateAction =
   | MyCartSetBusinessUnitAction
   | MyCartSetCountryAction
   | MyCartSetCustomFieldAction
-  | MyCartSetCustomLineItemRecurrenceInfoAction
   | MyCartSetCustomTypeAction
   | MyCartSetCustomerEmailAction
   | MyCartSetDeleteDaysAfterLastModificationAction
   | MyCartSetLineItemCustomFieldAction
   | MyCartSetLineItemCustomTypeAction
   | MyCartSetLineItemDistributionChannelAction
-  | MyCartSetLineItemRecurrenceInfoAction
   | MyCartSetLineItemShippingDetailsAction
   | MyCartSetLineItemSupplyChannelAction
   | MyCartSetLocaleAction
@@ -1069,11 +1066,16 @@ export interface MyTransactionDraft {
    */
   readonly interactionId?: string
   /**
-   *	Custom Fields of the Transaction.
+   *	Custom Fields for the Transaction.
    *
    *
    */
   readonly custom?: CustomFieldsDraft
+  /**
+   *	Identifier used by the payment service that processes the Payment (for example, a PSP) in the current transaction.
+   *
+   */
+  readonly interfaceId?: string
 }
 export interface ReplicaMyCartDraft {
   /**
@@ -1416,8 +1418,10 @@ export interface MyBusinessUnitSetDefaultShippingAddressAction extends IMyBusine
 }
 /**
  *	Adds a [DiscountCode](ctp:api:type:DiscountCode) to the Cart to activate the related [CartDiscounts](/../api/projects/cartDiscounts).
- *	Adding a Discount Code is only possible if no [DirectDiscount](ctp:api:type:DirectDiscount) has been applied to the Cart.
- *	Discount Codes can be added to [frozen Carts](ctp:api:type:FrozenCarts), but their [DiscountCodeState](ctp:api:type:DiscountCodeState) is then `DoesNotMatchCart`.
+ *	If the related Cart Discounts are inactive or invalid, or belong to a different Store than the Cart, a [DiscountCodeNonApplicableError](ctp:api:type:DiscountCodeNonApplicableError) is returned.
+ *
+ *	A Discount Code can be added only if no [DirectDiscount](ctp:api:type:DirectDiscount) has been applied to the Cart.
+ *	For [frozen Carts](ctp:api:type:FrozenCarts), the [DiscountCodeState](ctp:api:type:DiscountCodeState) must be `DoesNotMatchCart` when adding a Discount Code.
  *
  *	The maximum number of Discount Codes in a Cart is restricted by a [limit](/../api/limits#carts).
  *
@@ -1434,7 +1438,7 @@ export interface MyCartAddDiscountCodeAction extends IMyCartUpdateAction {
   readonly code: string
 }
 /**
- *	Adds an address to a Cart when shipping to multiple addresses is desired.
+ *	Adds an address to the `itemShippingAddresses` of a Cart. Use this action when shipping is defined per item. For example, when shipping items to multiple addresses or when using different Shipping Methods, even if all items share the same address.
  *
  */
 export interface MyCartAddItemShippingAddressAction extends IMyCartUpdateAction {
@@ -1591,6 +1595,8 @@ export interface MyCartApplyDeltaToLineItemShippingDetailsTargetsAction extends 
  *	it will be changed to `ExternalPrice` and the existing `externalPrice` value, i.e. `LineItem.price`, will be retained.
  *	The LineItem total will be calculated by the system instead, so that the `externalTotalPrice` will be dropped.
  *
+ *	This action is subject to [InventoryEntry](ctp:api:type:InventoryEntry) min/max restrictions when applicable. For more information, see [Quantity limits](/../api/carts-orders-overview#quantity-limits).
+ *
  */
 export interface MyCartChangeLineItemQuantityAction extends IMyCartUpdateAction {
   readonly action: 'changeLineItemQuantity'
@@ -1698,14 +1704,16 @@ export interface MyCartRemoveLineItemAction extends IMyCartUpdateAction {
    */
   readonly lineItemKey?: string
   /**
-   *	Amount to subtract from the LineItem's `quantity`.
-   *	If absent, the LineItem is removed from the Cart.
+   *	Amount to subtract from the LineItem quantity.
+   *	If omitted, the LineItem is removed from the Cart.
    *
    *
    */
   readonly quantity?: number
   /**
    *	Sets the [LineItem](ctp:api:type:LineItem) `price` to the given value when decreasing the quantity of a Line Item with the `ExternalPrice` [LineItemPriceMode](ctp:api:type:LineItemPriceMode).
+   *
+   *	To set the money value in high precision, use [HighPrecisionMoneyDraft](ctp:api:type:HighPrecisionMoneyDraft).
    *
    *
    */
@@ -1789,33 +1797,6 @@ export interface MyCartSetCustomFieldAction extends IMyCartUpdateAction {
    *
    */
   readonly value?: any
-}
-/**
- *	Sets the recurrence information on the [CustomLineItem](ctp:api:type:CustomLineItem).
- *	If the Cart is already associated with a Recurring Order, this action will fail.
- *
- */
-export interface MyCartSetCustomLineItemRecurrenceInfoAction extends IMyCartUpdateAction {
-  readonly action: 'setCustomLineItemRecurrenceInfo'
-  /**
-   *	`id` of the [CustomLineItem](ctp:api:type:CustomLineItem) to update. Either `customLineItemId` or `customLineItemKey` is required.
-   *
-   *
-   */
-  readonly customLineItemId?: string
-  /**
-   *	`key` of the [CustomLineItem](ctp:api:type:CustomLineItem) to update. Either `customLineItemId` or `customLineItemKey` is required.
-   *
-   *
-   */
-  readonly customLineItemKey?: string
-  /**
-   *	Value to set.
-   *	If empty, any existing value will be removed.
-   *
-   *
-   */
-  readonly recurrenceInfo?: CustomLineItemRecurrenceInfoDraft
 }
 export interface MyCartSetCustomTypeAction extends IMyCartUpdateAction {
   readonly action: 'setCustomType'
@@ -1943,33 +1924,6 @@ export interface MyCartSetLineItemDistributionChannelAction extends IMyCartUpdat
    */
   readonly distributionChannel?: ChannelResourceIdentifier
 }
-/**
- *	Sets the recurrence information on the [LineItem](ctp:api:type:LineItem).
- *	If the Cart is already associated with a Recurring Order, this action will fail.
- *
- */
-export interface MyCartSetLineItemRecurrenceInfoAction extends IMyCartUpdateAction {
-  readonly action: 'setLineItemRecurrenceInfo'
-  /**
-   *	`id` of the [LineItem](ctp:api:type:LineItem) to update. Either `lineItemId` or `lineItemKey` is required.
-   *
-   *
-   */
-  readonly lineItemId?: string
-  /**
-   *	`key` of the [LineItem](ctp:api:type:LineItem) to update. Either `lineItemId` or `lineItemKey` is required.
-   *
-   *
-   */
-  readonly lineItemKey?: string
-  /**
-   *	Value to set.
-   *	If empty, any existing value will be removed.
-   *
-   *
-   */
-  readonly recurrenceInfo?: LineItemRecurrenceInfoDraft
-}
 export interface MyCartSetLineItemShippingDetailsAction extends IMyCartUpdateAction {
   readonly action: 'setLineItemShippingDetails'
   /**
@@ -1994,6 +1948,8 @@ export interface MyCartSetLineItemShippingDetailsAction extends IMyCartUpdateAct
 }
 /**
  *	Performing this action does not reserve stock. Stock is only reserved at Order creation if the [InventoryMode](ctp:api:type:InventoryMode) of the Cart is `TrackOnly` or `ReserveOnOrder`.
+ *
+ *	This action is subject to [InventoryEntry](ctp:api:type:InventoryEntry) min/max restrictions when applicable. For more information, see [Quantity limits](/../api/carts-orders-overview#quantity-limits).
  *
  */
 export interface MyCartSetLineItemSupplyChannelAction extends IMyCartUpdateAction {
@@ -2199,40 +2155,40 @@ export interface MyCustomerRemoveAddressAction extends IMyCustomerUpdateAction {
   readonly addressKey?: string
 }
 /**
- *	Removes an existing billing address from `billingAddressesIds`.
+ *	Removes an existing billing address from `billingAddressIds`.
  *	If the billing address is the default billing address, the `defaultBillingAddressId` is unset. Either `addressId` or `addressKey` is required.
  *
  */
 export interface MyCustomerRemoveBillingAddressIdAction extends IMyCustomerUpdateAction {
   readonly action: 'removeBillingAddressId'
   /**
-   *	`id` of the [Address](ctp:api:type:Address) to remove from `billingAddressesIds`.
+   *	`id` of the [Address](ctp:api:type:Address) to remove from `billingAddressIds`.
    *
    *
    */
   readonly addressId?: string
   /**
-   *	`key` of the [Address](ctp:api:type:Address) to remove from `billingAddressesIds`.
+   *	`key` of the [Address](ctp:api:type:Address) to remove from `billingAddressIds`.
    *
    *
    */
   readonly addressKey?: string
 }
 /**
- *	Removes an existing shipping address from `shippingAddressesIds`.
+ *	Removes an existing shipping address from `shippingAddressIds`.
  *	If the shipping address is the default shipping address, the `defaultShippingAddressId` is unset. Either `addressId` or `addressKey` is required.
  *
  */
 export interface MyCustomerRemoveShippingAddressIdAction extends IMyCustomerUpdateAction {
   readonly action: 'removeShippingAddressId'
   /**
-   *	`id` of the [Address](ctp:api:type:Address) to remove from `shippingAddressesIds`.
+   *	`id` of the [Address](ctp:api:type:Address) to remove from `shippingAddressIds`.
    *
    *
    */
   readonly addressId?: string
   /**
-   *	`key` of the [Address](ctp:api:type:Address) to remove from `shippingAddressesIds`.
+   *	`key` of the [Address](ctp:api:type:Address) to remove from `shippingAddressIds`.
    *
    *
    */
