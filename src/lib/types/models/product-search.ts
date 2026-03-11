@@ -92,7 +92,7 @@ export interface ProductSearchMatchingVariants {
   readonly matchedVariants: ProductSearchMatchingVariantEntry[]
 }
 /**
- *	The query parameters used for [data integration with Product Projection parameters](/../api/projects/product-search#with-product-projection-parameters).
+ *	The query parameters used for the deprecated [data integration with Product Projection parameters](/../api/deprecations-and-removals#product-projection-parameters) in Product Search.
  *
  */
 export interface ProductSearchProjectionParams {
@@ -104,7 +104,7 @@ export interface ProductSearchProjectionParams {
    */
   readonly expand?: string[]
   /**
-   *	Set to `true` to retrieve the [staged](ctp:api:type:CurrentStaged) Product Projection
+   *	Set to `true` to retrieve the [staged](/../api/projects/productProjections#current--staged) Product Projection
    *
    *
    */
@@ -140,7 +140,7 @@ export interface ProductSearchProjectionParams {
    */
   readonly priceChannel?: string
   /**
-   *	Used for [locale-based projection](ctp:api:type:ProductProjectionLocales).
+   *	Used for [locale-based projection](/../api/projects/productProjections#locales).
    *
    *
    */
@@ -148,10 +148,12 @@ export interface ProductSearchProjectionParams {
   /**
    *	`key` of an existing [Store](ctp:api:type:Store).
    *	If the Store has defined `languages`, `countries`, `distributionChannels`, or `supplyChannels`,
-   *	they are used for projections based on [locale](ctp:api:type:ProductProjectionLocales), [price](ctp:api:type:ProductProjectionPrices),
-   *	and [inventory](ctp:api:type:ProductProjectionInventoryEntries).
-   *	For Projects with active [Product Selections](/../api/projects/product-selections), the API does not take the [availability of the Product in the specified Store](/../api/projects/stores#products-available-in-store) into account.
-   *	[Product Tailoring](/../api/projects/product-tailoring) modifies the product information returned in API responses, but evaluating [query expressions](/../api/search-query-language#simple-expressions) is restricted to the original product information.
+   *	they are used for projections based on [locale](/../api/projects/productProjections#locales), [price](/../api/projects/productProjections#prices),
+   *	and [inventory](/../api/projects/productProjections#inventory-entries).
+   *
+   *	For Projects with active [Product Selections](/../api/projects/product-selections), the API does not take the [availability of the Product in the specified Store](/../api/project-configuration-overview#products-available-in-store) into account.
+   *
+   *	[Product Tailoring](/../api/projects/product-tailoring) modifies the product information returned in API responses. However, you can only specify [query expressions](/../api/search-query-language#simple-expressions) for the original Product data, not for tailored data.
    *
    *
    */
@@ -192,10 +194,10 @@ export interface ProductSearchRequest {
    */
   readonly markMatchingVariants?: boolean
   /**
-   *	Controls data integration [with Product Projection parameters](/../api/projects/product-search#with-product-projection-parameters).
+   *	Controls deprecated data integration [with Product Projection parameters](/../api/deprecations-and-removals#product-projection-parameters).
    *	If not set, the result does not include the Product Projection.
    *
-   *
+   *	@deprecated
    */
   readonly productProjectionParameters?: ProductSearchProjectionParams
   /**
@@ -228,9 +230,9 @@ export interface ProductSearchResult {
   readonly matchingVariants?: ProductSearchMatchingVariants
   /**
    *	Projected data of the Product with `id`.
-   *	Only present if data integration [with Product Projection parameters](/../api/projects/product-search#with-product-projection-parameters) is requested.
+   *	Only present if deprecated data integration [with Product Projection parameters](/../api/deprecations-and-removals#product-projection-parameters) is requested.
    *
-   *
+   *	@deprecated
    */
   readonly productProjection?: ProductProjection
 }

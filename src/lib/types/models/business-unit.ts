@@ -20,7 +20,13 @@ import {
   LastModifiedBy,
   _BaseAddress,
 } from './common.js'
-import { CustomerReference, CustomerResourceIdentifier } from './customer.js'
+import {
+  CustomerGroupAssignment,
+  CustomerGroupAssignmentDraft,
+  CustomerReference,
+  CustomerResourceIdentifier,
+} from './customer.js'
+import { CustomerGroupResourceIdentifier } from './customer-group.js'
 import { StoreKeyReference, StoreResourceIdentifier } from './store.js'
 import { CustomFields, CustomFieldsDraft, FieldContainer, TypeResourceIdentifier } from './type.js'
 
@@ -185,11 +191,19 @@ export interface IBusinessUnit {
    */
   readonly contactEmail?: string
   /**
-   *	Custom Fields for the Business Unit.
+   *	Custom Fields of the Business Unit.
    *
    *
    */
   readonly custom?: CustomFields
+  /**
+   *	Customer Groups assigned to the Business Unit.
+   *
+   *	They are considered during [line Item price selection](/../api/pricing-and-discounts-overview#line-item-price-selection), if provided (non-null).
+   *
+   *
+   */
+  readonly customerGroupAssignments?: CustomerGroupAssignment[]
   /**
    *	Addresses used by the Business Unit.
    *
@@ -201,7 +215,7 @@ export interface IBusinessUnit {
    *
    *
    */
-  readonly shippingAddressIds?: string[]
+  readonly shippingAddressIds: string[]
   /**
    *	Unique identifier of the address used as the default shipping address.
    *
@@ -213,7 +227,7 @@ export interface IBusinessUnit {
    *
    *
    */
-  readonly billingAddressIds?: string[]
+  readonly billingAddressIds: string[]
   /**
    *	Unique identifier of the address used as the default billing address.
    *
@@ -421,6 +435,14 @@ export interface IBusinessUnitDraft {
    *
    */
   readonly custom?: CustomFieldsDraft
+  /**
+   *	Customer Groups to assign the Business Unit to.
+   *
+   *	They are considered during [line Item price selection](/../api/pricing-and-discounts-overview#line-item-price-selection), if provided (non-null).
+   *
+   *
+   */
+  readonly customerGroupAssignments?: CustomerGroupAssignmentDraft[]
 }
 /**
  *	[KeyReference](ctp:api:type:KeyReference) to a [BusinessUnit](ctp:api:type:BusinessUnit).
@@ -562,6 +584,7 @@ export type BusinessUnitUpdateAction =
   | BusinessUnitAddAddressAction
   | BusinessUnitAddAssociateAction
   | BusinessUnitAddBillingAddressIdAction
+  | BusinessUnitAddCustomerGroupAssignmentAction
   | BusinessUnitAddShippingAddressIdAction
   | BusinessUnitAddStoreAction
   | BusinessUnitChangeAddressAction
@@ -574,6 +597,7 @@ export type BusinessUnitUpdateAction =
   | BusinessUnitRemoveAddressAction
   | BusinessUnitRemoveAssociateAction
   | BusinessUnitRemoveBillingAddressIdAction
+  | BusinessUnitRemoveCustomerGroupAssignmentAction
   | BusinessUnitRemoveShippingAddressIdAction
   | BusinessUnitRemoveStoreAction
   | BusinessUnitSetAddressCustomFieldAction
@@ -582,6 +606,7 @@ export type BusinessUnitUpdateAction =
   | BusinessUnitSetContactEmailAction
   | BusinessUnitSetCustomFieldAction
   | BusinessUnitSetCustomTypeAction
+  | BusinessUnitSetCustomerGroupAssignmentsAction
   | BusinessUnitSetDefaultBillingAddressAction
   | BusinessUnitSetDefaultShippingAddressAction
   | BusinessUnitSetStoreModeAction
@@ -683,11 +708,19 @@ export interface Company extends IBusinessUnit {
    */
   readonly contactEmail?: string
   /**
-   *	Custom Fields for the Business Unit.
+   *	Custom Fields of the Business Unit.
    *
    *
    */
   readonly custom?: CustomFields
+  /**
+   *	Customer Groups assigned to the Business Unit.
+   *
+   *	They are considered during [line Item price selection](/../api/pricing-and-discounts-overview#line-item-price-selection), if provided (non-null).
+   *
+   *
+   */
+  readonly customerGroupAssignments?: CustomerGroupAssignment[]
   /**
    *	Addresses used by the Business Unit.
    *
@@ -699,7 +732,7 @@ export interface Company extends IBusinessUnit {
    *
    *
    */
-  readonly shippingAddressIds?: string[]
+  readonly shippingAddressIds: string[]
   /**
    *	Unique identifier of the address used as the default shipping address.
    *
@@ -711,7 +744,7 @@ export interface Company extends IBusinessUnit {
    *
    *
    */
-  readonly billingAddressIds?: string[]
+  readonly billingAddressIds: string[]
   /**
    *	Unique identifier of the address used as the default billing address.
    *
@@ -862,6 +895,14 @@ export interface CompanyDraft extends IBusinessUnitDraft {
    *
    */
   readonly custom?: CustomFieldsDraft
+  /**
+   *	Customer Groups to assign the Business Unit to.
+   *
+   *	They are considered during [line Item price selection](/../api/pricing-and-discounts-overview#line-item-price-selection), if provided (non-null).
+   *
+   *
+   */
+  readonly customerGroupAssignments?: CustomerGroupAssignmentDraft[]
 }
 /**
  *	Business Unit type to model divisions that are part of the [Company](ctp:api:type:Company) or a higher-order Division.
@@ -953,11 +994,19 @@ export interface Division extends IBusinessUnit {
    */
   readonly contactEmail?: string
   /**
-   *	Custom Fields for the Business Unit.
+   *	Custom Fields of the Business Unit.
    *
    *
    */
   readonly custom?: CustomFields
+  /**
+   *	Customer Groups assigned to the Business Unit.
+   *
+   *	They are considered during [line Item price selection](/../api/pricing-and-discounts-overview#line-item-price-selection), if provided (non-null).
+   *
+   *
+   */
+  readonly customerGroupAssignments?: CustomerGroupAssignment[]
   /**
    *	Addresses used by the Business Unit.
    *
@@ -969,7 +1018,7 @@ export interface Division extends IBusinessUnit {
    *
    *
    */
-  readonly shippingAddressIds?: string[]
+  readonly shippingAddressIds: string[]
   /**
    *	Unique identifier of the address used as the default shipping address.
    *
@@ -981,7 +1030,7 @@ export interface Division extends IBusinessUnit {
    *
    *
    */
-  readonly billingAddressIds?: string[]
+  readonly billingAddressIds: string[]
   /**
    *	Unique identifier of the address used as the default billing address.
    *
@@ -1131,6 +1180,14 @@ export interface DivisionDraft extends IBusinessUnitDraft {
    */
   readonly custom?: CustomFieldsDraft
   /**
+   *	Customer Groups to assign the Business Unit to.
+   *
+   *	They are considered during [line Item price selection](/../api/pricing-and-discounts-overview#line-item-price-selection), if provided (non-null).
+   *
+   *
+   */
+  readonly customerGroupAssignments?: CustomerGroupAssignmentDraft[]
+  /**
    *	The parent unit of this Division. Can be a Company or a Division.
    *
    *
@@ -1209,6 +1266,21 @@ export interface BusinessUnitAddBillingAddressIdAction extends IBusinessUnitUpda
    *
    */
   readonly addressKey?: string
+}
+/**
+ *	Assigns a Customer Group to a Business Unit.
+ *
+ *	This action generates the [BusinessUnitCustomerGroupAssignmentAdded](ctp:api:type:BusinessUnitCustomerGroupAssignmentAddedMessage) Message.
+ *
+ */
+export interface BusinessUnitAddCustomerGroupAssignmentAction extends IBusinessUnitUpdateAction {
+  readonly action: 'addCustomerGroupAssignment'
+  /**
+   *	Customer Group to assign the Business Unit to.
+   *
+   *
+   */
+  readonly customerGroupAssignment: CustomerGroupAssignmentDraft
 }
 /**
  *	Adding a shipping address to a [Business Unit](ctp:api:type:BusinessUnit) generates a [BusinessUnitShippingAddressAdded](ctp:api:type:BusinessUnitShippingAddressAddedMessage) Message.
@@ -1412,6 +1484,21 @@ export interface BusinessUnitRemoveBillingAddressIdAction extends IBusinessUnitU
   readonly addressKey?: string
 }
 /**
+ *	Unassigns a Customer Group from a Business Unit.
+ *
+ *	This action generates the [BusinessUnitCustomerGroupAssignmentRemoved](ctp:api:type:BusinessUnitCustomerGroupAssignmentRemovedMessage) Message.
+ *
+ */
+export interface BusinessUnitRemoveCustomerGroupAssignmentAction extends IBusinessUnitUpdateAction {
+  readonly action: 'removeCustomerGroupAssignment'
+  /**
+   *	Customer Group to unassign the Business Unit from.
+   *
+   *
+   */
+  readonly customerGroup: CustomerGroupResourceIdentifier
+}
+/**
  *	Removing a shipping address from a [Business Unit](ctp:api:type:BusinessUnit) generates a [BusinessUnitShippingAddressRemoved](ctp:api:type:BusinessUnitShippingAddressRemovedMessage) Message.
  *
  */
@@ -1568,6 +1655,21 @@ export interface BusinessUnitSetCustomTypeAction extends IBusinessUnitUpdateActi
    *
    */
   readonly fields?: FieldContainer
+}
+/**
+ *	Assigns multiple Customer Groups to a Business Unit.
+ *
+ *	This action generates the [BusinessUnitCustomerGroupAssignmentsSet](ctp:api:type:BusinessUnitCustomerGroupAssignmentsSetMessage) Message.
+ *
+ */
+export interface BusinessUnitSetCustomerGroupAssignmentsAction extends IBusinessUnitUpdateAction {
+  readonly action: 'setCustomerGroupAssignments'
+  /**
+   *	Customer Groups to assign the Business Unit to.
+   *
+   *
+   */
+  readonly customerGroupAssignments?: CustomerGroupAssignmentDraft[]
 }
 /**
  *	Setting the default billing address on a [Business Unit](ctp:api:type:BusinessUnit) generates the [BusinessUnitDefaultBillingAddressSet](ctp:api:type:BusinessUnitDefaultBillingAddressSetMessage) Message.

@@ -321,7 +321,7 @@ export interface ShoppingListLineItemDraft {
    */
   readonly addedAt?: string
   /**
-   *	Custom Fields of the ShoppingListLineItem.
+   *	Custom Fields for the ShoppingListLineItem.
    *
    *
    */

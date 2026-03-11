@@ -185,13 +185,6 @@ export interface FilteredFacetResult extends IFacetResult {
    */
   readonly productCount?: number
 }
-/**
- *	An abstract sellable good with a set of Attributes defined by a Product Type.
- *	Products themselves are not sellable. Instead, they act as a parent structure for Product Variants.
- *	Each Product must have at least one Product Variant, which is called the Master Variant.
- *	A single Product representation contains the _current_ and the _staged_ representation of its product data.
- *
- */
 export interface Product extends BaseResource {
   /**
    *	Unique identifier of the Product.
@@ -280,13 +273,9 @@ export interface Product extends BaseResource {
    */
   readonly warnings?: WarningObject[]
 }
-/**
- *	Contains the `current` and `staged` [ProductData](ctp:api:type:ProductData).
- *
- */
 export interface ProductCatalogData {
   /**
-   *	`true` if the Product is published.
+   *	If `true`, the `current` representation of the Product is retrievable in the [Product Projection](/projects/productProjections) endpoints and indexed for [Product Search](/../api/projects/product-search).
    *
    *
    */
@@ -310,10 +299,6 @@ export interface ProductCatalogData {
    */
   readonly hasStagedChanges: boolean
 }
-/**
- *	Contains all the data of a Product and its Product Variants.
- *
- */
 export interface ProductData {
   /**
    *	Name of the Product.
@@ -384,7 +369,8 @@ export interface ProductData {
    */
   readonly searchKeywords: SearchKeywords
   /**
-   *	Attributes according to the respective [AttributeDefinition](ctp:api:type:AttributeDefinition).
+   *	Product Attributes according to the respective [AttributeDefinition](ctp:api:type:AttributeDefinition).
+   *	**Not supported** by [Product Projection Search](/projects/product-projection-search).
    *
    *
    */
@@ -415,8 +401,6 @@ export interface ProductDraft {
    *	User-defined unique identifier for the Product.
    *
    *	This field is optional for backwards compatibility reasons, but we strongly recommend setting it. Keys are mandatory for importing Products with the [Import API](/../api/import-export/overview) and the [Merchant Center](/../merchant-center/import-data).
-   *
-   *	To update a Product using the Import API or Merchant Center, the Product `key` must match the pattern `^[A-Za-z0-9_-]{2,256}$`.
    *
    *
    */
@@ -488,7 +472,9 @@ export interface ProductDraft {
    */
   readonly state?: StateResourceIdentifier
   /**
-   *	If `true`, the Product is published immediately to the current projection.
+   *	If `true`, the platform sets the `published` flag on the resulting [ProductCatalogData](ctp:api:type:ProductCatalogData) to `true`.
+   *	This makes the current representation retrievable in [Product Projection](/projects/productProjections) endpoints and indexes it for [Product Search](/../api/projects/product-search).
+   *	You can also set this flag later using the [Publish](/projects/products#publish) update action.
    *
    *
    */
@@ -500,7 +486,8 @@ export interface ProductDraft {
    */
   readonly priceMode?: ProductPriceModeEnum
   /**
-   *	Attributes according to the respective [AttributeDefinition](ctp:api:type:AttributeDefinitionDraft).
+   *	Product Attributes according to the respective [AttributeDefinition](ctp:api:type:AttributeDefinitionDraft).
+   *	**Not supported** by [Product Projection Search](/projects/product-projection-search).
    *
    *
    */
@@ -853,7 +840,6 @@ export type ProductUpdateAction =
   | ProductChangeNameAction
   | ProductChangePriceAction
   | ProductChangeSlugAction
-  | ProductLegacySetSkuAction
   | ProductMoveImageToPositionAction
   | ProductPublishAction
   | ProductRemoveAssetAction
@@ -897,10 +883,6 @@ export interface IProductUpdateAction {
    */
   readonly action: string
 }
-/**
- *	A concrete sellable good for which inventory can be tracked. Product Variants are generally mapped to specific SKUs.
- *
- */
 export interface ProductVariant {
   /**
    *	A unique, sequential identifier of the Product Variant within the Product.
@@ -930,7 +912,7 @@ export interface ProductVariant {
    */
   readonly prices?: Price[]
   /**
-   *	Attributes of the Product Variant.
+   *	Variant Attributes according to the respective [AttributeDefinition](ctp:api:type:AttributeDefinition).
    *
    *
    */
@@ -1073,10 +1055,6 @@ export interface ProductVariantChannelAvailability {
 export interface ProductVariantChannelAvailabilityMap {
   [key: string]: ProductVariantChannelAvailability
 }
-/**
- *	Creates a Product Variant when included in the `masterVariant` and `variants` fields of the [ProductDraft](ctp:api:type:ProductDraft).
- *
- */
 export interface ProductVariantDraft {
   /**
    *	User-defined unique SKU of the Product Variant.
@@ -1098,7 +1076,7 @@ export interface ProductVariantDraft {
    */
   readonly prices?: PriceDraft[]
   /**
-   *	Attributes according to the respective [AttributeDefinition](ctp:api:type:AttributeDefinition).
+   *	Variant Attributes according to the respective [AttributeDefinition](ctp:api:type:AttributeDefinition).
    *
    *
    */
@@ -1560,17 +1538,6 @@ export interface ProductChangeSlugAction extends IProductUpdateAction {
    */
   readonly staged?: boolean
 }
-export interface ProductLegacySetSkuAction extends IProductUpdateAction {
-  readonly action: 'legacySetSku'
-  /**
-   *
-   */
-  readonly sku?: string
-  /**
-   *
-   */
-  readonly variantId: number
-}
 /**
  *	Either `variantId` or `sku` is required.
  *
@@ -1609,7 +1576,9 @@ export interface ProductMoveImageToPositionAction extends IProductUpdateAction {
   readonly staged?: boolean
 }
 /**
- *	Publishes product data from the Product's staged projection to its current projection.
+ *	Copies the product data from the Product's staged representation to its current representation and sets the `published` flag on the resulting [ProductCatalogData](ctp:api:type:ProductCatalogData) to `true`.
+ *	This makes the current representation retrievable in [Product Projection](/projects/productProjections) endpoints and indexes it for [Product Search](/../api/projects/product-search).
+ *
  *	Produces the [ProductPublished](ctp:api:type:ProductPublishedMessage) Message.
  */
 export interface ProductPublishAction extends IProductUpdateAction {
@@ -2540,7 +2509,11 @@ export interface ProductTransitionStateAction extends IProductUpdateAction {
   readonly force?: boolean
 }
 /**
- *	Removes the current [projection](/../api/projects/productProjections#current--staged) of the Product. The staged projection is unaffected. To retrieve unpublished Products, the `staged` parameter must be set to `false` when [querying](ctp:api:endpoint:/{projectKey}/product-projections:GET)/[searching](/projects/product-projection-search#product-projection-search) Product Projections. Produces the [ProductUnpublished](ctp:api:type:ProductUnpublishedMessage) Message.
+ *	Sets the `published` flag on the [ProductCatalogData](ctp:api:type:ProductCatalogData) to `false`.
+ *	This makes the [current](/../api/projects/productProjections#current--staged) representation of a Product unavailable in [Product Projection](/projects/productProjections) endpoints by default, and excludes it from [Product Search](/../api/projects/product-search).
+ *	To retrieve unpublished Products on Product Projection endpoints, set parameter `staged=true`.
+ *
+ *	Produces the [ProductUnpublished](ctp:api:type:ProductUnpublishedMessage) Message.
  *
  *	When a Product is unpublished, any associated Line Items already present in a Cart remain unaffected and can still be ordered. To prevent this, do the following:
  *

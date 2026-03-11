@@ -126,6 +126,16 @@ export interface UpdateAction {
    */
   readonly action: string
 }
+/**
+ *	Indicates the role of an address.
+ *
+ */
+export enum AddressRoleValues {
+  Billing = 'Billing',
+  Shipping = 'Shipping',
+}
+
+export type AddressRole = 'Billing' | 'Shipping' | (string & {})
 export interface Asset {
   /**
    *	Unique identifier of the Asset. Not required when importing Assets using the [Import API](/import-export/import-resources).
@@ -617,7 +627,6 @@ export interface DiscountedPrice {
 export interface DiscountedPriceDraft {
   /**
    *	Sets the money value for the discounted price.
-   *
    *	To set the money value in high precision, use [HighPrecisionMoneyDraft](ctp:api:type:HighPrecisionMoneyDraft).
    *
    *
@@ -759,6 +768,8 @@ export interface Money {
    *	* Cents for EUR and USD, pence for GBP, or centime for CHF (5 CHF is specified as `500`).
    *	* The value in the major unit for currencies without minor units, like JPY (5 JPY is specified as `5`).
    *
+   *	`centAmount` is represented as 64-bit integers. If this limit is exceeded, a [MoneyOverflow](/errors#moneyoverflow) error will be returned.
+   *
    *
    */
   readonly centAmount: number
@@ -833,9 +844,11 @@ export interface Price {
    */
   readonly validUntil?: string
   /**
-   *	Is set if a [ProductDiscount](ctp:api:type:ProductDiscount) has been applied.
+   *	Set if a matching [ProductDiscount](ctp:api:type:ProductDiscount) exists.
    *	If set, the API uses the DiscountedPrice value for the [Line Item price selection](/../api/pricing-and-discounts-overview#line-item-price-selection).
-   *	When a [relative discount](ctp:api:type:ProductDiscountValueRelative) has been applied and the fraction part of the DiscountedPrice `value` is 0.5, the `value` is rounded in favor of the customer with [half-down rounding](https://en.wikipedia.org/wiki/Rounding#Round_half_down).
+   *	When a [relative discount](ctp:api:type:ProductDiscountValueRelative) has been applied and the fraction part of the DiscountedPrice `value` is 0.5, the `value` is rounded in favor of the customer with [half-down rounding](https://en.wikipedia.org/wiki/Rounding#Rounding_half_down).
+   *
+   *	If an [absolute discount](ctp:api:type:ProductDiscountValueAbsolute) value exceeds the price of the Product Variant, the discounted price is a negative value.
    *
    *
    */
@@ -987,6 +1000,7 @@ export interface PriceTierDraft {
   readonly minimumQuantity: number
   /**
    *	Money value that applies when the `minimumQuantity` is greater than or equal to the [LineItem](ctp:api:type:LineItem) `quantity`.
+   *
    *	To set the money value in high precision, use [HighPrecisionMoneyDraft](ctp:api:type:HighPrecisionMoneyDraft).
    *
    *	The `currencyCode` of a Price tier must be the same as the `currencyCode` in the `value` of the related Price.
@@ -1045,7 +1059,7 @@ export interface QueryPrice {
    */
   readonly discounted?: DiscountedPriceDraft
   /**
-   *	Custom Fields for the Price.
+   *	Custom Fields of the Price.
    *
    *
    */
@@ -1331,13 +1345,13 @@ export interface ScopedPrice {
   /**
    *	Is set when a matching [ProductDiscount](ctp:api:type:ProductDiscount) exists. If set, the [Cart](ctp:api:type:Cart) uses the discounted value for the [Cart Price calculation](ctp:api:type:CartAddLineItemAction).
    *
-   *	When a [relative Product Discount](ctp:api:type:ProductDiscountValueRelative) is applied and the fractional part of the discounted Price is 0.5, the discounted Price is [rounded half down](https://en.wikipedia.org/wiki/Rounding#Round_half_down) in favor of the Customer.
+   *	When a [relative Product Discount](ctp:api:type:ProductDiscountValueRelative) is applied and the fractional part of the discounted Price is 0.5, the discounted Price is [rounded half down](https://en.wikipedia.org/wiki/Rounding#Rounding_half_down) in favor of the Customer.
    *
    *
    */
   readonly discounted?: DiscountedPrice
   /**
-   *	Custom Fields for the Price.
+   *	Custom Fields of the Price.
    *
    *
    */
@@ -1354,6 +1368,8 @@ export interface ITypedMoney {
    *
    *	* Cents for EUR and USD, pence for GBP, or centime for CHF (5 CHF is specified as `500`).
    *	* The value in the major unit for currencies without minor units, like JPY (5 JPY is specified as `5`).
+   *
+   *	`centAmount` is represented as 64-bit integers. If this limit is exceeded, a [MoneyOverflow](/errors#moneyoverflow) error will be returned.
    *
    *
    */
@@ -1391,6 +1407,8 @@ export interface CentPrecisionMoney extends ITypedMoney {
    *	* Cents for EUR and USD, pence for GBP, or centime for CHF (5 CHF is specified as `500`).
    *	* The value in the major unit for currencies without minor units, like JPY (5 JPY is specified as `5`).
    *
+   *	`centAmount` is represented as 64-bit integers. If this limit is exceeded, a [MoneyOverflow](/errors#moneyoverflow) error will be returned.
+   *
    *
    */
   readonly centAmount: number
@@ -1417,6 +1435,8 @@ export interface HighPrecisionMoney extends ITypedMoney {
    *
    *	* Cents for EUR and USD, pence for GBP, or centime for CHF (5 CHF is specified as `500`).
    *	* The value in the major unit for currencies without minor units, like JPY (5 JPY is specified as `5`).
+   *
+   *	`centAmount` is represented as 64-bit integers. If this limit is exceeded, a [MoneyOverflow](/errors#moneyoverflow) error will be returned.
    *
    *
    */
@@ -1509,6 +1529,8 @@ export interface HighPrecisionMoneyDraft extends ITypedMoneyDraft {
    *
    *	A Price of 1.015 USD can be rounded either to 1.01 USD or 1.02 USD. If it lies outside of this range, an error message stating that centAmount must be rounded correctly will be returned.
    *
+   *	`centAmount` is represented as 64-bit integers. If this limit is exceeded, a [MoneyOverflow](/errors#moneyoverflow) error will be returned.
+   *
    *	If `centAmount` is not provided, the API calculates the value automatically using the default rounding mode half even.
    *
    *
@@ -1528,6 +1550,8 @@ export interface HighPrecisionMoneyDraft extends ITypedMoneyDraft {
   readonly fractionDigits: number
   /**
    *	Amount in 1 / (10 ^ `fractionDigits`) of a currency.
+   *
+   *	`preciseAmount` is represented as 64-bit integers. If this limit is exceeded, a [MoneyOverflow](/errors#moneyoverflow) error will be returned.
    *
    *
    */

@@ -24,7 +24,7 @@ export type AwsAuthenticationMode = 'Credentials' | 'IAM' | (string & {})
  */
 export interface ChangeSubscription {
   /**
-   *	Unique identifier for the type of resource, for example, `cart`.
+   *	Unique identifier for the type of resource, for example, `order`.
    *
    *
    */
@@ -49,6 +49,7 @@ export enum ChangeSubscriptionResourceTypeIdValues {
   CustomerGroup = 'customer-group',
   CustomerPasswordToken = 'customer-password-token',
   DiscountCode = 'discount-code',
+  DiscountGroup = 'discount-group',
   Extension = 'extension',
   InventoryEntry = 'inventory-entry',
   KeyValueDocument = 'key-value-document',
@@ -92,6 +93,7 @@ export type ChangeSubscriptionResourceTypeId =
   | 'customer-group'
   | 'customer-password-token'
   | 'discount-code'
+  | 'discount-group'
   | 'extension'
   | 'inventory-entry'
   | 'key-value-document'
@@ -516,7 +518,7 @@ export interface PlatformFormat extends IDeliveryFormat {
  *
  *	We recommend setting `authenticationMode` to `IAM`, to avoid unnecessary key management. For IAM authentication and before creating the Subscription, give permissions to the following user account: `arn:aws:iam::362576667341:user/subscriptions`. Otherwise, a test notification will not be sent.
  *
- *	If you prefer to use `Credentials` for authentication, we recommend [creating an IAM user](https://docs.aws.amazon.com/sns/latest/dg/sns-setting-up.html#create-iam-user) with an `accessKey` and `accessSecret` pair specifically for each Subscription.
+ *	If you prefer to use `Credentials` for authentication, we recommend [creating an IAM user](https://docs.aws.amazon.com/sns/latest/dg/sns-setting-up.html) with an `accessKey` and `accessSecret` pair specifically for each Subscription.
  *
  *	The IAM user should only have the `sns:Publish` permission on this topic.
  *
@@ -550,7 +552,7 @@ export interface SnsDestination extends IDestination {
  *
  *	We recommend setting `authenticationMode` to `IAM`, to avoid unnecessary key management. For IAM authentication and before creating the Subscription, give permissions to the following user account: `arn:aws:iam::362576667341:user/subscriptions`. Otherwise, a test message will not be sent.
  *
- *	If you prefer to use `Credentials` for authentication, we recommend [creating an IAM user](https://docs.aws.amazon.com/sns/latest/dg/sns-setting-up.html#create-iam-user) with an `accessKey` and `accessSecret` pair specifically for each Subscription.
+ *	If you prefer to use `Credentials` for authentication, we recommend [creating an IAM user](https://docs.aws.amazon.com/sns/latest/dg/sns-setting-up.html) with an `accessKey` and `accessSecret` pair specifically for each Subscription.
  *
  *	The IAM user should only have the `sqs:SendMessage` permission on this queue.
  *

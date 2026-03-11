@@ -481,6 +481,8 @@ export interface CustomLineItemImportDraft {
   /**
    *	The cost of individual items in the Custom Line Item. The amount can be negative.
    *
+   *	To set the money value in high precision, use [HighPrecisionMoneyDraft](ctp:api:type:HighPrecisionMoneyDraft).
+   *
    */
   readonly money: _Money
   /**
@@ -515,7 +517,7 @@ export interface CustomLineItemImportDraft {
    */
   readonly state?: ItemState[]
   /**
-   *	Custom Fields of the CustomLineItem.
+   *	Custom Fields for the CustomLineItem.
    *
    *
    */
@@ -716,7 +718,7 @@ export interface LineItemImportDraft {
    */
   readonly state?: ItemState[]
   /**
-   *	Custom Fields of the LineItem.
+   *	Custom Fields for the LineItem.
    *
    *
    */
@@ -1097,9 +1099,11 @@ export interface OrderFromCartDraft {
    */
   readonly orderNumber?: string
   /**
-   *	User-defined identifier for a purchase Order.
+   *	User-defined identifier for a purchase order.
    *
-   *	It is typically set by the [Buyer](ctp:api:type:Buyer) and can be used with [Quotes](/quotes-overview) to track the purchase Order during the [quote and order flow](/../api/quotes-overview#intended-workflow).
+   *	It is typically set by the [Buyer](ctp:api:type:Buyer) or Merchant to track the purchase order during the [quote and order flow](/../api/quotes-overview#intended-workflow).
+   *
+   *	If not provided, the `purchaseOrderNumber` from the referenced [Cart](ctp:api:type:Cart) is used.
    *
    */
   readonly purchaseOrderNumber?: string
@@ -1929,7 +1933,7 @@ export interface IReturnItem {
    */
   readonly lastModifiedAt: string
   /**
-   *	Date and time (UTC) the Return Item was intitially created.
+   *	Date and time (UTC) the Return Item was initially created.
    *
    *
    */
@@ -1988,7 +1992,7 @@ export interface CustomLineItemReturnItem extends IReturnItem {
    */
   readonly lastModifiedAt: string
   /**
-   *	Date and time (UTC) the Return Item was intitially created.
+   *	Date and time (UTC) the Return Item was initially created.
    *
    *
    */
@@ -2053,7 +2057,7 @@ export interface LineItemReturnItem extends IReturnItem {
    */
   readonly lastModifiedAt: string
   /**
-   *	Date and time (UTC) the Return Item was intitially created.
+   *	Date and time (UTC) the Return Item was initially created.
    *
    *
    */
@@ -2291,6 +2295,8 @@ export interface TrackingData {
  *	A [Delivery](ctp:api:type:Delivery) can only be added to an [Order](ctp:api:type:Order) if
  *	its `shippingInfo` (for `shippingMode` = `Single`), or its `shipping` (for `shippingMode` = `Multiple`) exists.
  *
+ *	Multiple Deliveries can be added to the same Order to represent split or partial shipments. However, the API doesn't validate that the cumulative quantities of Line Items or Custom Line Items across all Deliveries match or stay within the originally ordered quantities. For more information, see [Multiple Deliveries](/../api/shipping-delivery-overview#multiple-deliveries) on the Shipping and Delivery overview page.
+ *
  *	Produces the [Delivery Added](ctp:api:type:DeliveryAddedMessage) Message.
  *
  */
@@ -2336,7 +2342,7 @@ export interface OrderAddDeliveryAction extends IOrderUpdateAction {
   readonly custom?: CustomFieldsDraft
 }
 /**
- *	Adds an address to an Order when shipping to multiple addresses is desired.
+ *	Adds an address to the `itemShippingAddresses` of an Order. Use this action when shipping is defined per item. For example, when shipping items to multiple addresses or when using different Shipping Methods, even if all items share the same address.
  *
  */
 export interface OrderAddItemShippingAddressAction extends IOrderUpdateAction {
@@ -2404,6 +2410,10 @@ export interface OrderAddParcelToDeliveryAction extends IOrderUpdateAction {
    */
   readonly custom?: CustomFieldsDraft
 }
+/**
+ *	Produces the [Order Payment Added](ctp:api:type:OrderPaymentAddedMessage) Message.
+ *
+ */
 export interface OrderAddPaymentAction extends IOrderUpdateAction {
   readonly action: 'addPayment'
   /**
@@ -2592,6 +2602,10 @@ export interface OrderRemoveParcelFromDeliveryAction extends IOrderUpdateAction 
    */
   readonly parcelKey?: string
 }
+/**
+ *	Produces the [Order Payment Removed](ctp:api:type:OrderPaymentRemovedMessage) Message.
+ *
+ */
 export interface OrderRemovePaymentAction extends IOrderUpdateAction {
   readonly action: 'removePayment'
   /**

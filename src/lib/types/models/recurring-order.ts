@@ -116,6 +116,8 @@ export interface RecurringOrder extends BaseResource {
   readonly cart: CartReference
   /**
    *	[Reference](ctp:api:type:Reference) to the original [Order](ctp:api:type:Order) that generated this RecurringOrder.
+   *	This field is automatically populated when the RecurringOrder is created via the [Create Order from Cart](/../api/projects/orders#create-order-from-cart) endpoint and the Cart contains Line Items with defined `recurrenceInfo`.
+   *	When the RecurringOrder is created directly via the [Create RecurringOrder](/../api/projects/recurring-orders#create-recurringorder) endpoint, this field remains empty.
    *
    *
    */
@@ -253,11 +255,17 @@ export interface RecurringOrderDraft {
    */
   readonly cartVersion: number
   /**
-   *	Date and time (UTC) when the RecurringOrder will start.
+   *	Date and time (UTC) when the RecurringOrder will start. When specified, the date and time must be in the future. If not specified, the recurring order will start immediately.
    *
    *
    */
-  readonly startsAt: string
+  readonly startsAt?: string
+  /**
+   *	Date and time (UTC) when the RecurringOrder will expire.
+   *
+   *
+   */
+  readonly expiresAt?: string
   /**
    *	State for the RecurringOrder in a custom workflow.
    *
@@ -436,6 +444,7 @@ export interface RecurringOrderUpdate {
 export type RecurringOrderUpdateAction =
   | RecurringOrderSetCustomFieldAction
   | RecurringOrderSetCustomTypeAction
+  | RecurringOrderSetExpiresAtAction
   | RecurringOrderSetKeyAction
   | RecurringOrderSetOrderSkipConfigurationAction
   | RecurringOrderSetScheduleAction
@@ -464,7 +473,7 @@ export interface ISkipConfiguration {
  *
  */
 export interface Counter extends ISkipConfiguration {
-  readonly type: 'counter'
+  readonly type: 'Counter'
   /**
    *	Number of Orders that will be skipped.
    *
@@ -500,13 +509,111 @@ export interface ISkipConfigurationDraft {
  *
  */
 export interface CounterDraft extends ISkipConfigurationDraft {
-  readonly type: 'counter'
+  readonly type: 'Counter'
   /**
    *	Number of Orders that will be skipped.
    *
    *
    */
   readonly totalToSkip: number
+}
+/**
+ *	Indicates the scope of Cart Discounts for recurring Orders.
+ *
+ */
+export type RecurringOrderScope = AnyOrder | ApplicableRecurrencePolicies | NonRecurringOrdersOnly | RecurringOrdersOnly
+export interface IRecurringOrderScope {
+  /**
+   *
+   */
+  readonly type: string
+}
+/**
+ *	Cart Discounts are applied to recurring and non-recurring Orders.
+ *
+ */
+export interface AnyOrder extends IRecurringOrderScope {
+  readonly type: 'AnyOrder'
+}
+/**
+ *	Cart Discounts are applied to recurring Orders that match the Recurrence Policies.
+ *
+ */
+export interface ApplicableRecurrencePolicies extends IRecurringOrderScope {
+  readonly type: 'ApplicableRecurrencePolicies'
+  /**
+   *	Recurrence Policies for which the Cart Discount is valid.
+   *
+   *
+   */
+  readonly recurrencePolicies: RecurrencePolicyReference[]
+}
+/**
+ *	Cart Discounts are applied to non-recurring Orders.
+ *
+ */
+export interface NonRecurringOrdersOnly extends IRecurringOrderScope {
+  readonly type: 'NonRecurringOrdersOnly'
+}
+/**
+ *	Defines the scope of Cart Discounts for recurring Orders.
+ *
+ */
+export type RecurringOrderScopeDraft =
+  | AnyOrderDraft
+  | ApplicableRecurrencePoliciesDraft
+  | NonRecurringOrdersOnlyDraft
+  | RecurringOrdersOnlyDraft
+export interface IRecurringOrderScopeDraft {
+  /**
+   *
+   */
+  readonly type: string
+}
+/**
+ *	Applies Cart Discounts to recurring and non-recurring Orders.
+ *
+ */
+export interface AnyOrderDraft extends IRecurringOrderScopeDraft {
+  readonly type: 'AnyOrder'
+}
+/**
+ *	Applies Cart Discounts to recurring Orders that match the Recurrence Policies.
+ *
+ */
+export interface ApplicableRecurrencePoliciesDraft extends IRecurringOrderScopeDraft {
+  readonly type: 'ApplicableRecurrencePolicies'
+  /**
+   *	Recurrence Policies for which the Cart Discount is valid.
+   *
+   *	If a Recurrence Policy does not exist, a [ReferencedResourceNotFound](ctp:api:type:ReferencedResourceNotFoundError) error will be returned.
+   *
+   *	If fewer or more Recurrence Policies are provided, an [InvalidOperation](ctp:api:type:InvalidOperationError) error will be returned.
+   *
+   *
+   */
+  readonly recurrencePolicies: RecurrencePolicyResourceIdentifier[]
+}
+/**
+ *	Applies Cart Discounts to non-recurring Orders.
+ *
+ */
+export interface NonRecurringOrdersOnlyDraft extends IRecurringOrderScopeDraft {
+  readonly type: 'NonRecurringOrdersOnly'
+}
+/**
+ *	Cart Discounts are applied to recurring Orders.
+ *
+ */
+export interface RecurringOrdersOnly extends IRecurringOrderScope {
+  readonly type: 'RecurringOrdersOnly'
+}
+/**
+ *	Applies Cart Discounts to recurring Orders.
+ *
+ */
+export interface RecurringOrdersOnlyDraft extends IRecurringOrderScopeDraft {
+  readonly type: 'RecurringOrdersOnly'
 }
 /**
  *	Adding a Custom Field to a Recurring Order generates the [RecurringOrderCustomFieldAdded](ctp:api:type:RecurringOrderCustomFieldAddedMessage) Message, removing one generates the [RecurringOrderCustomFieldRemoved](ctp:api:type:RecurringOrderCustomFieldRemovedMessage) Message, and updating an existing one generates the [RecurringOrderCustomFieldChanged](ctp:api:type:RecurringOrderCustomFieldChangedMessage) Message.
@@ -550,6 +657,21 @@ export interface RecurringOrderSetCustomTypeAction extends IRecurringOrderUpdate
   readonly fields?: FieldContainer
 }
 /**
+ *	Setting the expiration date and time generates the [RecurringOrderExpiresAtSet](ctp:api:type:RecurringOrderExpiresAtSetMessage) Message.
+ *
+ */
+export interface RecurringOrderSetExpiresAtAction extends IRecurringOrderUpdateAction {
+  readonly action: 'setExpiresAt'
+  /**
+   *	Date and time (UTC) the Recurring Order should expire. If empty, any existing value will be removed.
+   *
+   *	If the date or time is extended or removed when the [RecurringOrderState](ctp:api:type:RecurringOrderState) is `Expired`, the state will be updated to `Active`.
+   *
+   *
+   */
+  readonly expiresAt?: string
+}
+/**
  *	This update action generates the [RecurringOrderKeySet](ctp:api:type:RecurringOrderKeySetMessage) Message.
  *
  */
@@ -566,13 +688,13 @@ export interface RecurringOrderSetKeyAction extends IRecurringOrderUpdateAction 
 export interface RecurringOrderSetOrderSkipConfigurationAction extends IRecurringOrderUpdateAction {
   readonly action: 'setOrderSkipConfiguration'
   /**
-   *	Configuration for skipping the next orders of the [Recurring Order](ctp:api:type:RecurringOrder).
+   *	Configuration for skipping future orders of the [Recurring Order](ctp:api:type:RecurringOrder).
    *
    *
    */
-  readonly skipConfiguration?: SkipConfigurationDraft
+  readonly skipConfigurationInputDraft?: SkipConfigurationDraft
   /**
-   *	Date and time (UTC) the Recurring Order will resume and start to generate new orders.
+   *	Date and time (UTC) the Recurring Order will expire and stop generating new orders.
    *
    *
    */

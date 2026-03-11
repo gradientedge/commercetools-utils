@@ -19,6 +19,10 @@ import { CustomerGroupReference, CustomerGroupResourceIdentifier } from './custo
 import { StoreKeyReference, StoreResourceIdentifier } from './store.js'
 import { CustomFields, CustomFieldsDraft, FieldContainer, TypeResourceIdentifier } from './type.js'
 
+/**
+ *	Determines how an anonymous Cart is handled when a Customer signs in. For more information, see [Cart merge during sign-in and sign-up](/../api/customers-overview#cart-merge-during-sign-in-and-sign-up).
+ *
+ */
 export enum AnonymousCartSignInModeValues {
   MergeWithExistingCustomerCart = 'MergeWithExistingCustomerCart',
   UseAsNewActiveCustomerCart = 'UseAsNewActiveCustomerCart',
@@ -164,7 +168,7 @@ export interface Customer extends BaseResource {
    *
    *
    */
-  readonly shippingAddressIds?: string[]
+  readonly shippingAddressIds: string[]
   /**
    *	ID of the address in `addresses` used as the default billing address.
    *
@@ -176,7 +180,7 @@ export interface Customer extends BaseResource {
    *
    *
    */
-  readonly billingAddressIds?: string[]
+  readonly billingAddressIds: string[]
   /**
    *	Indicates whether the email address of the Customer is [verified](#email-verification-of-customer).
    *
@@ -196,9 +200,9 @@ export interface Customer extends BaseResource {
    *
    *
    */
-  readonly customerGroupAssignments?: CustomerGroupAssignment[]
+  readonly customerGroupAssignments: CustomerGroupAssignment[]
   /**
-   *	Custom Fields for the Customer.
+   *	Custom Fields of the Customer.
    *
    *
    */
@@ -372,13 +376,15 @@ export interface CustomerDraft {
    */
   readonly anonymousCartId?: string
   /**
-   *	Identifies a [Cart](ctp:api:type:Cart) that will be assigned to the new Customer.
+   *	Assigns the Customer to the specified Cart.
    *
    *
    */
   readonly anonymousCart?: CartResourceIdentifier
   /**
-   *	Identifies Carts and Orders belonging to an anonymous session that will be assigned to the new Customer.
+   *	Assigns the Customer to all [Carts](ctp:api:type:Cart), [Orders](ctp:api:type:Order), [ShoppingLists](ctp:api:type:ShoppingList), and [Payments](ctp:api:type:Payment) with the same `anonymousId`.
+   *
+   *	If `anonymousCart` is provided, this value must match the `anonymousId` of the anonymous [Cart](ctp:api:type:Cart); otherwise, an [InvalidOperation](ctp:api:type:InvalidOperationError) error is returned.
    *
    *
    */
@@ -657,7 +663,11 @@ export interface CustomerSignInResult {
   readonly customer: Customer
   /**
    *	Cart associated with the Customer.
-   *	If empty, the Customer does not have a Cart assigned.
+   *
+   *	The Cart is recalculated to remove invalid Line Items and apply the latest prices, taxes, and discounts.
+   *	During these updates, the following errors can be returned: [MatchingPriceNotFound](ctp:api:type:MatchingPriceNotFoundError) and [MissingTaxRateForCountry](ctp:api:type:MissingTaxRateForCountryError).
+   *
+   *	For more information, see [Cart updates](/../api/carts-orders-overview#update-a-cart).
    *
    *
    */
@@ -683,7 +693,7 @@ export interface CustomerSignin {
    */
   readonly anonymousCartId?: string
   /**
-   *	Identifies a [Cart](ctp:api:type:Cart) that will be assigned to the Customer.
+   *	Assigns the Customer to the specified Cart.
    *
    *
    */
@@ -696,9 +706,9 @@ export interface CustomerSignin {
    */
   readonly anonymousCartSignInMode?: AnonymousCartSignInMode
   /**
-   *	If both `anonymousCart` and `anonymousId` are provided, the `anonymousId` on the CustomerSignin must match that of the anonymous [Cart](ctp:api:type:Cart).
-   *	Otherwise a [400 Bad Request](ctp:api:type:InvalidOperationError) `Invalid Operation` error is returned with the message:
-   *	"Cart with the ID cart-id does not have the expected anonymousId.".
+   *	Assigns the Customer to all [Carts](ctp:api:type:Cart), [Orders](ctp:api:type:Order), [ShoppingLists](ctp:api:type:ShoppingList), and [Payments](ctp:api:type:Payment) with the same `anonymousId`.
+   *
+   *	If `anonymousCart` is provided, this value must match the `anonymousId` of the anonymous [Cart](ctp:api:type:Cart); otherwise, an [InvalidOperation](ctp:api:type:InvalidOperationError) error is returned.
    *
    *
    */
@@ -1022,20 +1032,20 @@ export interface CustomerRemoveAddressAction extends ICustomerUpdateAction {
   readonly addressKey?: string
 }
 /**
- *	Removes a billing address from `billingAddressesIds`.
+ *	Removes a billing address from `billingAddressIds`.
  *	If the billing address is the default billing address, the `defaultBillingAddressId` is unset. Either `addressId` or `addressKey` is required.
  *
  */
 export interface CustomerRemoveBillingAddressIdAction extends ICustomerUpdateAction {
   readonly action: 'removeBillingAddressId'
   /**
-   *	`id` of the [Address](ctp:api:type:Address) to remove from `billingAddressesIds`.
+   *	`id` of the [Address](ctp:api:type:Address) to remove from `billingAddressIds`.
    *
    *
    */
   readonly addressId?: string
   /**
-   *	`key` of the [Address](ctp:api:type:Address) to remove from `billingAddressesIds`.
+   *	`key` of the [Address](ctp:api:type:Address) to remove from `billingAddressIds`.
    *
    *
    */
@@ -1055,20 +1065,20 @@ export interface CustomerRemoveCustomerGroupAssignmentAction extends ICustomerUp
   readonly customerGroup: CustomerGroupResourceIdentifier
 }
 /**
- *	Removes a shipping address from `shippingAddressesIds`.
+ *	Removes a shipping address from `shippingAddressIds`.
  *	If the shipping address is the default shipping address, the `defaultShippingAddressId` is unset. Either `addressId` or `addressKey` is required.
  *
  */
 export interface CustomerRemoveShippingAddressIdAction extends ICustomerUpdateAction {
   readonly action: 'removeShippingAddressId'
   /**
-   *	`id` of the [Address](ctp:api:type:Address) to remove from `shippingAddressesIds`.
+   *	`id` of the [Address](ctp:api:type:Address) to remove from `shippingAddressIds`.
    *
    *
    */
   readonly addressId?: string
   /**
-   *	`key` of the [Address](ctp:api:type:Address) to remove from `shippingAddressesIds`.
+   *	`key` of the [Address](ctp:api:type:Address) to remove from `shippingAddressIds`.
    *
    *
    */
@@ -1273,6 +1283,8 @@ export interface CustomerSetDateOfBirthAction extends ICustomerUpdateAction {
  *	Sets the default billing address from `addresses`.
  *	The action adds the `id` of the specified Address to the `billingAddressIds` if not contained already. Either `addressId` or `addressKey` is required.
  *
+ *	This action generates the [CustomerDefaultBillingAddressSet](ctp:api:type:CustomerDefaultBillingAddressSetMessage) Message.
+ *
  */
 export interface CustomerSetDefaultBillingAddressAction extends ICustomerUpdateAction {
   readonly action: 'setDefaultBillingAddress'
@@ -1293,6 +1305,8 @@ export interface CustomerSetDefaultBillingAddressAction extends ICustomerUpdateA
  *	Sets the default shipping address from `addresses`.
  *	The action adds the `id` of the specified address to the `shippingAddressIds` if not contained already. Either `addressId` or `addressKey` is required.
  *
+ *	This action generates the [CustomerDefaultShippingAddressSet](ctp:api:type:CustomerDefaultShippingAddressSetMessage) Message.
+ *
  */
 export interface CustomerSetDefaultShippingAddressAction extends ICustomerUpdateAction {
   readonly action: 'setDefaultShippingAddress'
@@ -1309,6 +1323,10 @@ export interface CustomerSetDefaultShippingAddressAction extends ICustomerUpdate
    */
   readonly addressKey?: string
 }
+/**
+ *	This action generates the [CustomerExternalIdSet](ctp:api:type:CustomerExternalIdSetMessage) Message.
+ *
+ */
 export interface CustomerSetExternalIdAction extends ICustomerUpdateAction {
   readonly action: 'setExternalId'
   /**
@@ -1385,6 +1403,8 @@ export interface CustomerSetSalutationAction extends ICustomerUpdateAction {
 /**
  *	Sets the Stores the Customer account is associated with.
  *	If no Stores are specified, the Customer becomes a [global Customer](/../api/customers-overview#global-versus-store-specific-customers).
+ *
+ *	This action generates the [CustomerStoresSet](ctp:api:type:CustomerStoresSetMessage) Message.
  *
  */
 export interface CustomerSetStoresAction extends ICustomerUpdateAction {
