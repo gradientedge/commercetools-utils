@@ -32,7 +32,7 @@ jobs:
       - name: Build the code
         run: pnpm build
       - name: Monitor coverage
-        uses: slavcodev/coverage-monitor-action@1.2.0
+        uses: slavcodev/coverage-monitor-action@1.10.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           clover_file: .coverage/clover.xml
