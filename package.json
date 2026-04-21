@@ -57,7 +57,7 @@
   },
   "homepage": "https://github.com/gradientedge/commercetools-utils#readme",
   "devDependencies": {
-    "@eslint/eslintrc": "^3.3.3",
+    "@eslint/eslintrc": "^3.3.5",
     "@eslint/js": "^9.39.2",
     "@jest/globals": "^29.7.0",
     "@sinonjs/fake-timers": "11.3.1",
