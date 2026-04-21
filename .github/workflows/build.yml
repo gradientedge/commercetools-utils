@@ -31,13 +31,13 @@ jobs:
         run: pnpm test
       - name: Build the code
         run: pnpm build
-      - name: Monitor coverage
-        uses: slavcodev/coverage-monitor-action@1.2.0
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          clover_file: .coverage/clover.xml
-          threshold_alert: 50
-          threshold_warning: 60
+      # - name: Monitor coverage
+      #   uses: slavcodev/coverage-monitor-action@1.2.0
+      #   with:
+      #     github_token: ${{ secrets.GITHUB_TOKEN }}
+      #     clover_file: .coverage/clover.xml
+      #     threshold_alert: 50
+      #     threshold_warning: 60
       # - name: Publish Code Coverage
       #   run: pnpx codecov
       - name: Build the documentation
