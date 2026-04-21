@@ -9,6 +9,7 @@ export default {
   collectCoverage,
   coverageDirectory: '../.coverage',
   coverageProvider: 'v8',
+  coverageReporters: ['lcov', 'text-summary'],
   verbose: true,
   extensionsToTreatAsEsm: [".ts"],
   moduleNameMapper: {
