@@ -8,6 +8,8 @@ jobs:
   build:
     name: Validate build
     runs-on: ubuntu-22.04
+    env:
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
     steps:
       - name: Install pnpm
         shell: bash
@@ -29,16 +31,14 @@ jobs:
         run: pnpm lint
       - name: Run the test suite
         run: pnpm test
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ env.CODECOV_TOKEN }}
+          files: ./.coverage/lcov.info
+          disable_search: true
+          fail_ci_if_error: true
       - name: Build the code
         run: pnpm build
-      # - name: Monitor coverage
-      #   uses: slavcodev/coverage-monitor-action@1.2.0
-      #   with:
-      #     github_token: ${{ secrets.GITHUB_TOKEN }}
-      #     clover_file: .coverage/clover.xml
-      #     threshold_alert: 50
-      #     threshold_warning: 60
-      # - name: Publish Code Coverage
-      #   run: pnpx codecov
       - name: Build the documentation
         run: pnpm run docs
