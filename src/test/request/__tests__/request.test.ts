@@ -390,6 +390,7 @@ describe('request', () => {
                   'content-type': 'application/json',
                 },
                 status: 200,
+                tlsVersion: expect.any(String),
               },
               stats: {
                 durationMs: expect.any(Number),
@@ -445,6 +446,7 @@ describe('request', () => {
                   'content-type': 'application/json',
                 },
                 status: 500,
+                tlsVersion: expect.any(String),
               },
               stats: {
                 durationMs: expect.any(Number),
@@ -478,6 +480,7 @@ describe('request', () => {
                   'content-type': 'application/json',
                 },
                 status: 200,
+                tlsVersion: expect.any(String),
               },
               stats: {
                 durationMs: expect.any(Number),
@@ -526,6 +529,7 @@ describe('request', () => {
                   'content-type': 'application/json',
                 },
                 status: 500,
+                tlsVersion: expect.any(String),
               },
               stats: {
                 durationMs: expect.any(Number),
@@ -570,6 +574,7 @@ describe('request', () => {
               response: {
                 code: 'ECONNABORTED',
                 message: 'timeout of 500ms exceeded',
+                tlsVersion: expect.any(String),
               },
               stats: {
                 durationMs: expect.any(Number),
