@@ -114,6 +114,12 @@ export interface CommercetoolsRequestResponse {
     status?: number
     headers?: Record<string, string> | undefined
     data?: any
+    /**
+     * The TLS protocol version negotiated for the request (e.g. `TLSv1.3`).
+     * Will be `undefined` if the request was not made over TLS or the
+     * negotiated protocol could not be determined.
+     */
+    tlsVersion?: string
   }
   stats: CommercetoolsRequestResponseStats
 }

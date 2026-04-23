@@ -1,6 +1,7 @@
 import { CommercetoolsRequestResponse, CommercetoolsRequestResponseStats } from '../../types.js'
 import { AxiosError } from 'axios'
 import { extractAxiosHeaders } from './extract-headers.js'
+import { extractTlsVersion } from './extract-tls-version.js'
 
 export function convertAxiosError(
   error: AxiosError | Error,
@@ -23,6 +24,7 @@ export function convertAxiosError(
       status: error.response?.status,
       headers: extractAxiosHeaders(error.response?.headers),
       data: error.response?.data,
+      tlsVersion: extractTlsVersion(error.response?.request ?? error.request),
     },
     stats,
   }
