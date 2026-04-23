@@ -22,7 +22,48 @@ export interface RequestOptions extends CommercetoolsHooks {
   abortController?: AbortController
 }
 
-export async function request<T = any>(options: RequestOptions): Promise<T> {
+/**
+ * Map of in-flight GET requests, keyed by URL + serialized query string.
+ * When a second GET request arrives with the same key while one is already
+ * in flight, it will await the existing promise instead of making a new
+ * network call.
+ */
+const inflightGetRequests = new Map<string, Promise<any>>()
+
+/**
+ * Build a stable cache key from a request's URL and its querystring params.
+ * We delegate the actual serialization to axios itself (via `getUri`) so that
+ * the key matches however axios would serialize the querystring (including
+ * any configured `paramsSerializer`). Keys are sorted first so that the same
+ * logical params produce the same cache key regardless of property order.
+ */
+function buildInflightGetKey(axiosInstance: AxiosInstance, req: CommercetoolsRequest): string {
+  const params = req.params ?? {}
+  const sortedParams: Record<string, unknown> = {}
+  for (const key of Object.keys(params).sort()) {
+    sortedParams[key] = params[key]
+  }
+  return axiosInstance.getUri({ url: req.url, params: sortedParams })
+}
+
+export function request<T = any>(options: RequestOptions): Promise<T> {
+  const method = options.request.method?.toString().toLowerCase()
+  if (method === 'get') {
+    const key = buildInflightGetKey(options.axiosInstance, options.request)
+    const existing = inflightGetRequests.get(key) as Promise<T> | undefined
+    if (existing) {
+      return existing
+    }
+    const promise = executeRequest<T>(options).finally(() => {
+      inflightGetRequests.delete(key)
+    })
+    inflightGetRequests.set(key, promise)
+    return promise
+  }
+  return executeRequest<T>(options)
+}
+
+async function executeRequest<T = any>(options: RequestOptions): Promise<T> {
   const { retry: retryConfig, onBeforeRequest, onAfterResponse, axiosInstance, aggregateTimeoutMs } = options
   const timeout = options.timeoutMs ?? DEFAULT_REQUEST_TIMEOUT_MS
   const additionalHeaders: Record<string, string> = {}
