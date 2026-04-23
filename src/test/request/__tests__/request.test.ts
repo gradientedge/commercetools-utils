@@ -590,4 +590,116 @@ describe('request', () => {
       })
     })
   })
+
+  describe('In-flight GET request deduplication', function () {
+    it('should share the same promise for two concurrent identical GET requests', async () => {
+      const scope = nock('https://localhost').get('/test').query({ a: '1', b: '2' }).reply(200, { success: true })
+      const config1 = getRequestConfig()
+      config1.request.params = { a: '1', b: '2' }
+      const config2 = getRequestConfig()
+      config2.request.params = { a: '1', b: '2' }
+
+      const [result1, result2] = await Promise.all([request(config1), request(config2)])
+
+      expect(result1).toEqual({ success: true })
+      expect(result2).toEqual({ success: true })
+      expect(scope.isDone()).toBe(true)
+      // nock would still have pending interceptors if a second HTTP call had been made
+      expect(nock.pendingMocks()).toEqual([])
+    })
+
+    it('should share the promise regardless of the order of params properties', async () => {
+      const scope = nock('https://localhost').get('/test').query({ a: '1', b: '2' }).reply(200, { success: true })
+      const config1 = getRequestConfig()
+      config1.request.params = { a: '1', b: '2' }
+      const config2 = getRequestConfig()
+      config2.request.params = { b: '2', a: '1' }
+
+      const [result1, result2] = await Promise.all([request(config1), request(config2)])
+
+      expect(result1).toEqual({ success: true })
+      expect(result2).toEqual({ success: true })
+      expect(scope.isDone()).toBe(true)
+      expect(nock.pendingMocks()).toEqual([])
+    })
+
+    it('should make two separate requests when querystrings differ', async () => {
+      const scope1 = nock('https://localhost').get('/test').query({ a: '1' }).reply(200, { which: 1 })
+      const scope2 = nock('https://localhost').get('/test').query({ a: '2' }).reply(200, { which: 2 })
+      const config1 = getRequestConfig()
+      config1.request.params = { a: '1' }
+      const config2 = getRequestConfig()
+      config2.request.params = { a: '2' }
+
+      const [result1, result2] = await Promise.all([request(config1), request(config2)])
+
+      expect(result1).toEqual({ which: 1 })
+      expect(result2).toEqual({ which: 2 })
+      expect(scope1.isDone()).toBe(true)
+      expect(scope2.isDone()).toBe(true)
+    })
+
+    it('should make two separate requests when URLs differ', async () => {
+      const scope1 = nock('https://localhost').get('/test-a').reply(200, { which: 'a' })
+      const scope2 = nock('https://localhost').get('/test-b').reply(200, { which: 'b' })
+      const config1 = getRequestConfig()
+      config1.request.url = 'https://localhost/test-a'
+      const config2 = getRequestConfig()
+      config2.request.url = 'https://localhost/test-b'
+
+      const [result1, result2] = await Promise.all([request(config1), request(config2)])
+
+      expect(result1).toEqual({ which: 'a' })
+      expect(result2).toEqual({ which: 'b' })
+      expect(scope1.isDone()).toBe(true)
+      expect(scope2.isDone()).toBe(true)
+    })
+
+    it('should not deduplicate non-GET requests with the same URL and params', async () => {
+      const scope = nock('https://localhost').post('/test').query({ a: '1' }).twice().reply(200, { success: true })
+      const config1 = getRequestConfig()
+      config1.request.method = 'POST'
+      config1.request.params = { a: '1' }
+      const config2 = getRequestConfig()
+      config2.request.method = 'POST'
+      config2.request.params = { a: '1' }
+
+      const [result1, result2] = await Promise.all([request(config1), request(config2)])
+
+      expect(result1).toEqual({ success: true })
+      expect(result2).toEqual({ success: true })
+      expect(scope.isDone()).toBe(true)
+    })
+
+    it('should share rejection with concurrent callers when the in-flight request fails', async () => {
+      const scope = nock('https://localhost').get('/test').query({ a: '1' }).reply(400, { error: 'bad' })
+      const config1 = getRequestConfig()
+      config1.request.params = { a: '1' }
+      const config2 = getRequestConfig()
+      config2.request.params = { a: '1' }
+
+      const results = await Promise.allSettled([request(config1), request(config2)])
+
+      expect(results[0].status).toBe('rejected')
+      expect(results[1].status).toBe('rejected')
+      expect(scope.isDone()).toBe(true)
+      expect(nock.pendingMocks()).toEqual([])
+    })
+
+    it('should not share the promise once the previous request has settled', async () => {
+      const scope1 = nock('https://localhost').get('/test').query({ a: '1' }).reply(200, { call: 1 })
+      const config1 = getRequestConfig()
+      config1.request.params = { a: '1' }
+      const result1 = await request(config1)
+      expect(result1).toEqual({ call: 1 })
+      expect(scope1.isDone()).toBe(true)
+
+      const scope2 = nock('https://localhost').get('/test').query({ a: '1' }).reply(200, { call: 2 })
+      const config2 = getRequestConfig()
+      config2.request.params = { a: '1' }
+      const result2 = await request(config2)
+      expect(result2).toEqual({ call: 2 })
+      expect(scope2.isDone()).toBe(true)
+    })
+  })
 })
