@@ -31,10 +31,6 @@ const defaultRefreshGrantResponse: CommercetoolsGrantResponse = {
 }
 
 describe('CommercetoolsAuthApi', () => {
-  beforeAll(() => {
-    nock.disableNetConnect()
-  })
-
   describe('constructor', () => {
     it('should use region-based endpoint when custom authUrl is not provided', () => {
       const auth = new CommercetoolsAuthApi(defaultConfig)
@@ -444,7 +440,7 @@ describe('CommercetoolsAuthApi', () => {
           name: 'Adrian',
           age: 13.75,
         }),
-      ).rejects.toThrow(new CommercetoolsError('Request failed with status code 500'))
+      ).rejects.toThrow('Request failed with status code 500')
 
       scope.isDone()
     })

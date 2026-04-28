@@ -1,4 +1,3 @@
-import { beforeAll, beforeEach } from '@jest/globals'
 import nock from 'nock'
 import { CommercetoolsAuth, CommercetoolsError, Region } from '../../lib/index.js'
 import { CommercetoolsGrantResponse } from '../../lib/auth/types.js'
@@ -34,14 +33,6 @@ function nockGetClientGrant(body = ''): nock.Scope {
 }
 
 describe('CommercetoolsAuth', () => {
-  beforeAll(() => {
-    nock.disableNetConnect()
-  })
-
-  beforeEach(() => {
-    nock.cleanAll()
-  })
-
   describe('constructor', () => {
     it('should throw if there are no client scopes defined on the config object', () => {
       expect(() => {
@@ -611,7 +602,7 @@ describe('CommercetoolsAuth', () => {
   })
 
   describe('multiple simultaneous requests', () => {
-    it('should make all requests wait for the pending client credentials', (done) => {
+    it('should make all requests wait for the pending client credentials', async () => {
       const scope = nock('https://auth.us-east-2.aws.commercetools.com', {
         encodedQueryParams: true,
       })
@@ -628,12 +619,14 @@ describe('CommercetoolsAuth', () => {
         }, i * 10)
       }
 
-      setTimeout(async () => {
-        const token = await Promise.all(promises)
-        expect(token.length).toBe(5)
-        scope.isDone()
-        done()
-      }, 1000)
+      await new Promise<void>((resolve) => {
+        setTimeout(async () => {
+          const token = await Promise.all(promises)
+          expect(token.length).toBe(5)
+          scope.isDone()
+          resolve()
+        }, 1000)
+      })
     })
   })
 })

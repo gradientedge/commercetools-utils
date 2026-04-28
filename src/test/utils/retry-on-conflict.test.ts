@@ -1,12 +1,14 @@
-import { beforeEach, jest } from '@jest/globals'
+import { beforeEach, vi } from 'vitest'
 
-const mockedCalculateDelay = jest.fn<any>()
+const { mockedCalculateDelay } = vi.hoisted(() => ({
+  mockedCalculateDelay: vi.fn(),
+}))
 
-jest.unstable_mockModule('../../lib/utils/calculate-delay', () => ({
+vi.mock('../../lib/utils/calculate-delay.js', () => ({
   calculateDelay: mockedCalculateDelay,
 }))
 
-const { retryOnConflict, CommercetoolsError } = await import('../../lib/index.js')
+import { retryOnConflict, CommercetoolsError } from '../../lib/index.js'
 
 describe('retryOnConflict', () => {
   beforeEach(() => {
@@ -15,7 +17,7 @@ describe('retryOnConflict', () => {
 
   it('should retry 3 times when no specific configuration is passed in', async () => {
     const error = new CommercetoolsError('test error', {}, 409)
-    const mockExecuteFn = jest.fn<any>()
+    const mockExecuteFn = vi.fn<(attemptNo: number) => Promise<any>>()
     mockExecuteFn.mockRejectedValueOnce(error)
     mockExecuteFn.mockRejectedValueOnce(error)
     mockExecuteFn.mockRejectedValueOnce(error)
@@ -39,7 +41,7 @@ describe('retryOnConflict', () => {
 
   it('should throw an error if a 409 status is still returned after the default 3 attempts', async () => {
     const error = new CommercetoolsError('test error', {}, 409)
-    const mockExecuteFn = jest.fn<any>()
+    const mockExecuteFn = vi.fn<(attemptNo: number) => Promise<any>>()
     mockExecuteFn.mockRejectedValue(error)
 
     await expect(
@@ -61,7 +63,7 @@ describe('retryOnConflict', () => {
 
   it('should retry 5 times when configuration dictates', async () => {
     const error = new CommercetoolsError('test error', {}, 409)
-    const mockExecuteFn = jest.fn<any>()
+    const mockExecuteFn = vi.fn<(attemptNo: number) => Promise<any>>()
     mockExecuteFn.mockRejectedValueOnce(error)
     mockExecuteFn.mockRejectedValueOnce(error)
     mockExecuteFn.mockRejectedValueOnce(error)
@@ -89,7 +91,7 @@ describe('retryOnConflict', () => {
 
   it('should immediately throw an error if a non 409 error status is received', async () => {
     const error = new CommercetoolsError('test error', {}, 500)
-    const mockExecuteFn = jest.fn<any>()
+    const mockExecuteFn = vi.fn<(attemptNo: number) => Promise<any>>()
     mockExecuteFn.mockRejectedValueOnce(error)
 
     await expect(
@@ -106,7 +108,7 @@ describe('retryOnConflict', () => {
 
   it('should pass through the configured values for `delayMs`, `maxRetries` and `jitter` to `calculateDelay', async () => {
     const error = new CommercetoolsError('test error', {}, 409)
-    const mockExecuteFn = jest.fn<any>()
+    const mockExecuteFn = vi.fn<(attemptNo: number) => Promise<any>>()
     mockExecuteFn.mockRejectedValueOnce(error)
     mockExecuteFn.mockResolvedValue(true)
 
@@ -127,7 +129,7 @@ describe('retryOnConflict', () => {
 
   describe('type inference', () => {
     it('should infer string return type from executeFn', async () => {
-      const mockExecuteFn = jest.fn<() => Promise<string>>()
+      const mockExecuteFn = vi.fn<() => Promise<string>>()
       mockExecuteFn.mockResolvedValue('success')
 
       const result = await retryOnConflict({
@@ -139,7 +141,7 @@ describe('retryOnConflict', () => {
     })
 
     it('should infer number return type from executeFn', async () => {
-      const mockExecuteFn = jest.fn<() => Promise<number>>()
+      const mockExecuteFn = vi.fn<() => Promise<number>>()
       mockExecuteFn.mockResolvedValue(42)
 
       const result = await retryOnConflict({
@@ -163,7 +165,7 @@ describe('retryOnConflict', () => {
         version: 1,
       }
 
-      const mockExecuteFn = jest.fn<() => Promise<Product>>()
+      const mockExecuteFn = vi.fn<() => Promise<Product>>()
       mockExecuteFn.mockResolvedValue(mockProduct)
 
       const result = await retryOnConflict({
@@ -190,7 +192,7 @@ describe('retryOnConflict', () => {
         totalPrice: 99.99,
       }
 
-      const mockExecuteFn = jest.fn<() => Promise<Cart>>()
+      const mockExecuteFn = vi.fn<() => Promise<Cart>>()
       mockExecuteFn.mockRejectedValueOnce(error)
       mockExecuteFn.mockResolvedValue(mockCart)
 
