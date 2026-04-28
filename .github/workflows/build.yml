@@ -1,44 +1,60 @@
 name: Build
+
 on:
   pull_request:
     branches:
-      - develop
       - main
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build:
     name: Validate build
-    runs-on: ubuntu-22.04
-    env:
-      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+    runs-on: ubuntu-24.04
     steps:
-      - name: Install pnpm
-        shell: bash
-        run: npm i -g pnpm@8
-      - name: Turn on auto-install-peers
-        shell: bash
-        run: pnpm config set auto-install-peers true
       - name: Checkout
-        uses: actions/checkout@v1
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+
       - name: Setup Node.js
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version-file: .nvmrc
+          cache: pnpm
+
       - name: Install dependencies
-        run: pnpm i
+        run: pnpm install --frozen-lockfile
+
       - name: Prettier check
         run: pnpm prettier
+
       - name: Lint the code
         run: pnpm lint
+
+      - name: Type-check the code
+        run: pnpm typecheck
+
       - name: Run the test suite
         run: pnpm test
+
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5
         with:
-          token: ${{ env.CODECOV_TOKEN }}
+          token: ${{ secrets.CODECOV_TOKEN }}
           files: ./.coverage/lcov.info
           disable_search: true
-          fail_ci_if_error: true
+          fail_ci_if_error: false
+
       - name: Build the code
         run: pnpm build
+
       - name: Build the documentation
         run: pnpm run docs
+

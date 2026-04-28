@@ -1,46 +1,57 @@
 name: Release
+
 on:
   push:
     branches:
       - main
+
+permissions:
+  contents: read
+
 jobs:
   release:
     name: Release
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+      id-token: write
     steps:
-      - name: Install pnpm
-        shell: bash
-        run: npm i -g pnpm@8
-      - name: Turn on auto-install-peers
-        shell: bash
-        run: pnpm config set auto-install-peers true
       - name: Checkout
-        uses: actions/checkout@v1
-      - name: Setup Node.js
-        uses: actions/setup-node@v1
+        uses: actions/checkout@v4
         with:
-          node-version: 20
+          # semantic-release needs the full git history to compute the next version
+          fetch-depth: 0
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
       - name: Install dependencies
-        run: pnpm i
-      - name: Prettier check
-        run: pnpm prettier
-      - name: Lint the code
-        run: pnpm lint
-      - name: Run the test suite
-        run: pnpm test
+        run: pnpm install --frozen-lockfile
+
       - name: Build the code
         run: pnpm build
-      # - name: Publish Code Coverage
-      #   run: pnpx codecov
+
+      - name: Build the documentation
+        run: pnpm run docs
+
       - name: Release to npm
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: npx semantic-release
-      - name: Build the documentation
-        run: pnpm run docs
+
       - name: Deploy docs
-        uses: peaceiris/actions-gh-pages@v3
+        uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./docs
+          force_orphan: true
+
