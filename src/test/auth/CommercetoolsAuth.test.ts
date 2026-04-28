@@ -1,7 +1,38 @@
 import nock from 'nock'
 import { CommercetoolsAuth, CommercetoolsError, Region } from '../../lib/index.js'
 import { CommercetoolsGrantResponse } from '../../lib/auth/types.js'
-import FakeTimers from '@sinonjs/fake-timers'
+import FakeTimers, { Clock } from '@sinonjs/fake-timers'
+
+/**
+ * Tracks the currently-installed clock for the active test so that
+ * {@link afterEach} can guarantee teardown, even if a test throws/times out
+ * before reaching its `clock.uninstall()` call. Without this, a single
+ * failing test would leave the global clock installed and every subsequent
+ * test would fail with `Can't install fake timers twice`.
+ */
+let activeClock: Clock | null = null
+
+/**
+ * Installs `@sinonjs/fake-timers` with a restricted `toFake` list.
+ *
+ * From v12 onwards the package's default `toFake` list expanded to include
+ * `setImmediate`, `queueMicrotask` and `process.nextTick`. Faking those
+ * APIs deadlocks nock/axios (which schedule request handling on micro-tasks
+ * and `process.nextTick`), so we limit faking to just the timer APIs and
+ * `Date` that these tests actually need.
+ */
+function installClock(now: Date): Clock {
+  if (activeClock) {
+    activeClock.uninstall()
+    activeClock = null
+  }
+  const clock = FakeTimers.install({
+    now,
+    toFake: ['setTimeout', 'clearTimeout', 'setInterval', 'clearInterval', 'Date'],
+  })
+  activeClock = clock
+  return clock
+}
 
 const defaultConfig = {
   projectKey: 'test-project-key',
@@ -33,6 +64,21 @@ function nockGetClientGrant(body = ''): nock.Scope {
 }
 
 describe('CommercetoolsAuth', () => {
+  // Defensive teardown: if a test installs a fake clock and throws/times out
+  // before reaching its own `clock.uninstall()`, this guarantees the global
+  // clock is restored so subsequent tests don't fail with
+  // "Can't install fake timers twice on the same global object".
+  afterEach(() => {
+    if (activeClock) {
+      try {
+        activeClock.uninstall()
+      } catch {
+        // already uninstalled by the test itself — that's fine
+      }
+      activeClock = null
+    }
+  })
+
   describe('constructor', () => {
     it('should throw if there are no client scopes defined on the config object', () => {
       expect(() => {
@@ -110,7 +156,7 @@ describe('CommercetoolsAuth', () => {
 
   describe('getClientGrant', () => {
     it('should directly make a request to get a new grant when no grant is cached', async () => {
-      const clock = FakeTimers.install({ now: new Date('2020-01-01T09:35:23.000') })
+      const clock = installClock(new Date('2020-01-01T09:35:23.000'))
       const auth = new CommercetoolsAuth(defaultConfig)
       const scope = nockGetClientGrant()
 
@@ -128,7 +174,7 @@ describe('CommercetoolsAuth', () => {
     })
 
     it('should use the configured client scopes when making a request', async () => {
-      const clock = FakeTimers.install({ now: new Date('2020-01-01T09:35:23.000') })
+      const clock = installClock(new Date('2020-01-01T09:35:23.000'))
       const auth = new CommercetoolsAuth({
         ...defaultConfig,
         clientScopes: ['test-scope1', 'test-scope2'],
@@ -151,7 +197,7 @@ describe('CommercetoolsAuth', () => {
     })
 
     it('should return the cached grant if it has not expired', async () => {
-      const clock = FakeTimers.install({ now: new Date('2020-01-01T09:35:23.000') })
+      const clock = installClock(new Date('2020-01-01T09:35:23.000'))
       const auth = new CommercetoolsAuth(defaultConfig)
       const scope = nockGetClientGrant()
       await auth.getClientGrant()
@@ -172,7 +218,7 @@ describe('CommercetoolsAuth', () => {
     })
 
     it('should use custom auth endpoint when making requests', async () => {
-      const clock = FakeTimers.install({ now: new Date('2020-01-01T09:35:23.000') })
+      const clock = installClock(new Date('2020-01-01T09:35:23.000'))
       const customAuthUrl = 'http://localhost:4000'
       const auth = new CommercetoolsAuth({
         ...defaultConfig,
@@ -198,7 +244,7 @@ describe('CommercetoolsAuth', () => {
     })
 
     it('should wait on a single promise when two requests are made at the same time', async () => {
-      const clock = FakeTimers.install({ now: new Date('2020-01-01T09:35:23.000') })
+      const clock = installClock(new Date('2020-01-01T09:35:23.000'))
       const auth = new CommercetoolsAuth(defaultConfig)
       const scope1 = nockGetClientGrant()
 
@@ -226,7 +272,7 @@ describe('CommercetoolsAuth', () => {
   describe('refreshCustomerGrant', () => {
     it('should request a client grant before making the refresh customer access token request, if no cached client grant exists', async () => {
       const auth = new CommercetoolsAuth({ ...defaultConfig, refreshIfWithinSecs: 3600 })
-      const clock = FakeTimers.install({ now: new Date('2020-01-06T12:15:17.000Z') })
+      const clock = installClock(new Date('2020-01-06T12:15:17.000Z'))
       // Resolving the client grant request
       const scope1 = nockGetClientGrant()
       // Resolving the customer refresh token request
@@ -256,7 +302,7 @@ describe('CommercetoolsAuth', () => {
 
     it('should immediately make the refresh customer access token request if a cached client grant exists', async () => {
       const auth = new CommercetoolsAuth({ ...defaultConfig, refreshIfWithinSecs: 3600 })
-      const clock = FakeTimers.install({ now: new Date('2020-01-06T12:15:17.000Z') })
+      const clock = installClock(new Date('2020-01-06T12:15:17.000Z'))
       const scope1 = nockGetClientGrant()
       await auth.getClientGrant()
       const scope2 = nock('https://auth.us-east-2.aws.commercetools.com', {
@@ -288,7 +334,7 @@ describe('CommercetoolsAuth', () => {
     describe('cached client grant does not exist', () => {
       it('should request a client grant before making the login request', async () => {
         const auth = new CommercetoolsAuth({ ...defaultConfig, refreshIfWithinSecs: 3600 })
-        const clock = FakeTimers.install({ now: new Date('2020-01-06T12:15:17.000Z') })
+        const clock = installClock(new Date('2020-01-06T12:15:17.000Z'))
         // Resolving the client grant request
         const scope1 = nockGetClientGrant()
         // Resolving the customer access token request for the login request
@@ -327,7 +373,7 @@ describe('CommercetoolsAuth', () => {
 
     describe('cached client grant exists', () => {
       it('should immediately make the login request', async () => {
-        const clock = FakeTimers.install({ now: new Date('2020-01-06T12:15:17.000Z') })
+        const clock = installClock(new Date('2020-01-06T12:15:17.000Z'))
         // Resolving the client grant request
         const scope1 = nockGetClientGrant()
         const auth = new CommercetoolsAuth(defaultConfig)
@@ -380,7 +426,7 @@ describe('CommercetoolsAuth', () => {
       })
 
       it('should use the customer scopes on the config if none passed in', async () => {
-        const clock = FakeTimers.install({ now: new Date('2020-01-06T12:15:17.000Z') })
+        const clock = installClock(new Date('2020-01-06T12:15:17.000Z'))
         const auth = new CommercetoolsAuth({
           ...defaultConfig,
           customerScopes: ['configuredScope1'],
@@ -424,7 +470,7 @@ describe('CommercetoolsAuth', () => {
     describe('cached client grant does not exist', () => {
       it('should request a client grant before making the anonymous customer request', async () => {
         const auth = new CommercetoolsAuth(defaultConfig)
-        const clock = FakeTimers.install({ now: new Date('2020-01-06T12:15:17.000Z') })
+        const clock = installClock(new Date('2020-01-06T12:15:17.000Z'))
         // Resolving the client grant request
         const scope1 = nockGetClientGrant()
         // Resolving the customer access token request for the login request
@@ -461,7 +507,7 @@ describe('CommercetoolsAuth', () => {
 
     describe('cached client grant exists', () => {
       it('should immediately make the anonymous customer request', async () => {
-        const clock = FakeTimers.install({ now: new Date('2020-01-06T12:15:17.000Z') })
+        const clock = installClock(new Date('2020-01-06T12:15:17.000Z'))
         const auth = new CommercetoolsAuth(defaultConfig)
         // Resolving the client grant request
         const scope1 = nockGetClientGrant()
@@ -506,7 +552,7 @@ describe('CommercetoolsAuth', () => {
       })
 
       it('should use the customer scopes on the config if none passed in', async () => {
-        const clock = FakeTimers.install({ now: new Date('2020-01-06T12:15:17.000Z') })
+        const clock = installClock(new Date('2020-01-06T12:15:17.000Z'))
         const auth = new CommercetoolsAuth({
           ...defaultConfig,
           customerScopes: ['configuredScope1'],
@@ -544,7 +590,7 @@ describe('CommercetoolsAuth', () => {
       })
 
       it('should pass across the anonymous id if specified in the config', async () => {
-        const clock = FakeTimers.install({ now: new Date('2020-01-06T12:15:17.000Z') })
+        const clock = installClock(new Date('2020-01-06T12:15:17.000Z'))
         const auth = new CommercetoolsAuth({ ...defaultConfig })
         // Resolving the client grant request
         const scope1 = nockGetClientGrant()

@@ -1,0 +1,14 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": false,
+    "outDir": "./dist/mjs",
+    "rootDir": "./src/lib",
+    "sourceMap": true,
+    "declaration": true,
+    "declarationMap": true,
+    "noEmitOnError": true,
+    "types": ["node"]
+  },
+  "include": ["./src/lib/**/*.ts"]
+}
