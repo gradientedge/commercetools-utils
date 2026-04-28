@@ -30,7 +30,7 @@ jobs:
       - name: Lint the code
         run: pnpm lint
       - name: Run the test suite
-        run: pnpm test
+        run: pnpm test:coverage
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5
         with:
