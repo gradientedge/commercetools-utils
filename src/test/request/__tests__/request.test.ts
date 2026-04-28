@@ -1,4 +1,4 @@
-import { beforeEach, jest } from '@jest/globals'
+import { beforeEach, vi } from 'vitest'
 import { setTimeout as sleep } from 'node:timers/promises'
 import nock from 'nock'
 import { request, RequestOptions } from '../../../lib/request/index.js'
@@ -23,6 +23,10 @@ describe('request', () => {
   }
 
   beforeEach(() => {
+    nock.cleanAll()
+  })
+
+  afterAll(() => {
     nock.cleanAll()
   })
 
@@ -247,7 +251,7 @@ describe('request', () => {
               age: 123,
             })
             .reply(200, { success: true })
-          const mockOnBeforeRequest = jest.fn<any>().mockResolvedValue(null)
+          const mockOnBeforeRequest = vi.fn().mockResolvedValue(null)
           const requestConfig = getRequestConfig()
           requestConfig.onBeforeRequest = mockOnBeforeRequest
           requestConfig.request.params = {
@@ -282,7 +286,7 @@ describe('request', () => {
               age: 123,
             })
             .reply(200, { success: true })
-          const mockOnBeforeRequest = jest.fn<any>().mockImplementation((config: any) => {
+          const mockOnBeforeRequest = vi.fn().mockImplementation((config: any) => {
             config.headers['X-Test-Header'] = 'my-test-header-value'
             return config
           })
@@ -321,7 +325,7 @@ describe('request', () => {
               age: 123,
             })
             .reply(200, { success: true })
-          const mockOnBeforeRequest = jest.fn<any>().mockImplementation((config: any) => {
+          const mockOnBeforeRequest = vi.fn().mockImplementation((config: any) => {
             return new Promise((resolve) => {
               config.headers['X-Test-Header'] = 'my-test-header-value'
               resolve(config)
@@ -359,7 +363,7 @@ describe('request', () => {
               .get('/test')
               .query({ name: 'Fred', age: 123 })
               .reply(200, { success: true })
-            const mockOnAfterResponse = jest.fn()
+            const mockOnAfterResponse = vi.fn()
             const requestConfig = getRequestConfig()
             requestConfig.onAfterResponse = mockOnAfterResponse
             requestConfig.request.params = { name: 'Fred', age: 123 }
@@ -398,6 +402,8 @@ describe('request', () => {
                 activeSockets: expect.any(Number),
                 freeSocketCount: expect.any(Number),
                 queuedRequests: expect.any(Number),
+                clientStartTime: expect.any(Number),
+                clientEndTime: expect.any(Number),
                 retries: 0,
               },
             })
@@ -412,7 +418,7 @@ describe('request', () => {
               .get('/test')
               .query({ name: 'Fred', age: 123 })
               .reply(200, { success: true })
-            const mockOnAfterResponse = jest.fn()
+            const mockOnAfterResponse = vi.fn()
             const requestConfig = getRequestConfig()
             requestConfig.onAfterResponse = mockOnAfterResponse
             requestConfig.request.params = { name: 'Fred', age: 123 }
@@ -455,6 +461,8 @@ describe('request', () => {
                 activeSockets: expect.any(Number),
                 freeSocketCount: expect.any(Number),
                 queuedRequests: expect.any(Number),
+                clientStartTime: expect.any(Number),
+                clientEndTime: expect.any(Number),
               },
             })
             expect(mockOnAfterResponse).toHaveBeenNthCalledWith(2, {
@@ -488,6 +496,8 @@ describe('request', () => {
                 activeSockets: expect.any(Number),
                 freeSocketCount: expect.any(Number),
                 queuedRequests: expect.any(Number),
+                clientStartTime: expect.any(Number),
+                clientEndTime: expect.any(Number),
                 retries: 1,
               },
             })
@@ -498,7 +508,7 @@ describe('request', () => {
               .get('/test')
               .query({ name: 'Fred', age: 123 })
               .reply(500, { success: false })
-            const mockOnAfterResponse = jest.fn()
+            const mockOnAfterResponse = vi.fn()
             const requestConfig = getRequestConfig()
             requestConfig.onAfterResponse = mockOnAfterResponse
             requestConfig.request.params = { name: 'Fred', age: 123 }
@@ -537,6 +547,8 @@ describe('request', () => {
                 activeSockets: expect.any(Number),
                 freeSocketCount: expect.any(Number),
                 queuedRequests: expect.any(Number),
+                clientStartTime: expect.any(Number),
+                clientEndTime: expect.any(Number),
                 retries: 0,
               },
             })
@@ -548,7 +560,7 @@ describe('request', () => {
               .query({ name: 'Fred', age: 123 })
               .delay(500)
               .reply(500, { success: false })
-            const mockOnAfterResponse = jest.fn()
+            const mockOnAfterResponse = vi.fn()
             const requestConfig = getRequestConfig()
             requestConfig.onAfterResponse = mockOnAfterResponse
             requestConfig.timeoutMs = 500
@@ -582,6 +594,8 @@ describe('request', () => {
                 activeSockets: expect.any(Number),
                 freeSocketCount: expect.any(Number),
                 queuedRequests: expect.any(Number),
+                clientStartTime: expect.any(Number),
+                clientEndTime: expect.any(Number),
                 retries: 0,
               },
             })
@@ -700,6 +714,110 @@ describe('request', () => {
       const result2 = await request(config2)
       expect(result2).toEqual({ call: 2 })
       expect(scope2.isDone()).toBe(true)
+    })
+  })
+
+  describe('clientStartTime and clientEndTime stats', function () {
+    it('should set both to timestamps close to Date.now() on a successful response', async () => {
+      nock('https://localhost').get('/test').reply(200, { success: true })
+      const mockOnAfterResponse = vi.fn()
+      const requestConfig = getRequestConfig()
+      requestConfig.onAfterResponse = mockOnAfterResponse
+
+      const before = Date.now()
+      await request(requestConfig)
+      const after = Date.now()
+
+      const stats = (mockOnAfterResponse.mock.calls[0][0] as any).stats
+      expect(stats.clientStartTime).toBeGreaterThanOrEqual(before)
+      expect(stats.clientStartTime).toBeLessThanOrEqual(after)
+      expect(stats.clientEndTime).toBeGreaterThanOrEqual(stats.clientStartTime)
+      expect(stats.clientEndTime).toBeLessThanOrEqual(after)
+    })
+
+    it('should have clientEndTime - clientStartTime approximately equal to durationMs', async () => {
+      nock('https://localhost').get('/test').delay(50).reply(200, { success: true })
+      const mockOnAfterResponse = vi.fn()
+      const requestConfig = getRequestConfig()
+      requestConfig.onAfterResponse = mockOnAfterResponse
+
+      await request(requestConfig)
+
+      const stats = (mockOnAfterResponse.mock.calls[0][0] as any).stats
+      expect(stats.clientEndTime - stats.clientStartTime).toBe(stats.durationMs)
+    })
+
+    it('should populate clientStartTime and clientEndTime on an unsuccessful response', async () => {
+      nock('https://localhost').get('/test').reply(500, { success: false })
+      const mockOnAfterResponse = vi.fn()
+      const requestConfig = getRequestConfig()
+      requestConfig.onAfterResponse = mockOnAfterResponse
+
+      const before = Date.now()
+      await expect(request(requestConfig)).rejects.toThrow()
+      const after = Date.now()
+
+      const stats = (mockOnAfterResponse.mock.calls[0][0] as any).stats
+      expect(stats.clientStartTime).toBeGreaterThanOrEqual(before)
+      expect(stats.clientStartTime).toBeLessThanOrEqual(after)
+      expect(stats.clientEndTime).toBeGreaterThanOrEqual(stats.clientStartTime)
+      expect(stats.clientEndTime).toBeLessThanOrEqual(after)
+    })
+
+    it('should populate clientStartTime and clientEndTime on a network timeout error', async () => {
+      nock('https://localhost').get('/test').delay(500).reply(200, { success: true })
+      const mockOnAfterResponse = vi.fn()
+      const requestConfig = getRequestConfig()
+      requestConfig.onAfterResponse = mockOnAfterResponse
+      requestConfig.timeoutMs = 100
+
+      const before = Date.now()
+      await expect(request(requestConfig)).rejects.toThrow('timeout of 100ms exceeded')
+      const after = Date.now()
+
+      const stats = (mockOnAfterResponse.mock.calls[0][0] as any).stats
+      expect(stats.clientStartTime).toBeGreaterThanOrEqual(before)
+      expect(stats.clientStartTime).toBeLessThanOrEqual(after)
+      expect(stats.clientEndTime).toBeGreaterThanOrEqual(stats.clientStartTime)
+      expect(stats.clientEndTime).toBeLessThanOrEqual(after)
+    })
+
+    it("should have each retry attempt's clientStartTime after the previous attempt's clientEndTime", async () => {
+      nock('https://localhost').get('/test').reply(500, { success: false })
+      nock('https://localhost').get('/test').reply(200, { success: true })
+      const mockOnAfterResponse = vi.fn()
+      const requestConfig = getRequestConfig()
+      requestConfig.onAfterResponse = mockOnAfterResponse
+      requestConfig.retry.maxRetries = 1
+      requestConfig.retry.delayMs = 10
+
+      await request(requestConfig)
+
+      expect(mockOnAfterResponse).toHaveBeenCalledTimes(2)
+      const firstStats = (mockOnAfterResponse.mock.calls[0][0] as any).stats
+      const secondStats = (mockOnAfterResponse.mock.calls[1][0] as any).stats
+
+      expect(firstStats.clientEndTime).toBeGreaterThanOrEqual(firstStats.clientStartTime)
+      expect(secondStats.clientStartTime).toBeGreaterThanOrEqual(firstStats.clientEndTime)
+      expect(secondStats.clientEndTime).toBeGreaterThanOrEqual(secondStats.clientStartTime)
+    })
+
+    it('should still reject when onBeforeRequest throws before the request is dispatched', async () => {
+      // This covers the branch in the catch handler where `startTime` is
+      // still null because the error was thrown before the axios call — so
+      // `durationMs` falls back to 0 and `clientStartTime` falls back to
+      // `endTime`.
+      const requestConfig = getRequestConfig()
+      // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+      requestConfig.onBeforeRequest = async () => {
+        throw new Error('before-request failure')
+      }
+      requestConfig.onAfterResponse = vi.fn()
+
+      await expect(request(requestConfig)).rejects.toThrow('before-request failure')
+      // convertAxiosError returns null for non-axios errors, so
+      // onAfterResponse should not be invoked.
+      expect(requestConfig.onAfterResponse).not.toHaveBeenCalled()
     })
   })
 })

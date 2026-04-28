@@ -142,6 +142,8 @@ async function executeRequest<T = any>(options: RequestOptions): Promise<T> {
             accumulativeDurationMs: totalDurationMs,
             durationMs: endTime - startTime,
             retries: retryCount,
+            clientStartTime: startTime,
+            clientEndTime: endTime,
             ...preRequestSocketStats,
           }),
         )
@@ -155,6 +157,8 @@ async function executeRequest<T = any>(options: RequestOptions): Promise<T> {
           accumulativeDurationMs: totalDurationMs,
           durationMs: startTime ? endTime - startTime : 0,
           retries: retryCount,
+          clientStartTime: startTime ?? endTime,
+          clientEndTime: endTime,
           ...preRequestSocketStats,
         })
         if (convertedError) {

@@ -9,6 +9,8 @@ const stats: CommercetoolsRequestResponseStats = {
   activeSockets: 1,
   freeSocketCount: 0,
   queuedRequests: 0,
+  clientStartTime: 0,
+  clientEndTime: 5,
 }
 
 function buildResponse(overrides: Partial<AxiosResponse> = {}): AxiosResponse {

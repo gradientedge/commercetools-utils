@@ -125,12 +125,50 @@ export interface CommercetoolsRequestResponse {
 }
 
 export interface CommercetoolsRequestResponseStats {
+  /**
+   * The cumulative time (in milliseconds) spent across all attempts for this
+   * request, including retries. Equal to `durationMs` when no retries occurred.
+   */
   accumulativeDurationMs: number
+  /**
+   * The time (in milliseconds) taken by the final attempt of this request —
+   * measured from just before the HTTP call was dispatched to when the
+   * response (or error) was received.
+   */
   durationMs: number
+  /**
+   * The number of retries performed before this response was received.
+   * `0` indicates the request succeeded (or failed terminally) on the first
+   * attempt.
+   */
   retries: number
+  /**
+   * The number of sockets currently in use by the underlying HTTPS agent at
+   * the point the request was dispatched. `-1` if socket stats were unavailable.
+   */
   activeSockets: number
+  /**
+   * The number of idle (keep-alive) sockets available in the underlying
+   * HTTPS agent's free pool at the point the request was dispatched.
+   * `-1` if socket stats were unavailable.
+   */
   freeSocketCount: number
+  /**
+   * The number of requests queued and waiting for a free socket in the
+   * underlying HTTPS agent at the point the request was dispatched.
+   * `-1` if socket stats were unavailable.
+   */
   queuedRequests: number
+  /**
+   * Unix epoch timestamp (in milliseconds) captured immediately before
+   * the HTTP request was dispatched by the client.
+   */
+  clientStartTime: number
+  /**
+   * Unix epoch timestamp (in milliseconds) captured as soon as the
+   * response (or error) was received by the client.
+   */
+  clientEndTime: number
 }
 
 export interface RequestExecutor<T = any> {

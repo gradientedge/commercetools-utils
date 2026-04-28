@@ -44,5 +44,6 @@ module.exports = defineConfig([{
         "@typescript-eslint/no-explicit-any": "off",
         "@typescript-eslint/no-var-requires": "off",
         "no-empty": "off",
+        "no-useless-assignment": "off",
     },
 }, globalIgnores(["src/lib/types/**/*"])]);

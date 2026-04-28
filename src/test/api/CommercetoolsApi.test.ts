@@ -1,4 +1,4 @@
-import { beforeAll, beforeEach, jest } from '@jest/globals'
+import { beforeAll, beforeEach, vi } from 'vitest'
 import nock from 'nock'
 import {
   CommercetoolsApi,
@@ -49,17 +49,17 @@ describe('CommercetoolsApi', () => {
   let originalProcessEnv = {}
 
   beforeAll(() => {
-    nock.disableNetConnect()
+    originalProcessEnv = { ...process.env }
+  })
+
+  beforeEach(() => {
     nock('https://auth.europe-west1.gcp.commercetools.com', {
       encodedQueryParams: true,
     })
       .persist()
       .post('/oauth/token', 'grant_type=client_credentials&scope=defaultClientScope1%3Atest-project-key')
       .reply(200, defaultClientGrantResponse)
-    originalProcessEnv = { ...process.env }
-  })
 
-  beforeEach(() => {
     process.env = { ...originalProcessEnv }
   })
 
@@ -1010,7 +1010,7 @@ describe('CommercetoolsApi', () => {
           .query({ version: 4 })
           .reply(200, { success: true })
         const api = new CommercetoolsApi(defaultConfig)
-        api.unpublishProductByKey = jest.fn<any>().mockResolvedValue({
+        api.unpublishProductByKey = vi.fn().mockResolvedValue({
           version: 4,
         })
 
@@ -1041,7 +1041,7 @@ describe('CommercetoolsApi', () => {
           .query({ version: 4 })
           .reply(200, { success: true })
         const api = new CommercetoolsApi(defaultConfig)
-        api.unpublishProductById = jest.fn<any>().mockResolvedValue({
+        api.unpublishProductById = vi.fn().mockResolvedValue({
           version: 4,
         })
 

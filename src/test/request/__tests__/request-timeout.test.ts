@@ -2,6 +2,7 @@ import { fileURLToPath } from 'url'
 import tls from 'tls'
 import fs from 'fs'
 import path from 'path'
+import nock from 'nock'
 import { request } from '../../../lib/request/index.js'
 import axios from 'axios'
 import https from 'https'
@@ -20,22 +21,35 @@ describe('request timeout tests', () => {
     }),
   })
 
-  beforeAll((done) => {
+  beforeAll(async () => {
+    // The global test setup calls `nock.disableNetConnect()` so that no real
+    // outbound network calls are made during tests. This file is an exception
+    // because it spins up a local TLS server and needs to connect to it, so
+    // we re-enable net connect for the duration of this suite (restricted to
+    // localhost so other suites can't accidentally hit real services).
+    nock.enableNetConnect('127.0.0.1')
+
     server = tls.createServer({ key, cert }, (socket) => {
       setTimeout(() => {
         socket.destroy()
       }, 2000)
     })
 
-    server.listen(4433, '127.0.0.1', done)
+    await new Promise<void>((resolve) => {
+      server.listen(4433, '127.0.0.1', () => resolve())
+    })
   })
 
-  afterAll((done) => {
-    server.close(done)
+  afterAll(async () => {
+    await new Promise<void>((resolve, reject) => {
+      server.close((err) => (err ? reject(err) : resolve()))
+    })
+
+    // Restore the global "no network" guard for any subsequent test files.
+    nock.disableNetConnect()
   })
 
-  // Skipped because nock modifies global network behavior to disable outbound network connections. So to avoid impacting tests in CI this is skipped and can be ran if needed.
-  it.skip('should fail with 1s timeout on TLS socket hangup of 2s', async () => {
+  it('should fail with 1s timeout on TLS socket hangup of 2s', async () => {
     const timeoutMs = 1000
     const start = Date.now()
 

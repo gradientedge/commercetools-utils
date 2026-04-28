@@ -13,7 +13,7 @@
     "baseUrl": ".",
     "noEmit": false,
     "experimentalDecorators": true,
-    "types": ["node", "jest", "jest-extended", "jest-matcher-specific-error"],
+    "types": ["node", "vitest/globals"],
     "strict": true,
     "forceConsistentCasingInFileNames": true,
   },
