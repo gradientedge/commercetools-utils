@@ -84,7 +84,7 @@
   },
   "dependencies": {
     "@tshttp/status": "2.0.0",
-    "axios": "1.15.2",
+    "axios": "1.16.0",
     "json-stringify-safe": "5.0.1",
     "qs": "6.15.1",
     "traverse": "0.6.11",
