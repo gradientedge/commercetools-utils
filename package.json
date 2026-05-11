@@ -23,7 +23,7 @@
     "prepare": "husky",
     "prettier": "prettier --check \"**/*.{ts,js,json,graphql}\"",
     "prettify": "prettier --write \"**/*.{ts,js,json,graphql}\"",
-    "validate": "npm run prettier && npm run lint && pnpm typecheck && pnpm build && npm run test",
+    "validate": "pnpm prettier && pnpm lint && pnpm typecheck && pnpm build && pnpm test",
     "docs": "typedoc --readme ./README.md",
     "semantic-release": "semantic-release",
     "typecheck": "tsc --noEmit",

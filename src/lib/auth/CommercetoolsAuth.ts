@@ -17,7 +17,7 @@ import { CommercetoolsAuthApi } from './CommercetoolsAuthApi.js'
  * defined on {@see configDefaults}.
  */
 interface Config extends CommercetoolsAuthConfig {
-  clientScopes: string[]
+  clientScopes?: string[]
   refreshIfWithinSecs: number
   timeoutMs: number
   storeKey?: string
@@ -99,11 +99,6 @@ export class CommercetoolsAuth {
    */
   constructor(config: CommercetoolsAuthConfig) {
     this.config = { ...configDefaults, ...config }
-
-    if (!this.config.clientScopes.length) {
-      throw new CommercetoolsError('`config.clientScopes` must contain at least one scope')
-    }
-
     this.api = new CommercetoolsAuthApi(config)
   }
 

@@ -57,10 +57,15 @@ export class CommercetoolsAuthApi {
    * Get a new client grant:
    * https://docs.commercetools.com/api/authorization#client-credentials-flow
    */
-  public async getClientGrant(scopes: string[]): Promise<CommercetoolsGrantResponse> {
+  public async getClientGrant(scopes?: string[]): Promise<CommercetoolsGrantResponse> {
+    if (scopes?.length) {
+      return this.post('/token', {
+        grant_type: GrantType.CLIENT_CREDENTIALS,
+        scope: scopeArrayToRequestString(scopes, this.config.projectKey),
+      })
+    }
     return this.post('/token', {
       grant_type: GrantType.CLIENT_CREDENTIALS,
-      scope: scopeArrayToRequestString(scopes, this.config.projectKey),
     })
   }
 

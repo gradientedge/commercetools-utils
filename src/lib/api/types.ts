@@ -6,7 +6,7 @@ import { CommercetoolsAuthConfig } from '../auth/index.js'
  */
 export interface CommercetoolsApiConfig extends CommercetoolsAuthConfig {
   httpsAgent?: https.Agent
-  clientScopes: string[]
+  clientScopes?: string[]
 }
 
 /**

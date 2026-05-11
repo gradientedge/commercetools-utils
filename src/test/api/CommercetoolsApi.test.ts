@@ -4541,11 +4541,25 @@ describe('CommercetoolsApi', () => {
     })
 
     it('should throw an error if the `clientScopes` property is not an array', () => {
-      expect(() => CommercetoolsApi.validateConfig({ ...defaultConfig, clientScopes: 'test' })).toThrowError()
+      expect(() => CommercetoolsApi.validateConfig({ ...defaultConfig, clientScopes: 'test' })).toThrowError(
+        'The `clientScopes` property must be an array',
+      )
     })
 
     it('should throw an error if the `clientScopes` array does not contain at least one item', () => {
-      expect(() => CommercetoolsApi.validateConfig({ ...defaultConfig, clientScopes: [] })).toThrowError()
+      expect(() => CommercetoolsApi.validateConfig({ ...defaultConfig, clientScopes: [] })).toThrowError(
+        'The `clientScopes` property must have at least 1 scope defined',
+      )
+    })
+
+    it('should not throw an error if the `clientScopes` property is undefined', () => {
+      expect(() => CommercetoolsApi.validateConfig({ ...defaultConfig, clientScopes: undefined })).not.toThrowError()
+    })
+
+    it('should not throw an error if the `clientScopes` property is omitted', () => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { clientScopes: _omitted, ...configWithoutScopes } = defaultConfig
+      expect(() => CommercetoolsApi.validateConfig(configWithoutScopes)).not.toThrowError()
     })
 
     it('should throw an error if the `region` property is falsy', () => {
@@ -4572,6 +4586,17 @@ describe('CommercetoolsApi', () => {
           clientId: 'test',
           clientSecret: 'test',
           clientScopes: ['manage_project'],
+          projectKey: 'test',
+          region: 'europe_gcp',
+        }),
+      ).not.toThrowError()
+    })
+
+    it('should not throw an error when all required properties are populated and `clientScopes` is omitted', () => {
+      expect(() =>
+        CommercetoolsApi.validateConfig({
+          clientId: 'test',
+          clientSecret: 'test',
           projectKey: 'test',
           region: 'europe_gcp',
         }),

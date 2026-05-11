@@ -97,6 +97,34 @@ describe('CommercetoolsAuthApi', () => {
       scope.isDone()
       expect(grant).toEqual(defaultResponseToken)
     })
+
+    it('should send no scope parameter when no scopes are provided', async () => {
+      const scope = nock('https://auth.us-east-2.aws.commercetools.com', {
+        encodedQueryParams: true,
+      })
+        .post('/oauth/token', 'grant_type=client_credentials')
+        .reply(200, defaultResponseToken)
+      const auth = new CommercetoolsAuthApi(defaultConfig)
+
+      const grant = await auth.getClientGrant()
+
+      scope.isDone()
+      expect(grant).toEqual(defaultResponseToken)
+    })
+
+    it('should send no scope parameter when an empty scope array is provided', async () => {
+      const scope = nock('https://auth.us-east-2.aws.commercetools.com', {
+        encodedQueryParams: true,
+      })
+        .post('/oauth/token', 'grant_type=client_credentials')
+        .reply(200, defaultResponseToken)
+      const auth = new CommercetoolsAuthApi(defaultConfig)
+
+      const grant = await auth.getClientGrant([])
+
+      scope.isDone()
+      expect(grant).toEqual(defaultResponseToken)
+    })
   })
 
   describe('refreshGrant', () => {
