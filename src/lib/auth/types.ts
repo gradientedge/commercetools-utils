@@ -7,7 +7,7 @@ import https from 'https'
 export interface CommercetoolsAuthConfig extends CommercetoolsBaseConfig {
   refreshIfWithinSecs?: number
   customerScopes?: string[]
-  clientScopes: string[]
+  clientScopes?: string[]
 }
 
 /**

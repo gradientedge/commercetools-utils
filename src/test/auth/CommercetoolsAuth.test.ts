@@ -1,5 +1,5 @@
 import nock from 'nock'
-import { CommercetoolsAuth, CommercetoolsError, Region } from '../../lib/index.js'
+import { CommercetoolsAuth, Region } from '../../lib/index.js'
 import { CommercetoolsGrantResponse } from '../../lib/auth/types.js'
 import FakeTimers, { Clock } from '@sinonjs/fake-timers'
 
@@ -80,10 +80,18 @@ describe('CommercetoolsAuth', () => {
   })
 
   describe('constructor', () => {
-    it('should throw if there are no client scopes defined on the config object', () => {
+    it('should not throw if `clientScopes` is an empty array', () => {
       expect(() => {
         new CommercetoolsAuth({ ...defaultConfig, clientScopes: [] })
-      }).toThrow(new CommercetoolsError('`config.clientScopes` must contain at least one scope'))
+      }).not.toThrow()
+    })
+
+    it('should not throw if `clientScopes` is undefined on the config object', () => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { clientScopes: _omitted, ...configWithoutScopes } = defaultConfig
+      expect(() => {
+        new CommercetoolsAuth(configWithoutScopes as any)
+      }).not.toThrow()
     })
 
     it('should use the expected defaults for optional config properties', () => {
@@ -191,6 +199,44 @@ describe('CommercetoolsAuth', () => {
         scopes: ['scope1', 'scope2', 'scope3'],
         expiresIn: 172800,
         expiresAt: new Date(1578044123000),
+        customerId: '123456',
+      })
+      clock.uninstall()
+    })
+
+    it('should send no scope parameter when `clientScopes` is undefined on the config', async () => {
+      const clock = installClock(new Date('2020-01-01T09:35:23.000'))
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { clientScopes: _omitted, ...configWithoutScopes } = defaultConfig
+      const auth = new CommercetoolsAuth(configWithoutScopes as any)
+      const scope = nockGetClientGrant('grant_type=client_credentials')
+
+      const token = await auth.getClientGrant()
+
+      scope.isDone()
+      expect(token).toEqual({
+        accessToken: 'test-access-token',
+        scopes: ['scope1', 'scope2', 'scope3'],
+        expiresIn: 172800,
+        expiresAt: new Date('2020-01-03T09:35:23.000'),
+        customerId: '123456',
+      })
+      clock.uninstall()
+    })
+
+    it('should send no scope parameter when `clientScopes` is an empty array on the config', async () => {
+      const clock = installClock(new Date('2020-01-01T09:35:23.000'))
+      const auth = new CommercetoolsAuth({ ...defaultConfig, clientScopes: [] })
+      const scope = nockGetClientGrant('grant_type=client_credentials')
+
+      const token = await auth.getClientGrant()
+
+      scope.isDone()
+      expect(token).toEqual({
+        accessToken: 'test-access-token',
+        scopes: ['scope1', 'scope2', 'scope3'],
+        expiresIn: 172800,
+        expiresAt: new Date('2020-01-03T09:35:23.000'),
         customerId: '123456',
       })
       clock.uninstall()

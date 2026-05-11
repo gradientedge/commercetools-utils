@@ -3206,10 +3206,12 @@ export class CommercetoolsApi {
       } else if (typeof config.clientSecret !== 'string') {
         errors.push('The `clientSecret` property must be a string')
       }
-      if (!Array.isArray(config.clientScopes)) {
-        errors.push('The `clientScopes` property must be an array')
-      } else if (config.clientScopes.length === 0) {
-        errors.push('The `clientScopes` property must have at least 1 scope defined')
+      if (config.clientScopes) {
+        if (!Array.isArray(config.clientScopes)) {
+          errors.push('The `clientScopes` property must be an array')
+        } else if (config.clientScopes.length === 0) {
+          errors.push('The `clientScopes` property must have at least 1 scope defined')
+        }
       }
       if (!config.region) {
         errors.push('The `region` property is empty')
