@@ -2586,6 +2586,31 @@ describe('CommercetoolsApi', () => {
       })
     })
 
+    describe('getPaymentByKey', () => {
+      it('should make a GET request to the correct endpoint with the given access token', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com', {
+          reqheaders: {
+            authorization: 'Bearer test-access-token',
+          },
+        })
+          .get('/test-project-key/payments/key=spoof-path%2Fpayment-key')
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const response = await api.getPaymentByKey({
+          key: 'spoof-path/payment-key',
+        })
+
+        expect(response).toEqual({ success: true })
+      })
+
+      it('should throw an error when an empty key is being passed as a parameter', async () => {
+        const api = new CommercetoolsApi(defaultConfig)
+
+        expect(() => api.getPaymentByKey({ key: ' ' })).toThrow(`The string parameter 'key' cannot be empty`)
+      })
+    })
+
     describe('queryPayments', () => {
       it('should make a GET request to the correct endpoint', async () => {
         nock('https://api.europe-west1.gcp.commercetools.com', {
