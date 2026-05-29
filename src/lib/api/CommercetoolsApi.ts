@@ -1366,6 +1366,20 @@ export class CommercetoolsApi {
   }
 
   /**
+   * Get a payment object by key:
+   * https://docs.commercetools.com/api/projects/payments#get-payment-by-key
+   */
+  getPaymentByKey(options: CommonRequestOptions & { key: string }): Promise<Payment> {
+    ensureNonEmptyString({ value: options.key, name: 'key' })
+
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/payments/key=${encodeURIComponent(options.key)}`,
+      method: 'GET',
+    })
+  }
+
+  /**
    * Query payment objects:
    * https://docs.commercetools.com/api/projects/payments#query-payments
    */
