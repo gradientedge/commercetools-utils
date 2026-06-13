@@ -68,6 +68,14 @@ describe('convertAxiosError', () => {
     expect(result?.response.tlsVersion).toBeUndefined()
   })
 
+  it('falls back to an empty string when the request config has no url', () => {
+    // Covers the `error.config?.url ?? ''` fallback branch on line 15.
+    const error = buildAxiosError({ config: undefined as unknown as AxiosError['config'] })
+    const result = convertAxiosError(error, stats)
+    expect(result?.request.url).toBe('')
+    expect(result?.request.method).toBeUndefined()
+  })
+
   it('produces the expected full shape including tlsVersion', () => {
     const error = buildAxiosError({
       response: {

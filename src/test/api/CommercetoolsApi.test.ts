@@ -5076,4 +5076,524 @@ describe('CommercetoolsApi', () => {
       })
     })
   })
+
+  describe('Product Types (additional coverage)', () => {
+    describe('deleteProductTypeById', () => {
+      it('should make a DELETE request to the correct endpoint with the version param', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com')
+          .delete('/test-project-key/product-types/my-product-type-id')
+          .query({ version: 4 })
+          .reply(200, singleResultItem)
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const result = await api.deleteProductTypeById({ id: 'my-product-type-id', version: 4 })
+
+        expect(result).toEqual(singleResultItem)
+      })
+
+      it('should throw an error when an empty id is passed', async () => {
+        const api = new CommercetoolsApi(defaultConfig)
+        await expect(() => api.deleteProductTypeById({ id: ' ', version: 1 })).toThrow(
+          "The string parameter 'id' cannot be empty",
+        )
+      })
+    })
+
+    describe('deleteProductTypeByKey', () => {
+      it('should make a DELETE request to the correct endpoint with the version param', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com')
+          .delete('/test-project-key/product-types/key=my-product-type-key')
+          .query({ version: 4 })
+          .reply(200, singleResultItem)
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const result = await api.deleteProductTypeByKey({ key: 'my-product-type-key', version: 4 })
+
+        expect(result).toEqual(singleResultItem)
+      })
+
+      it('should throw an error when an empty key is passed', async () => {
+        const api = new CommercetoolsApi(defaultConfig)
+        await expect(() => api.deleteProductTypeByKey({ key: ' ', version: 1 })).toThrow(
+          "The string parameter 'key' cannot be empty",
+        )
+      })
+    })
+  })
+
+  describe('States (additional coverage)', () => {
+    const updateData = { version: 1, actions: [{ action: 'changeKey', key: 'new-key' }] } as any
+
+    describe('updateStateById', () => {
+      it('should make a POST request to the correct endpoint with the provided data', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com')
+          .post('/test-project-key/states/my-state-id', updateData)
+          .reply(200, singleResultItem)
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const result = await api.updateStateById({ id: 'my-state-id', data: updateData })
+
+        expect(result).toEqual(singleResultItem)
+      })
+
+      it('should throw an error when an empty id is passed', async () => {
+        const api = new CommercetoolsApi(defaultConfig)
+        await expect(() => api.updateStateById({ id: ' ', data: updateData })).toThrow(
+          "The string parameter 'id' cannot be empty",
+        )
+      })
+    })
+
+    describe('updateStateByKey', () => {
+      it('should make a POST request to the correct endpoint with the provided data', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com')
+          .post('/test-project-key/states/key=my-state-key', updateData)
+          .reply(200, singleResultItem)
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const result = await api.updateStateByKey({ key: 'my-state-key', data: updateData })
+
+        expect(result).toEqual(singleResultItem)
+      })
+
+      it('should throw an error when an empty key is passed', async () => {
+        const api = new CommercetoolsApi(defaultConfig)
+        await expect(() => api.updateStateByKey({ key: ' ', data: updateData })).toThrow(
+          "The string parameter 'key' cannot be empty",
+        )
+      })
+    })
+
+    describe('deleteStateById', () => {
+      it('should make a DELETE request to the correct endpoint with the version param', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com')
+          .delete('/test-project-key/states/my-state-id')
+          .query({ version: 2 })
+          .reply(200, singleResultItem)
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const result = await api.deleteStateById({ id: 'my-state-id', version: 2 })
+
+        expect(result).toEqual(singleResultItem)
+      })
+
+      it('should throw an error when an empty id is passed', async () => {
+        const api = new CommercetoolsApi(defaultConfig)
+        await expect(() => api.deleteStateById({ id: ' ', version: 1 })).toThrow(
+          "The string parameter 'id' cannot be empty",
+        )
+      })
+    })
+
+    describe('deleteStateByKey', () => {
+      it('should make a DELETE request to the correct endpoint with the version param', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com')
+          .delete('/test-project-key/states/key=my-state-key')
+          .query({ version: 2 })
+          .reply(200, singleResultItem)
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const result = await api.deleteStateByKey({ key: 'my-state-key', version: 2 })
+
+        expect(result).toEqual(singleResultItem)
+      })
+
+      it('should throw an error when an empty key is passed', async () => {
+        const api = new CommercetoolsApi(defaultConfig)
+        await expect(() => api.deleteStateByKey({ key: ' ', version: 1 })).toThrow(
+          "The string parameter 'key' cannot be empty",
+        )
+      })
+    })
+  })
+
+  describe('Subscriptions', () => {
+    const subscriptionDraft = { key: 'my-sub', destination: { type: 'GoogleCloudPubSub' } } as any
+    const subscriptionUpdate = { version: 1, actions: [{ action: 'setKey', key: 'new-sub-key' }] } as any
+
+    describe('getSubscriptionById', () => {
+      it('should make a GET request to the correct endpoint', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com')
+          .get('/test-project-key/subscriptions/my-sub-id')
+          .reply(200, singleResultItem)
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const result = await api.getSubscriptionById({ id: 'my-sub-id' })
+
+        expect(result).toEqual(singleResultItem)
+      })
+
+      it('should throw an error when an empty id is passed', async () => {
+        const api = new CommercetoolsApi(defaultConfig)
+        await expect(() => api.getSubscriptionById({ id: ' ' })).toThrow("The string parameter 'id' cannot be empty")
+      })
+    })
+
+    describe('getSubscriptionByKey', () => {
+      it('should make a GET request to the correct endpoint', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com')
+          .get('/test-project-key/subscriptions/key=my-sub-key')
+          .reply(200, singleResultItem)
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const result = await api.getSubscriptionByKey({ key: 'my-sub-key' })
+
+        expect(result).toEqual(singleResultItem)
+      })
+    })
+
+    describe('querySubscriptions', () => {
+      it('should make a GET request to the correct endpoint', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com')
+          .get('/test-project-key/subscriptions')
+          .reply(200, singleItemResponse)
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const result = await api.querySubscriptions()
+
+        expect(result).toEqual(singleItemResponse)
+      })
+    })
+
+    describe('createSubscription', () => {
+      it('should make a POST request to the correct endpoint with the provided data', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com')
+          .post('/test-project-key/subscriptions', subscriptionDraft)
+          .reply(201, singleResultItem)
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const result = await api.createSubscription({ data: subscriptionDraft })
+
+        expect(result).toEqual(singleResultItem)
+      })
+    })
+
+    describe('updateSubscriptionById', () => {
+      it('should make a POST request to the correct endpoint with the provided data', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com')
+          .post('/test-project-key/subscriptions/my-sub-id', subscriptionUpdate)
+          .reply(200, singleResultItem)
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const result = await api.updateSubscriptionById({ id: 'my-sub-id', data: subscriptionUpdate })
+
+        expect(result).toEqual(singleResultItem)
+      })
+
+      it('should throw an error when an empty id is passed', async () => {
+        const api = new CommercetoolsApi(defaultConfig)
+        await expect(() => api.updateSubscriptionById({ id: ' ', data: subscriptionUpdate })).toThrow(
+          "The string parameter 'id' cannot be empty",
+        )
+      })
+    })
+
+    describe('updateSubscriptionByKey', () => {
+      it('should make a POST request to the correct endpoint with the provided data', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com')
+          .post('/test-project-key/subscriptions/key=my-sub-key', subscriptionUpdate)
+          .reply(200, singleResultItem)
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const result = await api.updateSubscriptionByKey({ key: 'my-sub-key', data: subscriptionUpdate })
+
+        expect(result).toEqual(singleResultItem)
+      })
+    })
+
+    describe('deleteSubscriptionById', () => {
+      it('should make a DELETE request to the correct endpoint with the version param', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com')
+          .delete('/test-project-key/subscriptions/my-sub-id')
+          .query({ version: 3 })
+          .reply(200, singleResultItem)
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const result = await api.deleteSubscriptionById({ id: 'my-sub-id', version: 3 })
+
+        expect(result).toEqual(singleResultItem)
+      })
+
+      it('should throw an error when an empty id is passed', async () => {
+        const api = new CommercetoolsApi(defaultConfig)
+        await expect(() => api.deleteSubscriptionById({ id: ' ', version: 1 })).toThrow(
+          "The string parameter 'id' cannot be empty",
+        )
+      })
+    })
+
+    describe('deleteSubscriptionByKey', () => {
+      it('should make a DELETE request to the correct endpoint with the version param', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com')
+          .delete('/test-project-key/subscriptions/key=my-sub-key')
+          .query({ version: 3 })
+          .reply(200, singleResultItem)
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const result = await api.deleteSubscriptionByKey({ key: 'my-sub-key', version: 3 })
+
+        expect(result).toEqual(singleResultItem)
+      })
+    })
+  })
+
+  describe('Recurrence policies (additional coverage)', () => {
+    const recurrencePolicyUpdate = { version: 1, actions: [{ action: 'setKey', key: 'new-key' }] } as any
+
+    describe('getRecurrencePolicyById', () => {
+      it('should make a GET request to the correct endpoint', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com')
+          .get('/test-project-key/recurrence-policies/my-policy-id')
+          .reply(200, singleResultItem)
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const result = await api.getRecurrencePolicyById({ id: 'my-policy-id' })
+
+        expect(result).toEqual(singleResultItem)
+      })
+
+      it('should throw an error when an empty id is passed', async () => {
+        const api = new CommercetoolsApi(defaultConfig)
+        await expect(() => api.getRecurrencePolicyById({ id: ' ' })).toThrow(
+          "The string parameter 'id' cannot be empty",
+        )
+      })
+    })
+
+    describe('queryRecurrencePolicies', () => {
+      it('should make a GET request to the correct endpoint', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com')
+          .get('/test-project-key/recurrence-policies')
+          .reply(200, singleItemResponse)
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const result = await api.queryRecurrencePolicies()
+
+        expect(result).toEqual(singleItemResponse)
+      })
+    })
+
+    describe('checkRecurrencePolicyExistsById', () => {
+      it('should return true on a 200', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com')
+          .head('/test-project-key/recurrence-policies/my-policy-id')
+          .reply(200)
+        const api = new CommercetoolsApi(defaultConfig)
+
+        await expect(api.checkRecurrencePolicyExistsById({ id: 'my-policy-id' })).resolves.toBe(true)
+      })
+
+      it('should return false on a 404', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com')
+          .head('/test-project-key/recurrence-policies/my-policy-id')
+          .reply(404)
+        const api = new CommercetoolsApi(defaultConfig)
+
+        await expect(api.checkRecurrencePolicyExistsById({ id: 'my-policy-id' })).resolves.toBe(false)
+      })
+
+      it('should throw on a non-404 error', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com')
+          .head('/test-project-key/recurrence-policies/my-policy-id')
+          .reply(500)
+          .persist()
+        const api = new CommercetoolsApi(defaultConfig)
+
+        await expect(() => api.checkRecurrencePolicyExistsById({ id: 'my-policy-id' })).rejects.toThrow(
+          'Request failed with status code 500',
+        )
+      })
+    })
+
+    describe('checkRecurrencePolicyExists', () => {
+      it('should return true on a 200', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com')
+          .head('/test-project-key/recurrence-policies?where=some-predicate')
+          .reply(200)
+        const api = new CommercetoolsApi(defaultConfig)
+
+        await expect(api.checkRecurrencePolicyExists({ params: { where: 'some-predicate' } })).resolves.toBe(true)
+      })
+
+      it('should return false on a 404', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com')
+          .head('/test-project-key/recurrence-policies?where=some-predicate')
+          .reply(404)
+        const api = new CommercetoolsApi(defaultConfig)
+
+        await expect(api.checkRecurrencePolicyExists({ params: { where: 'some-predicate' } })).resolves.toBe(false)
+      })
+
+      it('should throw on a non-404 error', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com')
+          .head('/test-project-key/recurrence-policies?where=some-predicate')
+          .reply(500)
+          .persist()
+        const api = new CommercetoolsApi(defaultConfig)
+
+        await expect(() => api.checkRecurrencePolicyExists({ params: { where: 'some-predicate' } })).rejects.toThrow(
+          'Request failed with status code 500',
+        )
+      })
+    })
+
+    describe('updateRecurrencePolicyById', () => {
+      it('should make a POST request to the correct endpoint with the provided data', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com')
+          .post('/test-project-key/recurrence-policies/my-policy-id', recurrencePolicyUpdate)
+          .reply(200, singleResultItem)
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const result = await api.updateRecurrencePolicyById({
+          id: 'my-policy-id',
+          data: recurrencePolicyUpdate,
+        })
+
+        expect(result).toEqual(singleResultItem)
+      })
+
+      it('should throw an error when an empty id is passed', async () => {
+        const api = new CommercetoolsApi(defaultConfig)
+        await expect(() => api.updateRecurrencePolicyById({ id: ' ', data: recurrencePolicyUpdate })).toThrow(
+          "The string parameter 'id' cannot be empty",
+        )
+      })
+    })
+  })
+
+  describe('Recurring orders (additional coverage)', () => {
+    const recurringOrderDraft = { cart: { typeId: 'cart', id: 'cart-id' } } as any
+    const recurringOrderUpdate = { version: 1, actions: [{ action: 'setKey', key: 'new-key' }] } as any
+
+    describe('getRecurringOrderById', () => {
+      it('should make a GET request to the correct endpoint', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com')
+          .get('/test-project-key/recurring-orders/my-order-id')
+          .reply(200, singleResultItem)
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const result = await api.getRecurringOrderById({ id: 'my-order-id' })
+
+        expect(result).toEqual(singleResultItem)
+      })
+
+      it('should throw an error when an empty id is passed', async () => {
+        const api = new CommercetoolsApi(defaultConfig)
+        await expect(() => api.getRecurringOrderById({ id: ' ' })).toThrow("The string parameter 'id' cannot be empty")
+      })
+    })
+
+    describe('queryRecurringOrders', () => {
+      it('should make a GET request to the correct endpoint', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com')
+          .get('/test-project-key/recurring-orders')
+          .reply(200, singleItemResponse)
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const result = await api.queryRecurringOrders()
+
+        expect(result).toEqual(singleItemResponse)
+      })
+    })
+
+    describe('checkRecurringOrderExistsById', () => {
+      it('should return true on a 200', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com')
+          .head('/test-project-key/recurring-orders/my-order-id')
+          .reply(200)
+        const api = new CommercetoolsApi(defaultConfig)
+
+        await expect(api.checkRecurringOrderExistsById({ id: 'my-order-id' })).resolves.toBe(true)
+      })
+
+      it('should return false on a 404', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com')
+          .head('/test-project-key/recurring-orders/my-order-id')
+          .reply(404)
+        const api = new CommercetoolsApi(defaultConfig)
+
+        await expect(api.checkRecurringOrderExistsById({ id: 'my-order-id' })).resolves.toBe(false)
+      })
+
+      it('should throw on a non-404 error', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com')
+          .head('/test-project-key/recurring-orders/my-order-id')
+          .reply(500)
+          .persist()
+        const api = new CommercetoolsApi(defaultConfig)
+
+        await expect(() => api.checkRecurringOrderExistsById({ id: 'my-order-id' })).rejects.toThrow(
+          'Request failed with status code 500',
+        )
+      })
+    })
+
+    describe('checkRecurringOrderExists', () => {
+      it('should return true on a 200', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com')
+          .head('/test-project-key/recurring-orders?where=some-predicate')
+          .reply(200)
+        const api = new CommercetoolsApi(defaultConfig)
+
+        await expect(api.checkRecurringOrderExists({ params: { where: 'some-predicate' } })).resolves.toBe(true)
+      })
+
+      it('should return false on a 404', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com')
+          .head('/test-project-key/recurring-orders?where=some-predicate')
+          .reply(404)
+        const api = new CommercetoolsApi(defaultConfig)
+
+        await expect(api.checkRecurringOrderExists({ params: { where: 'some-predicate' } })).resolves.toBe(false)
+      })
+
+      it('should throw on a non-404 error', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com')
+          .head('/test-project-key/recurring-orders?where=some-predicate')
+          .reply(500)
+          .persist()
+        const api = new CommercetoolsApi(defaultConfig)
+
+        await expect(() => api.checkRecurringOrderExists({ params: { where: 'some-predicate' } })).rejects.toThrow(
+          'Request failed with status code 500',
+        )
+      })
+    })
+
+    describe('createRecurringOrder', () => {
+      it('should make a POST request to the correct endpoint with the provided data', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com')
+          .post('/test-project-key/recurring-orders', recurringOrderDraft)
+          .reply(201, singleResultItem)
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const result = await api.createRecurringOrder({ data: recurringOrderDraft })
+
+        expect(result).toEqual(singleResultItem)
+      })
+    })
+
+    describe('updateRecurringOrderById', () => {
+      it('should make a POST request to the correct endpoint with the provided data', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com')
+          .post('/test-project-key/recurring-orders/my-order-id', recurringOrderUpdate)
+          .reply(200, singleResultItem)
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const result = await api.updateRecurringOrderById({
+          id: 'my-order-id',
+          data: recurringOrderUpdate,
+        })
+
+        expect(result).toEqual(singleResultItem)
+      })
+
+      it('should throw an error when an empty id is passed', async () => {
+        const api = new CommercetoolsApi(defaultConfig)
+        await expect(() => api.updateRecurringOrderById({ id: ' ', data: recurringOrderUpdate })).toThrow(
+          "The string parameter 'id' cannot be empty",
+        )
+      })
+    })
+  })
 })

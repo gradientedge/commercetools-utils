@@ -70,4 +70,30 @@ describe('getSocketStats', () => {
       queuedRequests: 0,
     })
   })
+
+  it('treats entries with nullish values as zero', () => {
+    // Covers the `?.length ?? 0` fallback branches on lines 12/17/22 where
+    // an enumerated key has an explicitly undefined value.
+    const mockAgent = {
+      sockets: {
+        'host-a:443': undefined,
+        'host-b:443': [1, 2],
+      },
+      freeSockets: {
+        'host-a:443': undefined,
+        'host-b:443': [3],
+      },
+      requests: {
+        'host-a:443': undefined,
+        'host-b:443': [4, 5, 6],
+      },
+    } as unknown as https.Agent
+
+    const stats = getSocketStats(mockAgent)
+    expect(stats).toEqual({
+      activeSockets: 2,
+      freeSocketCount: 1,
+      queuedRequests: 3,
+    })
+  })
 })

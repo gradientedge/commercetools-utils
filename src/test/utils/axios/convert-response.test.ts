@@ -57,6 +57,16 @@ describe('convertAxiosResponse', () => {
     expect(result.response.tlsVersion).toBeUndefined()
   })
 
+  it('falls back to an empty string when the response config has no url', () => {
+    // Covers the `response.config?.url ?? ''` fallback branch on line 12.
+    const result = convertAxiosResponse(
+      buildResponse({ config: undefined as unknown as AxiosResponse['config'] }),
+      stats,
+    )
+    expect(result.request.url).toBe('')
+    expect(result.request.method).toBeUndefined()
+  })
+
   it('includes the other response fields alongside tlsVersion', () => {
     const result = convertAxiosResponse(buildResponse(), stats)
     expect(result).toEqual({

@@ -693,6 +693,21 @@ describe('CommercetoolsAuth', () => {
     })
   })
 
+  describe('revokeToken', () => {
+    it('should delegate to the underlying api.revokeToken method', async () => {
+      // Covers line 275 of CommercetoolsAuth.ts.
+      const auth = new CommercetoolsAuth(defaultConfig)
+      const scope = nock('https://auth.us-east-2.aws.commercetools.com')
+        .post('/oauth/token/revoke', `token=my-access-token&token_type_hint=access_token`)
+        .reply(200, {})
+
+      await expect(
+        auth.revokeToken({ tokenValue: 'my-access-token', tokenType: 'access_token' }),
+      ).resolves.toBeUndefined()
+      expect(scope.isDone()).toBe(true)
+    })
+  })
+
   describe('multiple simultaneous requests', () => {
     it('should make all requests wait for the pending client credentials', async () => {
       const scope = nock('https://auth.us-east-2.aws.commercetools.com', {
