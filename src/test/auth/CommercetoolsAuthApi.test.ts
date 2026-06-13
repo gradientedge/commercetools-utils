@@ -595,4 +595,49 @@ describe('CommercetoolsAuthApi', () => {
       }
     })
   })
+
+  describe('getRequestOptions', () => {
+    it('uses a provided correlationId when passed in', () => {
+      // Covers lines 177-178 of CommercetoolsAuthApi.ts — the explicit
+      // `correlationId` branch in `getRequestOptions`.
+      const api = new CommercetoolsAuthApi(defaultConfig)
+
+      const result = api.getRequestOptions({
+        path: '/token',
+        correlationId: 'my-correlation-id',
+        body: { grant_type: 'client_credentials' },
+      })
+
+      expect(result.headers?.['X-Correlation-ID']).toBe('my-correlation-id')
+      expect(result.method).toBe('POST')
+      expect(result.url).toBe('https://auth.us-east-2.aws.commercetools.com/oauth/token')
+    })
+
+    it('generates a UUID correlationId when none is provided', () => {
+      const api = new CommercetoolsAuthApi(defaultConfig)
+
+      const result = api.getRequestOptions({
+        path: '/token',
+        body: { grant_type: 'client_credentials' },
+      })
+
+      expect(result.headers?.['X-Correlation-ID']).toMatch(
+        /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/,
+      )
+    })
+
+    it('treats an empty string correlationId as missing and generates a UUID', () => {
+      const api = new CommercetoolsAuthApi(defaultConfig)
+
+      const result = api.getRequestOptions({
+        path: '/token',
+        correlationId: '',
+        body: { grant_type: 'client_credentials' },
+      })
+
+      expect(result.headers?.['X-Correlation-ID']).toMatch(
+        /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/,
+      )
+    })
+  })
 })

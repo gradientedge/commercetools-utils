@@ -103,4 +103,17 @@ describe('plainClone', function () {
       },
     })
   })
+
+  it('should ignore inherited (prototype-chain) properties', () => {
+    // Covers the `hasOwnProperty` false branch on line 20 — properties that
+    // come from the prototype chain must not be copied across.
+    const proto = { inherited: 'should-not-be-copied' }
+    const source = Object.create(proto)
+    source.own = 'should-be-copied'
+
+    const result = plainClone(source)
+
+    expect(result).toEqual({ own: 'should-be-copied' })
+    expect(result.inherited).toBeUndefined()
+  })
 })

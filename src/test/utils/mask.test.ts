@@ -1,4 +1,5 @@
-import { maskSensitiveData } from '../../lib/utils/mask.js'
+import { AxiosHeaders } from 'axios'
+import { maskSensitiveData, maskSensitiveHeaders } from '../../lib/utils/mask.js'
 
 describe('maskSensitiveData', () => {
   it('should return null if null is passed in', () => {
@@ -34,6 +35,22 @@ describe('maskSensitiveData', () => {
         '***mask***',
       )
       expect(result).toEqual({ password: '***mask***', name: 'Jimmy', secret: '***mask***' })
+    })
+  })
+
+  describe('AxiosHeaders input', () => {
+    it('should serialize an AxiosHeaders instance via toJSON before masking', () => {
+      // Covers the `data instanceof AxiosHeaders` branch on line 43 of mask.ts.
+      const headers = new AxiosHeaders()
+      headers.set('Authorization', 'Bearer secret-token')
+      headers.set('Accept', 'application/json')
+
+      const result = maskSensitiveHeaders(headers)
+
+      expect(result).toEqual({
+        Authorization: '********',
+        Accept: 'application/json',
+      })
     })
   })
 
