@@ -700,6 +700,160 @@ describe('request', () => {
       expect(nock.pendingMocks()).toEqual([])
     })
 
+    it('should make two separate requests when Authorization headers differ', async () => {
+      const scope1 = nock('https://localhost')
+        .matchHeader('Authorization', 'Bearer token-a')
+        .get('/test')
+        .query({ a: '1' })
+        .reply(200, { which: 'a' })
+      const scope2 = nock('https://localhost')
+        .matchHeader('Authorization', 'Bearer token-b')
+        .get('/test')
+        .query({ a: '1' })
+        .reply(200, { which: 'b' })
+      const config1 = getRequestConfig()
+      config1.request.params = { a: '1' }
+      config1.request.headers = { Authorization: 'Bearer token-a' }
+      const config2 = getRequestConfig()
+      config2.request.params = { a: '1' }
+      config2.request.headers = { Authorization: 'Bearer token-b' }
+
+      const [result1, result2] = await Promise.all([request(config1), request(config2)])
+
+      expect(result1).toEqual({ which: 'a' })
+      expect(result2).toEqual({ which: 'b' })
+      expect(scope1.isDone()).toBe(true)
+      expect(scope2.isDone()).toBe(true)
+      expect(nock.pendingMocks()).toEqual([])
+    })
+
+    it('should share the promise when Authorization headers match (case-insensitive header name)', async () => {
+      const scope = nock('https://localhost')
+        .matchHeader('Authorization', 'Bearer same-token')
+        .get('/test')
+        .query({ a: '1' })
+        .reply(200, { success: true })
+      const config1 = getRequestConfig()
+      config1.request.params = { a: '1' }
+      config1.request.headers = { Authorization: 'Bearer same-token' }
+      const config2 = getRequestConfig()
+      config2.request.params = { a: '1' }
+      // Different header name casing should still produce the same key.
+      config2.request.headers = { authorization: 'Bearer same-token' }
+
+      const [result1, result2] = await Promise.all([request(config1), request(config2)])
+
+      expect(result1).toEqual({ success: true })
+      expect(result2).toEqual({ success: true })
+      expect(scope.isDone()).toBe(true)
+      expect(nock.pendingMocks()).toEqual([])
+    })
+
+    it('should make two separate requests when X-External-User-ID headers differ', async () => {
+      const scope1 = nock('https://localhost')
+        .matchHeader('X-External-User-ID', 'user-a')
+        .get('/test')
+        .query({ a: '1' })
+        .reply(200, { which: 'a' })
+      const scope2 = nock('https://localhost')
+        .matchHeader('X-External-User-ID', 'user-b')
+        .get('/test')
+        .query({ a: '1' })
+        .reply(200, { which: 'b' })
+      const config1 = getRequestConfig()
+      config1.request.params = { a: '1' }
+      config1.request.headers = { Authorization: 'Bearer same-token', 'X-External-User-ID': 'user-a' }
+      const config2 = getRequestConfig()
+      config2.request.params = { a: '1' }
+      config2.request.headers = { Authorization: 'Bearer same-token', 'X-External-User-ID': 'user-b' }
+
+      const [result1, result2] = await Promise.all([request(config1), request(config2)])
+
+      expect(result1).toEqual({ which: 'a' })
+      expect(result2).toEqual({ which: 'b' })
+      expect(scope1.isDone()).toBe(true)
+      expect(scope2.isDone()).toBe(true)
+      expect(nock.pendingMocks()).toEqual([])
+    })
+
+    it('should make two separate requests when only one request has an X-External-User-ID header', async () => {
+      const scope1 = nock('https://localhost').get('/test').query({ a: '1' }).reply(200, { which: 1 })
+      const scope2 = nock('https://localhost')
+        .matchHeader('X-External-User-ID', 'user-a')
+        .get('/test')
+        .query({ a: '1' })
+        .reply(200, { which: 2 })
+      const config1 = getRequestConfig()
+      config1.request.params = { a: '1' }
+      config1.request.headers = { Authorization: 'Bearer same-token' }
+      const config2 = getRequestConfig()
+      config2.request.params = { a: '1' }
+      config2.request.headers = { Authorization: 'Bearer same-token', 'X-External-User-ID': 'user-a' }
+
+      const [result1, result2] = await Promise.all([request(config1), request(config2)])
+
+      expect(result1).toEqual({ which: 1 })
+      expect(result2).toEqual({ which: 2 })
+      expect(scope1.isDone()).toBe(true)
+      expect(scope2.isDone()).toBe(true)
+      expect(nock.pendingMocks()).toEqual([])
+    })
+
+    it('should share the promise when only non-identity headers (e.g. X-Correlation-ID) differ', async () => {
+      const scope = nock('https://localhost').get('/test').query({ a: '1' }).reply(200, { success: true })
+      const config1 = getRequestConfig()
+      config1.request.params = { a: '1' }
+      config1.request.headers = { Authorization: 'Bearer same-token', 'X-Correlation-ID': 'corr-1' }
+      const config2 = getRequestConfig()
+      config2.request.params = { a: '1' }
+      config2.request.headers = { Authorization: 'Bearer same-token', 'X-Correlation-ID': 'corr-2' }
+
+      const [result1, result2] = await Promise.all([request(config1), request(config2)])
+
+      expect(result1).toEqual({ success: true })
+      expect(result2).toEqual({ success: true })
+      expect(scope.isDone()).toBe(true)
+      expect(nock.pendingMocks()).toEqual([])
+    })
+
+    it('should successfully dedupe two GETs that omit headers and params entirely', async () => {
+      // Covers the `req.params ?? {}` / `req.headers ?? {}` / `headers[name] ?? ''`
+      // fallback branches in `buildInflightGetKey`, plus the
+      // `requestConfig.headers ??= {}` branch in `executeRequest` (used when
+      // injecting a default User-Agent).
+      const scope = nock('https://localhost').get('/test').reply(200, { success: true })
+      const config1 = getRequestConfig()
+      delete (config1.request as any).headers
+      delete (config1.request as any).params
+      const config2 = getRequestConfig()
+      delete (config2.request as any).headers
+      delete (config2.request as any).params
+
+      const [result1, result2] = await Promise.all([request(config1), request(config2)])
+
+      expect(result1).toEqual({ success: true })
+      expect(result2).toEqual({ success: true })
+      expect(scope.isDone()).toBe(true)
+      expect(nock.pendingMocks()).toEqual([])
+    })
+
+    it('should treat an explicit undefined header value the same as a missing header', async () => {
+      // Covers the `String(headers[headerName] ?? '')` branch where the
+      // header value itself is nullish.
+      const scope = nock('https://localhost').get('/test').reply(200, { success: true })
+      const config1 = getRequestConfig()
+      config1.request.headers = { Authorization: undefined as unknown as string }
+      const config2 = getRequestConfig()
+      config2.request.headers = {}
+
+      const [result1, result2] = await Promise.all([request(config1), request(config2)])
+
+      expect(result1).toEqual({ success: true })
+      expect(result2).toEqual({ success: true })
+      expect(scope.isDone()).toBe(true)
+      expect(nock.pendingMocks()).toEqual([])
+    })
+
     it('should not share the promise once the previous request has settled', async () => {
       const scope1 = nock('https://localhost').get('/test').query({ a: '1' }).reply(200, { call: 1 })
       const config1 = getRequestConfig()

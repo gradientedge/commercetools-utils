@@ -31,11 +31,26 @@ export interface RequestOptions extends CommercetoolsHooks {
 const inflightGetRequests = new Map<string, Promise<any>>()
 
 /**
- * Build a stable cache key from a request's URL and its querystring params.
- * We delegate the actual serialization to axios itself (via `getUri`) so that
- * the key matches however axios would serialize the querystring (including
- * any configured `paramsSerializer`). Keys are sorted first so that the same
- * logical params produce the same cache key regardless of property order.
+ * Build a stable cache key from a request's URL, its querystring params, and
+ * a small set of identity-affecting headers.
+ *
+ * We delegate the actual URL/querystring serialization to axios itself (via
+ * `getUri`) so that the key matches however axios would serialize the
+ * querystring (including any configured `paramsSerializer`). Params keys are
+ * sorted first so that the same logical params produce the same cache key
+ * regardless of property order.
+ *
+ * Identity-affecting headers (`Authorization` and `X-External-User-ID`) are
+ * included in the key so that requests made with different credentials or on
+ * behalf of different users (e.g. different customer access tokens, or
+ * different impersonated users) are not accidentally de-duplicated together.
+ * Headers that do not affect the response body are deliberately excluded —
+ * notably `X-Correlation-ID` (a new UUID per request, which would defeat
+ * de-duplication entirely) and `User-Agent`.
+ *
+ * Parts are joined with the NUL character (`\u0000`) since it cannot legally
+ * appear in HTTP header values or URIs, which guarantees there is no way for
+ * two different inputs to collide on the same key.
  */
 function buildInflightGetKey(axiosInstance: AxiosInstance, req: CommercetoolsRequest): string {
   const params = req.params ?? {}
@@ -43,7 +58,18 @@ function buildInflightGetKey(axiosInstance: AxiosInstance, req: CommercetoolsReq
   for (const key of Object.keys(params).sort()) {
     sortedParams[key] = params[key]
   }
-  return axiosInstance.getUri({ url: req.url, params: sortedParams })
+  const uri = axiosInstance.getUri({ url: req.url, params: sortedParams })
+  const identityHeaders = ['authorization', 'x-external-user-id']
+  const headers = req.headers ?? {}
+  const headerParts: string[] = []
+  const lowerCasedHeaders: Record<string, string> = {}
+  for (const headerName of Object.keys(headers)) {
+    lowerCasedHeaders[headerName.toLowerCase()] = String(headers[headerName] ?? '')
+  }
+  for (const name of identityHeaders) {
+    headerParts.push(`${name}=${lowerCasedHeaders[name] ?? ''}`)
+  }
+  return `${headerParts.join('\u0000')}\u0000${uri}`
 }
 
 export function request<T = any>(options: RequestOptions): Promise<T> {
