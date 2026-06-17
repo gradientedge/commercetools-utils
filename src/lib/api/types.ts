@@ -11,7 +11,7 @@ export interface CommercetoolsApiConfig extends CommercetoolsAuthConfig {
 
 /**
  * Per-HTTP-method retry policy override.
- * When not set, CT-aligned defaults apply automatically:
+ * When not set, commercetools-aligned defaults apply automatically:
  *   - POST/PATCH/DELETE → only retry on [502, 503, 504]; never on timeout or 500
  *   - All other methods → retry on [500–504] and ECONNABORTED/ETIMEDOUT
  */
@@ -19,14 +19,14 @@ export interface MethodRetryPolicy {
   /**
    * HTTP response status codes that trigger a retry for this method.
    * Default when not set:
-   *   POST/PATCH/DELETE → [502, 503, 504]  — gateway errors only (CT never processed)
+   *   POST/PATCH/DELETE → [502, 503, 504]  — gateway errors only (commercetools never processed)
    *   all other methods → [500, 501, 502, 503, 504]
    */
   retryableStatusCodes?: number[]
   /**
    * Axios error codes (e.g. 'ECONNABORTED', 'ETIMEDOUT') that trigger a retry.
    * Default when not set:
-   *   POST/PATCH/DELETE → []  — never (timeout means CT may have already processed it)
+   *   POST/PATCH/DELETE → []  — never (timeout means commercetools may have already processed it)
    *   all other methods → ['ECONNABORTED', 'ETIMEDOUT']
    * Note: when `!error.request` (request never left the client), retry is always
    * allowed regardless — the server definitely never received the request.
@@ -59,7 +59,7 @@ export interface CommercetoolsRetryConfig {
   jitter?: boolean
 
   /**
-   * Per-method retry policy overrides. When omitted, CT-aligned defaults apply:
+   * Per-method retry policy overrides. When omitted, commercetools-aligned defaults apply:
    * - POST/PATCH/DELETE: only retry on [502, 503, 504]; never on timeout or 500
    * - All other methods: retry on [500–504] and ECONNABORTED/ETIMEDOUT
    *

@@ -1,7 +1,7 @@
 import { MethodRetryPolicy } from '../api/index.js'
 
-// CT docs: mutations may complete even after a 500. Gateway errors (502/503/504)
-// are safe — the LB rejected before forwarding to CT.
+// commercetools docs: mutations may complete even after a 500. Gateway errors (502/503/504)
+// are safe — the LB rejected before forwarding to commercetools.
 const DEFAULT_RETRYABLE_STATUS_CODES = [500, 501, 502, 503, 504]
 const DEFAULT_RETRYABLE_ERROR_CODES = ['ECONNABORTED', 'ETIMEDOUT']
 const MUTATION_RETRYABLE_STATUS_CODES = [502, 503, 504]
@@ -17,9 +17,9 @@ export interface IsRetryableErrorOptions {
  * Determine whether the given error means we should allow the request
  * to be retried (assuming retry config is provided).
  *
- * When `options.method` is provided, CT-aligned per-method defaults apply:
+ * When `options.method` is provided, commercetools-aligned per-method defaults apply:
  *   - POST/PATCH/DELETE: only retry on gateway errors (502/503/504); never on
- *     timeout (ECONNABORTED/ETIMEDOUT) or 500, since CT may have already
+ *     timeout (ECONNABORTED/ETIMEDOUT) or 500, since commercetools may have already
  *     processed the mutation.
  *   - All other methods: retry on [500–504] and network errors.
  *

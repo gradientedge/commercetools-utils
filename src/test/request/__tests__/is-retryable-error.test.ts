@@ -81,8 +81,8 @@ describe('isRetryableError', () => {
     })
   })
 
-  describe('POST/PATCH mutations — CT-aligned defaults (no config required)', () => {
-    it('should NOT retry POST on ECONNABORTED by default — timeout means CT may have already processed it', () => {
+  describe('POST/PATCH mutations — commercetools-aligned defaults (no config required)', () => {
+    it('should NOT retry POST on ECONNABORTED by default — timeout means commercetools may have already processed it', () => {
       const error = { isAxiosError: true, request: {}, code: 'ECONNABORTED' }
 
       expect(isRetryableError(error, { method: 'POST' })).toBe(false)
@@ -100,7 +100,7 @@ describe('isRetryableError', () => {
       expect(isRetryableError(error, { method: 'DELETE' })).toBe(false)
     })
 
-    it('should NOT retry POST on 500 by default — CT may have already completed the mutation', () => {
+    it('should NOT retry POST on 500 by default — commercetools may have already completed the mutation', () => {
       const error = { isAxiosError: true, request: {}, response: { status: 500 } }
 
       expect(isRetryableError(error, { method: 'POST' })).toBe(false)
@@ -112,7 +112,7 @@ describe('isRetryableError', () => {
       expect(isRetryableError(error, { method: 'PATCH' })).toBe(false)
     })
 
-    it('should retry POST on 502 — gateway error, CT never received the request', () => {
+    it('should retry POST on 502 — gateway error, commercetools never received the request', () => {
       const error = { isAxiosError: true, request: {}, response: { status: 502 } }
 
       expect(isRetryableError(error, { method: 'POST' })).toBe(true)

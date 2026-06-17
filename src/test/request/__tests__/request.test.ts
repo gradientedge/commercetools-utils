@@ -50,11 +50,10 @@ describe('request', () => {
       scope.isDone()
       expect(result).toEqual({ success: true })
     })
-
-    it('should make a DELETE request when the config specifies a DELETE request', async () => {
-      const scope = nock('https://localhost').delete('/test').reply(200, { success: true })
+    it('should default to GET when method is omitted', async () => {
+      const scope = nock('https://localhost').get('/test').reply(200, { success: true })
       const requestConfig = getRequestConfig()
-      requestConfig.request.method = 'DELETE'
+      delete (requestConfig.request as unknown as { method?: string }).method
 
       const result = await request(requestConfig)
 
