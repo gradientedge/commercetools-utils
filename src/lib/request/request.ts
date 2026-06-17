@@ -94,6 +94,7 @@ async function executeRequest<T = any>(options: RequestOptions): Promise<T> {
   const timeout = options.timeoutMs ?? DEFAULT_REQUEST_TIMEOUT_MS
   const additionalHeaders: Record<string, string> = {}
   const requestConfig: CommercetoolsRequest = plainClone(options.request)
+  const httpMethod = (requestConfig.method ?? 'GET').toString().toUpperCase()
   let retryCount = 0
   let lastError: any
   let aggregateTimeoutId: NodeJS.Timeout | undefined
@@ -191,7 +192,7 @@ async function executeRequest<T = any>(options: RequestOptions): Promise<T> {
           onAfterResponse(convertedError)
         }
       }
-      if (isRetryableError(error)) {
+      if (isRetryableError(error, { method: httpMethod, methodPolicies: retryConfig.methodPolicies })) {
         lastError = error
       } else {
         if (aggregateTimeoutId) {
