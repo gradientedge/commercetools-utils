@@ -3316,6 +3316,65 @@ describe('CommercetoolsApi', () => {
         expect(order).toEqual({ success: true })
       })
     })
+
+    describe('createProductType', () => {
+      const productTypeDraft = { key: 'my-product-type-key', name: 'My Product Type', description: 'desc' } as any
+
+      it('should make a POST request to the correct endpoint with the provided data', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com')
+          .post('/test-project-key/product-types', productTypeDraft)
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const result = await api.createProductType({ data: productTypeDraft })
+
+        expect(result).toEqual({ success: true })
+      })
+    })
+
+    describe('updateProductTypeById', () => {
+      const updateData = { version: 1, actions: [{ action: 'setKey', key: 'new-key' }] } as any
+
+      it('should make a POST request to the correct endpoint with the provided data', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com')
+          .post('/test-project-key/product-types/my-product-type-id', updateData)
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const result = await api.updateProductTypeById({ id: 'my-product-type-id', data: updateData })
+
+        expect(result).toEqual({ success: true })
+      })
+
+      it('should throw an error when an empty id is passed', async () => {
+        const api = new CommercetoolsApi(defaultConfig)
+        await expect(() => api.updateProductTypeById({ id: ' ', data: updateData })).toThrow(
+          "The string parameter 'id' cannot be empty",
+        )
+      })
+    })
+
+    describe('updateProductTypeByKey', () => {
+      const updateData = { version: 1, actions: [{ action: 'setKey', key: 'new-key' }] } as any
+
+      it('should make a POST request to the correct endpoint with the provided data', async () => {
+        nock('https://api.europe-west1.gcp.commercetools.com')
+          .post('/test-project-key/product-types/key=my-product-type-key', updateData)
+          .reply(200, { success: true })
+        const api = new CommercetoolsApi(defaultConfig)
+
+        const result = await api.updateProductTypeByKey({ key: 'my-product-type-key', data: updateData })
+
+        expect(result).toEqual({ success: true })
+      })
+
+      it('should throw an error when an empty key is passed', async () => {
+        const api = new CommercetoolsApi(defaultConfig)
+        await expect(() => api.updateProductTypeByKey({ key: ' ', data: updateData })).toThrow(
+          "The string parameter 'key' cannot be empty",
+        )
+      })
+    })
   })
 
   describe('Types', () => {
