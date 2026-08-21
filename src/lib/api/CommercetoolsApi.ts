@@ -92,7 +92,9 @@ import type {
   ProductSelectionUpdateAction,
   ProductsInStorePagedQueryResponse,
   ProductType,
+  ProductTypeDraft,
   ProductTypePagedQueryResponse,
+  ProductTypeUpdate,
   ProductUpdate,
   ReplicaCartDraft,
   ShippingMethod,
@@ -2143,6 +2145,51 @@ export class CommercetoolsApi {
       ...this.extractCommonRequestOptions(options),
       path: `/product-types`,
       method: 'GET',
+    })
+  }
+
+  /**
+   * Create a product type:
+   * https://docs.commercetools.com/api/projects/productTypes#create-producttype
+   */
+  createProductType(options: CommonRequestOptions & { data: ProductTypeDraft }): Promise<ProductType> {
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/product-types`,
+      method: 'POST',
+      data: options.data,
+    })
+  }
+
+  /**
+   * Update a product type by id:
+   * https://docs.commercetools.com/api/projects/productTypes#update-producttype-by-id
+   */
+  updateProductTypeById(options: CommonRequestOptions & { id: string; data: ProductTypeUpdate }): Promise<ProductType> {
+    ensureNonEmptyString({ value: options.id, name: 'id' })
+
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/product-types/${encodeURIComponent(options.id)}`,
+      method: 'POST',
+      data: options.data,
+    })
+  }
+
+  /**
+   * Update a product type by key:
+   * https://docs.commercetools.com/api/projects/productTypes#update-producttype-by-key
+   */
+  updateProductTypeByKey(
+    options: CommonRequestOptions & { key: string; data: ProductTypeUpdate },
+  ): Promise<ProductType> {
+    ensureNonEmptyString({ value: options.key, name: 'key' })
+
+    return this.request({
+      ...this.extractCommonRequestOptions(options),
+      path: `/product-types/key=${encodeURIComponent(options.key)}`,
+      method: 'POST',
+      data: options.data,
     })
   }
 
