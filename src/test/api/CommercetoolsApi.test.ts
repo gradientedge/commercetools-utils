@@ -130,6 +130,65 @@ describe('CommercetoolsApi', () => {
       expect(api.auth.config.authUrl).toBe('http://localhost:4000/auth')
       expect(api.endpoints.api).toBe('https://api.europe-west1.gcp.commercetools.com')
     })
+
+    it('should apply operation middleware for API requests', async () => {
+      const middleware = vi.fn().mockImplementation(async () => {
+        return { fromMiddleware: true }
+      })
+
+      const api = new CommercetoolsApi({
+        ...defaultConfig,
+        operationMiddlewares: [middleware],
+      })
+
+      const result = await api.queryStores()
+
+      expect(result).toEqual({ fromMiddleware: true })
+      expect(middleware).toHaveBeenCalledTimes(2)
+    })
+
+    it('should run multiple operation middlewares in declaration order', async () => {
+      const order: string[] = []
+
+      const middleware1 = vi.fn(async (next, requestConfig) => {
+        order.push('m1-before')
+        const result = await next(requestConfig)
+        order.push('m1-after')
+        return result
+      })
+
+      const middleware2 = vi.fn(async (next, requestConfig) => {
+        order.push('m2-before')
+        const result = await next(requestConfig)
+        order.push('m2-after')
+        return result
+      })
+
+      nock('https://api.europe-west1.gcp.commercetools.com')
+        .get('/test-project-key/stores')
+        .reply(200, { success: true })
+
+      const api = new CommercetoolsApi({
+        ...defaultConfig,
+        operationMiddlewares: [middleware1, middleware2],
+      })
+
+      const result = await api.queryStores()
+
+      expect(result).toEqual({ success: true })
+      expect(order).toEqual([
+        'm1-before',
+        'm2-before',
+        'm2-after',
+        'm1-after',
+        'm1-before',
+        'm2-before',
+        'm2-after',
+        'm1-after',
+      ])
+      expect(middleware1).toHaveBeenCalledTimes(2)
+      expect(middleware2).toHaveBeenCalledTimes(2)
+    })
   })
 
   describe('extractCommonRequestOptions', () => {
