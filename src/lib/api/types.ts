@@ -1,5 +1,6 @@
 import * as https from 'https'
 import { CommercetoolsAuthConfig } from '../auth/index.js'
+import { CommercetoolsOperationMiddleware } from '../types.js'
 
 /**
  * Configuration for constructing the {@see CommercetoolsApi} class.
@@ -7,6 +8,7 @@ import { CommercetoolsAuthConfig } from '../auth/index.js'
 export interface CommercetoolsApiConfig extends CommercetoolsAuthConfig {
   httpsAgent?: https.Agent
   clientScopes?: string[]
+  operationMiddlewares?: CommercetoolsOperationMiddleware[]
 }
 
 /**

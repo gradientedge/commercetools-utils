@@ -65,6 +65,17 @@ export interface CommercetoolsBaseConfig extends CommercetoolsHooks {
 
 export interface CommercetoolsHooks {
   /**
+   * Middleware pipeline that wraps a full logical request operation.
+   *
+   * Each middleware receives the next executor in the chain and the request
+   * config for the current operation. Middleware can:
+   * - call `next` (optionally with a modified request) to continue,
+   * - short-circuit by returning a value without calling `next`, or
+   * - throw to fail the operation.
+   */
+  operationMiddlewares?: CommercetoolsOperationMiddleware[]
+
+  /**
    * If passed in, will be called before sending a request to commercetools.
    * The {@see requestConfig} parameter can be manipulated if you wish to
    * modify/add headers or any other request data.
@@ -173,6 +184,13 @@ export interface CommercetoolsRequestResponseStats {
 
 export interface RequestExecutor<T = any> {
   (options: CommercetoolsRequest): Promise<T>
+}
+
+/**
+ * Middleware that wraps a single logical request operation.
+ */
+export interface CommercetoolsOperationMiddleware {
+  (next: RequestExecutor, requestConfig: CommercetoolsRequest): Promise<any>
 }
 
 export * from './types/models/index.js'

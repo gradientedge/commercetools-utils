@@ -130,6 +130,22 @@ describe('CommercetoolsApi', () => {
       expect(api.auth.config.authUrl).toBe('http://localhost:4000/auth')
       expect(api.endpoints.api).toBe('https://api.europe-west1.gcp.commercetools.com')
     })
+
+    it('should apply operation middleware for API requests', async () => {
+      const middleware = vi.fn().mockImplementation(async () => {
+        return { fromMiddleware: true }
+      })
+
+      const api = new CommercetoolsApi({
+        ...defaultConfig,
+        operationMiddlewares: [middleware],
+      })
+
+      const result = await api.queryStores()
+
+      expect(result).toEqual({ fromMiddleware: true })
+      expect(middleware).toHaveBeenCalledTimes(1)
+    })
   })
 
   describe('extractCommonRequestOptions', () => {

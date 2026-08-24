@@ -328,6 +328,7 @@ export class CommercetoolsApi {
       timeoutMs: config.timeoutMs,
       httpsAgent: config.httpsAgent,
       systemIdentifier: config.systemIdentifier,
+      operationMiddlewares: config.operationMiddlewares,
       onBeforeRequest: config.onBeforeRequest,
       onAfterResponse: config.onAfterResponse,
       retry: config.retry,
