@@ -40,6 +40,17 @@ export interface CommercetoolsBaseConfig extends CommercetoolsHooks {
   retry?: Partial<CommercetoolsRetryConfig>
 
   /**
+   * Middleware pipeline that wraps a full logical request operation.
+   *
+   * Each middleware receives the next executor in the chain and the request
+   * config for the current operation. Middleware can:
+   * - call `next(requestConfig)` to continue,
+   * - short-circuit by returning a value without calling `next`, or
+   * - throw to fail the operation.
+   */
+  operationMiddlewares?: CommercetoolsOperationMiddleware[]
+
+  /**
    * If provided, will be passed across to commercetools in the
    * 'User-Agent' HTTP header, in order to help commercetools
    * identify the source of incoming requests.
