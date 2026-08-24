@@ -8,6 +8,15 @@ import { CommercetoolsOperationMiddleware } from '../types.js'
 export interface CommercetoolsApiConfig extends CommercetoolsAuthConfig {
   httpsAgent?: https.Agent
   clientScopes?: string[]
+  /**
+   * Middleware pipeline that wraps a full logical request operation.
+   *
+   * Each middleware receives the next executor in the chain and the request
+   * config for the current operation. Middleware can:
+   * - call `next(requestConfig)` to continue,
+   * - short-circuit by returning a value without calling `next`, or
+   * - throw to fail the operation.
+   */
   operationMiddlewares?: CommercetoolsOperationMiddleware[]
 }
 

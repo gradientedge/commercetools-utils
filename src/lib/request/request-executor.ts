@@ -50,8 +50,7 @@ export function getRequestExecutor(props: GetRequestExecutorProps): RequestExecu
   }
 
   const composedExecutor = middlewares.reduceRight<RequestExecutor>((next, middleware) => {
-    const executor: RequestExecutor = (requestConfig: CommercetoolsRequest) => middleware(next, requestConfig)
-    return executor
+    return (requestConfig: CommercetoolsRequest): Promise<any> => middleware(next, requestConfig)
   }, baseExecutor)
 
   return composedExecutor
