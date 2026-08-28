@@ -3205,6 +3205,10 @@ export class CommercetoolsApi {
       url,
       headers,
       params,
+      timeoutMs: options.timeoutMs,
+      aggregateTimeoutMs: options.aggregateTimeoutMs,
+      retry: options.retry,
+      abortController: options.abortController,
     }
   }
 

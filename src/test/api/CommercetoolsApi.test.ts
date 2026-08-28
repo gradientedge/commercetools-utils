@@ -4618,6 +4618,27 @@ describe('CommercetoolsApi', () => {
         url: 'https://api.europe-west1.gcp.commercetools.com/test-project-key/test',
       })
     })
+
+    it('should pass through timeoutMs, aggregateTimeoutMs, retry, and abortController', async () => {
+      const api = new CommercetoolsApi(defaultConfig)
+      const abortController = new AbortController()
+
+      const result = await api.getRequestOptions({
+        path: '/test',
+        method: 'GET',
+        headers: {},
+        accessToken: 'mock-access-token',
+        timeoutMs: 25_000,
+        aggregateTimeoutMs: 25_000,
+        retry: { maxRetries: 5, delayMs: 2000 },
+        abortController,
+      })
+
+      expect(result.timeoutMs).toBe(25_000)
+      expect(result.aggregateTimeoutMs).toBe(25_000)
+      expect(result.retry).toEqual({ maxRetries: 5, delayMs: 2000 })
+      expect(result.abortController).toBe(abortController)
+    })
   })
 
   describe('applyStore', () => {
