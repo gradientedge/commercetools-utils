@@ -13,9 +13,9 @@ import {
   BaseResource,
   CreatedBy,
   DiscountedPriceDraft,
-  Image,
   IReference,
   IResourceIdentifier,
+  Image,
   LastModifiedBy,
   LocalizedString,
   Price,
@@ -27,6 +27,7 @@ import { ReviewRatingStatistics } from './review.js'
 import { StateReference, StateResourceIdentifier } from './state.js'
 import { TaxCategoryReference, TaxCategoryResourceIdentifier } from './tax-category.js'
 import { FieldContainer, TypeResourceIdentifier } from './type.js'
+import { VariantReference, VariantResourceIdentifier } from './variant.js'
 import { WarningObject } from './warning.js'
 
 export interface Attribute {
@@ -142,7 +143,8 @@ export interface FacetResults {
 }
 export interface FacetTerm {
   /**
-   *	Value for the field specified in the [term facet expression](/../api/projects/product-projection-search#term-facet-expression) for which at least one [ProductVariant](ctp:api:type:ProductVariant) could be found.
+   *	Value for the field specified in the [term facet expression](/api/projects/product-projection-search#term-facet-expression) for which at least one [ProductVariant](ctp:api:type:ProductVariant) could be found.
+   *	For [AttributeNumberType](ctp:api:type:AttributeNumberType) Attributes, numeric values are returned as decimals, for example `1.0` instead of `1`.
    *
    *
    */
@@ -155,7 +157,7 @@ export interface FacetTerm {
   readonly count: number
   /**
    *	Number of [Products](ctp:api:type:Product) for which the `term` applies.
-   *	Only available if the `counting products` [extension](/../api/projects/product-projection-search#counting-products) is enabled.
+   *	Only available if the `counting products` [extension](/api/projects/product-projection-search#counting-products) is enabled.
    *
    *
    */
@@ -171,13 +173,13 @@ export type FacetTypes = 'filter' | 'range' | 'terms' | (string & {})
 export interface FilteredFacetResult extends IFacetResult {
   readonly type: 'filter'
   /**
-   *	Number of [ProductVariants](ctp:api:type:ProductVariant) matching the value specified in [filtered facet expression](/../api/projects/product-projection-search#filtered-facet-expression).
+   *	Number of [ProductVariants](ctp:api:type:ProductVariant) matching the value specified in [filtered facet expression](/api/projects/product-projection-search#filtered-facet-expression).
    *
    *
    */
   readonly count: number
   /**
-   *	Number of [Products](ctp:api:type:Product) matching the value specified in [filtered facet expression](/../api/projects/product-projection-search#filtered-facet-expression).
+   *	Number of [Products](ctp:api:type:Product) matching the value specified in [filtered facet expression](/api/projects/product-projection-search#filtered-facet-expression).
    *
    *	Present only if the `counting products` [extension](/projects/product-projection-search#counting-products) is enabled.
    *
@@ -275,7 +277,7 @@ export interface Product extends BaseResource {
 }
 export interface ProductCatalogData {
   /**
-   *	If `true`, the `current` representation of the Product is retrievable in the [Product Projection](/projects/productProjections) endpoints and indexed for [Product Search](/../api/projects/product-search).
+   *	Whether the `current` representation of the Product is retrievable in the [Product Projection](/projects/productProjections) endpoints and indexed for [Product Search](/api/projects/product-search).
    *
    *
    */
@@ -293,7 +295,7 @@ export interface ProductCatalogData {
    */
   readonly staged: ProductData
   /**
-   *	`true` if the `staged` data is different from the `current` data.
+   *	Whether the `staged` data is different from the `current` data.
    *
    *
    */
@@ -353,11 +355,15 @@ export interface ProductData {
   /**
    *	The Master Variant of the Product.
    *
+   *	Omitted when the Project has the [ProductCatalogModel](ctp:api:type:ProductCatalogModel) `Modular`. Use the [Variants API](/projects/variants) instead.
+   *
    *
    */
   readonly masterVariant: ProductVariant
   /**
    *	Additional Product Variants.
+   *
+   *	Empty when the Project has the [ProductCatalogModel](ctp:api:type:ProductCatalogModel) `Modular`. Use the [Variants API](/projects/variants) instead.
    *
    *
    */
@@ -375,6 +381,12 @@ export interface ProductData {
    *
    */
   readonly attributes: Attribute[]
+  /**
+   *	Reference to the default [Variant](ctp:api:type:Variant) of the Product. Only available for Projects with [productCatalogModel](/projects/project#productcatalogmodel) set to `Modular`. The reference is automatically cleared when the referenced Variant is deleted; in that case, the response of the [Delete Variant](/projects/variants#delete-variant) request includes a `DefaultVariantDeleted` warning.
+   *
+   *
+   */
+  readonly defaultVariant?: VariantReference
 }
 export interface ProductDraft {
   /**
@@ -400,7 +412,7 @@ export interface ProductDraft {
   /**
    *	User-defined unique identifier for the Product.
    *
-   *	This field is optional for backwards compatibility reasons, but we strongly recommend setting it. Keys are mandatory for importing Products with the [Import API](/../api/import-export/overview) and the [Merchant Center](/../merchant-center/import-data).
+   *	This field is optional for backwards compatibility reasons, but we strongly recommend setting it. Keys are mandatory for importing Products with the [Import API](/api/import-export/overview) and the [Merchant Center](/merchant-center/import-data).
    *
    *
    */
@@ -442,13 +454,17 @@ export interface ProductDraft {
    */
   readonly metaKeywords?: LocalizedString
   /**
-   *	The Product Variant to be the Master Variant for the Product. Required if `variants` are provided also.
+   *	The Product Variant to be the Master Variant for the Product. Required if `variants` are provided or if the referenced Product Type contains any Variant-level [AttributeDefinition](ctp:api:type:AttributeDefinition) with `isRequired` set to `true`.
+   *
+   *	Must not be provided when the Project has the [ProductCatalogModel](ctp:api:type:ProductCatalogModel) `Modular`. Use the [Variants API](/projects/variants) to create Variants instead.
    *
    *
    */
   readonly masterVariant?: ProductVariantDraft
   /**
    *	The additional Product Variants for the Product.
+   *
+   *	Must not be provided when the Project has the [ProductCatalogModel](ctp:api:type:ProductCatalogModel) `Modular`. Use the [Variants API](/projects/variants) to create Variants instead.
    *
    *
    */
@@ -472,8 +488,8 @@ export interface ProductDraft {
    */
   readonly state?: StateResourceIdentifier
   /**
-   *	If `true`, the platform sets the `published` flag on the resulting [ProductCatalogData](ctp:api:type:ProductCatalogData) to `true`.
-   *	This makes the current representation retrievable in [Product Projection](/projects/productProjections) endpoints and indexes it for [Product Search](/../api/projects/product-search).
+   *	Whether the platform sets the `published` flag on the resulting [ProductCatalogData](ctp:api:type:ProductCatalogData) to `true`.
+   *	This makes the current representation retrievable in [Product Projection](/projects/productProjections) endpoints and indexes it for [Product Search](/api/projects/product-search).
    *	You can also set this flag later using the [Publish](/projects/products#publish) update action.
    *
    *
@@ -494,18 +510,18 @@ export interface ProductDraft {
   readonly attributes?: Attribute[]
 }
 /**
- *	[PagedQueryResult](/../api/general-concepts#pagedqueryresult) with `results` containing an array of [Product](ctp:api:type:Product).
+ *	[PagedQueryResult](/api/general-concepts#pagedqueryresult) with `results` containing an array of [Product](ctp:api:type:Product).
  *
  */
 export interface ProductPagedQueryResponse {
   /**
-   *	Number of [results requested](/../api/general-concepts#limit).
+   *	Number of [results requested](/api/general-concepts#limit).
    *
    *
    */
   readonly limit: number
   /**
-   *	Number of [elements skipped](/../api/general-concepts#offset).
+   *	Number of [elements skipped](/api/general-concepts#offset).
    *
    *
    */
@@ -518,10 +534,10 @@ export interface ProductPagedQueryResponse {
   readonly count: number
   /**
    *	Total number of results matching the query.
-   *	This number is an estimation that is not [strongly consistent](/../api/general-concepts#strong-consistency).
+   *	This number is an estimation that is not [strongly consistent](/api/general-concepts#strong-consistency).
    *	This field is returned by default.
    *	For improved performance, calculating this field can be deactivated by using the query parameter `withTotal=false`.
-   *	When the results are filtered with a [Query Predicate](ctp:api:type:QueryPredicate), `total` is subject to a [limit](/../api/limits#queries).
+   *	When the results are filtered with a [Query Predicate](ctp:api:type:QueryPredicate), `total` is subject to a [limit](/api/limits#queries).
    *
    *
    */
@@ -534,8 +550,12 @@ export interface ProductPagedQueryResponse {
   readonly results: Product[]
 }
 /**
+ *
  *	This mode determines the type of Prices used for [price selection](/../api/pricing-and-discounts-overview#price-selection) by Line Items and Products.
- *	For more information about the difference between the Prices, see [Pricing](/../api/pricing-and-discounts-overview).
+ *	For more information about the difference between the Prices, see [Pricing](/api/pricing-and-discounts-overview).
+ *
+ *	In Projects with the [ProductCatalogModel](ctp:api:type:ProductCatalogModel) `Classic`, you can configure the price mode.
+ *	In Projects with the `Modular` catalog model, the price mode is always `Standalone` and cannot be configured.
  *
  */
 export enum ProductPriceModeEnumValues {
@@ -597,7 +617,7 @@ export interface ProductProjection extends BaseResource {
    *	User-defined identifier used in a deep-link URL for the [Product](ctp:api:type:Product).
    *	Must be unique across a Project, but can be the same for Products in different locales.
    *	Matches the pattern `[a-zA-Z0-9_\-]{2,256}`.
-   *	For [good performance](/../api/predicates/query#performance-considerations), indexes are provided for the first 15 `languages` set in the [Project](ctp:api:type:Project).
+   *	For [good performance](/api/predicates/query#performance-considerations), indexes are provided for the first 15 `languages` set in the [Project](ctp:api:type:Project).
    *
    *
    */
@@ -633,19 +653,19 @@ export interface ProductProjection extends BaseResource {
    */
   readonly metaKeywords?: LocalizedString
   /**
-   *	Used by [Search Term Suggestions](/../api/projects/search-term-suggestions), but is also considered for a [full text search](/projects/product-projection-search#full-text-search) in the Product Projection Search API.
+   *	Used by [Search Term Suggestions](/api/projects/search-term-suggestions), but is also considered for a [full text search](/projects/product-projection-search#full-text-search) in the Product Projection Search API.
    *
    *
    */
   readonly searchKeywords?: SearchKeywords
   /**
-   *	`true` if the staged data is different from the current data.
+   *	Whether the staged data is different from the current data.
    *
    *
    */
   readonly hasStagedChanges?: boolean
   /**
-   *	`true` if the [Product](ctp:api:type:Product) is [published](ctp:api:type:CurrentStaged).
+   *	Whether the [Product](ctp:api:type:Product) is [published](ctp:api:type:CurrentStaged).
    *
    *
    */
@@ -653,11 +673,15 @@ export interface ProductProjection extends BaseResource {
   /**
    *	The Master Variant of the [Product](ctp:api:type:Product).
    *
+   *	Omitted when the Project has the [ProductCatalogModel](ctp:api:type:ProductCatalogModel) `Modular`. Use the [Variant Projections API](/projects/variant-projections) instead.
+   *
    *
    */
   readonly masterVariant: ProductVariant
   /**
    *	Additional Product Variants.
+   *
+   *	Empty when the Project has the [ProductCatalogModel](ctp:api:type:ProductCatalogModel) `Modular`. Use the [Variant Projections API](/projects/variant-projections) instead.
    *
    *
    */
@@ -681,7 +705,9 @@ export interface ProductProjection extends BaseResource {
    */
   readonly reviewRatingStatistics?: ReviewRatingStatistics
   /**
-   *	Indicates whether the Prices of the Product Projection are [embedded](ctp:api:type:Price) or [standalone](ctp:api:type:StandalonePrice). [Projecting Prices](#prices) only works with `Embedded`, there is currently no support for `Standalone`.
+   *	Indicates whether the Prices of the Product Projection are [embedded](ctp:api:type:Price) or [standalone](ctp:api:type:StandalonePrice).
+   *
+   *	When [projecting Prices by Store](/api/projects/productProjections#projection-by-store), the API supports only Embedded Prices (`Embedded`).
    *
    *
    */
@@ -695,7 +721,7 @@ export interface ProductProjection extends BaseResource {
 }
 export interface ProductProjectionPagedQueryResponse {
   /**
-   *	Number of [results requested](/../api/general-concepts#limit).
+   *	Number of [results requested](/api/general-concepts#limit).
    *
    *
    */
@@ -708,16 +734,16 @@ export interface ProductProjectionPagedQueryResponse {
   readonly count: number
   /**
    *	Total number of results matching the query.
-   *	This number is an estimation that is not [strongly consistent](/../api/general-concepts#strong-consistency).
+   *	This number is an estimation that is not [strongly consistent](/api/general-concepts#strong-consistency).
    *	This field is returned by default.
    *	For improved performance, calculating this field can be deactivated by using the query parameter `withTotal=false`.
-   *	When the results are filtered with a [Query Predicate](/../api/predicates/query), `total` is subject to a [limit](/../api/limits#queries).
+   *	When the results are filtered with a [Query Predicate](/api/predicates/query), `total` is subject to a [limit](/api/limits#queries).
    *
    *
    */
   readonly total?: number
   /**
-   *	Number of [elements skipped](/../api/general-concepts#offset).
+   *	Number of [elements skipped](/api/general-concepts#offset).
    *
    *
    */
@@ -730,19 +756,19 @@ export interface ProductProjectionPagedQueryResponse {
   readonly results: ProductProjection[]
 }
 /**
- *	The response returned to a [Product Projection Search](/../api/projects/product-projection-search#product-projection-search) request.
- *	The object contains the [query results](/../api/projects/product-projection-search#query-results) with Product Projections where at least one ProductVariant matches the search query, as well as the [facet results](/../api/projects/product-projection-search#facet-results), if requested.
+ *	The response returned to a [Product Projection Search](/api/projects/product-projection-search#product-projection-search) request.
+ *	The object contains the [query results](/api/projects/product-projection-search#query-results) with Product Projections where at least one ProductVariant matches the search query, as well as the [facet results](/api/projects/product-projection-search#facet-results), if requested.
  *
  */
 export interface ProductProjectionPagedSearchResponse {
   /**
-   *	The maximum number of results returned on a [page](/../api/projects/product-projection-search#pagination).
+   *	The maximum number of results returned on a [page](/api/projects/product-projection-search#pagination).
    *
    *
    */
   readonly limit: number
   /**
-   *	The starting point for the retrieved [paginated](/../api/projects/product-projection-search#pagination) result.
+   *	The starting point for the retrieved [paginated](/api/projects/product-projection-search#pagination) result.
    *
    *
    */
@@ -761,13 +787,13 @@ export interface ProductProjectionPagedSearchResponse {
   readonly total?: number
   /**
    *	[ProductProjections](ctp:api:type:ProductProjection) where at least one [ProductVariant](ctp:api:type:ProductVariant) matches the search query, provided with the `text.{language}` and/or `filter.query` or `filter` query parameter.
-   *	If the query parameter `markMatchingVariants=true` was provided with the request, the [matching variants](/../api/projects/product-projection-search#matching-variants) are marked as such.
+   *	If the query parameter `markMatchingVariants=true` was provided with the request, the [matching variants](/api/projects/product-projection-search#matching-variants) are marked as such.
    *
    *
    */
   readonly results: ProductProjection[]
   /**
-   *	Facet results for each [facet expression](/../api/projects/product-projection-search#facets) specified in the search request.
+   *	Facet results for each [facet expression](/api/projects/product-projection-search#facets) specified in the search request.
    *
    *	Only present if at least one `facet` parameter was provided with the search request.
    *
@@ -788,14 +814,14 @@ export interface ProductReference extends IReference {
    */
   readonly id: string
   /**
-   *	Contains the representation of the expanded Product. Only present in responses to requests with [Reference Expansion](/../api/general-concepts#reference-expansion) for Products.
+   *	Contains the representation of the expanded Product. Only present in responses to requests with [Reference Expansion](/api/general-concepts#reference-expansion) for Products.
    *
    *
    */
   readonly obj?: Product
 }
 /**
- *	[ResourceIdentifier](ctp:api:type:ResourceIdentifier) to a [Product](ctp:api:type:Product). Either `id` or `key` is required. If both are set, an [InvalidJsonInput](/../api/errors#invalidjsoninput) error is returned.
+ *	[ResourceIdentifier](ctp:api:type:ResourceIdentifier) to a [Product](ctp:api:type:Product). Either `id` or `key` is required. If both are set, an [InvalidJsonInput](ctp:api:type:InvalidJsonInputError) error is returned.
  *
  */
 export interface ProductResourceIdentifier extends IResourceIdentifier {
@@ -858,6 +884,7 @@ export type ProductUpdateAction =
   | ProductSetAttributeAction
   | ProductSetAttributeInAllVariantsAction
   | ProductSetCategoryOrderHintAction
+  | ProductSetDefaultVariantAction
   | ProductSetDescriptionAction
   | ProductSetDiscountedPriceAction
   | ProductSetImageLabelAction
@@ -883,6 +910,13 @@ export interface IProductUpdateAction {
    */
   readonly action: string
 }
+/**
+ *	Represents a Product Variant embedded in a [Product](ctp:api:type:Product).
+ *
+ *	Only available for Projects with the [ProductCatalogModel](ctp:api:type:ProductCatalogModel) `Classic`.
+ *	When the Project has the `Modular` catalog model, use the [Variants API](/projects/variants) instead.
+ *
+ */
 export interface ProductVariant {
   /**
    *	A unique, sequential identifier of the Product Variant within the Product.
@@ -891,13 +925,13 @@ export interface ProductVariant {
    */
   readonly id: number
   /**
-   *	User-defined unique SKU of the Product Variant.
+   *	User-defined SKU of the Product Variant. Unique across all ProductVariants in a Project.
    *
    *
    */
   readonly sku?: string
   /**
-   *	User-defined unique identifier of the ProductVariant.
+   *	User-defined identifier of the ProductVariant. Unique among ProductVariants in the same Product.
    *
    *	This is different from [Product](ctp:api:type:Product) `key`.
    *
@@ -905,8 +939,9 @@ export interface ProductVariant {
    */
   readonly key?: string
   /**
-   *	The Embedded Prices of the Product Variant.
-   *	Cannot contain two Prices of the same Price scope (with same currency, country, Customer Group, Channel, `validFrom` and `validUntil`).
+   *	If the Product is [projected by Store](/api/projects/productProjections#projection-by-store), this field only contains Embedded Prices that are valid for that Store.
+   *
+   *	Cannot contain two Embedded Prices with the same scopes (currency, country, Customer Group, Channel, `validFrom` and `validUntil`).
    *
    *
    */
@@ -918,7 +953,7 @@ export interface ProductVariant {
    */
   readonly attributes?: Attribute[]
   /**
-   *	Only available when [price selection](/../api/pricing-and-discounts-overview#price-selection) is used.
+   *	Only present when [price selection](/api/pricing-and-discounts-overview#price-selection) is applied.
    *	Cannot be used in a [Query Predicate](ctp:api:type:QueryPredicate).
    *
    *
@@ -945,29 +980,29 @@ export interface ProductVariant {
    */
   readonly availability?: ProductVariantAvailability
   /**
-   *	`true` if the Product Variant matches the search query.
-   *	Only available in response to a [Product Projection Search](ctp:api:type:ProductProjectionSearch) request.
+   *	Whether the Product Variant matches the search query.
+   *	Only available in response to a [Product Projection Search](/api/projects/product-projection-search) request.
    *
    *
    */
   readonly isMatchingVariant?: boolean
   /**
-   *	Only available in response to a [Product Projection Search](ctp:api:type:ProductProjectionSearch) request
-   *	with [Product price selection](/../api/pricing-and-discounts-overview#product-price-selection).
+   *	Only available in response to a [Product Projection Search](/api/projects/product-projection-search) request
+   *	with [Product price selection](/api/pricing-and-discounts-overview#product-price-selection).
    *	Can be used to sort, [filter](ctp:api:type:ProductProjectionSearchFilterScopedPrice), and facet.
    *
    *
    */
   readonly scopedPrice?: ScopedPrice
   /**
-   *	Only available in response to a [Product Projection Search](ctp:api:type:ProductProjectionSearchFilterScopedPrice) request
-   *	with [Product price selection](/../api/pricing-and-discounts-overview#product-price-selection).
+   *	Only available in response to a [Product Projection Search](/api/projects/product-projection-search) request
+   *	with [Product price selection](/api/pricing-and-discounts-overview#product-price-selection).
    *
    *
    */
   readonly scopedPriceDiscounted?: boolean
   /**
-   *	Only available when [Product price selection](/../api/pricing-and-discounts-overview#product-price-selection) is used.
+   *	Only available when [Product price selection](/api/pricing-and-discounts-overview#product-price-selection) is used.
    *	Cannot be used in a [Query Predicate](ctp:api:type:QueryPredicate).
    *
    *
@@ -976,6 +1011,8 @@ export interface ProductVariant {
 }
 /**
  *	The [InventoryEntry](ctp:api:type:InventoryEntry) information of the Product Variant. If there is a supply [Channel](ctp:api:type:Channel) for the InventoryEntry, then `channels` is returned. If not, then `isOnStock`, `restockableInDays`, and `availableQuantity` are returned.
+ *
+ *	Only available for Projects with the [ProductCatalogModel](ctp:api:type:ProductCatalogModel) `Classic`.
  *
  */
 export interface ProductVariantAvailability {
@@ -986,7 +1023,8 @@ export interface ProductVariantAvailability {
    */
   readonly channels?: ProductVariantChannelAvailabilityMap
   /**
-   *	Indicates whether a Product Variant is in stock.
+   *	Whether the Product Variant is in stock, based on an [InventoryEntry](ctp:api:type:InventoryEntry) that has no assigned supply [Channel](ctp:api:type:Channel).
+   *	This value reflects global or default availability; it does not aggregate the channel-specific availabilities found in the `channels` field.
    *
    *
    */
@@ -1049,7 +1087,7 @@ export interface ProductVariantChannelAvailability {
   readonly version: number
 }
 /**
- *	JSON object where the keys are supply [Channel](/projects/channels) `id`, and the values are [ProductVariantChannelAvailability](/projects/products#productvariantchannelavailability).
+ *	JSON object where the keys are supply [Channel](/projects/channels) `id`, and the values are [ProductVariantChannelAvailability](ctp:api:type:ProductVariantChannelAvailability).
  *
  */
 export interface ProductVariantChannelAvailabilityMap {
@@ -1057,13 +1095,13 @@ export interface ProductVariantChannelAvailabilityMap {
 }
 export interface ProductVariantDraft {
   /**
-   *	User-defined unique SKU of the Product Variant.
+   *	User-defined SKU of the Product Variant. Must be unique across all ProductVariants in a Project.
    *
    *
    */
   readonly sku?: string
   /**
-   *	User-defined unique identifier for the ProductVariant.
+   *	User-defined identifier for the ProductVariant. Must be unique among ProductVariants in the same Product.
    *
    *
    */
@@ -1164,13 +1202,13 @@ export interface TermFacetResult extends IFacetResult {
    */
   readonly dataType: TermFacetResultType
   /**
-   *	Number of [ProductVariants](ctp:api:type:ProductVariant) that have no value for the specified [term facet expression](/../api/projects/product-projection-search#term-facet-expression).
+   *	Number of [ProductVariants](ctp:api:type:ProductVariant) that have no value for the specified [term facet expression](/api/projects/product-projection-search#term-facet-expression).
    *
    *
    */
   readonly missing: number
   /**
-   *	Number of terms matching the [term facet expression](/../api/projects/product-projection-search#term-facet-expression).
+   *	Number of terms matching the [term facet expression](/api/projects/product-projection-search#term-facet-expression).
    *
    *	- If the expression refers to Product fields like `categories.id` and `reviewRatingStatistics.count`, the value represents the number of Products.
    *	- If the expression is defined for fields specific to Product Variants, for example, `variants.attributes.{name}`, the value represents the number of Product Variants matching the expression.
@@ -1185,7 +1223,7 @@ export interface TermFacetResult extends IFacetResult {
    */
   readonly other: number
   /**
-   *	Values for the field specified in [term facet expression](/../api/projects/product-projection-search#term-facet-expression) for which at least one [ProductVariant](ctp:api:type:ProductVariant) could be found.
+   *	Values for the field specified in [term facet expression](/api/projects/product-projection-search#term-facet-expression) for which at least one [ProductVariant](ctp:api:type:ProductVariant) could be found.
    *
    *	By default, facet terms are returned in a descending order of their `count`.
    *
@@ -1235,7 +1273,7 @@ export interface ProductAddAssetAction extends IProductUpdateAction {
    */
   readonly sku?: string
   /**
-   *	If `true`, only the staged `assets` are updated. If `false`, both the current and staged `assets` are updated.
+   *	Whether only staged `assets` are updated. If `false`, both current and staged `assets` are updated.
    *
    *
    */
@@ -1278,7 +1316,7 @@ export interface ProductAddExternalImageAction extends IProductUpdateAction {
    */
   readonly image: Image
   /**
-   *	If `true`, only the staged `images` is updated. If `false`, both the current and staged `images` is updated.
+   *	Whether only staged `images` are updated. If `false`, both current and staged `images` are updated.
    *
    *
    */
@@ -1310,7 +1348,7 @@ export interface ProductAddPriceAction extends IProductUpdateAction {
    */
   readonly price: PriceDraft
   /**
-   *	If `true`, only the staged `prices` is updated. If `false`, both the current and staged `prices` are updated.
+   *	Whether only staged `prices` are updated. If `false`, both current and staged `prices` are updated.
    *
    *
    */
@@ -1334,7 +1372,7 @@ export interface ProductAddToCategoryAction extends IProductUpdateAction {
    */
   readonly orderHint?: string
   /**
-   *	If `true`, only the staged `categories` and `categoryOrderHints` are updated. If `false`, both the current and staged `categories` and `categoryOrderHints` are updated.
+   *	Whether only staged `categories` and `categoryOrderHints` are updated. If `false`, both current and staged `categories` and `categoryOrderHints` are updated.
    *
    *
    */
@@ -1343,13 +1381,13 @@ export interface ProductAddToCategoryAction extends IProductUpdateAction {
 export interface ProductAddVariantAction extends IProductUpdateAction {
   readonly action: 'addVariant'
   /**
-   *	Value to set. Must be unique.
+   *	Value to set. Must be unique across all ProductVariants in a Project.
    *
    *
    */
   readonly sku?: string
   /**
-   *	Value to set. Must be unique.
+   *	Value to set. Must be unique among ProductVariants in the same Product.
    *
    *
    */
@@ -1372,7 +1410,7 @@ export interface ProductAddVariantAction extends IProductUpdateAction {
    */
   readonly attributes?: Attribute[]
   /**
-   *	If `true` the new Product Variant is only staged. If `false` the new Product Variant is both current and staged.
+   *	Whether the new Product Variant is only staged. If `false` the new Product Variant is both current and staged.
    *
    *
    */
@@ -1403,7 +1441,7 @@ export interface ProductChangeAssetNameAction extends IProductUpdateAction {
    */
   readonly sku?: string
   /**
-   *	If `true`, only the staged Asset is updated. If `false`, both the current and staged Asset is updated.
+   *	Whether only the staged Asset is updated. If `false`, both the current and staged Asset are updated.
    *
    *
    */
@@ -1446,7 +1484,7 @@ export interface ProductChangeAssetOrderAction extends IProductUpdateAction {
    */
   readonly sku?: string
   /**
-   *	If `true`, only the staged `assets` is updated. If `false`, both the current and staged `assets` are updated.
+   *	Whether only staged `assets` are updated. If `false`, both current and staged `assets` are updated.
    *
    *
    */
@@ -1478,7 +1516,7 @@ export interface ProductChangeMasterVariantAction extends IProductUpdateAction {
    */
   readonly sku?: string
   /**
-   *	If `true`, only the staged Master Variant is changed. If `false`, both the current and staged Master Variant are changed.
+   *	Whether only the staged Master Variant is changed. If `false`, both the current and staged Master Variant are changed.
    *
    *
    */
@@ -1493,12 +1531,16 @@ export interface ProductChangeNameAction extends IProductUpdateAction {
    */
   readonly name: LocalizedString
   /**
-   *	If `true`, only the staged `name` is updated. If `false`, both the current and staged `name` are updated.
+   *	Whether only the staged `name` is updated. If `false`, both the current and staged `name` are updated.
    *
    *
    */
   readonly staged?: boolean
 }
+/**
+ *	This action produces the [ProductPriceChanged](ctp:api:type:ProductPriceChangedMessage) Message.
+ *
+ */
 export interface ProductChangePriceAction extends IProductUpdateAction {
   readonly action: 'changePrice'
   /**
@@ -1514,7 +1556,7 @@ export interface ProductChangePriceAction extends IProductUpdateAction {
    */
   readonly price: PriceDraft
   /**
-   *	If `true`, only the staged Embedded Price is updated. If `false`, both the current and staged Embedded Price are updated.
+   *	Whether only the staged Embedded Price is updated. If `false`, both the current and staged Embedded Price are updated.
    *
    *
    */
@@ -1532,7 +1574,7 @@ export interface ProductChangeSlugAction extends IProductUpdateAction {
    */
   readonly slug: LocalizedString
   /**
-   *	If `true`, only the staged `slug` is updated. If `false`, both the current and staged `slug` are updated.
+   *	Whether only the staged `slug` is updated. If `false`, both the current and staged `slug` are updated.
    *
    *
    */
@@ -1569,7 +1611,7 @@ export interface ProductMoveImageToPositionAction extends IProductUpdateAction {
    */
   readonly position: number
   /**
-   *	If `true`, only the staged `images` is updated. If `false`, both the current and staged `images` is updated.
+   *	Whether only staged `images` are updated. If `false`, both current and staged `images` are updated.
    *
    *
    */
@@ -1577,7 +1619,7 @@ export interface ProductMoveImageToPositionAction extends IProductUpdateAction {
 }
 /**
  *	Copies the product data from the Product's staged representation to its current representation and sets the `published` flag on the resulting [ProductCatalogData](ctp:api:type:ProductCatalogData) to `true`.
- *	This makes the current representation retrievable in [Product Projection](/projects/productProjections) endpoints and indexes it for [Product Search](/../api/projects/product-search).
+ *	This makes the current representation retrievable in [Product Projection](/projects/productProjections) endpoints and indexes it for [Product Search](/api/projects/product-search).
  *
  *	Produces the [ProductPublished](ctp:api:type:ProductPublishedMessage) Message.
  */
@@ -1609,7 +1651,7 @@ export interface ProductRemoveAssetAction extends IProductUpdateAction {
    */
   readonly sku?: string
   /**
-   *	If `true`, only the staged Asset is removed. If `false`, both the current and staged Asset is removed.
+   *	Whether only the staged Asset is removed. If `false`, both the current and staged Asset is removed.
    *
    *
    */
@@ -1639,16 +1681,16 @@ export interface ProductRemoveFromCategoryAction extends IProductUpdateAction {
    */
   readonly category: CategoryResourceIdentifier
   /**
-   *	If `true`, only the staged `categories` and `categoryOrderHints` are removed. If `false`, both the current and staged `categories` and `categoryOrderHints` are removed.
+   *	Whether only the staged `categories` and `categoryOrderHints` are removed. If `false`, both the current and staged `categories` and `categoryOrderHints` are removed.
    *
    *
    */
   readonly staged?: boolean
 }
 /**
- *	Removes a Product image and deletes it from the Content Delivery Network (CDN) if it had been [uploaded to our CDN](/../api/projects/products#upload-product-image).
+ *	Removes a Product image and deletes it from the Content Delivery Network (CDN) if it had been [uploaded to our CDN](/api/projects/products#upload-product-image).
  *	External images will not be deleted.
- *	The API deletes the removed image from the CDN in an [eventual consistent](/../api/general-concepts#eventual-consistency) way.
+ *	The API deletes the removed image from the CDN in an [eventual consistent](/api/general-concepts#eventual-consistency) way.
  *	Either `variantId` or `sku` is required.
  *
  */
@@ -1673,7 +1715,7 @@ export interface ProductRemoveImageAction extends IProductUpdateAction {
    */
   readonly imageUrl: string
   /**
-   *	If `true`, only the staged image is removed. If `false`, both the current and staged image is removed.
+   *	Whether only the staged image is removed. If `false`, both the current image and staged image are removed.
    *
    *
    */
@@ -1688,7 +1730,7 @@ export interface ProductRemovePriceAction extends IProductUpdateAction {
    */
   readonly priceId: string
   /**
-   *	If `true`, only the staged Embedded Price is removed. If `false`, both the current and staged Embedded Price are removed.
+   *	Whether only the staged Embedded Price is removed. If `false`, both the current and staged Embedded Price are removed.
    *
    *
    */
@@ -1716,7 +1758,7 @@ export interface ProductRemoveVariantAction extends IProductUpdateAction {
    */
   readonly sku?: string
   /**
-   *	If `true`, only the staged ProductVariant is removed. If `false`, both the current and staged ProductVariant is removed.
+   *	Whether only the staged ProductVariant is removed. If `false`, both the current and staged ProductVariant is removed.
    *
    *
    */
@@ -1761,7 +1803,7 @@ export interface ProductSetAssetCustomFieldAction extends IProductUpdateAction {
    */
   readonly sku?: string
   /**
-   *	If `true`, only the staged Asset is updated. If `false`, both the current and staged Asset is updated.
+   *	Whether only the staged Asset is updated. If `false`, both the current and staged Asset is updated.
    *
    *
    */
@@ -1779,7 +1821,7 @@ export interface ProductSetAssetCustomFieldAction extends IProductUpdateAction {
    */
   readonly assetKey?: string
   /**
-   *	Name of the [Custom Field](/../api/projects/custom-fields).
+   *	Name of the [Custom Field](/api/projects/custom-fields).
    *
    *
    */
@@ -1812,7 +1854,7 @@ export interface ProductSetAssetCustomTypeAction extends IProductUpdateAction {
    */
   readonly sku?: string
   /**
-   *	If `true`, only the staged Asset is updated. If `false`, both the current and staged Asset is updated.
+   *	Whether only the staged Asset is updated. If `false`, both the current and staged Asset is updated.
    *
    *
    */
@@ -1830,14 +1872,16 @@ export interface ProductSetAssetCustomTypeAction extends IProductUpdateAction {
    */
   readonly assetKey?: string
   /**
-   *	Defines the [Type](ctp:api:type:Type) that extends the Asset with [Custom Fields](/../api/projects/custom-fields).
+   *	Defines the [Type](ctp:api:type:Type) that extends the Asset with [Custom Fields](ctp:api:type:CustomFields).
    *	If absent, any existing Type and Custom Fields are removed from the Asset.
    *
    *
    */
   readonly type?: TypeResourceIdentifier
   /**
-   *	Sets the [Custom Fields](/../api/projects/custom-fields) fields for the Asset.
+   *	Object containing the [Custom Fields](ctp:api:type:CustomFields) fields for the Asset.
+   *
+   *	Required if at least one Custom Field is defined as required in the `fieldDefinitions` of the referenced [Type](ctp:api:type:Type).
    *
    *
    */
@@ -1862,7 +1906,7 @@ export interface ProductSetAssetDescriptionAction extends IProductUpdateAction {
    */
   readonly sku?: string
   /**
-   *	If `true`, only the staged Asset is updated. If `false`, both the current and staged Asset is updated.
+   *	Whether only the staged Asset is updated. If `false`, both the current and staged Asset is updated.
    *
    *
    */
@@ -1905,7 +1949,7 @@ export interface ProductSetAssetKeyAction extends IProductUpdateAction {
    */
   readonly sku?: string
   /**
-   *	If `true`, only the staged Asset is updated. If `false`, both the current and staged Asset is updated.
+   *	Whether only the staged Asset is updated. If `false`, both the current and staged Asset is updated.
    *
    *
    */
@@ -1942,7 +1986,7 @@ export interface ProductSetAssetSourcesAction extends IProductUpdateAction {
    */
   readonly sku?: string
   /**
-   *	If `true`, only the staged Asset is updated. If `false` both the current and staged Asset is updated.
+   *	Whether only the staged Asset is updated. If `false`, both the current and staged Asset is updated.
    *
    *
    */
@@ -1985,7 +2029,7 @@ export interface ProductSetAssetTagsAction extends IProductUpdateAction {
    */
   readonly sku?: string
   /**
-   *	If `true`, only the staged Asset is updated. If `false`, both the current and staged Asset is updated.
+   *	Whether only the staged Asset is updated. If `false`, both the current and staged Asset is updated.
    *
    *
    */
@@ -2049,7 +2093,7 @@ export interface ProductSetAttributeAction extends IProductUpdateAction {
    */
   readonly value?: any
   /**
-   *	If `true`, only the staged Attribute is set. If `false`, both the current and staged Attributes are set.
+   *	Whether only the staged Attribute is set. If `false`, both the current and staged Attributes are set.
    *
    *
    */
@@ -2085,7 +2129,7 @@ export interface ProductSetAttributeInAllVariantsAction extends IProductUpdateAc
    */
   readonly value?: any
   /**
-   *	If `true`, only the staged Attributes are set. If `false`, both the current and staged Attributes are set.
+   *	Whether only the staged Attributes are set. If `false`, both the current and staged Attributes are set.
    *
    *
    */
@@ -2106,7 +2150,26 @@ export interface ProductSetCategoryOrderHintAction extends IProductUpdateAction 
    */
   readonly orderHint?: string
   /**
-   *	If `true`, only the staged `categoryOrderHints` is updated. If `false`, both the current and staged `categoryOrderHints` are updated.
+   *	Whether only the staged `categoryOrderHints` is updated. If `false`, both the current and staged `categoryOrderHints` are updated.
+   *
+   *
+   */
+  readonly staged?: boolean
+}
+/**
+ *	Sets the [defaultVariant](/projects/products#product) of the Product. Only available for Projects with [productCatalogModel](/projects/project#productcatalogmodel) set to `Modular`. The Variant must belong to the Product. If `variant` is omitted, any existing default Variant is cleared.
+ *
+ */
+export interface ProductSetDefaultVariantAction extends IProductUpdateAction {
+  readonly action: 'setDefaultVariant'
+  /**
+   *	The Variant to set as default. If empty, any existing value will be removed.
+   *
+   *
+   */
+  readonly variant?: VariantResourceIdentifier
+  /**
+   *	Whether only the staged `defaultVariant` is updated. If `false`, both the current and staged `defaultVariant` are updated.
    *
    *
    */
@@ -2121,7 +2184,7 @@ export interface ProductSetDescriptionAction extends IProductUpdateAction {
    */
   readonly description?: LocalizedString
   /**
-   *	If `true`, only the staged `description` is updated. If `false`, both the current and staged `description` are updated.
+   *	Whether only the staged `description` is updated. If `false`, both the current and staged `description` are updated.
    *
    *
    */
@@ -2140,7 +2203,7 @@ export interface ProductSetDiscountedPriceAction extends IProductUpdateAction {
    */
   readonly priceId: string
   /**
-   *	If `true`, only the staged Embedded Price is updated. If `false`, both the current and staged Embedded Price are updated.
+   *	Whether only the staged Embedded Price is updated. If `false`, both the current and staged Embedded Price are updated.
    *
    *
    */
@@ -2184,7 +2247,7 @@ export interface ProductSetImageLabelAction extends IProductUpdateAction {
    */
   readonly label?: string
   /**
-   *	If `true`, only the staged image is updated. If `false`, both the current and staged image is updated.
+   *	Whether only the staged image is updated. If `false`, both the current and staged image is updated.
    *
    *
    */
@@ -2195,7 +2258,7 @@ export interface ProductSetKeyAction extends IProductUpdateAction {
   /**
    *	Value to set. If empty, any existing value will be removed.
    *
-   *	To update a Product using the [Import API](/../api/import-export/overview) and the [Merchant Center](/../merchant-center/import-data), the Product `key` must match the pattern `^[A-Za-z0-9_-]{2,256}$`.
+   *	To update a Product using the [Import API](/api/import-export/overview) and the [Merchant Center](/merchant-center/import-data), the Product `key` must match the pattern `^[A-Za-z0-9_-]{2,256}$`.
    *
    *
    */
@@ -2210,7 +2273,7 @@ export interface ProductSetMetaDescriptionAction extends IProductUpdateAction {
    */
   readonly metaDescription?: LocalizedString
   /**
-   *	If `true`, only the staged `metaDescription` is updated. If `false`, both the current and staged `metaDescription` are updated.
+   *	Whether only the staged `metaDescription` is updated. If `false`, both the current and staged `metaDescription` are updated.
    *
    *
    */
@@ -2225,7 +2288,7 @@ export interface ProductSetMetaKeywordsAction extends IProductUpdateAction {
    */
   readonly metaKeywords?: LocalizedString
   /**
-   *	If `true`, only the staged `metaKeywords` is updated. If `false`, both the current and staged `metaKeywords` are updated.
+   *	Whether only the staged `metaKeywords` is updated. If `false`, both the current and staged `metaKeywords` are updated.
    *
    *
    */
@@ -2240,7 +2303,7 @@ export interface ProductSetMetaTitleAction extends IProductUpdateAction {
    */
   readonly metaTitle?: LocalizedString
   /**
-   *	If `true`, only the staged `metaTitle` is updated. If `false`, both the current and staged `metaTitle` are updated.
+   *	Whether only the staged `metaTitle` is updated. If `false`, both the current and staged `metaTitle` are updated.
    *
    *
    */
@@ -2259,7 +2322,7 @@ export interface ProductSetPriceKeyAction extends IProductUpdateAction {
    */
   readonly priceId: string
   /**
-   *	If `true`, only the staged [Embedded Price](ctp:api:type:Price) is updated. If `false`, both the current and staged Embedded Price are updated.
+   *	Whether only the staged [Embedded Price](ctp:api:type:Price) is updated. If `false`, both the current and staged Embedded Price are updated.
    *
    *
    */
@@ -2310,7 +2373,7 @@ export interface ProductSetPricesAction extends IProductUpdateAction {
    */
   readonly prices: PriceDraft[]
   /**
-   *	If `true`, only the staged ProductVariant is updated. If `false`, both the current and staged ProductVariant are updated.
+   *	Whether only the staged ProductVariant is updated. If `false`, both the current and staged ProductVariant are updated.
    *
    *
    */
@@ -2340,7 +2403,7 @@ export interface ProductSetProductAttributeAction extends IProductUpdateAction {
    */
   readonly value?: any
   /**
-   *	If `true`, only the staged Attribute is set. If `false`, both the current and staged Attributes are set.
+   *	Whether only the staged Attribute is set. If `false`, both the current and staged Attributes are set.
    *
    *
    */
@@ -2355,13 +2418,13 @@ export interface ProductSetProductPriceCustomFieldAction extends IProductUpdateA
    */
   readonly priceId: string
   /**
-   *	If `true`, only the staged Embedded Price Custom Field is updated. If `false`, both the current and staged Embedded Price Custom Field are updated.
+   *	Whether only the staged Embedded Price Custom Field is updated. If `false`, both the current and staged Embedded Price Custom Field are updated.
    *
    *
    */
   readonly staged?: boolean
   /**
-   *	Name of the [Custom Field](/../api/projects/custom-fields).
+   *	Name of the [Custom Field](/api/projects/custom-fields).
    *
    *
    */
@@ -2384,20 +2447,22 @@ export interface ProductSetProductPriceCustomTypeAction extends IProductUpdateAc
    */
   readonly priceId: string
   /**
-   *	If `true`, only the staged Embedded Price is updated. If `false`, both the current and staged Embedded Price is updated.
+   *	Whether only the staged Embedded Price is updated. If `false`, both the current and staged Embedded Price is updated.
    *
    *
    */
   readonly staged?: boolean
   /**
-   *	Defines the [Type](ctp:api:type:Type) that extends the Price with [Custom Fields](/../api/projects/custom-fields).
+   *	Defines the [Type](ctp:api:type:Type) that extends the Price with [Custom Fields](ctp:api:type:CustomFields).
    *	If absent, any existing Type and Custom Fields are removed from the Embedded Price.
    *
    *
    */
   readonly type?: TypeResourceIdentifier
   /**
-   *	Sets the [Custom Fields](/../api/projects/custom-fields) fields for the Embedded Price.
+   *	Object containing the [Custom Fields](ctp:api:type:CustomFields) fields for the Embedded Price.
+   *
+   *	Required if at least one Custom Field is defined as required in the `fieldDefinitions` of the referenced [Type](ctp:api:type:Type).
    *
    *
    */
@@ -2422,13 +2487,13 @@ export interface ProductSetProductVariantKeyAction extends IProductUpdateAction 
    */
   readonly sku?: string
   /**
-   *	Value to set. Must be unique. If empty, any existing value will be removed.
+   *	Value to set. Must be unique among ProductVariants in the same Product. If empty, any existing value will be removed.
    *
    *
    */
   readonly key?: string
   /**
-   *	If `true`, only the staged `key` is set. If `false`, both the current and staged `key` are set.
+   *	Whether only the staged `key` is set. If `false`, both the current and staged `key` are set.
    *
    *
    */
@@ -2443,7 +2508,7 @@ export interface ProductSetSearchKeywordsAction extends IProductUpdateAction {
    */
   readonly searchKeywords: SearchKeywords
   /**
-   *	If `true`, only the staged `searchKeywords` is updated. If `false`, both the current and staged `searchKeywords` are updated.
+   *	Whether only the staged `searchKeywords` is updated. If `false`, both the current and staged `searchKeywords` are updated.
    *
    *
    */
@@ -2464,13 +2529,13 @@ export interface ProductSetSkuAction extends IProductUpdateAction {
    */
   readonly variantId: number
   /**
-   *	Value to set. Must be unique. If empty, any existing value will be removed.
+   *	Value to set. Must be unique across all ProductVariants in a Project. If empty, any existing value will be removed.
    *
    *
    */
   readonly sku?: string
   /**
-   *	If `true`, only the staged `sku` is updated. If `false`, both the current and staged `sku` are updated.
+   *	Whether only the staged `sku` is updated. If `false`, both the current and staged `sku` are updated.
    *
    *
    */
@@ -2502,7 +2567,7 @@ export interface ProductTransitionStateAction extends IProductUpdateAction {
    */
   readonly state?: StateResourceIdentifier
   /**
-   *	If `true`, validations are disabled.
+   *	Whether validations are disabled.
    *
    *
    */
@@ -2510,7 +2575,7 @@ export interface ProductTransitionStateAction extends IProductUpdateAction {
 }
 /**
  *	Sets the `published` flag on the [ProductCatalogData](ctp:api:type:ProductCatalogData) to `false`.
- *	This makes the [current](/../api/projects/productProjections#current--staged) representation of a Product unavailable in [Product Projection](/projects/productProjections) endpoints by default, and excludes it from [Product Search](/../api/projects/product-search).
+ *	This makes the [current](/api/projects/productProjections#current--staged) representation of a Product unavailable in [Product Projection](/projects/productProjections) endpoints by default, and excludes it from [Product Search](/api/projects/product-search).
  *	To retrieve unpublished Products on Product Projection endpoints, set parameter `staged=true`.
  *
  *	Produces the [ProductUnpublished](ctp:api:type:ProductUnpublishedMessage) Message.

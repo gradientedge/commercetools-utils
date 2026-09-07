@@ -7,7 +7,7 @@
 import { BaseResource, CreatedBy, IReference, IResourceIdentifier, LastModifiedBy } from './common.js'
 
 /**
- *	It is used to calculate the [taxPortions](/../api/projects/carts#taxedprice) field in a Cart or Order.
+ *	It is used to calculate the [taxPortions](/api/projects/carts#taxedprice) field in a Cart or Order.
  */
 export interface SubRate {
   /**
@@ -110,18 +110,18 @@ export interface TaxCategoryDraft {
   readonly key?: string
 }
 /**
- *	[PagedQueryResult](/../api/general-concepts#pagedqueryresult) with `results` containing an array of [TaxCategory](ctp:api:type:TaxCategory).
+ *	[PagedQueryResult](/api/general-concepts#pagedqueryresult) with `results` containing an array of [TaxCategory](ctp:api:type:TaxCategory).
  *
  */
 export interface TaxCategoryPagedQueryResponse {
   /**
-   *	Number of [results requested](/../api/general-concepts#limit).
+   *	Number of [results requested](/api/general-concepts#limit).
    *
    *
    */
   readonly limit: number
   /**
-   *	Number of [elements skipped](/../api/general-concepts#offset).
+   *	Number of [elements skipped](/api/general-concepts#offset).
    *
    *
    */
@@ -134,10 +134,10 @@ export interface TaxCategoryPagedQueryResponse {
   readonly count: number
   /**
    *	Total number of results matching the query.
-   *	This number is an estimation that is not [strongly consistent](/../api/general-concepts#strong-consistency).
+   *	This number is an estimation that is not [strongly consistent](/api/general-concepts#strong-consistency).
    *	This field is returned by default.
    *	For improved performance, calculating this field can be deactivated by using the query parameter `withTotal=false`.
-   *	When the results are filtered with a [Query Predicate](/../api/predicates/query), `total` is subject to a [limit](/../api/limits#queries).
+   *	When the results are filtered with a [Query Predicate](/api/predicates/query), `total` is subject to a [limit](/api/limits#queries).
    *
    *
    */
@@ -162,14 +162,14 @@ export interface TaxCategoryReference extends IReference {
    */
   readonly id: string
   /**
-   *	Contains the representation of the expanded TaxCategory. Only present in responses to requests with [Reference Expansion](/../api/general-concepts#reference-expansion) for TaxCategories.
+   *	Contains the representation of the expanded TaxCategory. Only present in responses to requests with [Reference Expansion](/api/general-concepts#reference-expansion) for TaxCategories.
    *
    *
    */
   readonly obj?: TaxCategory
 }
 /**
- *	[ResourceIdentifier](ctp:api:type:ResourceIdentifier) to a [TaxCategory](ctp:api:type:TaxCategory). Either `id` or `key` is required. If both are set, an [InvalidJsonInput](/../api/errors#invalidjsoninput) error is returned.
+ *	[ResourceIdentifier](ctp:api:type:ResourceIdentifier) to a [TaxCategory](ctp:api:type:TaxCategory). Either `id` or `key` is required. If both are set, an [InvalidJsonInput](ctp:api:type:InvalidJsonInputError) error is returned.
  *
  */
 export interface TaxCategoryResourceIdentifier extends IResourceIdentifier {
@@ -224,7 +224,7 @@ export interface TaxRate {
    */
   readonly id?: string
   /**
-   *	User-defined unique identifier of the TaxRate.
+   *	User-defined identifier of the TaxRate. Unique within the TaxCategory containing it.
    *	Present when set using [TaxRateDraft](ctp:api:type:TaxRateDraft). Not available for external TaxRates created using [ExternalTaxRateDraft](ctp:api:type:ExternalTaxRateDraft).
    *
    *
@@ -243,7 +243,7 @@ export interface TaxRate {
    */
   readonly amount: number
   /**
-   *	If `true`, tax is included in [Embedded Prices](ctp:api:type:Price) or [Standalone Prices](ctp:api:type:StandalonePrice), and the `taxedPrice` is present on [LineItems](ctp:api:type:LineItem). In this case, the `totalNet` price on [TaxedPrice](ctp:api:type:TaxedPrice) includes the TaxRate.
+   *	Whether tax is included in [Embedded Prices](ctp:api:type:Price) or [Standalone Prices](ctp:api:type:StandalonePrice), and the `taxedPrice` is present on [LineItems](ctp:api:type:LineItem). In this case, the `totalNet` price on [TaxedPrice](ctp:api:type:TaxedPrice) includes the TaxRate.
    *
    *
    */
@@ -256,6 +256,7 @@ export interface TaxRate {
   readonly country: string
   /**
    *	State within the country, such as Texas in the United States.
+   *	The value is case-sensitive and must use the same casing as the `state` value in the Cart `shippingAddress`.
    *
    *
    */
@@ -283,7 +284,7 @@ export interface TaxRateDraft {
    */
   readonly amount?: number
   /**
-   *	If `true`, tax is included in [Embedded Prices](ctp:api:type:Price) or [Standalone Prices](ctp:api:type:StandalonePrice), and the `taxedPrice` is present on [LineItems](ctp:api:type:LineItem). In this case, the `totalNet` price on [TaxedPrice](ctp:api:type:TaxedPrice) includes the TaxRate.
+   *	Whether tax is included in [Embedded Prices](ctp:api:type:Price) or [Standalone Prices](ctp:api:type:StandalonePrice), and the `taxedPrice` is present on [LineItems](ctp:api:type:LineItem). In this case, the `totalNet` price on [TaxedPrice](ctp:api:type:TaxedPrice) includes the TaxRate.
    *
    *
    */
@@ -296,6 +297,7 @@ export interface TaxRateDraft {
   readonly country: string
   /**
    *	State within the country, such as Texas in the United States.
+   *	The value is case-sensitive and must use the same casing as the `state` value in the Cart `shippingAddress`.
    *
    *
    */
@@ -308,7 +310,7 @@ export interface TaxRateDraft {
    */
   readonly subRates?: SubRate[]
   /**
-   *	User-defined unique identifier of the TaxRate.
+   *	User-defined identifier of the TaxRate. Must be unique within the TaxCategory containing it.
    *
    *
    */

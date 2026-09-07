@@ -79,7 +79,7 @@ export interface ProductDiscount extends BaseResource {
    */
   readonly value: ProductDiscountValue
   /**
-   *	Valid [ProductDiscount predicate](/../api/projects/predicates#productdiscount-predicates).
+   *	Valid [ProductDiscount predicate](/api/projects/predicates#productdiscount-predicates).
    *
    *
    */
@@ -92,7 +92,7 @@ export interface ProductDiscount extends BaseResource {
    */
   readonly sortOrder: string
   /**
-   *	If `true` the Product Discount is applied to Products matching the `predicate`.
+   *	Whether the Product Discount is applied to Products matching the `predicate`.
    *
    *
    */
@@ -106,14 +106,14 @@ export interface ProductDiscount extends BaseResource {
   readonly references: Reference[]
   /**
    *	Date and time (UTC) from which the Discount is effective.
-   *	Take [Eventual Consistency](/../api/general-concepts#eventual-consistency) into account for calculated discount values.
+   *	Take [Eventual Consistency](/api/general-concepts#eventual-consistency) into account for calculated discount values.
    *
    *
    */
   readonly validFrom?: string
   /**
    *	Date and time (UTC) until which the Discount is effective.
-   *	Take [Eventual Consistency](/../api/general-concepts#eventual-consistency) into account for calculated undiscounted values.
+   *	Take [Eventual Consistency](/api/general-concepts#eventual-consistency) into account for calculated undiscounted values.
    *
    *
    */
@@ -145,7 +145,7 @@ export interface ProductDiscountDraft {
    */
   readonly value: ProductDiscountValueDraft
   /**
-   *	Valid [ProductDiscount predicate](/../api/projects/predicates#productdiscount-predicates).
+   *	Valid [ProductDiscount predicate](/api/projects/predicates#productdiscount-predicates).
    *
    *
    */
@@ -158,21 +158,21 @@ export interface ProductDiscountDraft {
    */
   readonly sortOrder: string
   /**
-   *	Set to `true` to activate the ProductDiscount, set to `false` to deactivate it (even though the `predicate` matches).
+   *	Whether to activate the ProductDiscount. To deactivate it even though the `predicate` matches, set to `false`.
    *
    *
    */
   readonly isActive: boolean
   /**
    *	Date and time (UTC) from which the Discount is effective.
-   *	Take [Eventual Consistency](/../api/general-concepts#eventual-consistency) into account for calculated discount values.
+   *	Take [Eventual Consistency](/api/general-concepts#eventual-consistency) into account for calculated discount values.
    *
    *
    */
   readonly validFrom?: string
   /**
    *	Date and time (UTC) until which the Discount is effective.
-   *	Take [Eventual Consistency](/../api/general-concepts#eventual-consistency) into account for calculated undiscounted values.
+   *	Take [Eventual Consistency](/api/general-concepts#eventual-consistency) into account for calculated undiscounted values.
    *
    *
    */
@@ -192,7 +192,7 @@ export interface ProductDiscountMatchQuery {
    */
   readonly variantId: number
   /**
-   *	Controls which [projected representation](/../api/projects/productProjections#current--staged) is applied for the query.
+   *	Controls which [projected representation](/api/projects/productProjections#current--staged) is applied for the query.
    *	Set to `true` for the `staged` Product Projection of the specified Product Variant, set to `false` for the `current` one.
    *
    *
@@ -206,18 +206,18 @@ export interface ProductDiscountMatchQuery {
   readonly price: QueryPrice
 }
 /**
- *	[PagedQueryResult](/../api/general-concepts#pagedqueryresult) with results containing an array of [ProductDiscount](ctp:api:type:ProductDiscount).
+ *	[PagedQueryResult](/api/general-concepts#pagedqueryresult) with results containing an array of [ProductDiscount](ctp:api:type:ProductDiscount).
  *
  */
 export interface ProductDiscountPagedQueryResponse {
   /**
-   *	Number of [results requested](/../api/general-concepts#limit).
+   *	Number of [results requested](/api/general-concepts#limit).
    *
    *
    */
   readonly limit: number
   /**
-   *	Number of [elements skipped](/../api/general-concepts#offset).
+   *	Number of [elements skipped](/api/general-concepts#offset).
    *
    *
    */
@@ -230,10 +230,10 @@ export interface ProductDiscountPagedQueryResponse {
   readonly count: number
   /**
    *	Total number of results matching the query.
-   *	This number is an estimation that is not [strongly consistent](/../api/general-concepts#strong-consistency).
+   *	This number is an estimation that is not [strongly consistent](/api/general-concepts#strong-consistency).
    *	This field is returned by default.
    *	For improved performance, calculating this field can be deactivated by using the query parameter `withTotal=false`.
-   *	When the results are filtered with a [Query Predicate](/../api/predicates/query), `total` is subject to a [limit](/../api/limits#queries).
+   *	When the results are filtered with a [Query Predicate](/api/predicates/query), `total` is subject to a [limit](/api/limits#queries).
    *
    *
    */
@@ -258,14 +258,14 @@ export interface ProductDiscountReference extends IReference {
    */
   readonly id: string
   /**
-   *	Contains the representation of the expanded ProductDiscount. Only present in responses to requests with [Reference Expansion](/../api/general-concepts#reference-expansion) for ProductDiscounts.
+   *	Contains the representation of the expanded ProductDiscount. Only present in responses to requests with [Reference Expansion](/api/general-concepts#reference-expansion) for ProductDiscounts.
    *
    *
    */
   readonly obj?: ProductDiscount
 }
 /**
- *	[ResourceIdentifier](ctp:api:type:ResourceIdentifier) to a [ProductDiscount](ctp:api:type:ProductDiscount). Either `id` or `key` is required. If both are set, an [InvalidJsonInput](/../api/errors#invalidjsoninput) error is returned.
+ *	[ResourceIdentifier](ctp:api:type:ResourceIdentifier) to a [ProductDiscount](ctp:api:type:ProductDiscount). Either `id` or `key` is required. If both are set, an [InvalidJsonInput](ctp:api:type:InvalidJsonInputError) error is returned.
  *
  */
 export interface ProductDiscountResourceIdentifier extends IResourceIdentifier {
@@ -316,9 +316,7 @@ export interface IProductDiscountUpdateAction {
   readonly action: string
 }
 export type ProductDiscountValue =
-  | ProductDiscountValueAbsolute
-  | ProductDiscountValueExternal
-  | ProductDiscountValueRelative
+  ProductDiscountValueAbsolute | ProductDiscountValueExternal | ProductDiscountValueRelative
 export interface IProductDiscountValue {
   /**
    *
@@ -338,9 +336,7 @@ export interface ProductDiscountValueAbsolute extends IProductDiscountValue {
   readonly money: CentPrecisionMoney[]
 }
 export type ProductDiscountValueDraft =
-  | ProductDiscountValueAbsoluteDraft
-  | ProductDiscountValueExternalDraft
-  | ProductDiscountValueRelativeDraft
+  ProductDiscountValueAbsoluteDraft | ProductDiscountValueExternalDraft | ProductDiscountValueRelativeDraft
 export interface IProductDiscountValueDraft {
   /**
    *
@@ -357,7 +353,7 @@ export interface ProductDiscountValueAbsoluteDraft extends IProductDiscountValue
    *	Money values in different currencies.
    *	An absolute Product Discount will match a price only if the array contains a value with the same currency. For example, if it contains 10€ and 15$, the matching € price will be decreased by 10€ and the matching $ price will be decreased by 15$.
    *
-   *	If the value exceeds the price of a Product Variant, the discounted price (of the Product Variant) will be a negative value.
+   *	If the value exceeds the price of a Product Variant, the resulting discounted price is set to `0`.
    *
    *	If the array is empty or has multiple values of the same currency, the API returns an [InvalidOperation](ctp:api:type:InvalidOperationError) error.
    *
@@ -428,7 +424,7 @@ export interface ProductDiscountChangeNameAction extends IProductDiscountUpdateA
 export interface ProductDiscountChangePredicateAction extends IProductDiscountUpdateAction {
   readonly action: 'changePredicate'
   /**
-   *	New value to set. Must be a valid [ProductDiscount predicate](/../api/projects/predicates#productdiscount-predicates).
+   *	New value to set. Must be a valid [ProductDiscount predicate](/api/projects/predicates#productdiscount-predicates).
    *
    *
    */
@@ -478,7 +474,7 @@ export interface ProductDiscountSetValidFromAction extends IProductDiscountUpdat
   /**
    *	Value to set.
    *	If empty, any existing value will be removed.
-   *	Take [Eventual Consistency](/../api/general-concepts#eventual-consistency) into account for calculated discount values.
+   *	Take [Eventual Consistency](/api/general-concepts#eventual-consistency) into account for calculated discount values.
    *
    *
    */
@@ -488,14 +484,14 @@ export interface ProductDiscountSetValidFromAndUntilAction extends IProductDisco
   readonly action: 'setValidFromAndUntil'
   /**
    *	Value to set.
-   *	Take [Eventual Consistency](/../api/general-concepts#eventual-consistency) into account for calculated undiscounted values.
+   *	Take [Eventual Consistency](/api/general-concepts#eventual-consistency) into account for calculated undiscounted values.
    *
    *
    */
   readonly validFrom?: string
   /**
    *	Value to set.
-   *	Take [Eventual Consistency](/../api/general-concepts#eventual-consistency) into account for calculated undiscounted values.
+   *	Take [Eventual Consistency](/api/general-concepts#eventual-consistency) into account for calculated undiscounted values.
    *
    *
    */
@@ -506,7 +502,7 @@ export interface ProductDiscountSetValidUntilAction extends IProductDiscountUpda
   /**
    *	Value to set.
    *	If empty, any existing value will be removed.
-   *	Take [Eventual Consistency](/../api/general-concepts#eventual-consistency) into account for calculated undiscounted values.
+   *	Take [Eventual Consistency](/api/general-concepts#eventual-consistency) into account for calculated undiscounted values.
    *
    *
    */

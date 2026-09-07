@@ -111,18 +111,18 @@ export interface DiscountGroupDraft {
   readonly isActive?: boolean
 }
 /**
- *	[PagedQueryResult](/../api/general-concepts#pagedqueryresult) with `results` containing an array of [DiscountGroup](ctp:api:type:DiscountGroup).
+ *	[PagedQueryResult](/api/general-concepts#pagedqueryresult) with `results` containing an array of [DiscountGroup](ctp:api:type:DiscountGroup).
  *
  */
 export interface DiscountGroupPagedQueryResponse {
   /**
-   *	Number of [results requested](/../api/general-concepts#limit).
+   *	Number of [results requested](/api/general-concepts#limit).
    *
    *
    */
   readonly limit: number
   /**
-   *	Number of [elements skipped](/../api/general-concepts#offset).
+   *	Number of [elements skipped](/api/general-concepts#offset).
    *
    *
    */
@@ -135,10 +135,10 @@ export interface DiscountGroupPagedQueryResponse {
   readonly count: number
   /**
    *	Total number of results matching the query.
-   *	This number is an estimation that is not [strongly consistent](/../api/general-concepts#strong-consistency).
+   *	This number is an estimation that is not [strongly consistent](/api/general-concepts#strong-consistency).
    *	This field is returned by default.
    *	For improved performance, calculating this field can be deactivated by using the query parameter `withTotal=false`.
-   *	When the results are filtered with a [Query Predicate](/../api/predicates/query), `total` is subject to a [limit](/../api/limits#queries).
+   *	When the results are filtered with a [Query Predicate](/api/predicates/query), `total` is subject to a [limit](/api/limits#queries).
    *
    *
    */
@@ -164,7 +164,7 @@ export interface DiscountGroupReference extends IReference {
   readonly id: string
   /**
    *	Contains the representation of the expanded DiscountGroup.
-   *	Only present in responses to requests with [Reference Expansion](/../api/general-concepts#reference-expansion) for DiscountGroups.
+   *	Only present in responses to requests with [Reference Expansion](/api/general-concepts#reference-expansion) for DiscountGroups.
    *
    *
    */
@@ -172,7 +172,7 @@ export interface DiscountGroupReference extends IReference {
 }
 /**
  *	[ResourceIdentifier](ctp:api:type:ResourceIdentifier) to a [DiscountGroup](ctp:api:type:DiscountGroup). Either `id` or `key` is required.
- *	If both are set, an [InvalidJsonInput](/../api/errors#invalidjsoninput) error is returned.
+ *	If both are set, an [InvalidJsonInput](ctp:api:type:InvalidJsonInputError) error is returned.
  *
  */
 export interface DiscountGroupResourceIdentifier extends IResourceIdentifier {
@@ -232,7 +232,7 @@ export interface DiscountGroupSetDescriptionAction extends IDiscountGroupUpdateA
 /**
  *	This action generates the [DiscountGroupIsActiveSet](ctp:api:type:DiscountGroupIsActiveSetMessage) Message.
  *
- *	If the [limit](/../api/limits#discount-groups) for active Discount Groups has been reached, a [MaxDiscountGroupsReached](ctp:api:type:MaxDiscountGroupsReachedError) error is returned.
+ *	If the [limit](/api/limits#discount-groups) for active Discount Groups has been reached, a [MaxDiscountGroupsReached](ctp:api:type:MaxDiscountGroupsReachedError) error is returned.
  *
  */
 export interface DiscountGroupSetIsActiveAction extends IDiscountGroupUpdateAction {

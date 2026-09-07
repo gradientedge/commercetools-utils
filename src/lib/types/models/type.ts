@@ -64,6 +64,7 @@ export enum CustomFieldReferenceValueValues {
   Review = 'review',
   ShippingMethod = 'shipping-method',
   State = 'state',
+  Variant = 'variant',
   Zone = 'zone',
 }
 
@@ -85,6 +86,7 @@ export type CustomFieldReferenceValue =
   | 'review'
   | 'shipping-method'
   | 'state'
+  | 'variant'
   | 'zone'
   | (string & {})
 /**
@@ -99,14 +101,14 @@ export interface CustomFields {
    */
   readonly type: TypeReference
   /**
-   *	Object containing the Custom Fields of the [customized resource or data type](/../api/projects/types#resourcetypeid).
+   *	Object containing the Custom Fields of the [customized resource or data type](/api/projects/types#resourcetypeid).
    *
    *
    */
   readonly fields: FieldContainer
 }
 /**
- *	The representation used when creating or updating a [customizable data type](/../api/projects/types#resourcetypeid) with Custom Fields.
+ *	The representation used when creating or updating a [customizable data type](/api/projects/types#resourcetypeid) with Custom Fields.
  *
  */
 export interface CustomFieldsDraft {
@@ -117,7 +119,7 @@ export interface CustomFieldsDraft {
    */
   readonly type: TypeResourceIdentifier
   /**
-   *	Object containing the Custom Fields for the [customized resource or data type](/../api/projects/types#resourcetypeid).
+   *	Object containing the Custom Fields for the [customized resource or data type](/api/projects/types#resourcetypeid).
    *
    *
    */
@@ -127,8 +129,8 @@ export interface FieldContainer {
   [key: string]: any
 }
 /**
- *	Defines a [Custom Field](/../api/projects/custom-fields) and its meta-information.
- *	This FieldDefinition is similar to an [AttributeDefinition](ctp:api:type:AttributeDefinition) of [Product Types](/../api/projects/productTypes).
+ *	Defines a [Custom Field](/api/projects/custom-fields) and its meta-information.
+ *	This FieldDefinition is similar to an [AttributeDefinition](ctp:api:type:AttributeDefinition) of [Product Types](/api/projects/productTypes).
  *
  */
 export interface FieldDefinition {
@@ -323,6 +325,7 @@ export enum ResourceTypeIdValues {
   ProductTailoring = 'product-tailoring',
   Quote = 'quote',
   RecurringOrder = 'recurring-order',
+  Reservation = 'reservation',
   Review = 'review',
   Shipping = 'shipping',
   ShippingMethod = 'shipping-method',
@@ -363,6 +366,7 @@ export type ResourceTypeId =
   | 'product-tailoring'
   | 'quote'
   | 'recurring-order'
+  | 'reservation'
   | 'review'
   | 'shipping'
   | 'shipping-method'
@@ -467,18 +471,18 @@ export interface TypeDraft {
   readonly fieldDefinitions?: FieldDefinition[]
 }
 /**
- *	[PagedQueryResult](/../api/general-concepts#pagedqueryresult) with `results` containing an array of [Types](ctp:api:type:Type).
+ *	[PagedQueryResult](/api/general-concepts#pagedqueryresult) with `results` containing an array of [Types](ctp:api:type:Type).
  *
  */
 export interface TypePagedQueryResponse {
   /**
-   *	Number of [results requested](/../api/general-concepts#limit).
+   *	Number of [results requested](/api/general-concepts#limit).
    *
    *
    */
   readonly limit: number
   /**
-   *	Number of [elements skipped](/../api/general-concepts#offset).
+   *	Number of [elements skipped](/api/general-concepts#offset).
    *
    *
    */
@@ -491,10 +495,10 @@ export interface TypePagedQueryResponse {
   readonly count: number
   /**
    *	Total number of results matching the query.
-   *	This number is an estimation that is not [strongly consistent](/../api/general-concepts#strong-consistency).
+   *	This number is an estimation that is not [strongly consistent](/api/general-concepts#strong-consistency).
    *	This field is returned by default.
    *	For improved performance, calculating this field can be deactivated by using the query parameter `withTotal=false`.
-   *	When the results are filtered with a [Query Predicate](ctp:api:type:QueryPredicate), `total` is subject to a [limit](/../api/limits#queries).
+   *	When the results are filtered with a [Query Predicate](ctp:api:type:QueryPredicate), `total` is subject to a [limit](/api/limits#queries).
    *
    *
    */
@@ -527,7 +531,7 @@ export interface TypeReference extends IReference {
   readonly obj?: Type
 }
 /**
- *	[ResourceIdentifier](ctp:api:type:ResourceIdentifier) of a [Type](ctp:api:type:Type). Either `id` or `key` is required. If both are set, an [InvalidJsonInput](/../api/errors#invalidjsoninput) error is returned.
+ *	[ResourceIdentifier](ctp:api:type:ResourceIdentifier) of a [Type](ctp:api:type:Type). Either `id` or `key` is required. If both are set, an [InvalidJsonInput](ctp:api:type:InvalidJsonInputError) error is returned.
  *
  */
 export interface TypeResourceIdentifier extends IResourceIdentifier {
@@ -792,7 +796,7 @@ export interface TypeRemoveFieldDefinitionAction extends ITypeUpdateAction {
   readonly action: 'removeFieldDefinition'
   /**
    *	`name` of the [FieldDefinition](ctp:api:type:FieldDefinition) to remove.
-   *	The removal of a FieldDefinition deletes [asynchronously](/../api/general-concepts#eventual-consistency) all Custom Fields using the FieldDefinition as well.
+   *	The removal of a FieldDefinition deletes [asynchronously](/api/general-concepts#eventual-consistency) all Custom Fields using the FieldDefinition as well.
    *
    *
    */

@@ -25,7 +25,7 @@ export interface ProductSelectionSetting {
    */
   readonly productSelection: ProductSelectionReference
   /**
-   *	If `true`, all Products assigned to this Product Selection are part of the Store's assortment.
+   *	Whether all Products assigned to this Product Selection are part of the Store's assortment.
    *
    */
   readonly active: boolean
@@ -37,7 +37,7 @@ export interface ProductSelectionSettingDraft {
    */
   readonly productSelection: ProductSelectionResourceIdentifier
   /**
-   *	Set to `true` if all Products assigned to the Product Selection should become part of the Store's assortment.
+   *	Whether all Products assigned to the Product Selection should become part of the Store's assortment.
    *
    *
    */
@@ -203,18 +203,18 @@ export interface StoreKeyReference extends IKeyReference {
   readonly key: string
 }
 /**
- *	[PagedQueryResult](/../api/general-concepts#pagedqueryresult) with results containing an array of [Store](ctp:api:type:Store).
+ *	[PagedQueryResult](/api/general-concepts#pagedqueryresult) with results containing an array of [Store](ctp:api:type:Store).
  *
  */
 export interface StorePagedQueryResponse {
   /**
-   *	Number of [results requested](/../api/general-concepts#limit).
+   *	Number of [results requested](/api/general-concepts#limit).
    *
    *
    */
   readonly limit: number
   /**
-   *	Number of [elements skipped](/../api/general-concepts#offset).
+   *	Number of [elements skipped](/api/general-concepts#offset).
    *
    *
    */
@@ -227,10 +227,10 @@ export interface StorePagedQueryResponse {
   readonly count: number
   /**
    *	Total number of results matching the query.
-   *	This number is an estimation that is not [strongly consistent](/../api/general-concepts#strong-consistency).
+   *	This number is an estimation that is not [strongly consistent](/api/general-concepts#strong-consistency).
    *	This field is returned by default.
    *	For improved performance, calculating this field can be deactivated by using the query parameter `withTotal=false`.
-   *	When the results are filtered with a [Query Predicate](/../api/predicates/query), `total` is subject to a [limit](/../api/limits#queries).
+   *	When the results are filtered with a [Query Predicate](/api/predicates/query), `total` is subject to a [limit](/api/limits#queries).
    *
    *
    */
@@ -255,14 +255,14 @@ export interface StoreReference extends IReference {
    */
   readonly id: string
   /**
-   *	Contains the representation of the expanded Store. Only present in responses to requests with [Reference Expansion](/../api/general-concepts#reference-expansion) for Stores.
+   *	Contains the representation of the expanded Store. Only present in responses to requests with [Reference Expansion](/api/general-concepts#reference-expansion) for Stores.
    *
    *
    */
   readonly obj?: Store
 }
 /**
- *	[ResourceIdentifier](ctp:api:type:ResourceIdentifier) to a [Store](ctp:api:type:Store). Either `id` or `key` is required. If both are set, an [InvalidJsonInput](/../api/errors#invalidjsoninput) error is returned.
+ *	[ResourceIdentifier](ctp:api:type:ResourceIdentifier) to a [Store](ctp:api:type:Store). Either `id` or `key` is required. If both are set, an [InvalidJsonInput](ctp:api:type:InvalidJsonInputError) error is returned.
  *
  */
 export interface StoreResourceIdentifier extends IResourceIdentifier {
@@ -350,7 +350,7 @@ export interface StoreAddDistributionChannelAction extends IStoreUpdateAction {
   readonly distributionChannel: ChannelResourceIdentifier
 }
 /**
- *	To make all included Products available to your customers of a given Store, add the [Product Selections](/../api/projects/product-selections) to the respective Store. This action has no effect if the given Product Selection is already present in the Store and has the same `active` flag.
+ *	To make all included Products available to your customers of a given Store, add the [Product Selections](/api/projects/product-selections) to the respective Store. This action has no effect if the given Product Selection is already present in the Store and has the same `active` flag.
  *
  */
 export interface StoreAddProductSelectionAction extends IStoreUpdateAction {
@@ -362,7 +362,7 @@ export interface StoreAddProductSelectionAction extends IStoreUpdateAction {
    */
   readonly productSelection: ProductSelectionResourceIdentifier
   /**
-   *	Set to `true` to make all Products assigned to the referenced Product Selection available in the Store.
+   *	Whether to make all Products assigned to the referenced Product Selection available in the Store.
    *
    *
    */
@@ -398,7 +398,7 @@ export interface StoreChangeProductSelectionAction extends IStoreUpdateAction {
    */
   readonly productSelection: ProductSelectionResourceIdentifier
   /**
-   *	Set to `true` if all Products assigned to the Product Selection should become part of the Store's assortment.
+   *	Whether all Products assigned to the Product Selection should become part of the Store's assortment.
    *
    *
    */
@@ -473,7 +473,7 @@ export interface StoreSetCountriesAction extends IStoreUpdateAction {
 export interface StoreSetCustomFieldAction extends IStoreUpdateAction {
   readonly action: 'setCustomField'
   /**
-   *	Name of the [Custom Field](/../api/projects/custom-fields).
+   *	Name of the [Custom Field](/api/projects/custom-fields).
    *
    *
    */
@@ -490,14 +490,16 @@ export interface StoreSetCustomFieldAction extends IStoreUpdateAction {
 export interface StoreSetCustomTypeAction extends IStoreUpdateAction {
   readonly action: 'setCustomType'
   /**
-   *	Defines the [Type](ctp:api:type:Type) that extends the Store with [Custom Fields](/../api/projects/custom-fields).
+   *	Defines the [Type](ctp:api:type:Type) that extends the Store with [Custom Fields](ctp:api:type:CustomFields).
    *	If absent, any existing Type and Custom Fields are removed from the Store.
    *
    *
    */
   readonly type?: TypeResourceIdentifier
   /**
-   *	Sets the [Custom Fields](/../api/projects/custom-fields) fields for the Store.
+   *	Object containing the [Custom Fields](ctp:api:type:CustomFields) fields for the Store.
+   *
+   *	Required if at least one Custom Field is defined as required in the `fieldDefinitions` of the referenced [Type](ctp:api:type:Type).
    *
    *
    */
@@ -547,7 +549,7 @@ export interface StoreSetNameAction extends IStoreUpdateAction {
   readonly name?: LocalizedString
 }
 /**
- *	Instead of adding or removing [Product Selections](/../api/projects/product-selections) individually, you can also change all the Store's Product Selections in one go using this update action. The Store will only contain the Product Selections specified in the request.
+ *	Instead of adding or removing [Product Selections](/api/projects/product-selections) individually, you can also change all the Store's Product Selections in one go using this update action. The Store will only contain the Product Selections specified in the request.
  *
  */
 export interface StoreSetProductSelectionsAction extends IStoreUpdateAction {

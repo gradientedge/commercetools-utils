@@ -14,6 +14,7 @@ import {
   LocalizedString,
   Reference,
 } from './common.js'
+import { StoreKeyReference } from './store.js'
 import { CustomFields, CustomFieldsDraft, FieldContainer, TypeResourceIdentifier } from './type.js'
 
 export interface DiscountCode extends BaseResource {
@@ -71,7 +72,7 @@ export interface DiscountCode extends BaseResource {
    */
   readonly description?: LocalizedString
   /**
-   *	User-defined unique identifier of the DiscountCode [added to the Cart](/../api/projects/carts#add-discountcode) to apply the related [CartDiscounts](ctp:api:type:CartDiscount).
+   *	User-defined unique identifier of the DiscountCode [added to the Cart](/api/projects/carts#add-discountcode) to apply the related [CartDiscounts](ctp:api:type:CartDiscount).
    *
    *
    */
@@ -82,6 +83,14 @@ export interface DiscountCode extends BaseResource {
    *
    */
   readonly cartDiscounts: CartDiscountReference[]
+  /**
+   *	Reference to the Stores the DiscountCode is associated with, derived from the `stores` field of each referenced [CartDiscount](ctp:api:type:CartDiscount).
+   *
+   *	The value of this field is [eventually consistent](/api/general-concepts#eventual-consistency).
+   *
+   *
+   */
+  readonly stores: StoreKeyReference[]
   /**
    *	DiscountCode can only be applied to Carts that match this predicate.
    *
@@ -103,7 +112,11 @@ export interface DiscountCode extends BaseResource {
   readonly references: Reference[]
   /**
    *	Number of times the DiscountCode can be applied.
+   *
    *	DiscountCode application is counted at the time of Order creation or edit. However, Order cancellation or deletion does not decrement the count.
+   *
+   *	If `maxApplicationsPerCustomer` is set, each application also counts toward this limit.
+   *
    *	This field does not limit discount applications for Orders created from a [Recurring Order](ctp:api:type:RecurringOrder).
    *
    *
@@ -111,7 +124,11 @@ export interface DiscountCode extends BaseResource {
   readonly maxApplications?: number
   /**
    *	Number of times the DiscountCode can be applied per Customer (anonymous Carts are not supported).
+   *
+   *	Each use also counts toward the `maxApplications` limit.
+   *
    *	DiscountCode application is counted at the time of Order creation or edit. However, Order cancellation or deletion does not decrement the count.
+   *
    *	This field does not limit discount applications for Orders created from a [Recurring Order](ctp:api:type:RecurringOrder).
    *
    *
@@ -153,7 +170,7 @@ export interface DiscountCodeDraft {
   /**
    *	User-defined unique identifier for the DiscountCode.
    *
-   *	This field is optional for backwards compatibility reasons, but we strongly recommend setting it. Keys are mandatory for importing Discount Codes with the [Import API](/../api/import-export/overview) and the [Merchant Center](/../merchant-center/import-data).
+   *	This field is optional for backwards compatibility reasons, but we strongly recommend setting it. Keys are mandatory for importing Discount Codes with the [Import API](/api/import-export/overview) and the [Merchant Center](/merchant-center/import-data).
    *
    */
   readonly key?: string
@@ -170,7 +187,7 @@ export interface DiscountCodeDraft {
    */
   readonly description?: LocalizedString
   /**
-   *	User-defined unique identifier for the DiscountCode that can be [added to the Cart](/../api/projects/carts#add-discountcode) to apply the related [CartDiscounts](ctp:api:type:CartDiscount).
+   *	User-defined unique identifier for the DiscountCode that can be [added to the Cart](/api/projects/carts#add-discountcode) to apply the related [CartDiscounts](ctp:api:type:CartDiscount).
    *	It cannot be modified after the DiscountCode is created.
    *
    *
@@ -198,6 +215,9 @@ export interface DiscountCodeDraft {
    *	Number of times the DiscountCode can be applied.
    *
    *	If not set, the DiscountCode can be applied any number of times.
+   *
+   *	If `maxApplicationsPerCustomer` is set, each application also counts toward this limit.
+   *
    *	This field does not limit discount applications for Orders created from a [Recurring Order](ctp:api:type:RecurringOrder).
    *
    *
@@ -207,6 +227,9 @@ export interface DiscountCodeDraft {
    *	Number of times the DiscountCode can be applied per Customer.
    *
    *	If not set, the DiscountCode can be applied any number of times.
+   *
+   *	Each use also counts toward the `maxApplications` limit.
+   *
    *	This field does not limit discount applications for Orders created from a [Recurring Order](ctp:api:type:RecurringOrder).
    *
    *
@@ -238,18 +261,18 @@ export interface DiscountCodeDraft {
   readonly validUntil?: string
 }
 /**
- *	[PagedQueryResult](/../api/general-concepts#pagedqueryresult) with `results` containing an array of [DiscountCode](ctp:api:type:DiscountCode).
+ *	[PagedQueryResult](/api/general-concepts#pagedqueryresult) with `results` containing an array of [DiscountCode](ctp:api:type:DiscountCode).
  *
  */
 export interface DiscountCodePagedQueryResponse {
   /**
-   *	Number of [results requested](/../api/general-concepts#limit).
+   *	Number of [results requested](/api/general-concepts#limit).
    *
    *
    */
   readonly limit: number
   /**
-   *	Number of [elements skipped](/../api/general-concepts#offset).
+   *	Number of [elements skipped](/api/general-concepts#offset).
    *
    *
    */
@@ -262,10 +285,10 @@ export interface DiscountCodePagedQueryResponse {
   readonly count: number
   /**
    *	Total number of results matching the query.
-   *	This number is an estimation that is not [strongly consistent](/../api/general-concepts#strong-consistency).
+   *	This number is an estimation that is not [strongly consistent](/api/general-concepts#strong-consistency).
    *	This field is returned by default.
    *	For improved performance, calculating this field can be deactivated by using the query parameter `withTotal=false`.
-   *	When the results are filtered with a [Query Predicate](/../api/predicates/query), `total` is subject to a [limit](/../api/limits#queries).
+   *	When the results are filtered with a [Query Predicate](/api/predicates/query), `total` is subject to a [limit](/api/limits#queries).
    *
    *
    */
@@ -290,14 +313,14 @@ export interface DiscountCodeReference extends IReference {
    */
   readonly id: string
   /**
-   *	Contains the representation of the expanded DiscountCode. Only present in responses to requests with [Reference Expansion](/../api/general-concepts#reference-expansion) for DiscountCodes.
+   *	Contains the representation of the expanded DiscountCode. Only present in responses to requests with [Reference Expansion](/api/general-concepts#reference-expansion) for DiscountCodes.
    *
    *
    */
   readonly obj?: DiscountCode
 }
 /**
- *	[ResourceIdentifier](ctp:api:type:ResourceIdentifier) to a [DiscountCode](ctp:api:type:DiscountCode). Either `id` or `key` is required. If both are set, an [InvalidJsonInput](/../api/errors#invalidjsoninput) error is returned.
+ *	[ResourceIdentifier](ctp:api:type:ResourceIdentifier) to a [DiscountCode](ctp:api:type:DiscountCode). Either `id` or `key` is required. If both are set, an [InvalidJsonInput](ctp:api:type:InvalidJsonInputError) error is returned.
  *
  */
 export interface DiscountCodeResourceIdentifier extends IResourceIdentifier {
@@ -389,7 +412,7 @@ export interface DiscountCodeSetCartPredicateAction extends IDiscountCodeUpdateA
 export interface DiscountCodeSetCustomFieldAction extends IDiscountCodeUpdateAction {
   readonly action: 'setCustomField'
   /**
-   *	Name of the [Custom Field](/../api/projects/custom-fields).
+   *	Name of the [Custom Field](/api/projects/custom-fields).
    *
    *
    */
@@ -406,14 +429,16 @@ export interface DiscountCodeSetCustomFieldAction extends IDiscountCodeUpdateAct
 export interface DiscountCodeSetCustomTypeAction extends IDiscountCodeUpdateAction {
   readonly action: 'setCustomType'
   /**
-   *	Defines the [Type](ctp:api:type:Type) that extends the DiscountCode with [Custom Fields](/../api/projects/custom-fields).
+   *	Defines the [Type](ctp:api:type:Type) that extends the DiscountCode with [Custom Fields](ctp:api:type:CustomFields).
    *	If absent, any existing Type and Custom Fields are removed from the DiscountCode.
    *
    *
    */
   readonly type?: TypeResourceIdentifier
   /**
-   *	Sets the [Custom Fields](/../api/projects/custom-fields) fields for the DiscountCode.
+   *	Object containing the [Custom Fields](ctp:api:type:CustomFields) fields for the DiscountCode.
+   *
+   *	Required if at least one Custom Field is defined as required in the `fieldDefinitions` of the referenced [Type](ctp:api:type:Type).
    *
    *
    */
@@ -447,6 +472,9 @@ export interface DiscountCodeSetMaxApplicationsAction extends IDiscountCodeUpdat
    *	Value to set.
    *
    *	If empty, any existing value will be removed and the DiscountCode can be applied any number of times.
+   *
+   *	If `maxApplicationsPerCustomer` is set, each application also counts toward this limit.
+   *
    *	This field does not limit discount applications for Orders created from a [Recurring Order](ctp:api:type:RecurringOrder).
    *
    *
@@ -459,6 +487,9 @@ export interface DiscountCodeSetMaxApplicationsPerCustomerAction extends IDiscou
    *	Value to set.
    *
    *	If empty, any existing value will be removed and the DiscountCode can be applied any number of times.
+   *
+   *	Each use also counts toward the `maxApplications` limit.
+   *
    *	This field does not limit discount applications for Orders created from a [Recurring Order](ctp:api:type:RecurringOrder).
    *
    *

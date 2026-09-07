@@ -100,7 +100,7 @@ export interface Review extends BaseResource {
    */
   readonly rating?: number
   /**
-   *	State of the Review. Used for approval processes, see [Review approval process](/../tutorials/review-ratings#review-approval-process) for details.
+   *	State of the Review. Used for approval processes, see [Review approval process](/tutorials/review-ratings#review-approval-process) for details.
    *
    *
    */
@@ -164,7 +164,7 @@ export interface ReviewDraft {
    */
   readonly target?: ProductResourceIdentifier | ChannelResourceIdentifier
   /**
-   *	State of the Review. Used for approval processes, see [Review approval process](/../tutorials/review-ratings#review-approval-process) for details.
+   *	State of the Review. Used for approval processes, see [Review approval process](/tutorials/review-ratings#review-approval-process) for details.
    *
    *
    */
@@ -191,7 +191,7 @@ export interface ReviewDraft {
 }
 export interface ReviewPagedQueryResponse {
   /**
-   *	Number of [results requested](/../api/general-concepts#limit).
+   *	Number of [results requested](/api/general-concepts#limit).
    *
    *
    */
@@ -204,16 +204,16 @@ export interface ReviewPagedQueryResponse {
   readonly count: number
   /**
    *	Total number of results matching the query.
-   *	This number is an estimation that is not [strongly consistent](/../api/general-concepts#strong-consistency).
+   *	This number is an estimation that is not [strongly consistent](/api/general-concepts#strong-consistency).
    *	This field is returned by default.
    *	For improved performance, calculating this field can be deactivated by using the query parameter `withTotal=false`.
-   *	When the results are filtered with a [Query Predicate](/../api/predicates/query), `total` is subject to a [limit](/../api/limits#queries).
+   *	When the results are filtered with a [Query Predicate](/api/predicates/query), `total` is subject to a [limit](/api/limits#queries).
    *
    *
    */
   readonly total?: number
   /**
-   *	Number of [elements skipped](/../api/general-concepts#offset).
+   *	Number of [elements skipped](/api/general-concepts#offset).
    *
    *
    */
@@ -268,14 +268,14 @@ export interface ReviewReference extends IReference {
    */
   readonly id: string
   /**
-   *	Contains the representation of the expanded Review. Only present in responses to requests with [Reference Expansion](/../api/general-concepts#reference-expansion) for Reviews.
+   *	Contains the representation of the expanded Review. Only present in responses to requests with [Reference Expansion](/api/general-concepts#reference-expansion) for Reviews.
    *
    *
    */
   readonly obj?: Review
 }
 /**
- *	[ResourceIdentifier](ctp:api:type:ResourceIdentifier) to a [Review](ctp:api:type:Review). Either `id` or `key` is required. If both are set, an [InvalidJsonInput](/../api/errors#invalidjsoninput) error is returned.
+ *	[ResourceIdentifier](ctp:api:type:ResourceIdentifier) to a [Review](ctp:api:type:Review). Either `id` or `key` is required. If both are set, an [InvalidJsonInput](ctp:api:type:InvalidJsonInputError) error is returned.
  *
  */
 export interface ReviewResourceIdentifier extends IResourceIdentifier {
@@ -337,7 +337,7 @@ export interface ReviewSetAuthorNameAction extends IReviewUpdateAction {
 export interface ReviewSetCustomFieldAction extends IReviewUpdateAction {
   readonly action: 'setCustomField'
   /**
-   *	Name of the [Custom Field](/../api/projects/custom-fields).
+   *	Name of the [Custom Field](/api/projects/custom-fields).
    *
    *
    */
@@ -354,14 +354,16 @@ export interface ReviewSetCustomFieldAction extends IReviewUpdateAction {
 export interface ReviewSetCustomTypeAction extends IReviewUpdateAction {
   readonly action: 'setCustomType'
   /**
-   *	Defines the [Type](ctp:api:type:Type) that extends the Review with [Custom Fields](/../api/projects/custom-fields).
+   *	Defines the [Type](ctp:api:type:Type) that extends the Review with [Custom Fields](ctp:api:type:CustomFields).
    *	If absent, any existing Type and Custom Fields are removed from the Review.
    *
    *
    */
   readonly type?: TypeResourceIdentifier
   /**
-   *	Sets the [Custom Fields](/../api/projects/custom-fields) fields for the Review.
+   *	Object containing the [Custom Fields](ctp:api:type:CustomFields) fields for the Review.
+   *
+   *	Required if at least one Custom Field is defined as required in the `fieldDefinitions` of the referenced [Type](ctp:api:type:Type).
    *
    *
    */

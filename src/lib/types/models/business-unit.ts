@@ -145,7 +145,7 @@ export interface IBusinessUnit {
    */
   readonly key: string
   /**
-   *	Indicates whether the Business Unit can be edited and used in [Orders](/../api/projects/orders).
+   *	Indicates whether the Business Unit can be edited and used in [Orders](/api/projects/orders).
    *
    *
    */
@@ -161,7 +161,7 @@ export interface IBusinessUnit {
    */
   readonly stores?: StoreKeyReference[]
   /**
-   *	Stores that are inherited from a parent Business Unit. The value of this field is [eventually consistent](/../api/general-concepts#eventual-consistency) and is only present when the `storeMode` is set to `FromParent`.
+   *	Stores that are inherited from a parent Business Unit. The value of this field is [eventually consistent](/api/general-concepts#eventual-consistency) and is only present when the `storeMode` is set to `FromParent`.
    *
    *
    */
@@ -199,7 +199,7 @@ export interface IBusinessUnit {
   /**
    *	Customer Groups assigned to the Business Unit.
    *
-   *	They are considered during [line Item price selection](/../api/pricing-and-discounts-overview#line-item-price-selection), if provided (non-null).
+   *	They are considered during [line Item price selection](/api/pricing-and-discounts-overview#line-item-price-selection), if provided (non-null).
    *
    *
    */
@@ -247,7 +247,7 @@ export interface IBusinessUnit {
    */
   readonly associates: Associate[]
   /**
-   *	Associates that are inherited from a parent Business Unit. The value of this field is [eventually consistent](/../api/general-concepts#eventual-consistency) and is only present when the `associateMode` is set to `ExplicitAndFromParent`.
+   *	Associates that are inherited from a parent Business Unit. The value of this field is [eventually consistent](/api/general-concepts#eventual-consistency) and is only present when the `associateMode` is set to `ExplicitAndFromParent`.
    *
    *
    */
@@ -335,7 +335,7 @@ export interface IBusinessUnitDraft {
    */
   readonly key: string
   /**
-   *	Indicates whether the Business Unit can be edited and used in [Orders](/../api/projects/orders).
+   *	Indicates whether the Business Unit can be edited and used in [Orders](/api/projects/orders).
    *
    *
    */
@@ -438,7 +438,7 @@ export interface IBusinessUnitDraft {
   /**
    *	Customer Groups to assign the Business Unit to.
    *
-   *	They are considered during [line Item price selection](/../api/pricing-and-discounts-overview#line-item-price-selection), if provided (non-null).
+   *	They are considered during [line Item price selection](/api/pricing-and-discounts-overview#line-item-price-selection), if provided (non-null).
    *
    *
    */
@@ -458,18 +458,18 @@ export interface BusinessUnitKeyReference extends IKeyReference {
   readonly key: string
 }
 /**
- *	[PagedQueryResult](/../api/general-concepts#pagedqueryresult) with results containing an array of [BusinessUnit](ctp:api:type:BusinessUnit).
+ *	[PagedQueryResult](/api/general-concepts#pagedqueryresult) with results containing an array of [BusinessUnit](ctp:api:type:BusinessUnit).
  *
  */
 export interface BusinessUnitPagedQueryResponse {
   /**
-   *	Number of requested [results](/../api/general-concepts#limit).
+   *	Number of requested [results](/api/general-concepts#limit).
    *
    *
    */
   readonly limit: number
   /**
-   *	Number of elements [skipped](/../api/general-concepts#offset).
+   *	Number of elements [skipped](/api/general-concepts#offset).
    *
    *
    */
@@ -482,10 +482,10 @@ export interface BusinessUnitPagedQueryResponse {
   readonly count: number
   /**
    *	Total number of results matching the query.
-   *	This number is an estimation that is not [strongly consistent](/../api/general-concepts#strong-consistency).
+   *	This number is an estimation that is not [strongly consistent](/api/general-concepts#strong-consistency).
    *	This field is returned by default.
    *	For improved performance, calculating this field can be deactivated by using the query parameter `withTotal=false`.
-   *	When the results are filtered with a [Query Predicate](/../api/predicates/query), `total` is subject to a [limit](/../api/limits#queries).
+   *	When the results are filtered with a [Query Predicate](/api/predicates/query), `total` is subject to a [limit](/api/limits#queries).
    *
    *
    */
@@ -510,14 +510,14 @@ export interface BusinessUnitReference extends IReference {
    */
   readonly id: string
   /**
-   *	Contains the representation of the expanded BusinessUnit. Only present in responses to requests with [Reference Expansion](/../api/general-concepts#reference-expansion) for BusinessUnit.
+   *	Contains the representation of the expanded BusinessUnit. Only present in responses to requests with [Reference Expansion](/api/general-concepts#reference-expansion) for BusinessUnit.
    *
    *
    */
   readonly obj?: BusinessUnit
 }
 /**
- *	[ResourceIdentifier](ctp:api:type:ResourceIdentifier) to a [BusinessUnit](ctp:api:type:BusinessUnit). Either `id` or `key` is required. If both are set, an [InvalidJsonInput](/../api/errors#invalidjsoninput) error is returned.
+ *	[ResourceIdentifier](ctp:api:type:ResourceIdentifier) to a [BusinessUnit](ctp:api:type:BusinessUnit). Either `id` or `key` is required. If both are set, an [InvalidJsonInput](ctp:api:type:InvalidJsonInputError) error is returned.
  *
  */
 export interface BusinessUnitResourceIdentifier extends IResourceIdentifier {
@@ -668,7 +668,7 @@ export interface Company extends IBusinessUnit {
    */
   readonly key: string
   /**
-   *	Indicates whether the Business Unit can be edited and used in [Orders](/../api/projects/orders).
+   *	Indicates whether the Business Unit can be edited and used in [Orders](/api/projects/orders).
    *
    *
    */
@@ -684,7 +684,7 @@ export interface Company extends IBusinessUnit {
    */
   readonly stores?: StoreKeyReference[]
   /**
-   *	Stores that are inherited from a parent Business Unit. The value of this field is [eventually consistent](/../api/general-concepts#eventual-consistency) and is only present when the `storeMode` is set to `FromParent`.
+   *	Stores that are inherited from a parent Business Unit. The value of this field is [eventually consistent](/api/general-concepts#eventual-consistency) and is only present when the `storeMode` is set to `FromParent`.
    *
    *
    */
@@ -716,7 +716,7 @@ export interface Company extends IBusinessUnit {
   /**
    *	Customer Groups assigned to the Business Unit.
    *
-   *	They are considered during [line Item price selection](/../api/pricing-and-discounts-overview#line-item-price-selection), if provided (non-null).
+   *	They are considered during [line Item price selection](/api/pricing-and-discounts-overview#line-item-price-selection), if provided (non-null).
    *
    *
    */
@@ -764,7 +764,7 @@ export interface Company extends IBusinessUnit {
    */
   readonly associates: Associate[]
   /**
-   *	Associates that are inherited from a parent Business Unit. The value of this field is [eventually consistent](/../api/general-concepts#eventual-consistency) and is only present when the `associateMode` is set to `ExplicitAndFromParent`.
+   *	Associates that are inherited from a parent Business Unit. The value of this field is [eventually consistent](/api/general-concepts#eventual-consistency) and is only present when the `associateMode` is set to `ExplicitAndFromParent`.
    *
    *
    */
@@ -801,7 +801,7 @@ export interface CompanyDraft extends IBusinessUnitDraft {
    */
   readonly key: string
   /**
-   *	Indicates whether the Business Unit can be edited and used in [Orders](/../api/projects/orders).
+   *	Indicates whether the Business Unit can be edited and used in [Orders](/api/projects/orders).
    *
    *
    */
@@ -898,7 +898,7 @@ export interface CompanyDraft extends IBusinessUnitDraft {
   /**
    *	Customer Groups to assign the Business Unit to.
    *
-   *	They are considered during [line Item price selection](/../api/pricing-and-discounts-overview#line-item-price-selection), if provided (non-null).
+   *	They are considered during [line Item price selection](/api/pricing-and-discounts-overview#line-item-price-selection), if provided (non-null).
    *
    *
    */
@@ -954,7 +954,7 @@ export interface Division extends IBusinessUnit {
    */
   readonly key: string
   /**
-   *	Indicates whether the Business Unit can be edited and used in [Orders](/../api/projects/orders).
+   *	Indicates whether the Business Unit can be edited and used in [Orders](/api/projects/orders).
    *
    *
    */
@@ -970,7 +970,7 @@ export interface Division extends IBusinessUnit {
    */
   readonly stores?: StoreKeyReference[]
   /**
-   *	Stores that are inherited from a parent Business Unit. The value of this field is [eventually consistent](/../api/general-concepts#eventual-consistency) and is only present when the `storeMode` is set to `FromParent`.
+   *	Stores that are inherited from a parent Business Unit. The value of this field is [eventually consistent](/api/general-concepts#eventual-consistency) and is only present when the `storeMode` is set to `FromParent`.
    *
    *
    */
@@ -1002,7 +1002,7 @@ export interface Division extends IBusinessUnit {
   /**
    *	Customer Groups assigned to the Business Unit.
    *
-   *	They are considered during [line Item price selection](/../api/pricing-and-discounts-overview#line-item-price-selection), if provided (non-null).
+   *	They are considered during [line Item price selection](/api/pricing-and-discounts-overview#line-item-price-selection), if provided (non-null).
    *
    *
    */
@@ -1050,7 +1050,7 @@ export interface Division extends IBusinessUnit {
    */
   readonly associates: Associate[]
   /**
-   *	Associates that are inherited from a parent Business Unit. The value of this field is [eventually consistent](/../api/general-concepts#eventual-consistency) and is only present when the `associateMode` is set to `ExplicitAndFromParent`.
+   *	Associates that are inherited from a parent Business Unit. The value of this field is [eventually consistent](/api/general-concepts#eventual-consistency) and is only present when the `associateMode` is set to `ExplicitAndFromParent`.
    *
    *
    */
@@ -1088,7 +1088,7 @@ export interface DivisionDraft extends IBusinessUnitDraft {
    */
   readonly key: string
   /**
-   *	Indicates whether the Business Unit can be edited and used in [Orders](/../api/projects/orders).
+   *	Indicates whether the Business Unit can be edited and used in [Orders](/api/projects/orders).
    *
    *
    */
@@ -1182,7 +1182,7 @@ export interface DivisionDraft extends IBusinessUnitDraft {
   /**
    *	Customer Groups to assign the Business Unit to.
    *
-   *	They are considered during [line Item price selection](/../api/pricing-and-discounts-overview#line-item-price-selection), if provided (non-null).
+   *	They are considered during [line Item price selection](/api/pricing-and-discounts-overview#line-item-price-selection), if provided (non-null).
    *
    *
    */
@@ -1384,7 +1384,7 @@ export interface BusinessUnitChangeAssociateModeAction extends IBusinessUnitUpda
    */
   readonly associateMode: BusinessUnitAssociateMode
   /**
-   *	If set to `true` during a change to `associateMode="Explicit"`, all inherited Associates will be converted to explicit Associates.
+   *	Whether all inherited Associates are converted to explicit Associates during a change to `associateMode="Explicit"`.
    *
    *
    */
@@ -1413,7 +1413,7 @@ export interface BusinessUnitChangeParentUnitAction extends IBusinessUnitUpdateA
    *	New parent unit of the [Business Unit](ctp:api:type:BusinessUnit).
    *	It must be associated with the same Stores, as the old parent unit.
    *
-   *	The Business Unit `inheritedAssociates` and `inheritedStores` field values will be [eventually consistent](/../api/general-concepts#eventual-consistency).
+   *	The Business Unit `inheritedAssociates` and `inheritedStores` field values will be [eventually consistent](/api/general-concepts#eventual-consistency).
    *
    *
    */
@@ -1548,7 +1548,7 @@ export interface BusinessUnitSetAddressCustomFieldAction extends IBusinessUnitUp
    */
   readonly addressId: string
   /**
-   *	Name of the [Custom Field](/../api/projects/custom-fields).
+   *	Name of the [Custom Field](/api/projects/custom-fields).
    *
    *
    */
@@ -1569,14 +1569,16 @@ export interface BusinessUnitSetAddressCustomFieldAction extends IBusinessUnitUp
 export interface BusinessUnitSetAddressCustomTypeAction extends IBusinessUnitUpdateAction {
   readonly action: 'setAddressCustomType'
   /**
-   *	Defines the [Type](ctp:api:type:Type) that extends the `address` with [Custom Fields](/../api/projects/custom-fields).
+   *	Defines the [Type](ctp:api:type:Type) that extends the `address` with [Custom Fields](ctp:api:type:CustomFields).
    *	If absent, any existing Type and Custom Fields are removed from the `address`.
    *
    *
    */
   readonly type?: TypeResourceIdentifier
   /**
-   *	Sets the [Custom Fields](/../api/projects/custom-fields) for the `address`.
+   *	Object containing the [Custom Fields](ctp:api:type:CustomFields) fields for the `address`.
+   *
+   *	Required if at least one Custom Field is defined as required in the `fieldDefinitions` of the referenced [Type](ctp:api:type:Type).
    *
    *
    */
@@ -1622,7 +1624,7 @@ export interface BusinessUnitSetContactEmailAction extends IBusinessUnitUpdateAc
 export interface BusinessUnitSetCustomFieldAction extends IBusinessUnitUpdateAction {
   readonly action: 'setCustomField'
   /**
-   *	Name of the [Custom Field](/../api/projects/custom-fields) to add, update, or remove.
+   *	Name of the [Custom Field](/api/projects/custom-fields) to add, update, or remove.
    *
    *
    */
@@ -1650,7 +1652,9 @@ export interface BusinessUnitSetCustomTypeAction extends IBusinessUnitUpdateActi
    */
   readonly type?: TypeResourceIdentifier
   /**
-   *	Sets the [Custom Fields](/../api/projects/custom-fields) for the BusinessUnit.
+   *	Object containing the [Custom Fields](ctp:api:type:CustomFields) fields for the BusinessUnit.
+   *
+   *	Required if at least one Custom Field is defined as required in the `fieldDefinitions` of the referenced [Type](ctp:api:type:Type).
    *
    *
    */

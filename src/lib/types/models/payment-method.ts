@@ -45,7 +45,7 @@ export interface PaymentMethod extends BaseResource {
   /**
    *	Reference to a BusinessUnit associated with the PaymentMethod.
    *
-   *	Only available for [B2B](/../offering/composable-commerce#composable-commerce-for-b2b)-enabled Projects.
+   *	Only available for [B2B](/offering/commerce-b2b)-enabled Projects.
    *
    *
    */
@@ -143,7 +143,7 @@ export interface PaymentMethodDraft {
   /**
    *	Reference to a BusinessUnit the PaymentMethod should belong to.
    *
-   *	Only available for [B2B](/../offering/composable-commerce#composable-commerce-for-b2b)-enabled Projects.
+   *	Only available for [B2B](/offering/commerce-b2b)-enabled Projects.
    *
    *
    */
@@ -179,7 +179,7 @@ export interface PaymentMethodDraft {
    */
   readonly paymentMethodStatus?: PaymentMethodStatus
   /**
-   *	Set to `true` if the PaymentMethod should be the default.
+   *	Whether the PaymentMethod should be the default.
    *
    *	The default applies per Customer, Business Unit, or the combination of both (Associate).
    *
@@ -194,18 +194,18 @@ export interface PaymentMethodDraft {
   readonly custom?: CustomFieldsDraft
 }
 /**
- *	[PagedQueryResult](/../api/general-concepts#pagedqueryresult) with `results` containing an array of [PaymentMethod](ctp:api:type:PaymentMethod).
+ *	[PagedQueryResult](/api/general-concepts#pagedqueryresult) with `results` containing an array of [PaymentMethod](ctp:api:type:PaymentMethod).
  *
  */
 export interface PaymentMethodPagedQueryResponse {
   /**
-   *	Number of [results requested](/../api/general-concepts#limit).
+   *	Number of [results requested](/api/general-concepts#limit).
    *
    *
    */
   readonly limit: number
   /**
-   *	Number of [elements skipped](/../api/general-concepts#offset).
+   *	Number of [elements skipped](/api/general-concepts#offset).
    *
    *
    */
@@ -218,10 +218,10 @@ export interface PaymentMethodPagedQueryResponse {
   readonly count: number
   /**
    *	Total number of results matching the query.
-   *	This number is an estimation that is not [strongly consistent](/../api/general-concepts#strong-consistency).
+   *	This number is an estimation that is not [strongly consistent](/api/general-concepts#strong-consistency).
    *	This field is returned by default.
    *	For improved performance, calculating this field can be deactivated by using the query parameter `withTotal=false`.
-   *	When the results are filtered with a [Query Predicate](/../api/predicates/query), `total` is subject to a [limit](/../api/limits#queries).
+   *	When the results are filtered with a [Query Predicate](/api/predicates/query), `total` is subject to a [limit](/api/limits#queries).
    *
    *
    */
@@ -246,7 +246,7 @@ export interface PaymentMethodReference extends IReference {
    */
   readonly id: string
   /**
-   *	Contains the representation of the expanded PaymentMethod. Only present in responses to requests with [Reference Expansion](/../api/general-concepts#reference-expansion) for PaymentMethods.
+   *	Contains the representation of the expanded PaymentMethod. Only present in responses to requests with [Reference Expansion](/api/general-concepts#reference-expansion) for PaymentMethods.
    *
    *
    */
@@ -314,7 +314,7 @@ export interface IPaymentMethodUpdateAction {
 export interface PaymentMethodSetCustomFieldAction extends IPaymentMethodUpdateAction {
   readonly action: 'setCustomField'
   /**
-   *	Name of the [Custom Field](/../api/projects/custom-fields) to add, update, or remove.
+   *	Name of the [Custom Field](/api/projects/custom-fields) to add, update, or remove.
    *
    *
    */
@@ -335,14 +335,16 @@ export interface PaymentMethodSetCustomFieldAction extends IPaymentMethodUpdateA
 export interface PaymentMethodSetCustomTypeAction extends IPaymentMethodUpdateAction {
   readonly action: 'setCustomType'
   /**
-   *	Defines the [Type](ctp:api:type:Type) that extends the PaymentMethod with [Custom Fields](/../api/projects/custom-fields).
+   *	Defines the [Type](ctp:api:type:Type) that extends the PaymentMethod with [Custom Fields](ctp:api:type:CustomFields).
    *	If absent, any existing Type and Custom Fields are removed from the PaymentMethod.
    *
    *
    */
   readonly type?: TypeResourceIdentifier
   /**
-   *	Sets the [Custom Fields](/../api/projects/custom-fields) fields for the PaymentMethod.
+   *	Object containing the [Custom Fields](ctp:api:type:CustomFields) fields for the PaymentMethod.
+   *
+   *	Required if at least one Custom Field is defined as required in the `fieldDefinitions` of the referenced [Type](ctp:api:type:Type).
    *
    *
    */

@@ -152,18 +152,18 @@ export interface ChannelDraft {
   readonly geoLocation?: GeoJson
 }
 /**
- *	[PagedQueryResult](/../api/general-concepts#pagedqueryresult) with results containing an array of [Channel](ctp:api:type:Channel).
+ *	[PagedQueryResult](/api/general-concepts#pagedqueryresult) with results containing an array of [Channel](ctp:api:type:Channel).
  *
  */
 export interface ChannelPagedQueryResponse {
   /**
-   *	Number of [results requested](/../api/general-concepts#limit).
+   *	Number of [results requested](/api/general-concepts#limit).
    *
    *
    */
   readonly limit: number
   /**
-   *	Number of [elements skipped](/../api/general-concepts#offset).
+   *	Number of [elements skipped](/api/general-concepts#offset).
    *
    *
    */
@@ -176,10 +176,10 @@ export interface ChannelPagedQueryResponse {
   readonly count: number
   /**
    *	Total number of results matching the query.
-   *	This number is an estimation that is not [strongly consistent](/../api/general-concepts#strong-consistency).
+   *	This number is an estimation that is not [strongly consistent](/api/general-concepts#strong-consistency).
    *	This field is returned by default.
    *	For improved performance, calculating this field can be deactivated by using the query parameter `withTotal=false`.
-   *	When the results are filtered with a [Query Predicate](/../api/predicates/query), `total` is subject to a [limit](/../api/limits#queries).
+   *	When the results are filtered with a [Query Predicate](/api/predicates/query), `total` is subject to a [limit](/api/limits#queries).
    *
    *
    */
@@ -205,14 +205,14 @@ export interface ChannelReference extends IReference {
   readonly id: string
   /**
    *	Contains the representation of the expanded Channel.
-   *	Only present in responses to requests with [Reference Expansion](/../api/general-concepts#reference-expansion) for Channels.
+   *	Only present in responses to requests with [Reference Expansion](/api/general-concepts#reference-expansion) for Channels.
    *
    *
    */
   readonly obj?: Channel
 }
 /**
- *	[ResourceIdentifier](ctp:api:type:ResourceIdentifier) to a [Channel](ctp:api:type:Channel). Either `id` or `key` is required. If both are set, an [InvalidJsonInput](/../api/errors#invalidjsoninput) error is returned.
+ *	[ResourceIdentifier](ctp:api:type:ResourceIdentifier) to a [Channel](ctp:api:type:Channel). Either `id` or `key` is required. If both are set, an [InvalidJsonInput](ctp:api:type:InvalidJsonInputError) error is returned.
  *
  */
 export interface ChannelResourceIdentifier extends IResourceIdentifier {
@@ -231,7 +231,7 @@ export interface ChannelResourceIdentifier extends IResourceIdentifier {
   readonly key?: string
 }
 /**
- *	Describes the purpose and type of the Channel. A Channel can have one or more roles.
+ *	Describes how a Channel is used. A Channel can have one or more roles.
  *
  */
 export enum ChannelRoleEnumValues {
@@ -243,12 +243,7 @@ export enum ChannelRoleEnumValues {
 }
 
 export type ChannelRoleEnum =
-  | 'InventorySupply'
-  | 'OrderExport'
-  | 'OrderImport'
-  | 'Primary'
-  | 'ProductDistribution'
-  | (string & {})
+  'InventorySupply' | 'OrderExport' | 'OrderImport' | 'Primary' | 'ProductDistribution' | (string & {})
 export interface ChannelUpdate {
   /**
    *	Expected version of the Channel on which the changes should be applied.
@@ -340,7 +335,7 @@ export interface ChannelSetAddressAction extends IChannelUpdateAction {
 export interface ChannelSetAddressCustomFieldAction extends IChannelUpdateAction {
   readonly action: 'setAddressCustomField'
   /**
-   *	Name of the [Custom Field](/../api/projects/custom-fields).
+   *	Name of the [Custom Field](/api/projects/custom-fields).
    *
    *
    */
@@ -357,14 +352,16 @@ export interface ChannelSetAddressCustomFieldAction extends IChannelUpdateAction
 export interface ChannelSetAddressCustomTypeAction extends IChannelUpdateAction {
   readonly action: 'setAddressCustomType'
   /**
-   *	Defines the [Type](ctp:api:type:Type) that extends the `address` with [Custom Fields](/../api/projects/custom-fields).
+   *	Defines the [Type](ctp:api:type:Type) that extends the `address` with [Custom Fields](ctp:api:type:CustomFields).
    *	If absent, any existing Type and Custom Fields are removed from the `address`.
    *
    *
    */
   readonly type?: TypeResourceIdentifier
   /**
-   *	Sets the [Custom Fields](/../api/projects/custom-fields) fields for the `address`.
+   *	Object containing the [Custom Fields](ctp:api:type:CustomFields) fields for the `address`.
+   *
+   *	Required if at least one Custom Field is defined as required in the `fieldDefinitions` of the referenced [Type](ctp:api:type:Type).
    *
    *
    */
@@ -373,7 +370,7 @@ export interface ChannelSetAddressCustomTypeAction extends IChannelUpdateAction 
 export interface ChannelSetCustomFieldAction extends IChannelUpdateAction {
   readonly action: 'setCustomField'
   /**
-   *	Name of the [Custom Field](/../api/projects/custom-fields).
+   *	Name of the [Custom Field](/api/projects/custom-fields).
    *
    *
    */
@@ -390,14 +387,16 @@ export interface ChannelSetCustomFieldAction extends IChannelUpdateAction {
 export interface ChannelSetCustomTypeAction extends IChannelUpdateAction {
   readonly action: 'setCustomType'
   /**
-   *	Defines the [Type](ctp:api:type:Type) that extends the Channel with [Custom Fields](/../api/projects/custom-fields).
+   *	Defines the [Type](ctp:api:type:Type) that extends the Channel with [Custom Fields](ctp:api:type:CustomFields).
    *	If absent, any existing Type and Custom Fields are removed from the Channel.
    *
    *
    */
   readonly type?: TypeResourceIdentifier
   /**
-   *	Sets the [Custom Fields](/../api/projects/custom-fields) fields for the Channel.
+   *	Object containing the [Custom Fields](ctp:api:type:CustomFields) fields for the Channel.
+   *
+   *	Required if at least one Custom Field is defined as required in the `fieldDefinitions` of the referenced [Type](ctp:api:type:Type).
    *
    *
    */

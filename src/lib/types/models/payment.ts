@@ -255,12 +255,12 @@ export interface PaymentMethodInfoDraft {
   readonly custom?: CustomFieldsDraft
 }
 /**
- *	[PagedQueryResult](/../api/general-concepts#pagedqueryresult) with `results` containing an array of [Payment](ctp:api:type:Payment).
+ *	[PagedQueryResult](/api/general-concepts#pagedqueryresult) with `results` containing an array of [Payment](ctp:api:type:Payment).
  *
  */
 export interface PaymentPagedQueryResponse {
   /**
-   *	Number of [results requested](/../api/general-concepts#limit).
+   *	Number of [results requested](/api/general-concepts#limit).
    *
    *
    */
@@ -273,16 +273,16 @@ export interface PaymentPagedQueryResponse {
   readonly count: number
   /**
    *	Total number of results matching the query.
-   *	This number is an estimation that is not [strongly consistent](/../api/general-concepts#strong-consistency).
+   *	This number is an estimation that is not [strongly consistent](/api/general-concepts#strong-consistency).
    *	This field is returned by default.
    *	For improved performance, calculating this field can be deactivated by using the query parameter `withTotal=false`.
-   *	When the results are filtered with a [Query Predicate](/../api/predicates/query), `total` is subject to a [limit](/../api/limits#queries).
+   *	When the results are filtered with a [Query Predicate](/api/predicates/query), `total` is subject to a [limit](/api/limits#queries).
    *
    *
    */
   readonly total?: number
   /**
-   *	Number of [elements skipped](/../api/general-concepts#offset).
+   *	Number of [elements skipped](/api/general-concepts#offset).
    *
    *
    */
@@ -307,14 +307,14 @@ export interface PaymentReference extends IReference {
    */
   readonly id: string
   /**
-   *	Contains the representation of the expanded Payment. Only present in responses to requests with [Reference Expansion](/../api/general-concepts#reference-expansion) for Payments.
+   *	Contains the representation of the expanded Payment. Only present in responses to requests with [Reference Expansion](/api/general-concepts#reference-expansion) for Payments.
    *
    *
    */
   readonly obj?: Payment
 }
 /**
- *	[ResourceIdentifier](ctp:api:type:ResourceIdentifier) of a [Payment](ctp:api:type:Payment). Either `id` or `key` is required. If both are set, an [InvalidJsonInput](/../api/errors#invalidjsoninput) error is returned.
+ *	[ResourceIdentifier](ctp:api:type:ResourceIdentifier) of a [Payment](ctp:api:type:Payment). Either `id` or `key` is required. If both are set, an [InvalidJsonInput](ctp:api:type:InvalidJsonInputError) error is returned.
  *
  */
 export interface PaymentResourceIdentifier extends IResourceIdentifier {
@@ -524,12 +524,7 @@ export enum TransactionTypeValues {
 }
 
 export type TransactionType =
-  | 'Authorization'
-  | 'CancelAuthorization'
-  | 'Charge'
-  | 'Chargeback'
-  | 'Refund'
-  | (string & {})
+  'Authorization' | 'CancelAuthorization' | 'Charge' | 'Chargeback' | 'Refund' | (string & {})
 /**
  *	Adding a Payment interaction generates the [PaymentInteractionAdded](ctp:api:type:PaymentInteractionAddedMessage) Message.
  *
@@ -543,7 +538,9 @@ export interface PaymentAddInterfaceInteractionAction extends IPaymentUpdateActi
    */
   readonly type: TypeResourceIdentifier
   /**
-   *	[Custom Fields](/../api/projects/custom-fields) as per [FieldDefinitions](ctp:api:type:FieldDefinition) of the [Type](ctp:api:type:Type).
+   *	Object containing the [Custom Fields](ctp:api:type:CustomFields) fields for the InterfaceInteraction.
+   *
+   *	Required if at least one Custom Field is defined as required in the `fieldDefinitions` of the referenced [Type](ctp:api:type:Type).
    *
    *
    */
@@ -640,7 +637,7 @@ export interface PaymentSetAnonymousIdAction extends IPaymentUpdateAction {
 export interface PaymentSetCustomFieldAction extends IPaymentUpdateAction {
   readonly action: 'setCustomField'
   /**
-   *	Name of the [Custom Field](/../api/projects/custom-fields).
+   *	Name of the [Custom Field](/api/projects/custom-fields).
    *
    *
    */
@@ -657,14 +654,16 @@ export interface PaymentSetCustomFieldAction extends IPaymentUpdateAction {
 export interface PaymentSetCustomTypeAction extends IPaymentUpdateAction {
   readonly action: 'setCustomType'
   /**
-   *	Defines the [Type](ctp:api:type:Type) that extends the Payment with [Custom Fields](/../api/projects/custom-fields).
+   *	Defines the [Type](ctp:api:type:Type) that extends the Payment with [Custom Fields](ctp:api:type:CustomFields).
    *	If absent, any existing Type and Custom Fields are removed from the Payment.
    *
    *
    */
   readonly type?: TypeResourceIdentifier
   /**
-   *	Sets the [Custom Fields](/../api/projects/custom-fields) fields for the Payment.
+   *	Object containing the [Custom Fields](ctp:api:type:CustomFields) fields for the Payment.
+   *
+   *	Required if at least one Custom Field is defined as required in the `fieldDefinitions` of the referenced [Type](ctp:api:type:Type).
    *
    *
    */
@@ -777,7 +776,7 @@ export interface PaymentSetMethodInfoAction extends IPaymentUpdateAction {
 export interface PaymentSetMethodInfoCustomFieldAction extends IPaymentUpdateAction {
   readonly action: 'setMethodInfoCustomField'
   /**
-   *	Name of the [Custom Field](/../api/projects/custom-fields).
+   *	Name of the [Custom Field](/api/projects/custom-fields).
    *
    *
    */
@@ -798,13 +797,15 @@ export interface PaymentSetMethodInfoCustomFieldAction extends IPaymentUpdateAct
 export interface PaymentSetMethodInfoCustomTypeAction extends IPaymentUpdateAction {
   readonly action: 'setMethodInfoCustomType'
   /**
-   *	Defines the [Type](ctp:api:type:Type) that extends the `paymentMethodInfo` with [Custom Fields](/../api/projects/custom-fields).
+   *	Defines the [Type](ctp:api:type:Type) that extends the `paymentMethodInfo` with [Custom Fields](ctp:api:type:CustomFields).
    *
    *
    */
   readonly type?: TypeResourceIdentifier
   /**
-   *	Sets the [Custom Fields](/../api/projects/custom-fields) fields for the `paymentMethodInfo`.
+   *	Object containing the [Custom Fields](ctp:api:type:CustomFields) fields for the `paymentMethodInfo`.
+   *
+   *	Required if at least one Custom Field is defined as required in the `fieldDefinitions` of the referenced [Type](ctp:api:type:Type).
    *
    *
    */
@@ -910,7 +911,7 @@ export interface PaymentSetTransactionCustomFieldAction extends IPaymentUpdateAc
    */
   readonly transactionId: string
   /**
-   *	Name of the [Custom Field](/../api/projects/custom-fields).
+   *	Name of the [Custom Field](/api/projects/custom-fields).
    *
    *
    */
@@ -933,14 +934,16 @@ export interface PaymentSetTransactionCustomTypeAction extends IPaymentUpdateAct
    */
   readonly transactionId: string
   /**
-   *	Defines the [Type](ctp:api:type:Type) that extends the Transaction with [Custom Fields](/../api/projects/custom-fields).
+   *	Defines the [Type](ctp:api:type:Type) that extends the Transaction with [Custom Fields](ctp:api:type:CustomFields).
    *	If absent, any existing Type and Custom Fields are removed from the Transaction.
    *
    *
    */
   readonly type?: TypeResourceIdentifier
   /**
-   *	Sets the [Custom Fields](/../api/projects/custom-fields) fields for the Transaction.
+   *	Object containing the [Custom Fields](ctp:api:type:CustomFields) fields for the Transaction.
+   *
+   *	Required if at least one Custom Field is defined as required in the `fieldDefinitions` of the referenced [Type](ctp:api:type:Type).
    *
    *
    */
@@ -983,7 +986,7 @@ export interface PaymentTransitionStateAction extends IPaymentUpdateAction {
    */
   readonly state: StateResourceIdentifier
   /**
-   *	Set to `true` to skip validations when transitioning to the new State.
+   *	Whether to skip validations when transitioning to the new State.
    *
    */
   readonly force?: boolean

@@ -16,8 +16,8 @@ import {
   ShippingInfo,
   ShippingRateInput,
   TaxCalculationMode,
-  TaxedPrice,
   TaxMode,
+  TaxedPrice,
 } from './cart.js'
 import {
   Address,
@@ -91,7 +91,7 @@ export interface QuoteRequest extends BaseResource {
    */
   readonly comment?: string
   /**
-   *	The [Buyer](/../api/quotes-overview#buyer) who owns the request.
+   *	The [Buyer](/api/quotes-overview#buyer) who owns the request.
    *
    *
    */
@@ -104,7 +104,7 @@ export interface QuoteRequest extends BaseResource {
    */
   readonly customerGroup?: CustomerGroupReference
   /**
-   *	The Store to which the [Buyer](/../api/quotes-overview#buyer) belongs.
+   *	The Store to which the [Buyer](/api/quotes-overview#buyer) belongs.
    *
    *
    */
@@ -244,7 +244,7 @@ export interface QuoteRequest extends BaseResource {
    */
   readonly cart?: CartReference
   /**
-   *	The [BusinessUnit](ctp:api:type:BusinessUnit) for the Quote Request. Only available for [B2B](/../offering/composable-commerce#composable-commerce-for-b2b)-enabled Projects.
+   *	The [BusinessUnit](ctp:api:type:BusinessUnit) for the Quote Request. Only available for [B2B](/offering/commerce-b2b)-enabled Projects.
    *
    *
    */
@@ -300,18 +300,18 @@ export interface QuoteRequestDraft {
   readonly purchaseOrderNumber?: string
 }
 /**
- *	[PagedQueryResult](/../api/general-concepts#pagedqueryresult) with results containing an array of [QuoteRequest](ctp:api:type:QuoteRequest).
+ *	[PagedQueryResult](/api/general-concepts#pagedqueryresult) with results containing an array of [QuoteRequest](ctp:api:type:QuoteRequest).
  *
  */
 export interface QuoteRequestPagedQueryResponse {
   /**
-   *	Number of [results requested](/../api/general-concepts#limit).
+   *	Number of [results requested](/api/general-concepts#limit).
    *
    *
    */
   readonly limit: number
   /**
-   *	Number of [elements skipped](/../api/general-concepts#offset).
+   *	Number of [elements skipped](/api/general-concepts#offset).
    *
    *
    */
@@ -324,10 +324,10 @@ export interface QuoteRequestPagedQueryResponse {
   readonly count: number
   /**
    *	Total number of results matching the query.
-   *	This number is an estimation that is not [strongly consistent](/../api/general-concepts#strong-consistency).
+   *	This number is an estimation that is not [strongly consistent](/api/general-concepts#strong-consistency).
    *	This field is returned by default.
    *	For improved performance, calculating this field can be deactivated by using the query parameter `withTotal=false`.
-   *	When the results are filtered with a [Query Predicate](/../api/predicates/query), `total` is subject to a [limit](/../api/limits#queries).
+   *	When the results are filtered with a [Query Predicate](/api/predicates/query), `total` is subject to a [limit](/api/limits#queries).
    *
    *
    */
@@ -353,7 +353,7 @@ export interface QuoteRequestReference extends IReference {
   readonly id: string
   /**
    *	Contains the representation of the expanded QuoteRequest.
-   *	Only present in responses to requests with [Reference Expansion](/../api/general-concepts#reference-expansion) for QuoteRequest.
+   *	Only present in responses to requests with [Reference Expansion](/api/general-concepts#reference-expansion) for QuoteRequest.
    *
    *
    */
@@ -448,7 +448,7 @@ export interface QuoteRequestChangeQuoteRequestStateAction extends IQuoteRequest
 export interface QuoteRequestSetCustomFieldAction extends IQuoteRequestUpdateAction {
   readonly action: 'setCustomField'
   /**
-   *	Name of the [Custom Field](/../api/projects/custom-fields).
+   *	Name of the [Custom Field](/api/projects/custom-fields).
    *
    *
    */
@@ -465,14 +465,16 @@ export interface QuoteRequestSetCustomFieldAction extends IQuoteRequestUpdateAct
 export interface QuoteRequestSetCustomTypeAction extends IQuoteRequestUpdateAction {
   readonly action: 'setCustomType'
   /**
-   *	Defines the [Type](ctp:api:type:Type) that extends the QuoteRequest with [Custom Fields](/../api/projects/custom-fields).
+   *	Defines the [Type](ctp:api:type:Type) that extends the QuoteRequest with [Custom Fields](ctp:api:type:CustomFields).
    *	If absent, any existing Type and Custom Fields are removed from the QuoteRequest.
    *
    *
    */
   readonly type?: TypeResourceIdentifier
   /**
-   *	Sets the [Custom Fields](/../api/projects/custom-fields) fields for the QuoteRequest.
+   *	Object containing the [Custom Fields](ctp:api:type:CustomFields) fields for the QuoteRequest.
+   *
+   *	Required if at least one Custom Field is defined as required in the `fieldDefinitions` of the referenced [Type](ctp:api:type:Type).
    *
    *
    */
