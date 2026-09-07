@@ -10,9 +10,9 @@ import {
   AssetSource,
   BaseResource,
   CreatedBy,
-  Image,
   IReference,
   IResourceIdentifier,
+  Image,
   LastModifiedBy,
   LocalizedString,
 } from './common.js'
@@ -80,7 +80,7 @@ export interface ProductTailoring extends BaseResource {
    */
   readonly product: ProductReference
   /**
-   *	If `true`, the tailored information contained in the `current` [ProductTailoringData](ctp:api:type:ProductTailoringData) is provided when [retrieving the ProductProjection in Store](/../api/projects/product-tailoring#retrieve-product-projection-with-tailored-information).
+   *	Whether the tailored information contained in the `current` [ProductTailoringData](ctp:api:type:ProductTailoringData) is provided when [retrieving the ProductProjection in Store](/api/projects/product-tailoring#retrieve-product-projection-with-tailored-information).
    *	For information not part of the ProductTailoringData, the original information contained in the [ProductData](ctp:api:type:ProductData) is provided.
    *	If `false`, only the original information contained in the ProductData is provided.
    *
@@ -100,7 +100,7 @@ export interface ProductTailoring extends BaseResource {
    */
   readonly staged: ProductTailoringData
   /**
-   *	`true` if the `staged` data is different from the `current` data.
+   *	Whether the `staged` data is different from the `current` data.
    *
    *
    */
@@ -258,7 +258,7 @@ export interface ProductTailoringDraft {
    */
   readonly slug?: LocalizedString
   /**
-   *	Set to `true` to [publish](/../api/projects/product-tailoring#stage-and-publish-tailored-product-information) the ProductTailoring immediately.
+   *	Whether to [publish](/api/projects/product-tailoring#stage-and-publish-tailored-product-information) the ProductTailoring immediately.
    *	Otherwise, the tailored product information is just staged.
    *
    *
@@ -333,7 +333,7 @@ export interface ProductTailoringInStoreDraft {
    */
   readonly slug?: LocalizedString
   /**
-   *	If `true`, the ProductTailoring is published immediately.
+   *	Whether the ProductTailoring is published immediately.
    *
    *
    */
@@ -353,18 +353,18 @@ export interface ProductTailoringInStoreDraft {
   readonly attributes?: ProductTailoringAttribute[]
 }
 /**
- *	[PagedQueryResult](/../api/general-concepts#pagedqueryresult) with results containing an array of [ProductTailoring](ctp:api:type:ProductTailoring).
+ *	[PagedQueryResult](/api/general-concepts#pagedqueryresult) with results containing an array of [ProductTailoring](ctp:api:type:ProductTailoring).
  *
  */
 export interface ProductTailoringPagedQueryResponse {
   /**
-   *	Number of [results requested](/../api/general-concepts#limit).
+   *	Number of [results requested](/api/general-concepts#limit).
    *
    *
    */
   readonly limit: number
   /**
-   *	Number of [elements skipped](/../api/general-concepts#offset).
+   *	Number of [elements skipped](/api/general-concepts#offset).
    *
    *
    */
@@ -378,8 +378,8 @@ export interface ProductTailoringPagedQueryResponse {
   /**
    *	Total number of results matching the query.
    *	Present only when the `withTotal` query parameter is set to `true`.
-   *	This number is an estimation that is not [strongly consistent](/../api/general-concepts#strong-consistency).
-   *	When the results are filtered with a [Query Predicate](/../api/predicates/query), `total` is subject to a [limit](/../api/limits#queries).
+   *	This number is an estimation that is not [strongly consistent](/api/general-concepts#strong-consistency).
+   *	When the results are filtered with a [Query Predicate](/api/predicates/query), `total` is subject to a [limit](/api/limits#queries).
    *
    *
    */
@@ -404,7 +404,7 @@ export interface ProductTailoringReference extends IReference {
    */
   readonly id: string
   /**
-   *	Contains the representation of the expanded ProductTailoring. Only present in responses to requests with [Reference Expansion](/../api/general-concepts#reference-expansion) for ProductTailoring.
+   *	Contains the representation of the expanded ProductTailoring. Only present in responses to requests with [Reference Expansion](/api/general-concepts#reference-expansion) for ProductTailoring.
    *
    *
    */
@@ -451,6 +451,7 @@ export type ProductTailoringUpdateAction =
   | ProductTailoringSetDescriptionAction
   | ProductTailoringSetExternalImagesAction
   | ProductTailoringSetImageLabelAction
+  | ProductTailoringSetKeyAction
   | ProductTailoringSetMetaAttributesAction
   | ProductTailoringSetMetaDescriptionAction
   | ProductTailoringSetMetaKeywordsAction
@@ -466,54 +467,53 @@ export interface IProductTailoringUpdateAction {
   readonly action: string
 }
 /**
- *	The tailoring of a [ProductVariant](ctp:api:type:ProductVariant).
+ *	The tailoring of a [ProductVariant](ctp:api:type:ProductVariant) or [Variant](ctp:api:type:Variant) ([BETA](/offering/compatibility#public-beta)).
  *
  */
 export interface ProductVariantTailoring {
   /**
-   *	The `id` of the tailored [ProductVariant](ctp:api:type:ProductVariant).
+   *	The `id` of the tailored [ProductVariant](ctp:api:type:ProductVariant) or [Variant](ctp:api:type:Variant) ([BETA](/offering/compatibility#public-beta)).
    *
    *
    */
   readonly id: number
   /**
    *	Images of the tailored Product Variant.
-   *	If present, these images will override the images of the corresponding [ProductVariant](ctp:api:type:ProductVariant) in total.
+   *	If present, these images will override the images of the corresponding [ProductVariant](ctp:api:type:ProductVariant) or [Variant](ctp:api:type:Variant) ([BETA](/offering/compatibility#public-beta)) in total.
    *
    *
    */
   readonly images?: Image[]
   /**
    *	Media assets of the tailored Product Variant.
-   *	If present, these assets will override the assets of the corresponding [ProductVariant](ctp:api:type:ProductVariant) in total.
+   *	If present, these assets will override the assets of the corresponding [ProductVariant](ctp:api:type:ProductVariant) or [Variant](ctp:api:type:Variant) ([BETA](/offering/compatibility#public-beta)) in total.
    *
    *
    */
   readonly assets?: Asset[]
   /**
    *	Attributes of the tailored Product Variant.
-   *	If present, these Attributes are selectively merged into the `attributes` of the corresponding [ProductVariant](ctp:api:type:ProductVariant):
+   *	If present, these Attributes are selectively merged into the `attributes` of the corresponding [ProductVariant](ctp:api:type:ProductVariant) or [Variant](ctp:api:type:Variant) ([BETA](/offering/compatibility#public-beta)):
    *
-   *	- If the ProductVariant contains an Attribute with the same `name`, its `value` is overwritten,
-   *	- otherwise the Attribute and its value are added to the ProductVariant.
+   *	- If the ProductVariant or Variant ([BETA](/offering/compatibility#public-beta)) contains an Attribute with the same `name`, its `value` is overwritten. Otherwise, the Attribute and its value are added to the ProductVariant or Variant ([BETA](/offering/compatibility#public-beta)).
    *
    *
    */
   readonly attributes?: ProductTailoringAttribute[]
 }
 /**
- *	Either `id` or `sku` is required to reference a [ProductVariant](ctp:api:type:ProductVariant) that exists.
+ *	Either `id` or `sku` is required to reference a [ProductVariant](ctp:api:type:ProductVariant) or [Variant](ctp:api:type:Variant) ([BETA](/offering/compatibility#public-beta)) that exists.
  *
  */
 export interface ProductVariantTailoringDraft {
   /**
-   *	The `id` of the [ProductVariant](ctp:api:type:ProductVariant) to be tailored.
+   *	The `id` of the [ProductVariant](ctp:api:type:ProductVariant) or [Variant](ctp:api:type:Variant) ([BETA](/offering/compatibility#public-beta)) to be tailored.
    *
    *
    */
   readonly id?: number
   /**
-   *	The `sku` of the [ProductVariant](ctp:api:type:ProductVariant) to be tailored.
+   *	The `sku` of the [ProductVariant](ctp:api:type:ProductVariant) or [Variant](ctp:api:type:Variant) ([BETA](/offering/compatibility#public-beta)) to be tailored.
    *
    *
    */
@@ -532,35 +532,34 @@ export interface ProductVariantTailoringDraft {
   readonly assets?: Asset[]
   /**
    *	Attributes of the tailored Product Variant according to the respective [AttributeDefinition](ctp:api:type:AttributeDefinition).
-   *	If provided, these Attributes are selectively merged into the `attributes` of the corresponding [ProductVariant](ctp:api:type:ProductVariant):
+   *	If provided, these Attributes are selectively merged into the `attributes` of the corresponding [ProductVariant](ctp:api:type:ProductVariant) or [Variant](ctp:api:type:Variant) ([BETA](/offering/compatibility#public-beta)):
    *
-   *	- If the ProductVariant contains an Attribute with the same `name`, its `value` is overwritten,
-   *	- otherwise the Attribute and its value are added to the ProductVariant.
+   *	- If the ProductVariant or Variant ([BETA](/offering/compatibility#public-beta)) contains an Attribute with the same `name`, its `value` is overwritten. Otherwise, the Attribute and its value are added to the ProductVariant or Variant ([BETA](/offering/compatibility#public-beta)).
    *
    *
    */
   readonly attributes?: ProductTailoringAttribute[]
 }
 /**
- *	Either `variantId` or `sku` is required to reference a [ProductVariant](ctp:api:type:ProductVariant) that exists.
+ *	Either `variantId` or `sku` is required to reference a [ProductVariant](ctp:api:type:ProductVariant) or [Variant](ctp:api:type:Variant) ([BETA](/offering/compatibility#public-beta)) that exists.
  *
  */
 export interface ProductTailoringAddAssetAction extends IProductTailoringUpdateAction {
   readonly action: 'addAsset'
   /**
-   *	The `id` of the tailored ProductVariant to update.
+   *	The `id` of the tailored ProductVariant or Variant ([BETA](/offering/compatibility#public-beta)) to update.
    *
    *
    */
   readonly variantId?: number
   /**
-   *	The `sku` of the tailored ProductVariant to update.
+   *	The `sku` of the tailored ProductVariant or Variant ([BETA](/offering/compatibility#public-beta)) to update.
    *
    *
    */
   readonly sku?: string
   /**
-   *	If `true`, only the staged `assets` are updated. If `false`, both the current and staged `assets` are updated.
+   *	Whether only the staged `assets` are updated. If `false`, both the current and staged `assets` are updated.
    *
    *
    */
@@ -579,19 +578,19 @@ export interface ProductTailoringAddAssetAction extends IProductTailoringUpdateA
   readonly position?: number
 }
 /**
- *	Either `variantId` or `sku` is required to reference a [ProductVariant](ctp:api:type:ProductVariant) that exists. Produces the [ProductTailoringImageAdded](/projects/messages/product-catalog-messages#product-tailoring-image-added) Message.
+ *	Either `variantId` or `sku` is required to reference a [ProductVariant](ctp:api:type:ProductVariant) or [Variant](ctp:api:type:Variant) ([BETA](/offering/compatibility#public-beta)) that exists. Produces the [ProductTailoringImageAdded](/projects/messages/product-catalog-messages#product-tailoring-image-added) Message.
  *
  */
 export interface ProductTailoringAddExternalImageAction extends IProductTailoringUpdateAction {
   readonly action: 'addExternalImage'
   /**
-   *	The `id` of the tailored ProductVariant to update.
+   *	The `id` of the tailored ProductVariant or Variant ([BETA](/offering/compatibility#public-beta)) to update.
    *
    *
    */
   readonly variantId?: number
   /**
-   *	The `sku` of the tailored ProductVariant to update.
+   *	The `sku` of the tailored ProductVariant or Variant ([BETA](/offering/compatibility#public-beta)) to update.
    *
    *
    */
@@ -603,27 +602,27 @@ export interface ProductTailoringAddExternalImageAction extends IProductTailorin
    */
   readonly image: Image
   /**
-   *	If `true`, only the staged `images` is updated. If `false`, both the current and staged `images` is updated.
+   *	Whether only the staged `images` is updated. If `false`, both the current and staged `images` are updated.
    *
    *
    */
   readonly staged?: boolean
 }
 /**
- *	Either `id` or `sku` is required to reference a [ProductVariant](ctp:api:type:ProductVariant) that exists.
+ *	Either `id` or `sku` is required to reference a [ProductVariant](ctp:api:type:ProductVariant) or [Variant](ctp:api:type:Variant) ([BETA](/offering/compatibility#public-beta)) that exists.
  *	Produces the [ProductVariantTailoringAdded](ctp:api:type:ProductVariantTailoringAddedMessage) Message.
  *
  */
 export interface ProductTailoringAddVariantAction extends IProductTailoringUpdateAction {
   readonly action: 'addVariant'
   /**
-   *	The `id` of the tailored ProductVariant to update.
+   *	The `id` of the tailored ProductVariant or Variant ([BETA](/offering/compatibility#public-beta)) to update.
    *
    *
    */
   readonly id?: number
   /**
-   *	The `sku` of the tailored ProductVariant to update.
+   *	The `sku` of the tailored ProductVariant or Variant ([BETA](/offering/compatibility#public-beta)) to update.
    *
    *
    */
@@ -647,7 +646,7 @@ export interface ProductTailoringAddVariantAction extends IProductTailoringUpdat
    */
   readonly attributes?: ProductTailoringAttribute[]
   /**
-   *	If `true` the new Product Variant Tailoring is only staged. If `false` the new Product Variant Tailoring is both current and staged.
+   *	Whether the new Product Variant Tailoring is only staged. If `false` the new Product Variant Tailoring is both current and staged.
    *
    *
    */
@@ -673,7 +672,7 @@ export interface ProductTailoringChangeAssetNameAction extends IProductTailoring
    */
   readonly sku?: string
   /**
-   *	If `true`, only the staged Asset is updated. If `false`, both the current and staged Asset is updated.
+   *	Whether only the staged Asset is updated. If `false`, both the current and staged Asset is updated.
    *
    *
    */
@@ -716,7 +715,7 @@ export interface ProductTailoringChangeAssetOrderAction extends IProductTailorin
    */
   readonly sku?: string
   /**
-   *	If `true`, only the staged `assets` is updated. If `false`, both the current and staged `assets` are updated.
+   *	Whether only the staged `assets` is updated. If `false`, both the current and staged `assets` are updated.
    *
    *
    */
@@ -729,19 +728,19 @@ export interface ProductTailoringChangeAssetOrderAction extends IProductTailorin
   readonly assetOrder: string[]
 }
 /**
- *	Either `variantId` or `sku` is required to reference a [ProductVariant](ctp:api:type:ProductVariant) that exists.
+ *	Either `variantId` or `sku` is required to reference a [ProductVariant](ctp:api:type:ProductVariant) or [Variant](ctp:api:type:Variant) ([BETA](/offering/compatibility#public-beta)) that exists.
  *
  */
 export interface ProductTailoringMoveImageToPositionAction extends IProductTailoringUpdateAction {
   readonly action: 'moveImageToPosition'
   /**
-   *	The `id` of the tailored ProductVariant to update.
+   *	The `id` of the tailored ProductVariant or Variant ([BETA](/offering/compatibility#public-beta)) to update.
    *
    *
    */
   readonly variantId?: number
   /**
-   *	The `sku` of the tailored ProductVariant to update.
+   *	The `sku` of the tailored ProductVariant or Variant ([BETA](/offering/compatibility#public-beta)) to update.
    *
    *
    */
@@ -759,7 +758,7 @@ export interface ProductTailoringMoveImageToPositionAction extends IProductTailo
    */
   readonly position: number
   /**
-   *	If `true`, only the staged `images` is updated. If `false`, both the current and staged `images` is updated.
+   *	Whether only the staged `images` is updated. If `false`, both the current and staged `images` are updated.
    *
    *
    */
@@ -774,26 +773,26 @@ export interface ProductTailoringPublishAction extends IProductTailoringUpdateAc
   readonly action: 'publish'
 }
 /**
- *	Either `variantId` or `sku` is required to reference a [ProductVariant](ctp:api:type:ProductVariant) that exists.
+ *	Either `variantId` or `sku` is required to reference a [ProductVariant](ctp:api:type:ProductVariant) or [Variant](ctp:api:type:Variant) ([BETA](/offering/compatibility#public-beta)) that exists.
  *	The Asset to remove must be specified using either `assetId` or `assetKey`.
  *
  */
 export interface ProductTailoringRemoveAssetAction extends IProductTailoringUpdateAction {
   readonly action: 'removeAsset'
   /**
-   *	The `id` of the tailored ProductVariant to update.
+   *	The `id` of the tailored ProductVariant or Variant ([BETA](/offering/compatibility#public-beta)) to update.
    *
    *
    */
   readonly variantId?: number
   /**
-   *	The `sku` of the tailored ProductVariant to update.
+   *	The `sku` of the tailored ProductVariant or Variant ([BETA](/offering/compatibility#public-beta)) to update.
    *
    *
    */
   readonly sku?: string
   /**
-   *	If `true`, only the staged Asset is removed. If `false`, both the current and staged Asset is removed.
+   *	Whether only the staged Asset is removed. If `false`, both the current and staged Asset is removed.
    *
    *
    */
@@ -812,19 +811,19 @@ export interface ProductTailoringRemoveAssetAction extends IProductTailoringUpda
   readonly assetKey?: string
 }
 /**
- *	Either `variantId` or `sku` is required to reference a [ProductVariant](ctp:api:type:ProductVariant) that exists.
+ *	Either `variantId` or `sku` is required to reference a [ProductVariant](ctp:api:type:ProductVariant) or [Variant](ctp:api:type:Variant) ([BETA](/offering/compatibility#public-beta)) that exists.
  *
  */
 export interface ProductTailoringRemoveImageAction extends IProductTailoringUpdateAction {
   readonly action: 'removeImage'
   /**
-   *	The `id` of the tailored ProductVariant to update.
+   *	The `id` of the tailored ProductVariant or Variant ([BETA](/offering/compatibility#public-beta)) to update.
    *
    *
    */
   readonly variantId?: number
   /**
-   *	The `sku` of the tailored ProductVariant to update.
+   *	The `sku` of the tailored ProductVariant or Variant ([BETA](/offering/compatibility#public-beta)) to update.
    *
    *
    */
@@ -836,7 +835,7 @@ export interface ProductTailoringRemoveImageAction extends IProductTailoringUpda
    */
   readonly imageUrl: string
   /**
-   *	If `true`, only the staged image is removed. If `false`, both the current and staged image is removed.
+   *	Whether only the staged image is removed. If `false`, both the current and staged image is removed.
    *
    *
    */
@@ -850,19 +849,19 @@ export interface ProductTailoringRemoveImageAction extends IProductTailoringUpda
 export interface ProductTailoringRemoveVariantAction extends IProductTailoringUpdateAction {
   readonly action: 'removeVariant'
   /**
-   *	The `id` of the ProductVariant to remove from the Tailoring.
+   *	The `id` of the ProductVariant or Variant ([BETA](/offering/compatibility#public-beta)) to remove from the Tailoring.
    *
    *
    */
   readonly id?: number
   /**
-   *	The `sku` of the ProductVariant to remove from the Tailoring.
+   *	The `sku` of the ProductVariant or Variant ([BETA](/offering/compatibility#public-beta)) to remove from the Tailoring.
    *
    *
    */
   readonly sku?: string
   /**
-   *	If `true`, only the staged Product Variant Tailoring is removed. If `false`, both the current and staged Product Variant Tailoring is removed.
+   *	Whether only the staged Product Variant Tailoring is removed. If `false`, both the current and staged Product Variant Tailoring is removed.
    *
    *
    */
@@ -888,7 +887,7 @@ export interface ProductTailoringSetAssetCustomFieldAction extends IProductTailo
    */
   readonly sku?: string
   /**
-   *	If `true`, only the staged Asset is updated. If `false`, both the current and staged Asset is updated.
+   *	Whether only the staged Asset is updated. If `false`, both the current and staged Asset is updated.
    *
    *
    */
@@ -906,7 +905,7 @@ export interface ProductTailoringSetAssetCustomFieldAction extends IProductTailo
    */
   readonly assetKey?: string
   /**
-   *	Name of the [Custom Field](/../api/projects/custom-fields).
+   *	Name of the [Custom Field](/api/projects/custom-fields).
    *
    *
    */
@@ -940,7 +939,7 @@ export interface ProductTailoringSetAssetCustomTypeAction extends IProductTailor
    */
   readonly sku?: string
   /**
-   *	If `true`, only the staged Asset is updated. If `false`, both the current and staged Asset is updated.
+   *	Whether only the staged Asset is updated. If `false`, both the current and staged Asset is updated.
    *
    *
    */
@@ -958,14 +957,16 @@ export interface ProductTailoringSetAssetCustomTypeAction extends IProductTailor
    */
   readonly assetKey?: string
   /**
-   *	Defines the [Type](ctp:api:type:Type) that extends the Asset with [Custom Fields](/../api/projects/custom-fields).
+   *	Defines the [Type](ctp:api:type:Type) that extends the Asset with [Custom Fields](ctp:api:type:CustomFields).
    *	If absent, any existing Type and Custom Fields are removed from the Asset.
    *
    *
    */
   readonly type?: TypeResourceIdentifier
   /**
-   *	Sets the [Custom Fields](/../api/projects/custom-fields) fields for the Asset.
+   *	Object containing the [Custom Fields](ctp:api:type:CustomFields) fields for the Asset.
+   *
+   *	Required if at least one Custom Field is defined as required in the `fieldDefinitions` of the referenced [Type](ctp:api:type:Type).
    *
    *
    */
@@ -991,7 +992,7 @@ export interface ProductTailoringSetAssetDescriptionAction extends IProductTailo
    */
   readonly sku?: string
   /**
-   *	If `true`, only the staged Asset is updated. If `false`, both the current and staged Asset is updated.
+   *	Whether only the staged Asset is updated. If `false`, both the current and staged Asset is updated.
    *
    *
    */
@@ -1034,7 +1035,7 @@ export interface ProductTailoringSetAssetKeyAction extends IProductTailoringUpda
    */
   readonly sku?: string
   /**
-   *	If `true`, only the staged Asset is updated. If `false`, both the current and staged Asset is updated.
+   *	Whether only the staged Asset is updated. If `false`, both the current and staged Asset is updated.
    *
    *
    */
@@ -1072,7 +1073,7 @@ export interface ProductTailoringSetAssetSourcesAction extends IProductTailoring
    */
   readonly sku?: string
   /**
-   *	If `true`, only the staged Asset is updated. If `false` both the current and staged Asset is updated.
+   *	Whether only the staged Asset is updated. If `false`, both the current and staged Asset is updated.
    *
    *
    */
@@ -1116,7 +1117,7 @@ export interface ProductTailoringSetAssetTagsAction extends IProductTailoringUpd
    */
   readonly sku?: string
   /**
-   *	If `true`, only the staged Asset is updated. If `false`, both the current and staged Asset is updated.
+   *	Whether only the staged Asset is updated. If `false`, both the current and staged Asset is updated.
    *
    *
    */
@@ -1147,14 +1148,14 @@ export interface ProductTailoringSetAssetTagsAction extends IProductTailoringUpd
 export interface ProductTailoringSetAttributeAction extends IProductTailoringUpdateAction {
   readonly action: 'setAttribute'
   /**
-   *	The `id` of the ProductVariant to update.
+   *	The `id` of the ProductVariant or Variant ([BETA](/offering/compatibility#public-beta)) to update.
    *	Required if `sku` is absent.
    *
    *
    */
   readonly variantId?: number
   /**
-   *	The `sku` of the ProductVariant to update.
+   *	The `sku` of the ProductVariant or Variant ([BETA](/offering/compatibility#public-beta)) to update.
    *	Required if `variantId` is absent.
    *
    *
@@ -1185,7 +1186,7 @@ export interface ProductTailoringSetAttributeAction extends IProductTailoringUpd
    */
   readonly value?: any
   /**
-   *	If `true`, only the staged Attribute is set. If `false`, both current and staged Attribute is set.
+   *	Whether only the staged Attribute is set. If `false`, both current and staged Attribute is set.
    *
    *
    */
@@ -1222,7 +1223,7 @@ export interface ProductTailoringSetAttributeInAllVariantsAction extends IProduc
    */
   readonly value?: any
   /**
-   *	If `true`, only the staged Attributes are set. If `false`, both the current and staged Attributes are set.
+   *	Whether only the staged Attributes are set. If `false`, both the current and staged Attributes are set.
    *
    *
    */
@@ -1241,60 +1242,60 @@ export interface ProductTailoringSetDescriptionAction extends IProductTailoringU
    */
   readonly description?: LocalizedString
   /**
-   *	If `true`, only the staged `description` is updated. If `false`, both the current and staged `description` are updated.
+   *	Whether only the staged `description` is updated. If `false`, both the current and staged `description` are updated.
    *
    *
    */
   readonly staged?: boolean
 }
 /**
- *	Either `variantId` or `sku` is required to reference a [ProductVariant](ctp:api:type:ProductVariant) that exists. Produces the [ProductTailoringImagesSet](/projects/messages/product-catalog-messages#product-tailoring-images-set) Message.
+ *	Either `variantId` or `sku` is required to reference a [ProductVariant](ctp:api:type:ProductVariant) or [Variant](ctp:api:type:Variant) ([BETA](/offering/compatibility#public-beta)) that exists. Produces the [ProductTailoringImagesSet](/projects/messages/product-catalog-messages#product-tailoring-images-set) Message.
  *
  */
 export interface ProductTailoringSetExternalImagesAction extends IProductTailoringUpdateAction {
   readonly action: 'setImages'
   /**
-   *	The `id` of the tailored ProductVariant to update.
+   *	The `id` of the tailored ProductVariant or Variant ([BETA](/offering/compatibility#public-beta)) to update.
    *
    *
    */
   readonly variantId?: number
   /**
-   *	The `sku` of the tailored ProductVariant to update.
+   *	The `sku` of the tailored ProductVariant or Variant ([BETA](/offering/compatibility#public-beta)) to update.
    *
    *
    */
   readonly sku?: string
   /**
-   *	Images of the tailored ProductVariant.
+   *	Images of the tailored ProductVariant or Variant ([BETA](/offering/compatibility#public-beta)).
    *
-   *	Don't provide this field if you want to remove all images from the tailored Product Variant.
-   *	Set to `[]` (empty) if you want to hide all images of the original ProductVariant on the tailored ProductVariant.
+   *	Don't provide this field if you want to remove all images from the tailored ProductVariant or Variant ([BETA](/offering/compatibility#public-beta)).
+   *	Set to `[]` (empty) if you want to hide all images of the original ProductVariant or Variant ([BETA](/offering/compatibility#public-beta)) on the tailored ProductVariant or Variant ([BETA](/offering/compatibility#public-beta)).
    *
    *
    */
   readonly images?: Image[]
   /**
-   *	If `true`, only the staged `images` is updated. If `false`, both the current and staged `images` is updated.
+   *	Whether only the staged `images` is updated. If `false`, both the current and staged `images` are updated.
    *
    *
    */
   readonly staged?: boolean
 }
 /**
- *	Either `variantId` or `sku` is required to reference a [ProductVariant](ctp:api:type:ProductVariant) that exists.
+ *	Either `variantId` or `sku` is required to reference a [ProductVariant](ctp:api:type:ProductVariant) or [Variant](ctp:api:type:Variant) ([BETA](/offering/compatibility#public-beta)) that exists.
  *
  */
 export interface ProductTailoringSetImageLabelAction extends IProductTailoringUpdateAction {
   readonly action: 'setImageLabel'
   /**
-   *	The `sku` of the tailored ProductVariant to update.
+   *	The `sku` of the tailored ProductVariant or Variant ([BETA](/offering/compatibility#public-beta)) to update.
    *
    *
    */
   readonly sku?: string
   /**
-   *	The `id` of the tailored ProductVariant to update.
+   *	The `id` of the tailored ProductVariant or Variant ([BETA](/offering/compatibility#public-beta)) to update.
    *
    *
    */
@@ -1312,11 +1313,24 @@ export interface ProductTailoringSetImageLabelAction extends IProductTailoringUp
    */
   readonly label?: string
   /**
-   *	If `true`, only the staged image is updated. If `false`, both the current and staged image is updated.
+   *	Whether only the staged image is updated. If `false`, both the current and staged image is updated.
    *
    *
    */
   readonly staged?: boolean
+}
+/**
+ *	Generates the [ProductTailoringKeySet](ctp:api:type:ProductTailoringKeySetMessage) Message.
+ *
+ */
+export interface ProductTailoringSetKeyAction extends IProductTailoringUpdateAction {
+  readonly action: 'setKey'
+  /**
+   *	Value to set. Must be unique. If empty, any existing value will be removed.
+   *
+   *
+   */
+  readonly key?: string
 }
 /**
  *	Updates all meta attributes at the same time.
@@ -1342,7 +1356,7 @@ export interface ProductTailoringSetMetaAttributesAction extends IProductTailori
    */
   readonly metaKeywords?: LocalizedString
   /**
-   *	If `true`, only the staged attributes are updated. If `false`, both the current and staged attributes are updated.
+   *	Whether only the staged attributes are updated. If `false`, both the current and staged attributes are updated.
    *
    *
    */
@@ -1357,7 +1371,7 @@ export interface ProductTailoringSetMetaDescriptionAction extends IProductTailor
    */
   readonly metaDescription?: LocalizedString
   /**
-   *	If `true`, only the staged `metaDescription` is updated. If `false`, both the current and staged `metaDescription` are updated.
+   *	Whether only the staged `metaDescription` is updated. If `false`, both the current and staged `metaDescription` are updated.
    *
    *
    */
@@ -1372,7 +1386,7 @@ export interface ProductTailoringSetMetaKeywordsAction extends IProductTailoring
    */
   readonly metaKeywords?: LocalizedString
   /**
-   *	If `true`, only the staged `metaKeywords` is updated. If `false`, both the current and staged `metaKeywords` are updated.
+   *	Whether only the staged `metaKeywords` is updated. If `false`, both the current and staged `metaKeywords` are updated.
    *
    *
    */
@@ -1387,7 +1401,7 @@ export interface ProductTailoringSetMetaTitleAction extends IProductTailoringUpd
    */
   readonly metaTitle?: LocalizedString
   /**
-   *	If `true`, only the staged `metaTitle` is updated. If `false`, both the current and staged `metaTitle` are updated.
+   *	Whether only the staged `metaTitle` is updated. If `false`, both the current and staged `metaTitle` are updated.
    *
    *
    */
@@ -1406,7 +1420,7 @@ export interface ProductTailoringSetNameAction extends IProductTailoringUpdateAc
    */
   readonly name?: LocalizedString
   /**
-   *	If `true`, only the staged `name` is updated. If `false`, both the current and staged `name` are updated.
+   *	Whether only the staged `name` is updated. If `false`, both the current and staged `name` are updated.
    *
    *
    */
@@ -1438,7 +1452,7 @@ export interface ProductTailoringSetProductAttributeAction extends IProductTailo
    */
   readonly value?: any
   /**
-   *	If `true`, then only the staged Attribute is set. If `false`, then both the current and staged Attributes are set.
+   *	Whether only the staged Attribute is set. If `false`, both the current and staged Attributes are set.
    *
    *
    */
@@ -1457,7 +1471,7 @@ export interface ProductTailoringSetSlugAction extends IProductTailoringUpdateAc
    */
   readonly slug?: LocalizedString
   /**
-   *	If `true`, only the staged `slug` is updated. If `false`, both the current and staged `slug` are updated.
+   *	Whether only the staged `slug` is updated. If `false`, both the current and staged `slug` are updated.
    *
    *
    */

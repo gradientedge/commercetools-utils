@@ -176,7 +176,7 @@ export interface CloudEventsPayload {
    */
   readonly sequencetype?: string
   /**
-   *	The URI from which the message can be retrieved if messages are [enabled](/../api/projects/messages#enable-querying-messages-via-the-api). Only set for [MessageSubscriptions](ctp:api:type:MessageSubscription).
+   *	The URI from which the message can be retrieved if messages are [enabled](/api/projects/messages#enable-querying-messages-via-the-api). Only set for [MessageSubscriptions](ctp:api:type:MessageSubscription).
    *
    *
    */
@@ -196,7 +196,8 @@ export interface IDeliveryFormat {
   readonly type: string
 }
 /**
- *	The CloudEventsFormat can be used with any [Destination](#destination-1), and the payload is delivered in the `JSON Event Format`. [AzureEventGridDestination](ctp:api:type:AzureEventGridDestination) offers native support to filter and route CloudEvents.
+ *	The CloudEventsFormat can be used with any [Destination](ctp:api:type:Destination), and the payload is delivered in the `JSON Event Format`.
+ *	[AzureEventGridDestination](ctp:api:type:AzureEventGridDestination) offers native support to filter and route CloudEvents.
  *
  */
 export interface CloudEventsFormat extends IDeliveryFormat {
@@ -419,7 +420,7 @@ export interface GoogleCloudPubSubDestination extends IDestination {
   readonly topic: string
 }
 /**
- *	Messages will be delivered even if the Messages Query HTTP API [is not enabled](/../api/projects/messages#enable-querying-messages-via-the-api).
+ *	Messages will be delivered even if the Messages Query HTTP API [is not enabled](/api/projects/messages#enable-querying-messages-via-the-api).
  *
  *	For MessageSubscriptions, the format of the payload is [MessageDeliveryPayload](ctp:api:type:MessageDeliveryPayload).
  *
@@ -507,7 +508,7 @@ export interface PayloadNotIncluded {
   readonly payloadType: string
 }
 /**
- *	The PlatformFormat uses constructs that are similar to the ones used in the REST API, for example, on the [Messages Query HTTP API](/../api/projects/messages).
+ *	The PlatformFormat uses constructs that are similar to the ones used in the REST API, for example, on the [Messages Query HTTP API](/api/projects/messages).
  *
  */
 export interface PlatformFormat extends IDeliveryFormat {
@@ -965,7 +966,7 @@ export interface ResourceDeletedDeliveryPayload extends IDeliveryPayload {
    */
   readonly modifiedAt: string
   /**
-   *	`true` if the `dataErasure` [parameter](/../api/gdpr#data-erasure-of-personal-data) on the `DELETE` request was set to `true`.
+   *	Whether the `dataErasure` [parameter](/api/gdpr#data-erasure-of-personal-data) on the `DELETE` request was set to `true`.
    *
    *
    */
@@ -1016,18 +1017,18 @@ export interface ResourceUpdatedDeliveryPayload extends IDeliveryPayload {
   readonly modifiedAt: string
 }
 /**
- *	[PagedQueryResult](/../api/general-concepts#pagedqueryresult) with `results` containing an array of [Subscription](ctp:api:type:Subscription).
+ *	[PagedQueryResult](/api/general-concepts#pagedqueryresult) with `results` containing an array of [Subscription](ctp:api:type:Subscription).
  *
  */
 export interface SubscriptionPagedQueryResponse {
   /**
-   *	Number of [results requested](/../api/general-concepts#limit).
+   *	Number of [results requested](/api/general-concepts#limit).
    *
    *
    */
   readonly limit: number
   /**
-   *	Number of [elements skipped](/../api/general-concepts#offset).
+   *	Number of [elements skipped](/api/general-concepts#offset).
    *
    *
    */
@@ -1040,10 +1041,10 @@ export interface SubscriptionPagedQueryResponse {
   readonly count: number
   /**
    *	Total number of results matching the query.
-   *	This number is an estimation that is not [strongly consistent](/../api/general-concepts#strong-consistency).
+   *	This number is an estimation that is not [strongly consistent](/api/general-concepts#strong-consistency).
    *	This field is returned by default.
    *	For improved performance, calculating this field can be deactivated by using the query parameter `withTotal=false`.
-   *	When the results are filtered with a [Query Predicate](/../api/predicates/query), `total` is subject to a [limit](/../api/limits#queries).
+   *	When the results are filtered with a [Query Predicate](/api/predicates/query), `total` is subject to a [limit](/api/limits#queries).
    *
    *
    */

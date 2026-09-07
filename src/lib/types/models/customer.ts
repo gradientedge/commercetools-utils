@@ -20,7 +20,7 @@ import { StoreKeyReference, StoreResourceIdentifier } from './store.js'
 import { CustomFields, CustomFieldsDraft, FieldContainer, TypeResourceIdentifier } from './type.js'
 
 /**
- *	Determines how an anonymous Cart is handled when a Customer signs in. For more information, see [Cart merge during sign-in and sign-up](/../api/customers-overview#cart-merge-during-sign-in-and-sign-up).
+ *	Determines how an anonymous Cart is handled when a Customer signs in. For more information, see [Cart merge during sign-in and sign-up](/api/customers-overview#cart-merge-during-sign-in-and-sign-up).
  *
  */
 export enum AnonymousCartSignInModeValues {
@@ -97,7 +97,7 @@ export interface Customer extends BaseResource {
    */
   readonly createdBy?: CreatedBy
   /**
-   *	Email address of the Customer that is [unique](/../api/customers-overview#customer-uniqueness) for an entire Project or to a Store the Customer is assigned to.
+   *	Email address of the Customer that is [unique](/api/customers-overview#customer-uniqueness) for an entire Project or to a Store the Customer is assigned to.
    *	It is the mandatory unique identifier of a Customer.
    *
    *
@@ -196,7 +196,7 @@ export interface Customer extends BaseResource {
   /**
    *	Customer Groups that the Customer belongs to.
    *
-   *	Used for [Line Item price selection](/../api/pricing-and-discounts-overview#line-item-price-selection).
+   *	Used for [Line Item price selection](/api/pricing-and-discounts-overview#line-item-price-selection).
    *
    *
    */
@@ -222,8 +222,8 @@ export interface Customer extends BaseResource {
   /**
    *	[Stores](ctp:api:type:Store) to which the Customer is assigned to.
    *
-   *	- If `stores` is empty, the Customer is a global customer, and can log in using the [Password Flow for global Customers](/../api/authorization#password-flow-for-global-customers).
-   *	- If any Stores are specified, the Customer can only log in using the [Password Flow for Customers in a Store](/../api/authorization#password-flow-for-customers-in-a-store) for those specific Stores.
+   *	- If `stores` is empty, the Customer is a global customer, and can log in using the [Password Flow for global Customers](/api/authorization#password-flow-for-global-customers).
+   *	- If any Stores are specified, the Customer can only log in using the [Password Flow for Customers in a Store](/api/authorization#password-flow-for-customers-in-a-store) for those specific Stores.
    *
    *
    */
@@ -280,7 +280,7 @@ export interface CustomerCreateEmailToken {
    */
   readonly ttlMinutes: number
   /**
-   *	If set to `true`, all email tokens issued previously for the Customer will be invalidated.
+   *	Whether all email tokens issued previously for the Customer will be invalidated.
    *
    *
    */
@@ -288,7 +288,7 @@ export interface CustomerCreateEmailToken {
 }
 export interface CustomerCreatePasswordResetToken {
   /**
-   *	Email address of the Customer treated as [case-insensitive](/../api/customers-overview#email-case-insensitivity).
+   *	Email address of the Customer treated as [case-insensitive](/api/customers-overview#email-case-insensitivity).
    *
    *
    */
@@ -300,7 +300,7 @@ export interface CustomerCreatePasswordResetToken {
    */
   readonly ttlMinutes?: number
   /**
-   *	If set to `true`, all password tokens issued previously for the Customer will be invalidated.
+   *	Whether all password tokens issued previously for the Customer will be invalidated.
    *
    *
    */
@@ -311,7 +311,7 @@ export interface CustomerDraft {
    *	User-defined unique identifier for the Customer.
    *	The `key` field is preferred over `customerNumber` as it is mutable and provides more flexibility.
    *
-   *	This field is optional for backwards compatibility reasons, but we strongly recommend setting it. Keys are mandatory for importing Customers with the [Import API](/../api/import-export/overview).
+   *	This field is optional for backwards compatibility reasons, but we strongly recommend setting it. Keys are mandatory for importing Customers with the [Import API](/api/import-export/overview).
    *
    *
    */
@@ -332,7 +332,7 @@ export interface CustomerDraft {
    */
   readonly externalId?: string
   /**
-   *	Email address of the Customer that must be [unique](/../api/customers-overview#customer-uniqueness) for an entire Project or to a Store the Customer is assigned to.
+   *	Email address of the Customer that must be [unique](/api/customers-overview#customer-uniqueness) for an entire Project or to a Store the Customer is assigned to.
    *	It is the mandatory unique identifier of a Customer.
    *
    *
@@ -442,7 +442,7 @@ export interface CustomerDraft {
    */
   readonly billingAddresses?: number[]
   /**
-   *	Set to `true` if the email address of the Customer has been verified already.
+   *	Whether the email address of the Customer has been verified already.
    *	The intended use is to leave this field unset upon sign-up of the Customer and initiate the [email verification](#email-verification-of-customer) afterwards.
    *
    *
@@ -459,7 +459,7 @@ export interface CustomerDraft {
   /**
    *	Customer Groups to assign the Customer to.
    *
-   *	Used for [Line Item price selection](/../api/pricing-and-discounts-overview#line-item-price-selection).
+   *	Used for [Line Item price selection](/api/pricing-and-discounts-overview#line-item-price-selection).
    *
    *
    */
@@ -486,8 +486,8 @@ export interface CustomerDraft {
   /**
    *	Sets the [Stores](ctp:api:type:Store) for the Customer.
    *
-   *	- If no Stores are specified, the Customer is a global customer, and can log in using the [Password Flow for global Customers](/../api/authorization#password-flow-for-global-customers).
-   *	- If any Stores are specified, the Customer can only log in using the [Password Flow for Customers in a Store](/../api/authorization#password-flow-for-customers-in-a-store) for those specific Stores.
+   *	- If no Stores are specified, the Customer is a global customer, and can log in using the [Password Flow for global Customers](/api/authorization#password-flow-for-global-customers).
+   *	- If any Stores are specified, the Customer can only log in using the [Password Flow for Customers in a Store](/api/authorization#password-flow-for-customers-in-a-store) for those specific Stores.
    *
    *
    */
@@ -544,18 +544,18 @@ export interface CustomerGroupAssignmentDraft {
   readonly customerGroup: CustomerGroupResourceIdentifier
 }
 /**
- *	[PagedQueryResult](/../api/general-concepts#pagedqueryresult) with results containing an array of [Customer](ctp:api:type:Customer).
+ *	[PagedQueryResult](/api/general-concepts#pagedqueryresult) with results containing an array of [Customer](ctp:api:type:Customer).
  *
  */
 export interface CustomerPagedQueryResponse {
   /**
-   *	Number of [results requested](/../api/general-concepts#limit).
+   *	Number of [results requested](/api/general-concepts#limit).
    *
    *
    */
   readonly limit: number
   /**
-   *	Number of [elements skipped](/../api/general-concepts#offset).
+   *	Number of [elements skipped](/api/general-concepts#offset).
    *
    *
    */
@@ -568,10 +568,10 @@ export interface CustomerPagedQueryResponse {
   readonly count: number
   /**
    *	Total number of results matching the query.
-   *	This number is an estimation that is not [strongly consistent](/../api/general-concepts#strong-consistency).
+   *	This number is an estimation that is not [strongly consistent](/api/general-concepts#strong-consistency).
    *	This field is returned by default.
    *	For improved performance, calculating this field can be deactivated by using the query parameter `withTotal=false`.
-   *	When the results are filtered with a [Query Predicate](/../api/predicates/query), `total` is subject to a [limit](/../api/limits#queries).
+   *	When the results are filtered with a [Query Predicate](/api/predicates/query), `total` is subject to a [limit](/api/limits#queries).
    *
    *
    */
@@ -636,7 +636,7 @@ export interface CustomerResetPassword {
   readonly version?: number
 }
 /**
- *	[ResourceIdentifier](ctp:api:type:ResourceIdentifier) to a [Customer](ctp:api:type:Customer). Either `id` or `key` is required. If both are set, an [InvalidJsonInput](/../api/errors#invalidjsoninput) error is returned.
+ *	[ResourceIdentifier](ctp:api:type:ResourceIdentifier) to a [Customer](ctp:api:type:Customer). Either `id` or `key` is required. If both are set, an [InvalidJsonInput](ctp:api:type:InvalidJsonInputError) error is returned.
  *
  */
 export interface CustomerResourceIdentifier extends IResourceIdentifier {
@@ -667,7 +667,7 @@ export interface CustomerSignInResult {
    *	The Cart is recalculated to remove invalid Line Items and apply the latest prices, taxes, and discounts.
    *	During these updates, the following errors can be returned: [MatchingPriceNotFound](ctp:api:type:MatchingPriceNotFoundError) and [MissingTaxRateForCountry](ctp:api:type:MissingTaxRateForCountryError).
    *
-   *	For more information, see [Cart updates](/../api/carts-orders-overview#update-a-cart).
+   *	For more information, see [Cart updates](/api/carts-orders-overview#update-a-cart).
    *
    *
    */
@@ -675,7 +675,7 @@ export interface CustomerSignInResult {
 }
 export interface CustomerSignin {
   /**
-   *	Email address of the Customer treated as [case-insensitive](/../api/customers-overview#email-case-insensitivity).
+   *	Email address of the Customer treated as [case-insensitive](/api/customers-overview#email-case-insensitivity).
    *
    *
    */
@@ -714,8 +714,7 @@ export interface CustomerSignin {
    */
   readonly anonymousId?: string
   /**
-   *	- If `true`, the [LineItem](ctp:api:type:LineItem) Product data (`name`, `variant`, and `productType`) of the returned Cart will be updated.
-   *	- If `false`, only the prices, discounts, and tax rates will be updated.
+   *	Whether the [LineItem](ctp:api:type:LineItem) Product data (`name`, `variant`, and `productType`) of the returned Cart will be updated. If `false`, only the prices, discounts, and tax rates will be updated.
    *
    *
    */
@@ -747,7 +746,7 @@ export interface CustomerToken {
    */
   readonly expiresAt: string
   /**
-   *	If `true`, all tokens issued previously for the Customer will be invalidated.
+   *	Whether all tokens issued previously for the Customer will be invalidated.
    *
    *
    */
@@ -867,7 +866,7 @@ export interface MyCustomerResetPassword {
 }
 export interface MyCustomerSignin {
   /**
-   *	Email address of the Customer treated as [case-insensitive](/../api/customers-overview#email-case-insensitivity).
+   *	Email address of the Customer treated as [case-insensitive](/api/customers-overview#email-case-insensitivity).
    *
    *
    */
@@ -886,8 +885,7 @@ export interface MyCustomerSignin {
    */
   readonly activeCartSignInMode?: AnonymousCartSignInMode
   /**
-   *	- If `true`, the [LineItem](ctp:api:type:LineItem) Product data (`name`, `variant`, and `productType`) of the returned Cart is updated.
-   *	- If `false`, only the prices, discounts, and tax rates are updated.
+   *	Whether the [LineItem](ctp:api:type:LineItem) Product data (`name`, `variant`, and `productType`) of the returned Cart is updated. If `false`, only the prices, discounts, and tax rates are updated.
    *
    *
    */
@@ -1086,7 +1084,7 @@ export interface CustomerRemoveShippingAddressIdAction extends ICustomerUpdateAc
 }
 /**
  *	Removes the association to a Store from the Customer.
- *	If no more Stores are assigned, the Customer becomes a [global Customer](/../api/customers-overview#global-versus-store-specific-customers).
+ *	If no more Stores are assigned, the Customer becomes a [global Customer](/api/customers-overview#global-versus-store-specific-customers).
  *
  */
 export interface CustomerRemoveStoreAction extends ICustomerUpdateAction {
@@ -1111,7 +1109,7 @@ export interface CustomerSetAddressCustomFieldAction extends ICustomerUpdateActi
    */
   readonly addressId: string
   /**
-   *	Name of the [Custom Field](/../api/projects/custom-fields).
+   *	Name of the [Custom Field](/api/projects/custom-fields).
    *
    *
    */
@@ -1138,14 +1136,16 @@ export interface CustomerSetAddressCustomTypeAction extends ICustomerUpdateActio
    */
   readonly addressId: string
   /**
-   *	Defines the [Type](ctp:api:type:Type) that extends the `address` with [Custom Fields](/../api/projects/custom-fields).
+   *	Defines the [Type](ctp:api:type:Type) that extends the `address` with [Custom Fields](ctp:api:type:CustomFields).
    *	If absent, any existing Type and Custom Fields are removed from the `address`.
    *
    *
    */
   readonly type?: TypeResourceIdentifier
   /**
-   *	Sets the [Custom Fields](/../api/projects/custom-fields) fields for the `address`.
+   *	Object containing the [Custom Fields](ctp:api:type:CustomFields) fields for the `address`.
+   *
+   *	Required if at least one Custom Field is defined as required in the `fieldDefinitions` of the referenced [Type](ctp:api:type:Type).
    *
    *
    */
@@ -1188,7 +1188,7 @@ export interface CustomerSetCompanyNameAction extends ICustomerUpdateAction {
 export interface CustomerSetCustomFieldAction extends ICustomerUpdateAction {
   readonly action: 'setCustomField'
   /**
-   *	Name of the [Custom Field](/../api/projects/custom-fields).
+   *	Name of the [Custom Field](/api/projects/custom-fields).
    *
    *
    */
@@ -1209,14 +1209,16 @@ export interface CustomerSetCustomFieldAction extends ICustomerUpdateAction {
 export interface CustomerSetCustomTypeAction extends ICustomerUpdateAction {
   readonly action: 'setCustomType'
   /**
-   *	Defines the [Type](ctp:api:type:Type) that extends the Customer with [Custom Fields](/../api/projects/custom-fields).
+   *	Defines the [Type](ctp:api:type:Type) that extends the Customer with [Custom Fields](ctp:api:type:CustomFields).
    *	If absent, any existing Type and Custom Fields are removed from the Customer.
    *
    *
    */
   readonly type?: TypeResourceIdentifier
   /**
-   *	Sets the [Custom Fields](/../api/projects/custom-fields) fields for the Customer.
+   *	Object containing the [Custom Fields](ctp:api:type:CustomFields) fields for the Customer.
+   *
+   *	Required if at least one Custom Field is defined as required in the `fieldDefinitions` of the referenced [Type](ctp:api:type:Type).
    *
    *
    */
@@ -1402,7 +1404,7 @@ export interface CustomerSetSalutationAction extends ICustomerUpdateAction {
 }
 /**
  *	Sets the Stores the Customer account is associated with.
- *	If no Stores are specified, the Customer becomes a [global Customer](/../api/customers-overview#global-versus-store-specific-customers).
+ *	If no Stores are specified, the Customer becomes a [global Customer](/api/customers-overview#global-versus-store-specific-customers).
  *
  *	This action generates the [CustomerStoresSet](ctp:api:type:CustomerStoresSetMessage) Message.
  *

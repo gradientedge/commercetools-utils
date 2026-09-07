@@ -14,13 +14,14 @@ import {
   LocalizedString,
   _Money,
 } from './common.js'
+import { StoreKeyReference, StoreResourceIdentifier } from './store.js'
 import { TaxCategoryReference, TaxCategoryResourceIdentifier } from './tax-category.js'
 import { CustomFields, CustomFieldsDraft, FieldContainer, TypeResourceIdentifier } from './type.js'
 import { ZoneReference, ZoneResourceIdentifier } from './zone.js'
 
 export interface PriceFunction {
   /**
-   *	Currency code compliant to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
+   *	A currency code compliant with [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217) or a [non-standard currency](ctp:api:type:NonStandardCurrency).
    *
    *
    */
@@ -112,7 +113,7 @@ export interface ShippingMethod extends BaseResource {
    */
   readonly active: boolean
   /**
-   *	If `true`, this ShippingMethod is the [Project](ctp:api:type:Project)'s default ShippingMethod. When retrieving [matching Shipping Methods](/projects/shippingMethods#get-matching-shipping-methods), it is returned as the first item in the array. This flag does not automatically apply the Shipping Method to Carts.
+   *	Whether this ShippingMethod is the [Project](ctp:api:type:Project)'s default ShippingMethod. When retrieving [matching Shipping Methods](/projects/shippingMethods#get-matching-shipping-methods), it is returned as the first item in the array. This flag does not automatically apply the Shipping Method to Carts.
    *
    *
    */
@@ -128,6 +129,13 @@ export interface ShippingMethod extends BaseResource {
    *
    */
   readonly custom?: CustomFields
+  /**
+   *	- If a value exists, the Shipping Method applies to [Carts](ctp:api:type:Cart) with a [Store](ctp:api:type:Store) that matches any Store in this field.
+   *	- If empty, the Shipping Method applies to all [Carts](ctp:api:type:Cart), irrespective of a Store.
+   *
+   *
+   */
+  readonly stores: StoreKeyReference[]
 }
 export interface ShippingMethodDraft {
   /**
@@ -168,13 +176,13 @@ export interface ShippingMethodDraft {
    */
   readonly zoneRates: ZoneRateDraft[]
   /**
-   *	If set to `true`, the ShippingMethod can be used during the creation or update of a Cart or Order.
+   *	Whether the ShippingMethod can be used during the creation or update of a Cart or Order.
    *
    *
    */
   readonly active?: boolean
   /**
-   *	If set to `true`, the ShippingMethod will be the [Project](ctp:api:type:Project)'s default ShippingMethod. When retrieving [matching Shipping Methods](/projects/shippingMethods#get-matching-shipping-methods), it is returned as the first item in the array. This flag does not automatically apply the Shipping Method to Carts.
+   *	Whether the ShippingMethod will be the [Project](ctp:api:type:Project)'s default ShippingMethod. When retrieving [matching Shipping Methods](/projects/shippingMethods#get-matching-shipping-methods), it is returned as the first item in the array. This flag does not automatically apply the Shipping Method to Carts.
    *
    *
    */
@@ -190,6 +198,15 @@ export interface ShippingMethodDraft {
    *
    */
   readonly custom?: CustomFieldsDraft
+  /**
+   *	- If defined and not empty, the Shipping Method applies to [Carts](ctp:api:type:Cart) with a [Store](ctp:api:type:Store) that matches any Store in this field.
+   *	- If not defined or empty, the Shipping Method applies to all Carts, irrespective of a Store.
+   *
+   *	If the number of referenced Stores exceeds the [Stores per Shipping Method limit](/api/limits#shipping-methods), an [InvalidOperation](ctp:api:type:InvalidOperationError) error is returned.
+   *
+   *
+   */
+  readonly stores?: StoreResourceIdentifier[]
 }
 /**
  *	[PagedQueryResult](/general-concepts#pagedqueryresult) with `results` containing an array of [ShippingMethod](ctp:api:type:ShippingMethod).
@@ -197,7 +214,7 @@ export interface ShippingMethodDraft {
  */
 export interface ShippingMethodPagedQueryResponse {
   /**
-   *	Number of [results requested](/../api/general-concepts#limit).
+   *	Number of [results requested](/api/general-concepts#limit).
    *
    *
    */
@@ -210,16 +227,16 @@ export interface ShippingMethodPagedQueryResponse {
   readonly count: number
   /**
    *	Total number of results matching the query.
-   *	This number is an estimation that is not [strongly consistent](/../api/general-concepts#strong-consistency).
+   *	This number is an estimation that is not [strongly consistent](/api/general-concepts#strong-consistency).
    *	This field is returned by default.
    *	For improved performance, calculating this field can be deactivated by using the query parameter `withTotal=false`.
-   *	When the results are filtered with a [Query Predicate](/../api/predicates/query), `total` is subject to a [limit](/../api/limits#queries).
+   *	When the results are filtered with a [Query Predicate](/api/predicates/query), `total` is subject to a [limit](/api/limits#queries).
    *
    *
    */
   readonly total?: number
   /**
-   *	Number of [elements skipped](/../api/general-concepts#offset).
+   *	Number of [elements skipped](/api/general-concepts#offset).
    *
    *
    */
@@ -244,14 +261,14 @@ export interface ShippingMethodReference extends IReference {
    */
   readonly id: string
   /**
-   *	Contains the representation of the expanded ShippingMethod. Only present in responses to requests with [Reference Expansion](/../api/general-concepts#reference-expansion) for ShippingMethods.
+   *	Contains the representation of the expanded ShippingMethod. Only present in responses to requests with [Reference Expansion](/api/general-concepts#reference-expansion) for ShippingMethods.
    *
    *
    */
   readonly obj?: ShippingMethod
 }
 /**
- *	[ResourceIdentifier](ctp:api:type:ResourceIdentifier) to a [ShippingMethod](ctp:api:type:ShippingMethod). Either `id` or `key` is required. If both are set, an [InvalidJsonInput](/../api/errors#invalidjsoninput) error is returned.
+ *	[ResourceIdentifier](ctp:api:type:ResourceIdentifier) to a [ShippingMethod](ctp:api:type:ShippingMethod). Either `id` or `key` is required. If both are set, an [InvalidJsonInput](ctp:api:type:InvalidJsonInputError) error is returned.
  *
  */
 export interface ShippingMethodResourceIdentifier extends IResourceIdentifier {
@@ -277,7 +294,7 @@ export interface ShippingMethodUpdate {
    */
   readonly version: number
   /**
-   *	Update actions to be performed on the [ShippingMethod](/projects/shippingMethods#shippingmethod).
+   *	Update actions to be performed on the [ShippingMethod](ctp:api:type:ShippingMethod).
    *
    *
    */
@@ -285,12 +302,14 @@ export interface ShippingMethodUpdate {
 }
 export type ShippingMethodUpdateAction =
   | ShippingMethodAddShippingRateAction
+  | ShippingMethodAddStoreAction
   | ShippingMethodAddZoneAction
   | ShippingMethodChangeActiveAction
   | ShippingMethodChangeIsDefaultAction
   | ShippingMethodChangeNameAction
   | ShippingMethodChangeTaxCategoryAction
   | ShippingMethodRemoveShippingRateAction
+  | ShippingMethodRemoveStoreAction
   | ShippingMethodRemoveZoneAction
   | ShippingMethodSetCustomFieldAction
   | ShippingMethodSetCustomTypeAction
@@ -299,6 +318,7 @@ export type ShippingMethodUpdateAction =
   | ShippingMethodSetLocalizedDescriptionAction
   | ShippingMethodSetLocalizedNameAction
   | ShippingMethodSetPredicateAction
+  | ShippingMethodSetStoresAction
 export interface IShippingMethodUpdateAction {
   /**
    *
@@ -312,12 +332,12 @@ export interface ShippingRate {
    */
   readonly price: CentPrecisionMoney
   /**
-   *	[Free shipping](/../api/shipping-delivery-overview#free-shipping) is applied if the sum of the (Custom) Line Item Prices reaches the specified value.
+   *	[Free shipping](/api/shipping-delivery-overview#free-shipping) is applied if the sum of the (Custom) Line Item Prices reaches the specified value.
    *
    */
   readonly freeAbove?: CentPrecisionMoney
   /**
-   *	`true` if the ShippingRate matches given [Cart](ctp:api:type:Cart) or [Location](ctp:api:type:Location).
+   *	Whether the ShippingRate matches given [Cart](ctp:api:type:Cart) or [Location](ctp:api:type:Location).
    *	Only appears in response to requests for [Get ShippingMethods for a Cart](ctp:api:endpoint:/{projectKey}/shipping-methods/matching-cart:GET) or
    *	[Get ShippingMethods for a Location](ctp:api:endpoint:/{projectKey}/shipping-methods/matching-location:GET).
    *
@@ -337,7 +357,7 @@ export interface ShippingRateDraft {
    */
   readonly price: _Money
   /**
-   *	[Free shipping](/../api/shipping-delivery-overview#free-shipping) is applied if the sum of the (Custom) Line Item Prices reaches the specified value.
+   *	[Free shipping](/api/shipping-delivery-overview#free-shipping) is applied if the sum of the (Custom) Line Item Prices reaches the specified value.
    *
    */
   readonly freeAbove?: _Money
@@ -361,7 +381,7 @@ export interface IShippingRatePriceTier {
 export interface CartClassificationTier extends IShippingRatePriceTier {
   readonly type: 'CartClassification'
   /**
-   *	`key` selected from the `values` of the [CartClassificationType](/projects/project#cartclassificationtype) configured in the Project.
+   *	`key` selected from the `values` of the [CartClassificationType](ctp:api:type:CartClassificationType) configured in the Project.
    *
    *
    */
@@ -387,7 +407,7 @@ export interface CartClassificationTier extends IShippingRatePriceTier {
 export interface CartScoreTier extends IShippingRatePriceTier {
   readonly type: 'CartScore'
   /**
-   *	Abstract value for categorizing a Cart. The range starts at `0`. The default price covers `0`, tiers start at `1`. See [Tiered shipping rates](/../api/shipping-delivery-overview#tiered-shipping-rates) for details and examples.
+   *	Abstract value for categorizing a Cart. The range starts at `0`. The default price covers `0`, tiers start at `1`. See [Tiered shipping rates](/api/shipping-delivery-overview#tiered-shipping-rates) for details and examples.
    *
    *
    */
@@ -493,10 +513,25 @@ export interface ShippingMethodAddShippingRateAction extends IShippingMethodUpda
    */
   readonly shippingRate: ShippingRateDraft
 }
+/**
+ *	Associates the ShippingMethod with a Store.
+ *
+ */
+export interface ShippingMethodAddStoreAction extends IShippingMethodUpdateAction {
+  readonly action: 'addStore'
+  /**
+   *	ResourceIdentifier of the Store to add.
+   *
+   *
+   */
+  readonly store: StoreResourceIdentifier
+}
 export interface ShippingMethodAddZoneAction extends IShippingMethodUpdateAction {
   readonly action: 'addZone'
   /**
    *	Value to add to `zoneRates`.
+   *
+   *	Adds a new [ZoneRate](ctp:api:type:ZoneRate) entry to the `zoneRates` array with the specified [Zone](ctp:api:type:Zone) and an empty `shippingRates` array. After adding the Zone, you can add [ShippingRates](ctp:api:type:ShippingRate) for this Zone using the [Add ShippingRate](ctp:api:type:ShippingMethodAddShippingRateAction) update action.
    *
    *
    */
@@ -552,10 +587,26 @@ export interface ShippingMethodRemoveShippingRateAction extends IShippingMethodU
    */
   readonly shippingRate: ShippingRateDraft
 }
+/**
+ *	Removes the association to a Store from the ShippingMethod.
+ *	If no more Stores are assigned, the ShippingMethod becomes a global ShippingMethod.
+ *
+ */
+export interface ShippingMethodRemoveStoreAction extends IShippingMethodUpdateAction {
+  readonly action: 'removeStore'
+  /**
+   *	ResourceIdentifier of the Store to remove.
+   *
+   *
+   */
+  readonly store: StoreResourceIdentifier
+}
 export interface ShippingMethodRemoveZoneAction extends IShippingMethodUpdateAction {
   readonly action: 'removeZone'
   /**
    *	Value to remove from `zoneRates`.
+   *
+   *	Removes the entire [ZoneRate](ctp:api:type:ZoneRate) entry for the specified [Zone](ctp:api:type:Zone) from the `zoneRates` array. This action deletes both the Zone reference and all [ShippingRates](ctp:api:type:ShippingRate) associated with that Zone.
    *
    *
    */
@@ -568,7 +619,7 @@ export interface ShippingMethodRemoveZoneAction extends IShippingMethodUpdateAct
 export interface ShippingMethodSetCustomFieldAction extends IShippingMethodUpdateAction {
   readonly action: 'setCustomField'
   /**
-   *	Name of the [Custom Field](/../api/projects/custom-fields).
+   *	Name of the [Custom Field](/api/projects/custom-fields).
    *
    *
    */
@@ -585,14 +636,16 @@ export interface ShippingMethodSetCustomFieldAction extends IShippingMethodUpdat
 export interface ShippingMethodSetCustomTypeAction extends IShippingMethodUpdateAction {
   readonly action: 'setCustomType'
   /**
-   *	Defines the [Type](ctp:api:type:Type) that extends the ShippingMethod with [Custom Fields](/../api/projects/custom-fields).
+   *	Defines the [Type](ctp:api:type:Type) that extends the ShippingMethod with [Custom Fields](ctp:api:type:CustomFields).
    *	If absent, any existing Type and Custom Fields are removed from the ShippingMethod.
    *
    *
    */
   readonly type?: TypeResourceIdentifier
   /**
-   *	Sets the [Custom Fields](/../api/projects/custom-fields) fields for the ShippingMethod.
+   *	Object containing the [Custom Fields](ctp:api:type:CustomFields) fields for the ShippingMethod.
+   *
+   *	Required if at least one Custom Field is defined as required in the `fieldDefinitions` of the referenced [Type](ctp:api:type:Type).
    *
    *
    */
@@ -637,4 +690,20 @@ export interface ShippingMethodSetPredicateAction extends IShippingMethodUpdateA
    *
    */
   readonly predicate?: string
+}
+/**
+ *	Sets the Stores the ShippingMethod is associated with.
+ *	If empty, the ShippingMethod becomes a global ShippingMethod.
+ *
+ */
+export interface ShippingMethodSetStoresAction extends IShippingMethodUpdateAction {
+  readonly action: 'setStores'
+  /**
+   *	ResourceIdentifiers of the Stores to set.
+   *	Overrides the current list of Stores.
+   *	If empty, any existing values are removed.
+   *
+   *
+   */
+  readonly stores: StoreResourceIdentifier[]
 }

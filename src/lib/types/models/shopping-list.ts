@@ -83,7 +83,7 @@ export interface ShoppingList extends BaseResource {
    */
   readonly store?: StoreKeyReference
   /**
-   *	[Reference](ctp:api:type:Reference) to the Business Unit the Shopping List belongs to. Only available for [B2B](/../offering/composable-commerce#composable-commerce-for-b2b)-enabled Projects.
+   *	[Reference](ctp:api:type:Reference) to the Business Unit the Shopping List belongs to. Only available for [B2B](/offering/commerce-b2b)-enabled Projects.
    *
    *
    */
@@ -181,7 +181,7 @@ export interface ShoppingListDraft {
    */
   readonly store?: StoreResourceIdentifier
   /**
-   *	[ResourceIdentifier](ctp:api:type:ResourceIdentifier) of the Business Unit the Shopping List should belong to. When the `customer` of the Shopping List is set, the [Customer](ctp:api:type:Customer) must be an [Associate](ctp:api:type:Associate) of the Business Unit. Only available for [B2B](/../offering/composable-commerce#composable-commerce-for-b2b)-enabled Projects.
+   *	[ResourceIdentifier](ctp:api:type:ResourceIdentifier) of the Business Unit the Shopping List should belong to. When the `customer` of the Shopping List is set, the [Customer](ctp:api:type:Customer) must be an [Associate](ctp:api:type:Associate) of the Business Unit. Only available for [B2B](/offering/commerce-b2b)-enabled Projects.
    *
    *
    */
@@ -212,7 +212,7 @@ export interface ShoppingListLineItem {
    */
   readonly custom?: CustomFields
   /**
-   *	If the Product or Product Variant is deleted, `deactivatedAt` is the date and time (UTC) of deletion.
+   *	If the Product or Product Variant is deleted or unpublished, `deactivatedAt` is the date and time (UTC) this occurred.
    *
    *	This data is updated in an [eventual consistent manner](/general-concepts#eventual-consistency) when the Product Variant cannot be ordered anymore.
    *
@@ -266,6 +266,8 @@ export interface ShoppingListLineItem {
   /**
    *	`id` of the [ProductVariant](ctp:api:type:ProductVariant) the ShoppingListLineItem refers to. If not set, the ShoppingListLineItem refers to the Master Variant.
    *
+   *	For a Project with [ProductCatalogModel](ctp:api:type:ProductCatalogModel) (BETA) set to `Modular`, when `variantId` is not set, the ShoppingListLineItem refers to the Product's default [Variant](ctp:api:type:Variant) (BETA) (`defaultVariant`) instead of the Master Variant. If no default Variant is set, the ShoppingListLineItem refers to the Variant with the lowest `variantId`.
+   *
    *
    */
   readonly variantId?: number
@@ -305,6 +307,8 @@ export interface ShoppingListLineItemDraft {
   /**
    *	`id` of the [ProductVariant](ctp:api:type:ProductVariant). If not set, the ShoppingListLineItem refers to the Master Variant.
    *
+   *	For a Project with [ProductCatalogModel](ctp:api:type:ProductCatalogModel) (BETA) set to `Modular`, when `variantId` is not set, the ShoppingListLineItem refers to the Product's default [Variant](ctp:api:type:Variant) (BETA) (`defaultVariant`) instead of the Master Variant. If no default Variant is set, the ShoppingListLineItem refers to the Variant with the lowest `variantId`.
+   *
    *
    */
   readonly variantId?: number
@@ -335,7 +339,7 @@ export interface ShoppingListLineItemDraft {
 }
 export interface ShoppingListPagedQueryResponse {
   /**
-   *	Number of [results requested](/../api/general-concepts#limit).
+   *	Number of [results requested](/api/general-concepts#limit).
    *
    *
    */
@@ -348,16 +352,16 @@ export interface ShoppingListPagedQueryResponse {
   readonly count: number
   /**
    *	Total number of results matching the query.
-   *	This number is an estimation that is not [strongly consistent](/../api/general-concepts#strong-consistency).
+   *	This number is an estimation that is not [strongly consistent](/api/general-concepts#strong-consistency).
    *	This field is returned by default.
    *	For improved performance, calculating this field can be deactivated by using the query parameter `withTotal=false`.
-   *	When the results are filtered with a [Query Predicate](/../api/predicates/query), `total` is subject to a [limit](/../api/limits#queries).
+   *	When the results are filtered with a [Query Predicate](/api/predicates/query), `total` is subject to a [limit](/api/limits#queries).
    *
    *
    */
   readonly total?: number
   /**
-   *	Number of [elements skipped](/../api/general-concepts#offset).
+   *	Number of [elements skipped](/api/general-concepts#offset).
    *
    *
    */
@@ -382,14 +386,14 @@ export interface ShoppingListReference extends IReference {
    */
   readonly id: string
   /**
-   *	Contains the representation of the expanded ShoppingList. Only present in responses to requests with [Reference Expansion](/../api/general-concepts#reference-expansion) for ShoppingLists.
+   *	Contains the representation of the expanded ShoppingList. Only present in responses to requests with [Reference Expansion](/api/general-concepts#reference-expansion) for ShoppingLists.
    *
    *
    */
   readonly obj?: ShoppingList
 }
 /**
- *	[ResourceIdentifier](ctp:api:type:ResourceIdentifier) to a [ShoppingList](ctp:api:type:ShoppingList). Either `id` or `key` is required. If both are set, an [InvalidJsonInput](/../api/errors#invalidjsoninput) error is returned.
+ *	[ResourceIdentifier](ctp:api:type:ResourceIdentifier) to a [ShoppingList](ctp:api:type:ShoppingList). Either `id` or `key` is required. If both are set, an [InvalidJsonInput](ctp:api:type:InvalidJsonInputError) error is returned.
  *
  */
 export interface ShoppingListResourceIdentifier extends IResourceIdentifier {
@@ -569,6 +573,8 @@ export interface ShoppingListAddLineItemAction extends IShoppingListUpdateAction
   readonly productId?: string
   /**
    *	`id` of the [ProductVariant](ctp:api:type:ProductVariant). If not set, the ShoppingListLineItem refers to the Master Variant.
+   *
+   *	For a Project with [ProductCatalogModel](ctp:api:type:ProductCatalogModel) (BETA) set to `Modular`, when `variantId` is not set, the ShoppingListLineItem refers to the Product's default [Variant](ctp:api:type:Variant) (BETA) (`defaultVariant`) instead of the Master Variant. If no default Variant is set, the ShoppingListLineItem refers to the Variant with the lowest `variantId`.
    *
    *
    */
@@ -787,7 +793,7 @@ export interface ShoppingListSetAnonymousIdAction extends IShoppingListUpdateAct
 export interface ShoppingListSetBusinessUnitAction extends IShoppingListUpdateAction {
   readonly action: 'setBusinessUnit'
   /**
-   *	The Business Unit to assign to the Shopping List, which must have access to the [Store](/../api/projects/stores) that is set on the Shopping List.
+   *	The Business Unit to assign to the Shopping List, which must have access to the [Store](/api/projects/stores) that is set on the Shopping List.
    *
    *
    */
@@ -796,7 +802,7 @@ export interface ShoppingListSetBusinessUnitAction extends IShoppingListUpdateAc
 export interface ShoppingListSetCustomFieldAction extends IShoppingListUpdateAction {
   readonly action: 'setCustomField'
   /**
-   *	Name of the [Custom Field](/../api/projects/custom-fields).
+   *	Name of the [Custom Field](/api/projects/custom-fields).
    *
    *
    */
@@ -813,14 +819,16 @@ export interface ShoppingListSetCustomFieldAction extends IShoppingListUpdateAct
 export interface ShoppingListSetCustomTypeAction extends IShoppingListUpdateAction {
   readonly action: 'setCustomType'
   /**
-   *	Defines the [Type](ctp:api:type:Type) that extends the ShoppingList with [Custom Fields](/../api/projects/custom-fields).
+   *	Defines the [Type](ctp:api:type:Type) that extends the ShoppingList with [Custom Fields](ctp:api:type:CustomFields).
    *	If absent, any existing Type and Custom Fields are removed from the ShoppingList.
    *
    *
    */
   readonly type?: TypeResourceIdentifier
   /**
-   *	Sets the [Custom Fields](/../api/projects/custom-fields) fields for the ShoppingList.
+   *	Object containing the [Custom Fields](ctp:api:type:CustomFields) fields for the ShoppingList.
+   *
+   *	Required if at least one Custom Field is defined as required in the `fieldDefinitions` of the referenced [Type](ctp:api:type:Type).
    *
    *
    */
@@ -880,7 +888,7 @@ export interface ShoppingListSetLineItemCustomFieldAction extends IShoppingListU
    */
   readonly lineItemKey?: string
   /**
-   *	Name of the [Custom Field](/../api/projects/custom-fields).
+   *	Name of the [Custom Field](/api/projects/custom-fields).
    *
    *
    */
@@ -909,14 +917,16 @@ export interface ShoppingListSetLineItemCustomTypeAction extends IShoppingListUp
    */
   readonly lineItemKey?: string
   /**
-   *	Defines the [Type](ctp:api:type:Type) that extends the ShoppingListLineItem with [Custom Fields](/../api/projects/custom-fields).
+   *	Defines the [Type](ctp:api:type:Type) that extends the ShoppingListLineItem with [Custom Fields](ctp:api:type:CustomFields).
    *	If absent, any existing Type and Custom Fields are removed from the ShoppingListLineItem.
    *
    *
    */
   readonly type?: TypeResourceIdentifier
   /**
-   *	Sets the [Custom Fields](/../api/projects/custom-fields) fields for the ShoppingListLineItem.
+   *	Object containing the [Custom Fields](ctp:api:type:CustomFields) fields for the ShoppingListLineItem.
+   *
+   *	Required if at least one Custom Field is defined as required in the `fieldDefinitions` of the referenced [Type](ctp:api:type:Type).
    *
    *
    */
@@ -955,7 +965,7 @@ export interface ShoppingListSetTextLineItemCustomFieldAction extends IShoppingL
    */
   readonly textLineItemKey?: string
   /**
-   *	Name of the [Custom Field](/../api/projects/custom-fields).
+   *	Name of the [Custom Field](/api/projects/custom-fields).
    *
    *
    */
@@ -984,14 +994,16 @@ export interface ShoppingListSetTextLineItemCustomTypeAction extends IShoppingLi
    */
   readonly textLineItemKey?: string
   /**
-   *	Defines the [Type](ctp:api:type:Type) that extends the TextLineItem with [Custom Fields](/../api/projects/custom-fields).
+   *	Defines the [Type](ctp:api:type:Type) that extends the TextLineItem with [Custom Fields](ctp:api:type:CustomFields).
    *	If absent, any existing Type and Custom Fields are removed from the TextLineItem.
    *
    *
    */
   readonly type?: TypeResourceIdentifier
   /**
-   *	Sets the [Custom Fields](/../api/projects/custom-fields) fields for the TextLineItem.
+   *	Object containing the [Custom Fields](ctp:api:type:CustomFields) fields for the TextLineItem.
+   *
+   *	Required if at least one Custom Field is defined as required in the `fieldDefinitions` of the referenced [Type](ctp:api:type:Type).
    *
    *
    */

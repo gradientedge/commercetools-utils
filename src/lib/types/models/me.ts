@@ -166,7 +166,7 @@ export interface IMyBusinessUnitUpdateAction {
   readonly action: string
 }
 /**
- *	The `customerId` is determined by a [password flow token](/../api/authorization#password-flow) and
+ *	The `customerId` is determined by a [password flow token](/api/authorization#password-flow) and
  *	automatically set on the resulting [Cart](ctp:api:type:Cart).
  *	The `anonymousId` is determined by a [token for an anonymous session](ctp:api:type:AnonymousSession) and
  *	automatically set on the resulting [Cart](ctp:api:type:Cart).
@@ -186,7 +186,7 @@ export interface MyCartDraft {
    */
   readonly customerEmail?: string
   /**
-   *	[ResourceIdentifier](ctp:api:type:ResourceIdentifier) to the Business Unit the Cart should belong to. The [Customer](ctp:api:type:Customer) must be an [Associate](ctp:api:type:Associate) of the Business Unit. Only available for [B2B](/../offering/composable-commerce#composable-commerce-for-b2b)-enabled Projects.
+   *	[ResourceIdentifier](ctp:api:type:ResourceIdentifier) to the Business Unit the Cart should belong to. The [Customer](ctp:api:type:Customer) must be an [Associate](ctp:api:type:Associate) of the Business Unit. Only available for [B2B](/offering/commerce-b2b)-enabled Projects.
    *
    *
    */
@@ -255,7 +255,7 @@ export interface MyCartDraft {
    */
   readonly discountCodes?: string[]
   /**
-   *	Used for [Line Item price selection](/../api/pricing-and-discounts-overview#line-item-price-selection).
+   *	Used for [Line Item price selection](/api/pricing-and-discounts-overview#line-item-price-selection).
    *	If used for [Create Cart in Store](ctp:api:endpoint:/{projectKey}/in-store/me/carts:POST), the provided country must be one of the [Store's](ctp:api:type:Store) `countries`.
    *
    *
@@ -400,7 +400,7 @@ export interface MyCompanyDraft extends IMyBusinessUnitDraft {
 }
 export interface MyCustomerDraft {
   /**
-   *	Email address of the Customer that is [unique](/../api/customers-overview#customer-uniqueness) for an entire Project or Store the Customer is assigned to.
+   *	Email address of the Customer that is [unique](/api/customers-overview#customer-uniqueness) for an entire Project or Store the Customer is assigned to.
    *	It is the mandatory unique identifier of a Customer.
    *
    *
@@ -618,7 +618,7 @@ export interface MyDivisionDraft extends IMyBusinessUnitDraft {
  */
 export interface MyLineItemDraft {
   /**
-   *	User-defined unique identifier of the LineItem.
+   *	User-defined identifier of the LineItem. Must be unique among LineItems in the Cart.
    *
    *
    */
@@ -643,13 +643,13 @@ export interface MyLineItemDraft {
    */
   readonly sku?: string
   /**
-   *	Number of Product Variants to add to the Cart.
+   *	Quantity of Product Variants to add to the Cart.
    *
    *
    */
   readonly quantity?: number
   /**
-   *	Date and time (UTC) the Product Variant is added to the Cart.
+   *	Date and time (UTC) the Product Variant was added to the Cart.
    *	If not set, it defaults to the current date and time.
    *
    *	Optional for backwards compatibility reasons.
@@ -658,14 +658,14 @@ export interface MyLineItemDraft {
    */
   readonly addedAt?: string
   /**
-   *	Used to identify [Inventory entries](/../api/projects/inventory) that must be reserved.
+   *	Used to identify [Inventory entries](/api/projects/inventory) that must be reserved.
    *	The Channel must have the `InventorySupply` [ChannelRoleEnum](ctp:api:type:ChannelRoleEnum).
    *
    *
    */
   readonly supplyChannel?: ChannelResourceIdentifier
   /**
-   *	Used to [select](/../api/pricing-and-discounts-overview#line-item-price-selection) a Product Price.
+   *	Used to [select](/api/pricing-and-discounts-overview#line-item-price-selection) a Product Price.
    *	The Channel must have the `ProductDistribution` [ChannelRoleEnum](ctp:api:type:ChannelRoleEnum).
    *
    *	If the Cart is bound to a [Store](ctp:api:type:Store) with `distributionChannels` set,
@@ -721,7 +721,7 @@ export interface MyOrderFromQuoteDraft {
    */
   readonly version: number
   /**
-   *	Set to `true`, if the `quoteState` of the referenced [Quote](ctp:api:type:Quote) should be set to `Accepted`.
+   *	Whether the `quoteState` of the referenced [Quote](ctp:api:type:Quote) should be set to `Accepted`.
    *
    *
    */
@@ -741,7 +741,7 @@ export interface MyPayment {
    */
   readonly version: number
   /**
-   *	Reference to a [Customer](ctp:api:type:Customer) associated with the Payment. Set automatically with a [password flow token](/../api/authorization#password-flow). Either `customer` or `anonymousId` is present.
+   *	Reference to a [Customer](ctp:api:type:Customer) associated with the Payment. Set automatically with a [password flow token](/api/authorization#password-flow). Either `customer` or `anonymousId` is present.
    *
    *
    */
@@ -806,12 +806,12 @@ export interface MyPaymentDraft {
   readonly transaction?: MyTransactionDraft
 }
 /**
- *	[PagedQueryResult](/../api/general-concepts#pagedqueryresult) with `results` containing an array of [MyPayment](ctp:api:type:MyPayment).
+ *	[PagedQueryResult](/api/general-concepts#pagedqueryresult) with `results` containing an array of [MyPayment](ctp:api:type:MyPayment).
  *
  */
 export interface MyPaymentPagedQueryResponse {
   /**
-   *	Number of [results requested](/../api/general-concepts#limit).
+   *	Number of [results requested](/api/general-concepts#limit).
    *
    *
    */
@@ -824,16 +824,16 @@ export interface MyPaymentPagedQueryResponse {
   readonly count: number
   /**
    *	Total number of results matching the query.
-   *	This number is an estimation that is not [strongly consistent](/../api/general-concepts#strong-consistency).
+   *	This number is an estimation that is not [strongly consistent](/api/general-concepts#strong-consistency).
    *	This field is returned by default.
    *	For improved performance, calculating this field can be deactivated by using the query parameter `withTotal=false`.
-   *	When the results are filtered with a [Query Predicate](/../api/predicates/query), `total` is subject to a [limit](/../api/limits#queries).
+   *	When the results are filtered with a [Query Predicate](/api/predicates/query), `total` is subject to a [limit](/api/limits#queries).
    *
    *
    */
   readonly total?: number
   /**
-   *	Number of [elements skipped](/../api/general-concepts#offset).
+   *	Number of [elements skipped](/api/general-concepts#offset).
    *
    *
    */
@@ -1283,7 +1283,7 @@ export interface MyBusinessUnitSetAddressCustomFieldAction extends IMyBusinessUn
    */
   readonly addressId: string
   /**
-   *	Name of the [Custom Field](/../api/projects/custom-fields).
+   *	Name of the [Custom Field](/api/projects/custom-fields).
    *
    *
    */
@@ -1304,14 +1304,16 @@ export interface MyBusinessUnitSetAddressCustomFieldAction extends IMyBusinessUn
 export interface MyBusinessUnitSetAddressCustomTypeAction extends IMyBusinessUnitUpdateAction {
   readonly action: 'setAddressCustomType'
   /**
-   *	Defines the [Type](ctp:api:type:Type) that extends the `address` with [Custom Fields](/../api/projects/custom-fields).
+   *	Defines the [Type](ctp:api:type:Type) that extends the `address` with [Custom Fields](ctp:api:type:CustomFields).
    *	If absent, any existing Type and Custom Fields are removed from the `address`.
    *
    *
    */
   readonly type?: TypeResourceIdentifier
   /**
-   *	Sets the [Custom Fields](/../api/projects/custom-fields) fields for the `address`.
+   *	Object containing the [Custom Fields](ctp:api:type:CustomFields) fields for the `address`.
+   *
+   *	Required if at least one Custom Field is defined as required in the `fieldDefinitions` of the referenced [Type](ctp:api:type:Type).
    *
    *
    */
@@ -1344,7 +1346,7 @@ export interface MyBusinessUnitSetContactEmailAction extends IMyBusinessUnitUpda
 export interface MyBusinessUnitSetCustomFieldAction extends IMyBusinessUnitUpdateAction {
   readonly action: 'setCustomField'
   /**
-   *	Name of the [Custom Field](/../api/projects/custom-fields).
+   *	Name of the [Custom Field](/api/projects/custom-fields).
    *
    *
    */
@@ -1365,14 +1367,16 @@ export interface MyBusinessUnitSetCustomFieldAction extends IMyBusinessUnitUpdat
 export interface MyBusinessUnitSetCustomTypeAction extends IMyBusinessUnitUpdateAction {
   readonly action: 'setCustomType'
   /**
-   *	Defines the [Type](ctp:api:type:Type) that extends the BusinessUnit with [Custom Fields](/../api/projects/custom-fields).
+   *	Defines the [Type](ctp:api:type:Type) that extends the BusinessUnit with [Custom Fields](ctp:api:type:CustomFields).
    *	If absent, any existing Type and Custom Fields are removed from the BusinessUnit.
    *
    *
    */
   readonly type?: TypeResourceIdentifier
   /**
-   *	Sets the [Custom Fields](/../api/projects/custom-fields) for the BusinessUnit.
+   *	Object containing the [Custom Fields](ctp:api:type:CustomFields) fields for the BusinessUnit.
+   *
+   *	Required if at least one Custom Field is defined as required in the `fieldDefinitions` of the referenced [Type](ctp:api:type:Type).
    *
    *
    */
@@ -1417,13 +1421,13 @@ export interface MyBusinessUnitSetDefaultShippingAddressAction extends IMyBusine
   readonly addressKey?: string
 }
 /**
- *	Adds a [DiscountCode](ctp:api:type:DiscountCode) to the Cart to activate the related [CartDiscounts](/../api/projects/cartDiscounts).
+ *	Adds a [DiscountCode](ctp:api:type:DiscountCode) to the Cart to activate the related [CartDiscounts](/api/projects/cartDiscounts).
  *	If the related Cart Discounts are inactive or invalid, or belong to a different Store than the Cart, a [DiscountCodeNonApplicableError](ctp:api:type:DiscountCodeNonApplicableError) is returned.
  *
  *	A Discount Code can be added only if no [DirectDiscount](ctp:api:type:DirectDiscount) has been applied to the Cart.
  *	For [frozen Carts](ctp:api:type:FrozenCarts), the [DiscountCodeState](ctp:api:type:DiscountCodeState) must be `DoesNotMatchCart` when adding a Discount Code.
  *
- *	The maximum number of Discount Codes in a Cart is restricted by a [limit](/../api/limits#carts).
+ *	The maximum number of Discount Codes in a Cart is restricted by a [limit](/api/limits#carts).
  *
  *	Specific Error Code: [MatchingPriceNotFound](ctp:api:type:MatchingPriceNotFoundError)
  *
@@ -1453,9 +1457,9 @@ export interface MyCartAddItemShippingAddressAction extends IMyCartUpdateAction 
   readonly address: _BaseAddress
 }
 /**
- *	If the Cart contains a [LineItem](ctp:api:type:LineItem) for a Product Variant with the same [LineItemMode](ctp:api:type:LineItemMode), [Custom Fields](/../api/projects/custom-fields), supply and distribution channel, then only the quantity of the existing Line Item is increased.
+ *	If the Cart contains a [LineItem](ctp:api:type:LineItem) for a Product Variant with the same [LineItemMode](ctp:api:type:LineItemMode), [Custom Fields](ctp:api:type:CustomFields), supply and distribution channel, then only the quantity of the existing Line Item is increased.
  *	If [LineItem](ctp:api:type:LineItem) `shippingDetails` is set, it is merged. All addresses will be present afterwards and, for address keys present in both shipping details, the quantity will be summed up.
- *	The [LineItem](ctp:api:type:LineItem) price is set as described in [Line Item price selection](/../api/pricing-and-discounts-overview#line-item-price-selection).
+ *	The [LineItem](ctp:api:type:LineItem) price is set as described in [Line Item price selection](/api/pricing-and-discounts-overview#line-item-price-selection).
  *
  *	If the Tax Rate is not set, a [MissingTaxRateForCountry](ctp:api:type:MissingTaxRateForCountryError) error is returned.
  *
@@ -1465,7 +1469,7 @@ export interface MyCartAddItemShippingAddressAction extends IMyCartUpdateAction 
 export interface MyCartAddLineItemAction extends IMyCartUpdateAction {
   readonly action: 'addLineItem'
   /**
-   *	User-defined unique identifier of the LineItem.
+   *	User-defined identifier of the LineItem. Must be unique among LineItems in the Cart.
    *
    *
    */
@@ -1497,7 +1501,7 @@ export interface MyCartAddLineItemAction extends IMyCartUpdateAction {
    */
   readonly sku?: string
   /**
-   *	Number of Line Items to add to the Cart.
+   *	Quantity of Line Items to add to the Cart.
    *
    *
    */
@@ -1512,7 +1516,7 @@ export interface MyCartAddLineItemAction extends IMyCartUpdateAction {
    */
   readonly addedAt?: string
   /**
-   *	Used to [select](/../api/pricing-and-discounts-overview#line-item-price-selection) a Product Price.
+   *	Used to [select](/api/pricing-and-discounts-overview#line-item-price-selection) a Product Price.
    *	The Channel must have the `ProductDistribution` [ChannelRoleEnum](ctp:api:type:ChannelRoleEnum).
    *	If the Cart is bound to a [Store](ctp:api:type:Store) with `distributionChannels` set, the Channel must match one of the Store's distribution channels.
    *
@@ -1520,7 +1524,7 @@ export interface MyCartAddLineItemAction extends IMyCartUpdateAction {
    */
   readonly distributionChannel?: ChannelResourceIdentifier
   /**
-   *	Used to identify [Inventory entries](/../api/projects/inventory) that must be reserved.
+   *	Used to identify [Inventory entries](/api/projects/inventory) that must be reserved.
    *	The Channel must have the `InventorySupply` [ChannelRoleEnum](ctp:api:type:ChannelRoleEnum).
    *
    *
@@ -1595,7 +1599,10 @@ export interface MyCartApplyDeltaToLineItemShippingDetailsTargetsAction extends 
  *	it will be changed to `ExternalPrice` and the existing `externalPrice` value, i.e. `LineItem.price`, will be retained.
  *	The LineItem total will be calculated by the system instead, so that the `externalTotalPrice` will be dropped.
  *
- *	This action is subject to [InventoryEntry](ctp:api:type:InventoryEntry) min/max restrictions when applicable. For more information, see [Quantity limits](/../api/carts-orders-overview#quantity-limits).
+ *	This action is subject to [InventoryEntry](ctp:api:type:InventoryEntry) min/max restrictions when applicable. For more information, see [Quantity limits](/api/inventory-overview#quantity-limits).
+ *
+ *	If using [InventoryMode](ctp:api:type:InventoryMode) `ReserveOnCart`:
+ *	- If the requested quantity cannot be reserved, the Line Item quantity does not change and a reservation warning is returned in the Cart response.
  *
  */
 export interface MyCartChangeLineItemQuantityAction extends IMyCartUpdateAction {
@@ -1645,7 +1652,7 @@ export interface MyCartChangeTaxModeAction extends IMyCartUpdateAction {
   readonly taxMode: TaxMode
 }
 /**
- *	This update action does not set any Cart field in particular, but it triggers several [Cart updates](/../api/carts-orders-overview#update-a-cart)
+ *	This update action does not set any Cart field in particular, but it triggers several [Cart updates](/api/carts-orders-overview#update-a-cart)
  *	to bring prices and discounts to the latest state. Those can become stale over time when no Cart updates have been performed for a while and
  *	prices on related Products have changed in the meanwhile.
  *
@@ -1656,8 +1663,8 @@ export interface MyCartChangeTaxModeAction extends IMyCartUpdateAction {
 export interface MyCartRecalculateAction extends IMyCartUpdateAction {
   readonly action: 'recalculate'
   /**
-   *	- Leave empty or set to `false` to only update the Prices and TaxRates of the Line Items.
-   *	- Set to `true` to update the Line Items' product data (like `name`, `variant` and `productType`) also.
+   *	- Leave empty or set as `false` to update only the Prices and TaxRates of the Line Items. Prices inside the `variant` are only updated if `updateProductData` is `true`.
+   *	- Set as `true` to update the Product data (such as `name`, `variant`, `productType`, and Product Attributes) of the Line Items.
    *
    *
    */
@@ -1686,7 +1693,7 @@ export interface MyCartRemoveItemShippingAddressAction extends IMyCartUpdateActi
   readonly addressKey: string
 }
 /**
- *	The [LineItem](ctp:api:type:LineItem) price is updated as described in [Line Item price selection](/../api/pricing-and-discounts-overview#line-item-price-selection).
+ *	The [LineItem](ctp:api:type:LineItem) price is updated as described in [Line Item price selection](/api/pricing-and-discounts-overview#line-item-price-selection).
  *
  */
 export interface MyCartRemoveLineItemAction extends IMyCartUpdateAction {
@@ -1757,8 +1764,8 @@ export interface MyCartSetBillingAddressAction extends IMyCartUpdateAction {
 export interface MyCartSetBusinessUnitAction extends IMyCartUpdateAction {
   readonly action: 'setBusinessUnit'
   /**
-   *	New Business Unit to assign to the Cart, which must have access to the [Store](/../api/projects/stores) that is set on the Cart.
-   *	Additionally, the authenticated user must be an [Associate](/projects/business-units#associate) in the [Business Unit](/projects/business-units#businessunit).
+   *	New Business Unit to assign to the Cart, which must have access to the [Store](/api/projects/stores) that is set on the Cart.
+   *	Additionally, the authenticated user must be an [Associate](ctp:api:type:Associate) in the [Business Unit](/projects/business-units#businessunit).
    *
    *
    */
@@ -1784,7 +1791,7 @@ export interface MyCartSetCountryAction extends IMyCartUpdateAction {
 export interface MyCartSetCustomFieldAction extends IMyCartUpdateAction {
   readonly action: 'setCustomField'
   /**
-   *	Name of the [Custom Field](/../api/projects/custom-fields).
+   *	Name of the [Custom Field](/api/projects/custom-fields).
    *
    *
    */
@@ -1801,14 +1808,16 @@ export interface MyCartSetCustomFieldAction extends IMyCartUpdateAction {
 export interface MyCartSetCustomTypeAction extends IMyCartUpdateAction {
   readonly action: 'setCustomType'
   /**
-   *	Defines the [Type](ctp:api:type:Type) that extends the Cart with [Custom Fields](/../api/projects/custom-fields).
+   *	Defines the [Type](ctp:api:type:Type) that extends the Cart with [Custom Fields](ctp:api:type:CustomFields).
    *	If absent, any existing Type and Custom Fields are removed from the Cart.
    *
    *
    */
   readonly type?: TypeResourceIdentifier
   /**
-   *	Sets the [Custom Fields](/../api/projects/custom-fields) fields for the Cart.
+   *	Object containing the [Custom Fields](ctp:api:type:CustomFields) fields for the Cart.
+   *
+   *	Required if at least one Custom Field is defined as required in the `fieldDefinitions` of the referenced [Type](ctp:api:type:Type).
    *
    *
    */
@@ -1855,7 +1864,7 @@ export interface MyCartSetLineItemCustomFieldAction extends IMyCartUpdateAction 
    */
   readonly lineItemKey?: string
   /**
-   *	Name of the [Custom Field](/../api/projects/custom-fields).
+   *	Name of the [Custom Field](/api/projects/custom-fields).
    *
    *
    */
@@ -1884,21 +1893,23 @@ export interface MyCartSetLineItemCustomTypeAction extends IMyCartUpdateAction {
    */
   readonly lineItemKey?: string
   /**
-   *	Defines the [Type](ctp:api:type:Type) that extends the LineItem with [Custom Fields](/../api/projects/custom-fields).
+   *	Defines the [Type](ctp:api:type:Type) that extends the LineItem with [Custom Fields](ctp:api:type:CustomFields).
    *	If absent, any existing Type and Custom Fields are removed from the Line Item.
    *
    *
    */
   readonly type?: TypeResourceIdentifier
   /**
-   *	Sets the [Custom Fields](/../api/projects/custom-fields) fields for the Line Item.
+   *	Object containing the [Custom Fields](ctp:api:type:CustomFields) fields for the Line Item.
+   *
+   *	Required if at least one Custom Field is defined as required in the `fieldDefinitions` of the referenced [Type](ctp:api:type:Type).
    *
    *
    */
   readonly fields?: FieldContainer
 }
 /**
- *	Setting a distribution channel for a [LineItem](ctp:api:type:LineItem) can lead to an updated `price` as described in [Line Item price selection](/../api/pricing-and-discounts-overview#line-item-price-selection).
+ *	Setting a distribution channel for a [LineItem](ctp:api:type:LineItem) can lead to an updated `price` as described in [Line Item price selection](/api/pricing-and-discounts-overview#line-item-price-selection).
  *
  */
 export interface MyCartSetLineItemDistributionChannelAction extends IMyCartUpdateAction {
@@ -1949,7 +1960,7 @@ export interface MyCartSetLineItemShippingDetailsAction extends IMyCartUpdateAct
 /**
  *	Performing this action does not reserve stock. Stock is only reserved at Order creation if the [InventoryMode](ctp:api:type:InventoryMode) of the Cart is `TrackOnly` or `ReserveOnOrder`.
  *
- *	This action is subject to [InventoryEntry](ctp:api:type:InventoryEntry) min/max restrictions when applicable. For more information, see [Quantity limits](/../api/carts-orders-overview#quantity-limits).
+ *	This action is subject to [InventoryEntry](ctp:api:type:InventoryEntry) min/max restrictions when applicable. For more information, see [Quantity limits](/api/inventory-overview#quantity-limits).
  *
  */
 export interface MyCartSetLineItemSupplyChannelAction extends IMyCartUpdateAction {
@@ -1989,7 +2000,7 @@ export interface MyCartSetLocaleAction extends IMyCartUpdateAction {
 /**
  *	Setting the shipping address also sets the [TaxRate](ctp:api:type:TaxRate) of Line Items and calculates the [TaxedPrice](ctp:api:type:TaxedPrice).
  *
- *	If a matching price cannot be found for the given shipping address during [Line Item price selection](/../api/pricing-and-discounts-overview#line-item-price-selection),
+ *	If a matching price cannot be found for the given shipping address during [Line Item price selection](/api/pricing-and-discounts-overview#line-item-price-selection),
  *	a [MissingTaxRateForCountry](ctp:api:type:MissingTaxRateForCountryError) error is returned.
  *
  *	If you want to allow shipping to states inside a country that are not explicitly covered by a TaxRate,
@@ -2017,7 +2028,11 @@ export interface MyCartSetShippingMethodAction extends IMyCartUpdateAction {
    *	Value to set.
    *	If empty, any existing value is removed.
    *
-   *	If the referenced Shipping Method has a predicate that does not match the Cart, an [InvalidOperation](ctp:api:type:InvalidOperationError) error is returned.
+   *	[InvalidOperation](ctp:api:type:InvalidOperationError) error is returned in one of the following cases:
+   *	  1. If the referenced Shipping Method has a predicate that does not match the Cart.
+   *	  2. If the referenced Shipping Method is not active.
+   *	  3. If the referenced Shipping Method is associated with a Store that is different from the Cart's Store.
+   *	  4. If the referenced Shipping Method is associated with a Store and the Cart is not associated with any Store.
    *
    *
    */
@@ -2215,7 +2230,7 @@ export interface MyCustomerSetCompanyNameAction extends IMyCustomerUpdateAction 
 export interface MyCustomerSetCustomFieldAction extends IMyCustomerUpdateAction {
   readonly action: 'setCustomField'
   /**
-   *	Name of the [Custom Field](/../api/projects/custom-fields).
+   *	Name of the [Custom Field](/api/projects/custom-fields).
    *
    *
    */
@@ -2236,14 +2251,16 @@ export interface MyCustomerSetCustomFieldAction extends IMyCustomerUpdateAction 
 export interface MyCustomerSetCustomTypeAction extends IMyCustomerUpdateAction {
   readonly action: 'setCustomType'
   /**
-   *	Defines the [Type](ctp:api:type:Type) that extends the MyCustomer with [Custom Fields](/../api/projects/custom-fields).
+   *	Defines the [Type](ctp:api:type:Type) that extends the MyCustomer with [Custom Fields](ctp:api:type:CustomFields).
    *	If absent, any existing Type and Custom Fields are removed from the MyCustomer.
    *
    *
    */
   readonly type?: TypeResourceIdentifier
   /**
-   *	Sets the [Custom Fields](/../api/projects/custom-fields) fields for the MyCustomer.
+   *	Object containing the [Custom Fields](ctp:api:type:CustomFields) fields for the MyCustomer.
+   *
+   *	Required if at least one Custom Field is defined as required in the `fieldDefinitions` of the referenced [Type](ctp:api:type:Type).
    *
    *
    */
@@ -2415,7 +2432,7 @@ export interface MyPaymentChangeAmountPlannedAction extends IMyPaymentUpdateActi
 export interface MyPaymentSetCustomFieldAction extends IMyPaymentUpdateAction {
   readonly action: 'setCustomField'
   /**
-   *	Name of the [Custom Field](/../api/projects/custom-fields).
+   *	Name of the [Custom Field](/api/projects/custom-fields).
    *
    *
    */
@@ -2436,7 +2453,7 @@ export interface MyPaymentSetCustomFieldAction extends IMyPaymentUpdateAction {
 export interface MyPaymentSetMethodInfoCustomFieldAction extends IMyPaymentUpdateAction {
   readonly action: 'setMethodInfoCustomField'
   /**
-   *	Name of the [Custom Field](/../api/projects/custom-fields).
+   *	Name of the [Custom Field](/api/projects/custom-fields).
    *
    *
    */
@@ -2457,13 +2474,15 @@ export interface MyPaymentSetMethodInfoCustomFieldAction extends IMyPaymentUpdat
 export interface MyPaymentSetMethodInfoCustomTypeAction extends IMyPaymentUpdateAction {
   readonly action: 'setMethodInfoCustomType'
   /**
-   *	Defines the [Type](ctp:api:type:Type) that extends the `paymentMethodInfo` with [Custom Fields](/../api/projects/custom-fields).
+   *	Defines the [Type](ctp:api:type:Type) that extends the `paymentMethodInfo` with [Custom Fields](ctp:api:type:CustomFields).
    *
    *
    */
   readonly type?: TypeResourceIdentifier
   /**
-   *	Sets the [Custom Fields](/../api/projects/custom-fields) fields for the `paymentMethodInfo`.
+   *	Object containing the [Custom Fields](ctp:api:type:CustomFields) fields for the `paymentMethodInfo`.
+   *
+   *	Required if at least one Custom Field is defined as required in the `fieldDefinitions` of the referenced [Type](ctp:api:type:Type).
    *
    *
    */
@@ -2516,7 +2535,7 @@ export interface MyPaymentSetMethodInfoNameAction extends IMyPaymentUpdateAction
 export interface MyPaymentSetTransactionCustomFieldAction extends IMyPaymentUpdateAction {
   readonly action: 'setTransactionCustomField'
   /**
-   *	Name of the [Custom Field](/../api/projects/custom-fields).
+   *	Name of the [Custom Field](/api/projects/custom-fields).
    *
    *
    */
@@ -2531,7 +2550,7 @@ export interface MyPaymentSetTransactionCustomFieldAction extends IMyPaymentUpda
   readonly value?: any
 }
 /**
- *	When accepting, declining, or renegotiating [B2B Quotes](/../api/associates-overview#b2b-resources), the Customer must have the `AcceptMyQuotes`, `DeclineMyQuotes`, or `RenegotiateMyQuotes` [Permission](ctp:api:type:Permission), respectively. If the required [Permission](/projects/associate-roles#permission) is missing, an [AssociateMissingPermission](/errors#associatemissingpermission) error is returned.
+ *	When accepting, declining, or renegotiating [B2B Quotes](/api/associates-overview#b2b-resources), the Customer must have the `AcceptMyQuotes`, `DeclineMyQuotes`, or `RenegotiateMyQuotes` [Permission](ctp:api:type:Permission), respectively. If the required [Permission](ctp:api:type:Permission) is missing, an [AssociateMissingPermission](ctp:api:type:AssociateMissingPermissionError) error is returned.
  */
 export interface MyQuoteChangeMyQuoteStateAction extends IMyQuoteUpdateAction {
   readonly action: 'changeMyQuoteState'
@@ -2766,7 +2785,7 @@ export interface MyShoppingListRemoveTextLineItemAction extends IMyShoppingListU
 export interface MyShoppingListSetCustomFieldAction extends IMyShoppingListUpdateAction {
   readonly action: 'setCustomField'
   /**
-   *	Name of the [Custom Field](/../api/projects/custom-fields).
+   *	Name of the [Custom Field](/api/projects/custom-fields).
    *
    *
    */
@@ -2783,14 +2802,16 @@ export interface MyShoppingListSetCustomFieldAction extends IMyShoppingListUpdat
 export interface MyShoppingListSetCustomTypeAction extends IMyShoppingListUpdateAction {
   readonly action: 'setCustomType'
   /**
-   *	Defines the [Type](ctp:api:type:Type) that extends the MyShoppingList with [Custom Fields](/../api/projects/custom-fields).
+   *	Defines the [Type](ctp:api:type:Type) that extends the MyShoppingList with [Custom Fields](ctp:api:type:CustomFields).
    *	If absent, any existing Type and Custom Fields are removed from the MyShoppingList.
    *
    *
    */
   readonly type?: TypeResourceIdentifier
   /**
-   *	Sets the [Custom Fields](/../api/projects/custom-fields) fields for the MyShoppingList.
+   *	Object containing the [Custom Fields](ctp:api:type:CustomFields) fields for the MyShoppingList.
+   *
+   *	Required if at least one Custom Field is defined as required in the `fieldDefinitions` of the referenced [Type](ctp:api:type:Type).
    *
    *
    */
@@ -2833,7 +2854,7 @@ export interface MyShoppingListSetLineItemCustomFieldAction extends IMyShoppingL
    */
   readonly lineItemKey?: string
   /**
-   *	Name of the [Custom Field](/../api/projects/custom-fields).
+   *	Name of the [Custom Field](/api/projects/custom-fields).
    *
    *
    */
@@ -2856,14 +2877,16 @@ export interface MyShoppingListSetLineItemCustomTypeAction extends IMyShoppingLi
    */
   readonly lineItemId: string
   /**
-   *	Defines the [Type](ctp:api:type:Type) that extends the ShoppingListLineItem with [Custom Fields](/../api/projects/custom-fields).
+   *	Defines the [Type](ctp:api:type:Type) that extends the ShoppingListLineItem with [Custom Fields](ctp:api:type:CustomFields).
    *	If absent, any existing Type and Custom Fields are removed from the ShoppingListLineItem.
    *
    *
    */
   readonly type?: TypeResourceIdentifier
   /**
-   *	Sets the [Custom Fields](/../api/projects/custom-fields) fields for the ShoppingListLineItem.
+   *	Object containing the [Custom Fields](ctp:api:type:CustomFields) fields for the ShoppingListLineItem.
+   *
+   *	Required if at least one Custom Field is defined as required in the `fieldDefinitions` of the referenced [Type](ctp:api:type:Type).
    *
    *
    */
@@ -2884,7 +2907,7 @@ export interface MyShoppingListSetTextLineItemCustomFieldAction extends IMyShopp
    */
   readonly textLineItemKey?: string
   /**
-   *	Name of the [Custom Field](/../api/projects/custom-fields).
+   *	Name of the [Custom Field](/api/projects/custom-fields).
    *
    *
    */
@@ -2913,14 +2936,16 @@ export interface MyShoppingListSetTextLineItemCustomTypeAction extends IMyShoppi
    */
   readonly textLineItemKey?: string
   /**
-   *	Defines the [Type](ctp:api:type:Type) that extends the TextLineItem with [Custom Fields](/../api/projects/custom-fields).
+   *	Defines the [Type](ctp:api:type:Type) that extends the TextLineItem with [Custom Fields](ctp:api:type:CustomFields).
    *	If absent, any existing Type and Custom Fields are removed from the TextLineItem.
    *
    *
    */
   readonly type?: TypeResourceIdentifier
   /**
-   *	Sets the [Custom Fields](/../api/projects/custom-fields) fields for the TextLineItem.
+   *	Object containing the [Custom Fields](ctp:api:type:CustomFields) fields for the TextLineItem.
+   *
+   *	Required if at least one Custom Field is defined as required in the `fieldDefinitions` of the referenced [Type](ctp:api:type:Type).
    *
    *
    */

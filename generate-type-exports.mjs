@@ -2,7 +2,7 @@ import fs from 'node:fs'
 import { execSync } from 'node:child_process'
 
 const CHECKOUT_DIR = './.commercetools-repo'
-const IGNORED_FILES = ['api-client.ts']
+const IGNORED_FILES = ['api-client.ts', 'mcp-server.ts']
 const MODELS_DEST = './src/lib/types/models'
 
 if (!fs.existsSync(CHECKOUT_DIR)) {

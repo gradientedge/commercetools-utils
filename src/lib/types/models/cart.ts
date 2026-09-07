@@ -42,6 +42,7 @@ import {
   LineItemRecurrenceInfo,
   LineItemRecurrenceInfoDraft,
 } from './recurring-order.js'
+import { ReservationReference } from './reservation.js'
 import {
   ShippingMethodReference,
   ShippingMethodResourceIdentifier,
@@ -52,6 +53,7 @@ import { ShoppingListResourceIdentifier } from './shopping-list.js'
 import { StoreKeyReference, StoreResourceIdentifier } from './store.js'
 import { SubRate, TaxCategoryReference, TaxCategoryResourceIdentifier, TaxRate } from './tax-category.js'
 import { CustomFields, CustomFieldsDraft, FieldContainer, TypeResourceIdentifier } from './type.js'
+import { WarningObject } from './warning.js'
 
 export interface Cart extends BaseResource {
   /**
@@ -85,7 +87,7 @@ export interface Cart extends BaseResource {
    */
   readonly customerEmail?: string
   /**
-   *	[Reference](ctp:api:type:Reference) to the Customer Group of the Customer that the Cart belongs to. Used for [Line Item price selection](/../api/pricing-and-discounts-overview#line-item-price-selection).
+   *	[Reference](ctp:api:type:Reference) to the Customer Group of the Customer that the Cart belongs to. Used for [Line Item price selection](/api/pricing-and-discounts-overview#line-item-price-selection).
    *
    *
    */
@@ -97,7 +99,7 @@ export interface Cart extends BaseResource {
    */
   readonly anonymousId?: string
   /**
-   *	[Reference](ctp:api:type:Reference) to a Business Unit the Cart belongs to. Only available for [B2B](/../offering/composable-commerce#composable-commerce-for-b2b)-enabled Projects.
+   *	[Reference](ctp:api:type:Reference) to a Business Unit the Cart belongs to. Only available for [B2B](/offering/commerce-b2b)-enabled Projects.
    *
    *
    */
@@ -206,7 +208,7 @@ export interface Cart extends BaseResource {
    */
   readonly billingAddress?: Address
   /**
-   *	Shipping address for a Cart with `Single` [ShippingMode](ctp:api:type:ShippingMode). Determines eligible [ShippingMethod](ctp:api:type:ShippingMethod) rates and Tax Rates of Line Items.
+   *	Shipping address for a Cart with `Single` [ShippingMode](ctp:api:type:ShippingMode). Determines eligible [ShippingMethod](ctp:api:type:ShippingMethod) rates. For a Cart with `Platform` [TaxMode](ctp:api:type:TaxMode), it also determines Tax Rates of Line Items.
    *
    *
    */
@@ -283,7 +285,7 @@ export interface Cart extends BaseResource {
    */
   readonly paymentInfo?: PaymentInfo
   /**
-   *	Used for [Line Item price selection](/../api/pricing-and-discounts-overview#line-item-price-selection).
+   *	Used for [Line Item price selection](/api/pricing-and-discounts-overview#line-item-price-selection).
    *
    *
    */
@@ -313,7 +315,7 @@ export interface Cart extends BaseResource {
    */
   readonly discountTypeCombination?: DiscountTypeCombination
   /**
-   *	Indicates whether the Cart has been [locked](/../api/carts-orders-overview#lock-a-cart), preventing edits.
+   *	Indicates whether the Cart has been [locked](/api/carts-orders-overview#lock-a-cart), preventing edits.
    *
    *
    */
@@ -327,7 +329,7 @@ export interface Cart extends BaseResource {
   /**
    *	User-defined identifier of a purchase order.
    *
-   *	It is typically set by the [Buyer](ctp:api:type:Buyer) or Merchant to track the purchase order during the [quote and order flow](/../api/quotes-overview#intended-workflow).
+   *	It is typically set by the [Buyer](ctp:api:type:Buyer) or Merchant to track the purchase order during the [quote and order flow](/api/quotes-overview#intended-workflow).
    *
    */
   readonly purchaseOrderNumber?: string
@@ -355,6 +357,12 @@ export interface Cart extends BaseResource {
    *
    */
   readonly createdBy?: CreatedBy
+  /**
+   *	Warnings about the processing of a request.
+   *
+   *
+   */
+  readonly warnings?: WarningObject[]
 }
 export interface CartDraft {
   /**
@@ -382,7 +390,7 @@ export interface CartDraft {
    */
   readonly customerEmail?: string
   /**
-   *	[ResourceIdentifier](ctp:api:type:ResourceIdentifier) to the Customer Group of the Customer that the Cart belongs to. Used for [Line Item price selection](/../api/pricing-and-discounts-overview#line-item-price-selection).
+   *	[ResourceIdentifier](ctp:api:type:ResourceIdentifier) to the Customer Group of the Customer that the Cart belongs to. Used for [Line Item price selection](/api/pricing-and-discounts-overview#line-item-price-selection).
    *
    *	You can set either a `customerId` or a `customerGroup`.
    *	If the Customer referenced in `customerId` belongs to a Customer Group then `customerGroup` is set automatically.
@@ -397,7 +405,7 @@ export interface CartDraft {
    */
   readonly anonymousId?: string
   /**
-   *	[ResourceIdentifier](ctp:api:type:ResourceIdentifier) to the Business Unit the Cart should belong to. When the `customerId` of the Cart is also set, the [Customer](ctp:api:type:Customer) must be an [Associate](ctp:api:type:Associate) of the Business Unit. Only available for [B2B](/../offering/composable-commerce#composable-commerce-for-b2b)-enabled Projects.
+   *	[ResourceIdentifier](ctp:api:type:ResourceIdentifier) to the Business Unit the Cart should belong to. When the `customerId` of the Cart is also set, the [Customer](ctp:api:type:Customer) must be an [Associate](ctp:api:type:Associate) of the Business Unit. Only available for [B2B](/offering/commerce-b2b)-enabled Projects.
    *
    *
    */
@@ -518,7 +526,7 @@ export interface CartDraft {
    */
   readonly discountCodes?: string[]
   /**
-   *	Used for [Line Item price selection](/../api/pricing-and-discounts-overview#line-item-price-selection).
+   *	Used for [Line Item price selection](/api/pricing-and-discounts-overview#line-item-price-selection).
    *	If used for [Create Cart in Store](ctp:api:endpoint:/{projectKey}/in-store/carts:POST), the provided country must be one of the [Store's](ctp:api:type:Store) `countries`.
    *
    *
@@ -554,13 +562,13 @@ export interface CartDraft {
   /**
    *	User-defined identifier of a purchase order.
    *
-   *	It is typically set by the [Buyer](ctp:api:type:Buyer) or Merchant to track the purchase order during the [quote and order flow](/../api/quotes-overview#intended-workflow).
+   *	It is typically set by the [Buyer](ctp:api:type:Buyer) or Merchant to track the purchase order during the [quote and order flow](/api/quotes-overview#intended-workflow).
    *
    */
   readonly purchaseOrderNumber?: string
 }
 /**
- *	Indicates that the Cart is [locked](/../api/carts-orders-overview#lock-a-cart) to prevent changes.
+ *	Indicates that the Cart is [locked](/api/carts-orders-overview#lock-a-cart) to prevent changes.
  *	Provides metadata about when the lock was created and which
  *	[API Client](ctp:api:type:ApiClient) initiated it.
  *
@@ -580,7 +588,7 @@ export interface CartLock {
   readonly clientId: string
 }
 /**
- *	Determines how to manually merge an anonymous Cart with an existing Customer Cart. For more information about merge mode behaviors, merge rules, and tax recalculation, see [Merge a Cart](/../api/carts-orders-overview#merge-a-cart).
+ *	Determines how to manually merge an anonymous Cart with an existing Customer Cart. For more information about merge mode behaviors, merge rules, and tax recalculation, see [Merge a Cart](/api/carts-orders-overview#merge-a-cart).
  *
  */
 export enum CartMergeModeValues {
@@ -602,18 +610,18 @@ export enum CartOriginValues {
 
 export type CartOrigin = 'Customer' | 'Merchant' | 'Quote' | 'RecurringOrder' | (string & {})
 /**
- *	[PagedQueryResult](/../api/general-concepts#pagedqueryresult) with results containing an array of [Cart](ctp:api:type:Cart).
+ *	[PagedQueryResult](/api/general-concepts#pagedqueryresult) with results containing an array of [Cart](ctp:api:type:Cart).
  *
  */
 export interface CartPagedQueryResponse {
   /**
-   *	Number of [results requested](/../api/general-concepts#limit).
+   *	Number of [results requested](/api/general-concepts#limit).
    *
    *
    */
   readonly limit: number
   /**
-   *	Number of [elements skipped](/../api/general-concepts#offset).
+   *	Number of [elements skipped](/api/general-concepts#offset).
    *
    *
    */
@@ -626,10 +634,10 @@ export interface CartPagedQueryResponse {
   readonly count: number
   /**
    *	Total number of results matching the query.
-   *	This number is an estimation that is not [strongly consistent](/../api/general-concepts#strong-consistency).
+   *	This number is an estimation that is not [strongly consistent](/api/general-concepts#strong-consistency).
    *	This field is returned by default.
    *	For improved performance, calculating this field can be deactivated by using the query parameter `withTotal=false`.
-   *	When the results are filtered with a [Query Predicate](/../api/predicates/query), `total` is subject to a [limit](/../api/limits#queries).
+   *	When the results are filtered with a [Query Predicate](/api/predicates/query), `total` is subject to a [limit](/api/limits#queries).
    *
    *
    */
@@ -654,14 +662,14 @@ export interface CartReference extends IReference {
    */
   readonly id: string
   /**
-   *	Contains the representation of the expanded Cart. Only present in responses to requests with [Reference Expansion](/../api/general-concepts#reference-expansion) for Carts.
+   *	Contains the representation of the expanded Cart. Only present in responses to requests with [Reference Expansion](/api/general-concepts#reference-expansion) for Carts.
    *
    *
    */
   readonly obj?: Cart
 }
 /**
- *	[ResourceIdentifier](ctp:api:type:ResourceIdentifier) to a [Cart](ctp:api:type:Cart). Either `id` or `key` is required. If both are set, an [InvalidJsonInput](/../api/errors#invalidjsoninput) error is returned.
+ *	[ResourceIdentifier](ctp:api:type:ResourceIdentifier) to a [Cart](ctp:api:type:Cart). Either `id` or `key` is required. If both are set, an [InvalidJsonInput](ctp:api:type:InvalidJsonInputError) error is returned.
  *
  */
 export interface CartResourceIdentifier extends IResourceIdentifier {
@@ -772,6 +780,7 @@ export type CartUpdateAction =
   | CartSetLineItemTotalPriceAction
   | CartSetLocaleAction
   | CartSetPurchaseOrderNumberAction
+  | CartSetReservationExpirationInMinutesAction
   | CartSetShippingAddressAction
   | CartSetShippingAddressCustomFieldAction
   | CartSetShippingAddressCustomTypeAction
@@ -803,7 +812,7 @@ export interface CustomLineItem {
    */
   readonly id: string
   /**
-   *	User-defined unique identifier of the Custom Line Item.
+   *	User-defined identifier of the Custom Line Item. Unique among Custom Line Items in the Cart or Order.
    *
    *
    */
@@ -918,7 +927,7 @@ export interface CustomLineItemDraft {
    */
   readonly name: LocalizedString
   /**
-   *	User-defined unique identifier of the Custom Line Item.
+   *	User-defined identifier of the Custom Line Item. Must be unique among Custom Line Items in the Cart.
    *
    *
    */
@@ -1075,7 +1084,7 @@ export interface DirectDiscount {
   /**
    *	Segment of the Cart that is discounted.
    *
-   *	Empty when the `value` is set to `giftLineItem`.
+   *	Absent if the `value` is `giftLineItem`.
    *
    *
    */
@@ -1255,7 +1264,7 @@ export interface DiscountedLineItemPrice {
 }
 export interface DiscountedLineItemPriceForQuantity {
   /**
-   *	Number of Line Items or Custom Line Items in the Cart.
+   *	Quantity of Line Items or Custom Line Items in the Cart.
    *
    *
    */
@@ -1370,7 +1379,7 @@ export interface ExternalTaxRateDraft {
   readonly subRates?: SubRate[]
 }
 /**
- *	Indicates how a [Cart](ctp:api:type:Cart) freeze behaves. For detailed behavior on each of these strategies, see [Freeze a Cart](/../api/carts-orders-overview#freeze-a-cart).
+ *	Indicates how a [Cart](ctp:api:type:Cart) freeze behaves. For detailed behavior on each of these strategies, see [Freeze a Cart](/api/carts-orders-overview#freeze-a-cart).
  *
  */
 export enum FreezeStrategyValues {
@@ -1385,11 +1394,12 @@ export type FreezeStrategy = 'HardFreeze' | 'SoftFreeze' | (string & {})
  */
 export enum InventoryModeValues {
   None = 'None',
+  ReserveOnCart = 'ReserveOnCart',
   ReserveOnOrder = 'ReserveOnOrder',
   TrackOnly = 'TrackOnly',
 }
 
-export type InventoryMode = 'None' | 'ReserveOnOrder' | 'TrackOnly' | (string & {})
+export type InventoryMode = 'None' | 'ReserveOnCart' | 'ReserveOnOrder' | 'TrackOnly' | (string & {})
 export interface ItemShippingDetails {
   /**
    *	Holds information on the quantity of Line Items or Custom Line Items and the address it is shipped.
@@ -1398,8 +1408,7 @@ export interface ItemShippingDetails {
    */
   readonly targets: ItemShippingTarget[]
   /**
-   *	- `true` if the quantity of Line Items or Custom Line Items is equal to the sum of sub-quantities defined in `targets`.
-   *	- `false` if the quantity of Line Items or Custom Line Items is not equal to the sum of sub-quantities defined in `targets`.
+   *	Whether the quantity of Line Items or Custom Line Items is equal to the sum of sub-quantities defined in `targets`.
    *	  Ordering a Cart when the value is `false` returns an [InvalidItemShippingDetails](ctp:api:type:InvalidItemShippingDetailsError) error.
    *
    *
@@ -1452,7 +1461,7 @@ export interface ItemShippingTarget {
   readonly shippingMethodKey?: string
 }
 /**
- *	The representation of a [Line Item](/../api/carts-orders-overview#line-items) in a [Cart](ctp:api:type:Cart) or in an [Order](ctp:api:type:Order).
+ *	The representation of a [Line Item](/api/carts-orders-overview#line-items) in a [Cart](ctp:api:type:Cart) or in an [Order](ctp:api:type:Order).
  *
  */
 export interface LineItem {
@@ -1463,7 +1472,7 @@ export interface LineItem {
    */
   readonly id: string
   /**
-   *	User-defined unique identifier of the LineItem.
+   *	User-defined identifier of the LineItem. Unique among LineItems in the Cart or Order.
    *
    *
    */
@@ -1495,7 +1504,7 @@ export interface LineItem {
   readonly name: LocalizedString
   /**
    *	`slug` of the current version of the Product. Updated automatically if the `slug` changes. Empty if the Product has been deleted.
-   *	The `productSlug` field of LineItem is not expanded when using [Reference Expansion](/../api/general-concepts#reference-expansion).
+   *	The `productSlug` field of LineItem is not expanded when using [Reference Expansion](/api/general-concepts#reference-expansion).
    *
    *
    */
@@ -1522,7 +1531,7 @@ export interface LineItem {
    */
   readonly price: Price
   /**
-   *	Number of Line Items of the given Product Variant present in the [Cart](ctp:api:type:Cart) or [Order](ctp:api:type:Order).
+   *	Quantity of the Product Variant present in the [Cart](ctp:api:type:Cart) or [Order](ctp:api:type:Order).
    *
    *
    */
@@ -1574,13 +1583,13 @@ export interface LineItem {
    */
   readonly perMethodTaxRate: MethodTaxRate[]
   /**
-   *	Identifies [Inventory entries](/../api/projects/inventory) that are reserved. The referenced Channel has the `InventorySupply` [ChannelRoleEnum](ctp:api:type:ChannelRoleEnum).
+   *	Identifies [Inventory entries](/api/projects/inventory) that are reserved. The referenced Channel has the `InventorySupply` [ChannelRoleEnum](ctp:api:type:ChannelRoleEnum).
    *
    *
    */
   readonly supplyChannel?: ChannelReference
   /**
-   *	Used to [select](/../api/pricing-and-discounts-overview#line-item-price-selection) a Product Price. The referenced Channel has the `ProductDistribution` [ChannelRoleEnum](ctp:api:type:ChannelRoleEnum).
+   *	Used to [select](/api/pricing-and-discounts-overview#line-item-price-selection) a Product Price. The referenced Channel has the `ProductDistribution` [ChannelRoleEnum](ctp:api:type:ChannelRoleEnum).
    *
    *
    */
@@ -1610,6 +1619,12 @@ export interface LineItem {
    *
    */
   readonly shippingDetails?: ItemShippingDetails
+  /**
+   *	Reference to the successful [Reservation](ctp:api:type:Reservation) associated with this Line Item. This field is only populated when using the [ReserveOnCart](ctp:api:type:InventoryMode) mode.
+   *
+   *
+   */
+  readonly reservation?: ReservationReference
   /**
    *	Custom Fields of the Line Item.
    *
@@ -1642,7 +1657,7 @@ export interface LineItem {
  */
 export interface LineItemDraft {
   /**
-   *	User-defined unique identifier of the LineItem.
+   *	User-defined identifier of the LineItem. Must be unique among LineItems in the Cart.
    *
    *
    */
@@ -1673,7 +1688,7 @@ export interface LineItemDraft {
    */
   readonly quantity?: number
   /**
-   *	Date and time (UTC) the Product Variant is added to the Cart.
+   *	Date and time (UTC) the Line Item was added to the Cart.
    *	If not set, it defaults to the current date and time.
    *
    *	Optional for backwards compatibility reasons.
@@ -1682,7 +1697,7 @@ export interface LineItemDraft {
    */
   readonly addedAt?: string
   /**
-   *	Used to [select](/../api/pricing-and-discounts-overview#line-item-price-selection) a Product Price.
+   *	Used to [select](/api/pricing-and-discounts-overview#line-item-price-selection) a Product Price.
    *	The referenced Channel must have the `ProductDistribution` [ChannelRoleEnum](ctp:api:type:ChannelRoleEnum).
    *
    *	If the Cart is bound to a [Store](ctp:api:type:Store) with `distributionChannels` set,
@@ -1692,7 +1707,7 @@ export interface LineItemDraft {
    */
   readonly distributionChannel?: ChannelResourceIdentifier
   /**
-   *	Used to identify [Inventory entries](/../api/projects/inventory) that must be reserved.
+   *	Used to identify [Inventory entries](/api/projects/inventory) that must be reserved.
    *	The referenced Channel must have the `InventorySupply` [ChannelRoleEnum](ctp:api:type:ChannelRoleEnum).
    *
    *
@@ -1789,8 +1804,7 @@ export interface MergeCartDraft {
    */
   readonly mergeMode?: CartMergeMode
   /**
-   *	- If `true`, the [LineItem](ctp:api:type:LineItem) Product data (`name`, `variant`, and `productType`) of the returned Cart will be updated.
-   *	- If `false`, only the prices, discounts, and tax rates will be updated.
+   *	Whether the [LineItem](ctp:api:type:LineItem) Product data (`name`, `variant`, and `productType`) of the returned Cart will be updated. If `false`, only the prices, discounts, and tax rates will be updated.
    *
    *
    */
@@ -2303,7 +2317,7 @@ export interface CartAddCustomLineItemAction extends ICartUpdateAction {
    */
   readonly name: LocalizedString
   /**
-   *	User-defined unique identifier of the Custom Line Item.
+   *	User-defined identifier of the Custom Line Item. Must be unique among Custom Line Items in the Cart.
    *
    *
    */
@@ -2429,13 +2443,13 @@ export interface CartAddCustomShippingMethodAction extends ICartUpdateAction {
   readonly custom?: CustomFieldsDraft
 }
 /**
- *	Adds a [DiscountCode](ctp:api:type:DiscountCode) to the Cart to activate the related [Cart Discounts](/../api/projects/cartDiscounts).
+ *	Adds a [DiscountCode](ctp:api:type:DiscountCode) to the Cart to activate the related [Cart Discounts](/api/projects/cartDiscounts).
  *	If the related Cart Discounts are inactive or invalid, or belong to a different Store than the Cart, a [DiscountCodeNonApplicableError](ctp:api:type:DiscountCodeNonApplicableError) is returned.
  *
  *	A Discount Code can be added only if no [DirectDiscount](ctp:api:type:DirectDiscount) has been applied to the Cart.
  *	For [frozen Carts](ctp:api:type:FrozenCarts), the [DiscountCodeState](ctp:api:type:DiscountCodeState) must be `DoesNotMatchCart` when adding a Discount Code.
  *
- *	The maximum number of Discount Codes in a Cart is restricted by a [limit](/../api/limits#carts).
+ *	The maximum number of Discount Codes in a Cart is restricted by a [limit](/api/limits#carts).
  *
  *	Specific Error Code: [MatchingPriceNotFound](ctp:api:type:MatchingPriceNotFoundError)
  *
@@ -2465,22 +2479,22 @@ export interface CartAddItemShippingAddressAction extends ICartUpdateAction {
   readonly address: _BaseAddress
 }
 /**
- *	If the Cart contains a [LineItem](ctp:api:type:LineItem) for a Product Variant with the same [LineItemMode](ctp:api:type:LineItemMode), [Custom Fields](/../api/projects/custom-fields), supply and distribution channel, then only the quantity of the existing Line Item is increased.
+ *	If the Cart contains a [LineItem](ctp:api:type:LineItem) for a Product Variant with the same [LineItemMode](ctp:api:type:LineItemMode), [Custom Fields](ctp:api:type:CustomFields), supply and distribution channel, then only the quantity of the existing Line Item is increased.
  *	If [LineItem](ctp:api:type:LineItem) `shippingDetails` is set, it is merged. All addresses will be present afterwards and, for address keys present in both shipping details, the quantity will be summed up.
  *	A new Line Item is added when the `externalPrice` or `externalTotalPrice` is set in this update action.
- *	The [LineItem](ctp:api:type:LineItem) price is set as described in [Line Item price selection](/../api/pricing-and-discounts-overview#line-item-price-selection).
+ *	The [LineItem](ctp:api:type:LineItem) price is set as described in [Line Item price selection](/api/pricing-and-discounts-overview#line-item-price-selection).
  *
  *	If the Tax Rate is not set, a [MissingTaxRateForCountry](ctp:api:type:MissingTaxRateForCountryError) error is returned.
  *
  *	If the Line Items do not have a Price according to the [Product](ctp:api:type:Product) `priceMode` value for a selected currency and/or country, Customer Group, or Channel, a [MatchingPriceNotFound](ctp:api:type:MatchingPriceNotFoundError) error is returned.
  *
- *	If the Line Items are added to a Cart bound to a Store with active Product Selections, the selected Product Variant must be [available in that Store](/api/project-configuration-overview#products-available-in-store), otherwise an [InvalidInput](ctp:api:type:InvalidInputError) error is returned.
+ *	The Product Variant that is to be added as a Line Item must be [available in a Store](/api/project-configuration-overview#products-available-in-store), otherwise an [InvalidInput](ctp:api:type:InvalidInputError) error is returned.
  *
  */
 export interface CartAddLineItemAction extends ICartUpdateAction {
   readonly action: 'addLineItem'
   /**
-   *	User-defined unique identifier of the LineItem.
+   *	User-defined identifier of the LineItem. Must be unique among LineItems in the Cart.
    *
    *
    */
@@ -2517,7 +2531,7 @@ export interface CartAddLineItemAction extends ICartUpdateAction {
    */
   readonly quantity?: number
   /**
-   *	Date and time (UTC) the Product Variant is added to the Cart.
+   *	Date and time (UTC) the Line Item was added to the Cart.
    *	If not set, it defaults to the current date and time.
    *
    *	Optional for backwards compatibility reasons.
@@ -2526,7 +2540,7 @@ export interface CartAddLineItemAction extends ICartUpdateAction {
    */
   readonly addedAt?: string
   /**
-   *	Used to [select](/../api/pricing-and-discounts-overview#line-item-price-selection) a Product Price.
+   *	Used to [select](/api/pricing-and-discounts-overview#line-item-price-selection) a Product Price.
    *	The Channel must have the `ProductDistribution` [ChannelRoleEnum](ctp:api:type:ChannelRoleEnum).
    *	If the Cart is bound to a [Store](ctp:api:type:Store) with `distributionChannels` set, the Channel must match one of the Store's distribution channels.
    *
@@ -2534,7 +2548,7 @@ export interface CartAddLineItemAction extends ICartUpdateAction {
    */
   readonly distributionChannel?: ChannelResourceIdentifier
   /**
-   *	Used to identify [Inventory entries](/../api/projects/inventory) that must be reserved.
+   *	Used to identify [Inventory entries](/api/projects/inventory) that must be reserved.
    *	The Channel must have the `InventorySupply` [ChannelRoleEnum](ctp:api:type:ChannelRoleEnum).
    *
    *
@@ -2616,7 +2630,11 @@ export interface CartAddShippingMethodAction extends ICartUpdateAction {
   readonly shippingKey: string
   /**
    *	ResourceIdentifier to a [ShippingMethod](ctp:api:type:ShippingMethod) to add to the Cart with `Multiple` [ShippingMode](ctp:api:type:ShippingMode).
-   *	If the referenced Shipping Method has a predicate that does not match the Cart, an [InvalidOperation](ctp:api:type:InvalidOperationError) error is returned.
+   *	[InvalidOperation](ctp:api:type:InvalidOperationError) error is returned in one of the following cases:
+   *	  1. If the referenced Shipping Method has a predicate that does not match the Cart.
+   *	  2. If the referenced Shipping Method is not active.
+   *	  3. If the referenced Shipping Method is associated with a Store that is different from the Cart's Store.
+   *	  4. If the referenced Shipping Method is associated with a Store and the Cart is not associated with any Store.
    *
    *
    */
@@ -2819,9 +2837,13 @@ export interface CartChangeCustomLineItemQuantityAction extends ICartUpdateActio
  *	use this update action in combination with the [Set LineItem ShippingDetails](ctp:api:type:CartSetLineItemShippingDetailsAction) update action
  *	in a single Cart update command.
  *
- *	The [LineItem](ctp:api:type:LineItem) price is set as described in [Line Item price selection](/../api/pricing-and-discounts-overview#line-item-price-selection).
+ *	The [LineItem](ctp:api:type:LineItem) price is set as described in [Line Item price selection](/api/pricing-and-discounts-overview#line-item-price-selection).
  *
- *	This action is subject to [InventoryEntry](ctp:api:type:InventoryEntry) min/max restrictions when applicable. For more information, see [Quantity limits](/../api/carts-orders-overview#quantity-limits).
+ *	This action is subject to [InventoryEntry](ctp:api:type:InventoryEntry) min/max restrictions when applicable. For more information, see [Quantity limits](/api/inventory-overview#quantity-limits).
+ *
+ *	If using [InventoryMode](ctp:api:type:InventoryMode) `ReserveOnCart`:
+ *	- If the requested quantity cannot be reserved, the Line Item quantity does not change and a [CannotUpdateReservationWarning](ctp:api:type:CannotUpdateReservationWarning) is returned in the Cart response.
+ *	- Changing the quantity of a reserved Line Item also updates the reservation expiration time. To synchronize the expiration across the rest of the Line Items in the Cart, you must call the [Set Cart Reservation Expiration in Minutes](ctp:api:type:CartSetReservationExpirationInMinutesAction) update action after any Line Item changes.
  *
  */
 export interface CartChangeLineItemQuantityAction extends ICartUpdateAction {
@@ -2875,7 +2897,7 @@ export interface CartChangeLineItemsOrderAction extends ICartUpdateAction {
   readonly lineItemOrder: string[]
 }
 /**
- *	Changing the price rounding mode leads to [recalculation of taxes](/../api/carts-orders-overview#taxes).
+ *	Changing the price rounding mode leads to [recalculation of taxes](/api/carts-orders-overview#taxes).
  *
  */
 export interface CartChangePriceRoundingModeAction extends ICartUpdateAction {
@@ -2888,7 +2910,7 @@ export interface CartChangePriceRoundingModeAction extends ICartUpdateAction {
   readonly priceRoundingMode: RoundingMode
 }
 /**
- *	Changing the tax calculation mode leads to [recalculation of taxes](/../api/carts-orders-overview#taxes).
+ *	Changing the tax calculation mode leads to [recalculation of taxes](/api/carts-orders-overview#taxes).
  *
  */
 export interface CartChangeTaxCalculationModeAction extends ICartUpdateAction {
@@ -2915,7 +2937,7 @@ export interface CartChangeTaxModeAction extends ICartUpdateAction {
   readonly taxMode: TaxMode
 }
 /**
- *	Changing the tax rounding mode leads to [recalculation of taxes](/../api/carts-orders-overview#taxes).
+ *	Changing the tax rounding mode leads to [recalculation of taxes](/api/carts-orders-overview#taxes).
  *
  */
 export interface CartChangeTaxRoundingModeAction extends ICartUpdateAction {
@@ -2949,16 +2971,18 @@ export interface CartFreezeCartAction extends ICartUpdateAction {
   readonly strategy?: FreezeStrategy
 }
 /**
- *	[Locks](/../api/carts-orders-overview#lock-a-cart) a Cart, preventing all updates from API Clients without an elevated [OAuth 2.0 Scope](/../api/scopes).
+ *	[Locks](/api/carts-orders-overview#lock-a-cart) a Cart, preventing all updates from API Clients without an elevated [OAuth 2.0 Scope](/api/scopes).
  *	This action sets the Cart's `lock` [field](/projects/carts#cart) which identifies the API Client that locked the Cart and when the lock was applied.
  *	This action requires an additional OAuth 2.0 Scope `manage_locked_carts`.
+ *
+ *	Produces the [CartLocked](ctp:api:type:CartLockedMessage) Message.
  *
  */
 export interface CartLockCartAction extends ICartUpdateAction {
   readonly action: 'lockCart'
 }
 /**
- *	This update action does not set any Cart field in particular, but it triggers several [Cart updates](/../api/carts-orders-overview#update-a-cart)
+ *	This update action does not set any Cart field in particular, but it triggers several [Cart updates](/api/carts-orders-overview#update-a-cart)
  *	to bring prices and discounts to the latest state. Those can become stale over time when no Cart updates have been performed for a while and
  *	prices on related Products have changed in the meanwhile.
  *
@@ -2969,7 +2993,7 @@ export interface CartLockCartAction extends ICartUpdateAction {
 export interface CartRecalculateAction extends ICartUpdateAction {
   readonly action: 'recalculate'
   /**
-   *	- Leave empty or set as `false` to update only the Prices and TaxRates of the Line Items.
+   *	- Leave empty or set as `false` to update only the Prices and TaxRates of the Line Items. Prices inside the `variant` are only updated if `updateProductData` is `true`.
    *	- Set as `true` to update the Product data (such as `name`, `variant`, `productType`, and Product Attributes) of the Line Items.
    *
    *
@@ -3020,7 +3044,7 @@ export interface CartRemoveItemShippingAddressAction extends ICartUpdateAction {
   readonly addressKey: string
 }
 /**
- *	The [LineItem](ctp:api:type:LineItem) price is updated as described in [Line Item price selection](/../api/pricing-and-discounts-overview#line-item-price-selection).
+ *	The [LineItem](ctp:api:type:LineItem) price is updated as described in [Line Item price selection](/api/pricing-and-discounts-overview#line-item-price-selection).
  *
  */
 export interface CartRemoveLineItemAction extends ICartUpdateAction {
@@ -3114,7 +3138,7 @@ export interface CartSetBillingAddressAction extends ICartUpdateAction {
 export interface CartSetBillingAddressCustomFieldAction extends ICartUpdateAction {
   readonly action: 'setBillingAddressCustomField'
   /**
-   *	Name of the [Custom Field](/../api/projects/custom-fields).
+   *	Name of the [Custom Field](/api/projects/custom-fields).
    *
    *
    */
@@ -3131,14 +3155,16 @@ export interface CartSetBillingAddressCustomFieldAction extends ICartUpdateActio
 export interface CartSetBillingAddressCustomTypeAction extends ICartUpdateAction {
   readonly action: 'setBillingAddressCustomType'
   /**
-   *	Defines the [Type](ctp:api:type:Type) that extends the `billingAddress` with [Custom Fields](/../api/projects/custom-fields).
+   *	Defines the [Type](ctp:api:type:Type) that extends the `billingAddress` with [Custom Fields](ctp:api:type:CustomFields).
    *	If absent, any existing Type and Custom Fields are removed from the `billingAddress`.
    *
    *
    */
   readonly type?: TypeResourceIdentifier
   /**
-   *	Sets the [Custom Fields](/../api/projects/custom-fields) fields for the `billingAddress`.
+   *	Object containing the [Custom Fields](ctp:api:type:CustomFields) fields for the `billingAddress`.
+   *
+   *	Required if at least one Custom Field is defined as required in the `fieldDefinitions` of the referenced [Type](ctp:api:type:Type).
    *
    *
    */
@@ -3151,7 +3177,7 @@ export interface CartSetBillingAddressCustomTypeAction extends ICartUpdateAction
 export interface CartSetBusinessUnitAction extends ICartUpdateAction {
   readonly action: 'setBusinessUnit'
   /**
-   *	New Business Unit to assign to the Cart, which must have access to the [Store](/../api/projects/stores) that is set on the Cart.
+   *	New Business Unit to assign to the Cart, which must have access to the [Store](/api/projects/stores) that is set on the Cart.
    *
    *
    */
@@ -3197,7 +3223,7 @@ export interface CartSetCountryAction extends ICartUpdateAction {
 export interface CartSetCustomFieldAction extends ICartUpdateAction {
   readonly action: 'setCustomField'
   /**
-   *	Name of the [Custom Field](/../api/projects/custom-fields).
+   *	Name of the [Custom Field](/api/projects/custom-fields).
    *
    *
    */
@@ -3226,7 +3252,7 @@ export interface CartSetCustomLineItemCustomFieldAction extends ICartUpdateActio
    */
   readonly customLineItemKey?: string
   /**
-   *	Name of the [Custom Field](/../api/projects/custom-fields).
+   *	Name of the [Custom Field](/api/projects/custom-fields).
    *
    *
    */
@@ -3255,14 +3281,16 @@ export interface CartSetCustomLineItemCustomTypeAction extends ICartUpdateAction
    */
   readonly customLineItemKey?: string
   /**
-   *	Defines the [Type](ctp:api:type:Type) that extends the CustomLineItem with [Custom Fields](/../api/projects/custom-fields).
+   *	Defines the [Type](ctp:api:type:Type) that extends the CustomLineItem with [Custom Fields](ctp:api:type:CustomFields).
    *	If absent, any existing Type and Custom Fields are removed from the CustomLineItem.
    *
    *
    */
   readonly type?: TypeResourceIdentifier
   /**
-   *	Sets the [Custom Fields](/../api/projects/custom-fields) fields for the CustomLineItem.
+   *	Object containing the [Custom Fields](ctp:api:type:CustomFields) fields for the CustomLineItem.
+   *
+   *	Required if at least one Custom Field is defined as required in the `fieldDefinitions` of the referenced [Type](ctp:api:type:Type).
    *
    *
    */
@@ -3391,7 +3419,7 @@ export interface CartSetCustomLineItemTaxRateAction extends ICartUpdateAction {
  *	To unset a custom Shipping Method on a Cart, use the [Set ShippingMethod](ctp:api:type:CartSetShippingMethodAction) update action
  *	without the `shippingMethod` field instead.
  *
- *	This update is not allowed when the Cart is [frozen](/../api/carts-orders-overview#freeze-a-cart) with
+ *	This update is not allowed when the Cart is [frozen](/api/carts-orders-overview#freeze-a-cart) with
  *	the `HardFreeze` [FreezeStrategy](ctp:api:type:FreezeStrategy).
  *
  */
@@ -3431,14 +3459,16 @@ export interface CartSetCustomShippingMethodAction extends ICartUpdateAction {
 export interface CartSetCustomTypeAction extends ICartUpdateAction {
   readonly action: 'setCustomType'
   /**
-   *	Defines the [Type](ctp:api:type:Type) that extends the Cart with [Custom Fields](/../api/projects/custom-fields).
+   *	Defines the [Type](ctp:api:type:Type) that extends the Cart with [Custom Fields](ctp:api:type:CustomFields).
    *	If absent, any existing Type and Custom Fields are removed from the Cart.
    *
    *
    */
   readonly type?: TypeResourceIdentifier
   /**
-   *	Sets the [Custom Fields](/../api/projects/custom-fields) fields for the Cart.
+   *	Object containing the [Custom Fields](ctp:api:type:CustomFields) fields for the Cart.
+   *
+   *	Required if at least one Custom Field is defined as required in the `fieldDefinitions` of the referenced [Type](ctp:api:type:Type).
    *
    *
    */
@@ -3532,7 +3562,7 @@ export interface CartSetItemShippingAddressCustomFieldAction extends ICartUpdate
    */
   readonly addressKey: string
   /**
-   *	Name of the [Custom Field](/../api/projects/custom-fields).
+   *	Name of the [Custom Field](/api/projects/custom-fields).
    *
    *
    */
@@ -3555,14 +3585,16 @@ export interface CartSetItemShippingAddressCustomTypeAction extends ICartUpdateA
    */
   readonly addressKey: string
   /**
-   *	Defines the [Type](ctp:api:type:Type) that extends the `itemShippingAddress` with [Custom Fields](/../api/projects/custom-fields).
+   *	Defines the [Type](ctp:api:type:Type) that extends the `itemShippingAddress` with [Custom Fields](ctp:api:type:CustomFields).
    *	If absent, any existing Type and Custom Fields are removed from the `itemShippingAddress`.
    *
    *
    */
   readonly type?: TypeResourceIdentifier
   /**
-   *	Sets the [Custom Fields](/../api/projects/custom-fields) fields for the `itemShippingAddress`.
+   *	Object containing the [Custom Fields](ctp:api:type:CustomFields) fields for the `itemShippingAddress`.
+   *
+   *	Required if at least one Custom Field is defined as required in the `fieldDefinitions` of the referenced [Type](ctp:api:type:Type).
    *
    *
    */
@@ -3593,7 +3625,7 @@ export interface CartSetLineItemCustomFieldAction extends ICartUpdateAction {
    */
   readonly lineItemKey?: string
   /**
-   *	Name of the [Custom Field](/../api/projects/custom-fields).
+   *	Name of the [Custom Field](/api/projects/custom-fields).
    *
    *
    */
@@ -3622,21 +3654,23 @@ export interface CartSetLineItemCustomTypeAction extends ICartUpdateAction {
    */
   readonly lineItemKey?: string
   /**
-   *	Defines the [Type](ctp:api:type:Type) that extends the Line Item with [Custom Fields](/../api/projects/custom-fields).
+   *	Defines the [Type](ctp:api:type:Type) that extends the Line Item with [Custom Fields](ctp:api:type:CustomFields).
    *	If absent, any existing Type and Custom Fields are removed from the Line Item.
    *
    *
    */
   readonly type?: TypeResourceIdentifier
   /**
-   *	Sets the [Custom Fields](/../api/projects/custom-fields) fields for the Line Item.
+   *	Object containing the [Custom Fields](ctp:api:type:CustomFields) fields for the Line Item.
+   *
+   *	Required if at least one Custom Field is defined as required in the `fieldDefinitions` of the referenced [Type](ctp:api:type:Type).
    *
    *
    */
   readonly fields?: FieldContainer
 }
 /**
- *	Setting a distribution channel for a [LineItem](ctp:api:type:LineItem) can lead to an updated `price` as described in [Line Item price selection](/../api/pricing-and-discounts-overview#line-item-price-selection).
+ *	Setting a distribution channel for a [LineItem](ctp:api:type:LineItem) can lead to an updated `price` as described in [Line Item price selection](/api/pricing-and-discounts-overview#line-item-price-selection).
  *
  */
 export interface CartSetLineItemDistributionChannelAction extends ICartUpdateAction {
@@ -3662,6 +3696,10 @@ export interface CartSetLineItemDistributionChannelAction extends ICartUpdateAct
    */
   readonly distributionChannel?: ChannelResourceIdentifier
 }
+/**
+ *	Sets the inventory mode for a specific Line Item in the Cart. When changing a Line Item's inventory mode to `ReserveOnCart`, a reservation is automatically created if sufficient stock is available. When changing from `ReserveOnCart` to another mode, the reservation is released.
+ *
+ */
 export interface CartSetLineItemInventoryModeAction extends ICartUpdateAction {
   readonly action: 'setLineItemInventoryMode'
   /**
@@ -3764,7 +3802,7 @@ export interface CartSetLineItemShippingDetailsAction extends ICartUpdateAction 
 /**
  *	Performing this action does not reserve stock. Stock is only reserved at Order creation if the [InventoryMode](ctp:api:type:InventoryMode) of the Cart is `TrackOnly` or `ReserveOnOrder`.
  *
- *	This action is subject to [InventoryEntry](ctp:api:type:InventoryEntry) min/max restrictions when applicable. For more information, see [Quantity limits](/../api/carts-orders-overview#quantity-limits).
+ *	This action is subject to [InventoryEntry](ctp:api:type:InventoryEntry) min/max restrictions when applicable. For more information, see [Quantity limits](/api/inventory-overview#quantity-limits).
  *
  */
 export interface CartSetLineItemSupplyChannelAction extends ICartUpdateAction {
@@ -3909,9 +3947,22 @@ export interface CartSetPurchaseOrderNumberAction extends ICartUpdateAction {
   readonly purchaseOrderNumber?: string
 }
 /**
+ *	Sets a new expiration date and time for all [ReserveOnCart](ctp:api:type:InventoryMode) Line Items with a [Reservation](ctp:api:type:Reservation). The Cart will return a [warning](ctp:api:type:WarningObject) for any Reservation that could not be changed.
+ *
+ */
+export interface CartSetReservationExpirationInMinutesAction extends ICartUpdateAction {
+  readonly action: 'setReservationExpirationInMinutes'
+  /**
+   *	Value to set. Must be a positive integer.
+   *
+   *
+   */
+  readonly reservationExpirationInMinutes: number
+}
+/**
  *	Setting the shipping address also sets the [TaxRate](ctp:api:type:TaxRate) of Line Items and calculates the [TaxedPrice](ctp:api:type:TaxedPrice).
  *
- *	If a matching price cannot be found for the given shipping address during [Line Item price selection](/../api/pricing-and-discounts-overview#line-item-price-selection),
+ *	If a matching price cannot be found for the given shipping address during [Line Item price selection](/api/pricing-and-discounts-overview#line-item-price-selection),
  *	a [MissingTaxRateForCountry](ctp:api:type:MissingTaxRateForCountryError) error is returned.
  *
  *	If you want to allow shipping to states inside a country that are not explicitly covered by a TaxRate,
@@ -3932,7 +3983,7 @@ export interface CartSetShippingAddressAction extends ICartUpdateAction {
 export interface CartSetShippingAddressCustomFieldAction extends ICartUpdateAction {
   readonly action: 'setShippingAddressCustomField'
   /**
-   *	Name of the [Custom Field](/../api/projects/custom-fields).
+   *	Name of the [Custom Field](/api/projects/custom-fields).
    *
    *
    */
@@ -3949,14 +4000,16 @@ export interface CartSetShippingAddressCustomFieldAction extends ICartUpdateActi
 export interface CartSetShippingAddressCustomTypeAction extends ICartUpdateAction {
   readonly action: 'setShippingAddressCustomType'
   /**
-   *	Defines the [Type](ctp:api:type:Type) that extends the `shippingAddress` with [Custom Fields](/../api/projects/custom-fields).
+   *	Defines the [Type](ctp:api:type:Type) that extends the `shippingAddress` with [Custom Fields](ctp:api:type:CustomFields).
    *	If absent, any existing Type and Custom Fields are removed from the `shippingAddress`.
    *
    *
    */
   readonly type?: TypeResourceIdentifier
   /**
-   *	Sets the [Custom Fields](/../api/projects/custom-fields) fields for the `shippingAddress`.
+   *	Object containing the [Custom Fields](ctp:api:type:CustomFields) fields for the `shippingAddress`.
+   *
+   *	Required if at least one Custom Field is defined as required in the `fieldDefinitions` of the referenced [Type](ctp:api:type:Type).
    *
    *
    */
@@ -3973,7 +4026,7 @@ export interface CartSetShippingCustomFieldAction extends ICartUpdateAction {
    */
   readonly shippingKey?: string
   /**
-   *	Name of the [Custom Field](/../api/projects/custom-fields).
+   *	Name of the [Custom Field](/api/projects/custom-fields).
    *
    *
    */
@@ -4002,14 +4055,16 @@ export interface CartSetShippingCustomTypeAction extends ICartUpdateAction {
    */
   readonly shippingKey?: string
   /**
-   *	Defines the [Type](ctp:api:type:Type) that extends the specified ShippingMethod with [Custom Fields](/../api/projects/custom-fields).
+   *	Defines the [Type](ctp:api:type:Type) that extends the specified ShippingMethod with [Custom Fields](ctp:api:type:CustomFields).
    *	If absent, any existing Type and Custom Fields are removed from the ShippingMethod.
    *
    *
    */
   readonly type?: TypeResourceIdentifier
   /**
-   *	Sets the [Custom Fields](/../api/projects/custom-fields) fields for the `shippingMethod`.
+   *	Object containing the [Custom Fields](ctp:api:type:CustomFields) fields for the `shippingMethod`.
+   *
+   *	Required if at least one Custom Field is defined as required in the `fieldDefinitions` of the referenced [Type](ctp:api:type:Type).
    *
    *
    */
@@ -4018,7 +4073,7 @@ export interface CartSetShippingCustomTypeAction extends ICartUpdateAction {
 /**
  *	To set the Cart's Shipping Method the Cart must have the `Single` [ShippingMode](ctp:api:type:ShippingMode) and a `shippingAddress`.
  *
- *	This update is not allowed when the Cart is [frozen](/../api/carts-orders-overview#freeze-a-cart) with the `HardFreeze` [FreezeStrategy](ctp:api:type:FreezeStrategy).
+ *	This update is not allowed when the Cart is [frozen](/api/carts-orders-overview#freeze-a-cart) with the `HardFreeze` [FreezeStrategy](ctp:api:type:FreezeStrategy).
  *
  */
 export interface CartSetShippingMethodAction extends ICartUpdateAction {
@@ -4027,7 +4082,11 @@ export interface CartSetShippingMethodAction extends ICartUpdateAction {
    *	Value to set.
    *	If empty, any existing value is removed.
    *
-   *	If the referenced Shipping Method is inactive, or has a predicate that does not match the Cart, an [InvalidOperation](ctp:api:type:InvalidOperationError) error is returned.
+   *	[InvalidOperation](ctp:api:type:InvalidOperationError) error is returned in one of the following cases:
+   *	  1. If the referenced Shipping Method has a predicate that does not match the Cart.
+   *	  2. If the referenced Shipping Method is not active.
+   *	  3. If the referenced Shipping Method is associated with a Store that is different from the Cart's Store.
+   *	  4. If the referenced Shipping Method is associated with a Store and the Cart is not associated with any Store.
    *
    *
    */
@@ -4046,7 +4105,9 @@ export interface CartSetShippingMethodAction extends ICartUpdateAction {
 export interface CartSetShippingMethodTaxAmountAction extends ICartUpdateAction {
   readonly action: 'setShippingMethodTaxAmount'
   /**
-   *	`key` of the [ShippingMethod](ctp:api:type:ShippingMethod) to update. This is required for Carts with `Multiple` [ShippingMode](ctp:api:type:ShippingMode).
+   *	`key` of the [ShippingMethod](ctp:api:type:ShippingMethod) to update.
+   *	This is required and valid only for Carts with `Multiple` [ShippingMode](ctp:api:type:ShippingMode).
+   *	An [InvalidOperation](ctp:api:type:InvalidOperationError) error is returned if `shippingKey` is provided for Carts with `Single` [ShippingMode](ctp:api:type:ShippingMode), or omitted for Carts with `Multiple` [ShippingMode](ctp:api:type:ShippingMode).
    *
    *
    */
@@ -4066,7 +4127,9 @@ export interface CartSetShippingMethodTaxAmountAction extends ICartUpdateAction 
 export interface CartSetShippingMethodTaxRateAction extends ICartUpdateAction {
   readonly action: 'setShippingMethodTaxRate'
   /**
-   *	`key` of the [ShippingMethod](ctp:api:type:ShippingMethod) to update. This is required for Carts with `Multiple` [ShippingMode](ctp:api:type:ShippingMode).
+   *	`key` of the [ShippingMethod](ctp:api:type:ShippingMethod) to update.
+   *	This is required and valid only for Carts with `Multiple` [ShippingMode](ctp:api:type:ShippingMode).
+   *	An [InvalidOperation](ctp:api:type:InvalidOperationError) error is returned if `shippingKey` is provided for Carts with `Single` [ShippingMode](ctp:api:type:ShippingMode), or omitted for Carts with `Multiple` [ShippingMode](ctp:api:type:ShippingMode).
    *
    *
    */
@@ -4108,8 +4171,10 @@ export interface CartUnfreezeCartAction extends ICartUpdateAction {
   readonly action: 'unfreezeCart'
 }
 /**
- *	Unlocks a Cart, removing all update restrictions that are in place while a Cart is [locked](/../api/carts-orders-overview#lock-a-cart).
+ *	Unlocks a Cart, removing all update restrictions that are in place while a Cart is [locked](/api/carts-orders-overview#lock-a-cart).
  *	This action requires an additional OAuth 2.0 Scope `manage_locked_carts`.
+ *
+ *	Produces the [CartUnlocked](ctp:api:type:CartUnlockedMessage) Message.
  *
  */
 export interface CartUnlockCartAction extends ICartUpdateAction {
@@ -4131,7 +4196,7 @@ export interface CartUpdateItemShippingAddressAction extends ICartUpdateAction {
 export interface ProductTailoringUpdate {
   /**
    *	Expected version of the ProductTailoring on which the changes apply.
-   *	If the expected version does not match the actual version, a [409 Conflict](/../api/errors#409-conflict) is returned.
+   *	If the expected version does not match the actual version, a [409 Conflict](/api/errors#409-conflict) is returned.
    *
    *
    */

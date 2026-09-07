@@ -40,6 +40,8 @@ export type ErrorObject =
   | AttributeDefinitionTypeConflictError
   | AttributeNameDoesNotExistError
   | BadGatewayError
+  | BulkOperationMaxItemsExceededError
+  | CircularDependencyError
   | ConcurrentModificationError
   | ContentTooLargeError
   | CountryNotConfiguredInStoreError
@@ -62,6 +64,9 @@ export type ErrorObject =
   | ExpiredCustomerEmailTokenError
   | ExpiredCustomerPasswordTokenError
   | ExtensionBadResponseError
+  | ExtensionChainTooDeepError
+  | ExtensionChainTooWideError
+  | ExtensionDependencyExistsError
   | ExtensionNoResponseError
   | ExtensionPredicateEvaluationFailedError
   | ExtensionUpdateActionsFailedError
@@ -80,12 +85,15 @@ export type ErrorObject =
   | InvalidSubjectError
   | InvalidTokenError
   | LanguageUsedInStoresError
+  | LineItemQuantityAboveLimitError
+  | LineItemQuantityBelowLimitError
   | LockedFieldError
   | MatchingPriceNotFoundError
   | MaxCartDiscountsReachedError
   | MaxDiscountGroupsReachedError
   | MaxResourceLimitExceededError
   | MaxStoreReferencesReachedError
+  | MissingDependencyError
   | MissingRoleOnChannelError
   | MissingTaxRateForCountryError
   | MoneyOverflowError
@@ -93,6 +101,7 @@ export type ErrorObject =
   | ObjectNotFoundError
   | OutOfStockError
   | OverCapacityError
+  | OverlappingPriceValidityError
   | OverlappingStandalonePriceValidityError
   | PendingOperationError
   | PriceChangedError
@@ -116,6 +125,7 @@ export type ErrorObject =
   | ShippingMethodDoesNotMatchCartError
   | StoreCartDiscountsLimitReachedError
   | SyntaxErrorError
+  | UnauthorizedError
   | ValidityLockConflictError
 export interface IErrorObject {
   [key: string]: any
@@ -149,7 +159,7 @@ export interface AnonymousIdAlreadyInUseError extends IErrorObject {
   readonly message: string
 }
 /**
- *	Returned when an [Associate](/projects/business-units#associate) is missing a [Permission](/projects/associate-roles#ctp:api:type:Permission) on a [B2B resource](/associates-overview#b2b-resources).
+ *	Returned when an [Associate](ctp:api:type:Associate) is missing a [Permission](ctp:api:type:Permission) on a [B2B resource](/associates-overview#b2b-resources).
  *
  */
 export interface AssociateMissingPermissionError extends IErrorObject {
@@ -294,6 +304,48 @@ export interface BadGatewayError extends IErrorObject {
   readonly message: string
 }
 /**
+ *	Returned when a bulk request contains more items than the allowed maximum.
+ *
+ *	Reduce the number of items in the request to at most `limit` and retry.
+ *
+ */
+export interface BulkOperationMaxItemsExceededError extends IErrorObject {
+  readonly code: 'BulkOperationMaxItemsExceeded'
+  [key: string]: any
+  /**
+   *	`"The bulk request exceeds the maximum allowed items of $limit."`
+   *
+   *
+   */
+  readonly message: string
+  /**
+   *	Maximum number of items allowed in a single bulk request.
+   *
+   *
+   */
+  readonly limit: number
+  /**
+   *	Number of items provided in the request.
+   *
+   *
+   */
+  readonly provided: number
+}
+/**
+ *	Returned when a circular reference is detected among Extension dependencies.
+ *
+ */
+export interface CircularDependencyError extends IErrorObject {
+  readonly code: 'CircularDependency'
+  [key: string]: any
+  /**
+   *	`"Circular dependency detected: [ext-1, ext-2, ext-1]"`
+   *
+   *
+   */
+  readonly message: string
+}
+/**
  *	Returned when the request conflicts with the current state of the involved resources. Typically, the request attempts to modify a resource that is out of date (that is modified by another client since it was last retrieved).
  *	The client application should resolve the conflict (with or without involving the end user) before retrying the request.
  *
@@ -426,7 +478,7 @@ export interface DiscountCodeNonApplicableError extends IErrorObject {
   readonly validityCheckTime?: string
 }
 /**
- *	Returned when the `Unique` [AttributeConstraint](ctp:api:type:AttributeConstraintEnum) criteria are not met during an [Update Product](/../api/projects/products#update-product) request.
+ *	Returned when the `Unique` [AttributeConstraint](ctp:api:type:AttributeConstraintEnum) criteria are not met during an [Update Product](/api/projects/products#update-product) request.
  *
  */
 export interface DuplicateAttributeValueError extends IErrorObject {
@@ -446,7 +498,7 @@ export interface DuplicateAttributeValueError extends IErrorObject {
   readonly attribute: Attribute
 }
 /**
- *	Returned when the `CombinationUnique` [AttributeConstraint](ctp:api:type:AttributeConstraintEnum) criteria are not met during an [Update Product](/../api/projects/products#update-product) request.
+ *	Returned when the `CombinationUnique` [AttributeConstraint](ctp:api:type:AttributeConstraintEnum) criteria are not met during an [Update Product](/api/projects/products#update-product) request.
  *
  */
 export interface DuplicateAttributeValuesError extends IErrorObject {
@@ -566,7 +618,7 @@ export interface DuplicatePriceKeyError extends IErrorObject {
   readonly conflictingPrice: Price
 }
 /**
- *	Returned when a Price scope conflicts with an existing one during an [Update Product](/../api/projects/products#update-product) request.
+ *	Returned when a Price scope conflicts with an existing one during an [Update Product](/api/projects/products#update-product) request.
  *
  *	Every Price of a Product Variant must have a distinct combination of currency, Customer Group, country, and Channel that constitute the scope of a Price.
  *
@@ -653,7 +705,7 @@ export interface DuplicateStandalonePriceScopeError extends IErrorObject {
   readonly validUntil?: string
 }
 /**
- *	Returned when a [Product Variant](ctp:api:type:ProductVariant) value conflicts with an existing one during an [Update Product](/../api/projects/products#update-product) request.
+ *	Returned when a [Product Variant](ctp:api:type:ProductVariant) value conflicts with an existing one during an [Update Product](/api/projects/products#update-product) request.
  *
  */
 export interface DuplicateVariantValuesError extends IErrorObject {
@@ -988,6 +1040,48 @@ export interface ExtensionBadResponseError extends IErrorObject {
    */
   readonly extensionKey?: string
 }
+/**
+ *	Returned when the Extension dependency chain exceeds 3 layers.
+ *
+ */
+export interface ExtensionChainTooDeepError extends IErrorObject {
+  readonly code: 'ExtensionChainTooDeep'
+  [key: string]: any
+  /**
+   *	`"The dependency chain depth 4 exceeds the maximum allowed depth of 3"`
+   *
+   *
+   */
+  readonly message: string
+}
+/**
+ *	Returned when an Extension declares more than 5 direct dependencies.
+ *
+ */
+export interface ExtensionChainTooWideError extends IErrorObject {
+  readonly code: 'ExtensionChainTooWide'
+  [key: string]: any
+  /**
+   *	`"Extension chain breadth exceeds the maximum allowed breadth of 5"`
+   *
+   *
+   */
+  readonly message: string
+}
+/**
+ *	Returned when attempting to delete an Extension that is a prerequisite for other Extensions.
+ *
+ */
+export interface ExtensionDependencyExistsError extends IErrorObject {
+  readonly code: 'ExtensionDependencyExists'
+  [key: string]: any
+  /**
+   *	`"The extension cannot be deleted because it is a prerequisite for: [ext-2, ext-3]."`
+   *
+   *
+   */
+  readonly message: string
+}
 export interface ExtensionError {
   [key: string]: any
   /**
@@ -1014,7 +1108,7 @@ export interface ExtensionError {
   readonly extensionKey?: string
 }
 /**
- *	Returned when the API Extension does not respond within the [time limit](/../api/projects/api-extensions#time-limits), or could not be reached.
+ *	Returned when the API Extension does not respond within the [time limit](/api/projects/api-extensions#time-limits), or could not be reached.
  *
  */
 export interface ExtensionNoResponseError extends IErrorObject {
@@ -1093,7 +1187,7 @@ export interface ExtensionUpdateActionsFailedError extends IErrorObject {
   readonly extensionErrors: ExtensionError[]
 }
 /**
- *	Returned when an [external OAuth Introspection endpoint](/../api/authorization#request-an-access-token-using-an-external-oauth-server) does not return a response within the [time limit](/../api/authorization#time-limits), or the response isn't compliant with [RFC 7662](https://www.rfc-editor.org/rfc/rfc7662.html) (for example, an HTTP status code like `500`).
+ *	Returned when an [external OAuth Introspection endpoint](/api/authorization#request-an-access-token-using-an-external-oauth-server) does not return a response within the [time limit](/api/authorization#time-limits), or the response isn't compliant with [RFC 7662](https://www.rfc-editor.org/rfc/rfc7662.html) (for example, an HTTP status code like `500`).
  *
  */
 export interface ExternalOAuthFailedError extends IErrorObject {
@@ -1123,7 +1217,7 @@ export interface FeatureRemovedError extends IErrorObject {
 /**
  *	Returned when a server-side problem occurs before or after data persistence. In some cases, the requested action may successfully complete after the error is returned. Therefore, it is recommended to verify the status of the requested resource after receiving a 500 error.
  *
- *	If you encounter this error, report it to the [Composable Commerce support team](https://support.commercetools.com).
+ *	If you encounter this error, report it to the [commercetools support team](https://support.commercetools.com).
  *
  */
 export interface GeneralError extends IErrorObject {
@@ -1137,7 +1231,7 @@ export interface GeneralError extends IErrorObject {
   readonly message: string
 }
 /**
- *	This error occurs when your [API Client](/../api/projects/api-clients) does not have the [OAuth scope](/../api/scopes) required for the endpoint.
+ *	This error occurs when your [API Client](/api/projects/api-clients) does not have the [OAuth scope](/api/scopes) required for the endpoint.
  *	Use an API Client with the required permissions for this endpoint instead.
  *
  */
@@ -1361,6 +1455,70 @@ export interface LanguageUsedInStoresError extends IErrorObject {
   readonly message: string
 }
 /**
+ *	Returned when attempting to create or update a [Cart](ctp:api:type:Cart) with a Line Item whose quantity exceeds the `maxCartQuantity` limit defined in the [InventoryEntry](ctp:api:type:InventoryEntry) for that Line Item's SKU.
+ *
+ */
+export interface LineItemQuantityAboveLimitError extends IErrorObject {
+  readonly code: 'LineItemQuantityAboveLimit'
+  [key: string]: any
+  /**
+   *	`"Quantity '$quantity' greater than maximum '$maxCartQuantity'."`
+   *
+   *
+   */
+  readonly message: string
+  /**
+   *	The quantity that was requested.
+   *
+   *
+   */
+  readonly quantity: number
+  /**
+   *	The maximum quantity allowed for this Line Item.
+   *
+   *
+   */
+  readonly maxCartQuantity: number
+  /**
+   *	Reference to the Line Item that caused the error.
+   *
+   *
+   */
+  readonly lineItem?: string
+}
+/**
+ *	Returned when attempting to create or update a [Cart](ctp:api:type:Cart) with a Line Item whose quantity is below the `minCartQuantity` limit defined in the [InventoryEntry](ctp:api:type:InventoryEntry) for that Line Item's SKU.
+ *
+ */
+export interface LineItemQuantityBelowLimitError extends IErrorObject {
+  readonly code: 'LineItemQuantityBelowLimit'
+  [key: string]: any
+  /**
+   *	`"Quantity '$quantity' less than minimum '$minCartQuantity'."`
+   *
+   *
+   */
+  readonly message: string
+  /**
+   *	The quantity that was requested.
+   *
+   *
+   */
+  readonly quantity: number
+  /**
+   *	The minimum quantity required for this Line Item.
+   *
+   *
+   */
+  readonly minCartQuantity: number
+  /**
+   *	Reference to the Line Item that caused the error.
+   *
+   *
+   */
+  readonly lineItem?: string
+}
+/**
  *	Returned when two [Customers](ctp:api:type:Customer) are simultaneously created or updated with the same email address.
  *
  *	To confirm if the operation was successful, repeat the request.
@@ -1446,7 +1604,7 @@ export interface MatchingPriceNotFoundError extends IErrorObject {
   readonly channel?: ChannelReference
 }
 /**
- *	Returned when a Cart Discount cannot be created or activated as the [limit](/../api/limits#cart-discounts) for active Cart Discounts has been reached.
+ *	Returned when a Cart Discount cannot be created or activated as the [limit](/api/limits#cart-discounts) for active Cart Discounts has been reached.
  *
  *	The error is returned as a failed response to:
  *
@@ -1465,7 +1623,7 @@ export interface MaxCartDiscountsReachedError extends IErrorObject {
   readonly message: string
 }
 /**
- *	Returned when a Discount Group cannot be created or activated as the [limit](/../api/limits#discount-groups) for active Discount Groups has been reached.
+ *	Returned when a Discount Group cannot be created or activated as the [limit](/api/limits#discount-groups) for active Discount Groups has been reached.
  *
  *	The error is returned as a failed response to:
  *
@@ -1484,7 +1642,7 @@ export interface MaxDiscountGroupsReachedError extends IErrorObject {
   readonly message: string
 }
 /**
- *	Returned when a resource type cannot be created as it has reached its [limits](/../api/limits).
+ *	Returned when a resource type cannot be created as it has reached its [limits](/api/limits).
  *
  *	The limits must be adjusted for this resource before sending the request again.
  *
@@ -1506,7 +1664,7 @@ export interface MaxResourceLimitExceededError extends IErrorObject {
   readonly exceededResource: ReferenceTypeId
 }
 /**
- *	Returned when a Store cannot be added to a Cart Discount as the [limit](/../api/limits#cart-discounts-stores) for Stores configured for a Cart Discount has been reached.
+ *	Returned when a Store cannot be added to a Cart Discount as the [limit](/api/limits#cart-discounts-stores) for Stores configured for a Cart Discount has been reached.
  *
  *	The error is returned as a failed response to:
  *
@@ -1519,6 +1677,20 @@ export interface MaxStoreReferencesReachedError extends IErrorObject {
   [key: string]: any
   /**
    *	`"Maximum number of store discounts on a single cart discount reached $max".`
+   *
+   *
+   */
+  readonly message: string
+}
+/**
+ *	Returned when a referenced Extension does not exist or is not applicable to the same trigger.
+ *
+ */
+export interface MissingDependencyError extends IErrorObject {
+  readonly code: 'MissingDependency'
+  [key: string]: any
+  /**
+   *	`"The extensions '[ext-1, ext-2]' referenced in 'dependencies' do not exist."`
    *
    *
    */
@@ -1635,7 +1807,7 @@ export interface NoMatchingProductDiscountFoundError extends IErrorObject {
   readonly message: string
 }
 /**
- *	Returned if the requested resource was not found or the Product Search index is [inactive](/../api/projects/product-search#activate-the-product-search-api).
+ *	Returned if the requested resource was not found or the Product Search index is [inactive](/api/projects/product-search#activate-the-product-search-api).
  *
  */
 export interface ObjectNotFoundError extends IErrorObject {
@@ -1696,6 +1868,77 @@ export interface OverCapacityError extends IErrorObject {
    *
    */
   readonly message: string
+}
+/**
+ *	Returned when a given Price validity period conflicts with an existing one.
+ *	Every Price of a Product Variant with the same combination of currency, country, Customer Group, and Channel must have non-overlapping validity periods (`validFrom` and `validUntil`).
+ *
+ *	The error is returned as a failed response to the [Create Product](ctp:api:endpoint:/{projectKey}/products:POST) or [Update Product](/api/projects/products#update-product) request.
+ *
+ */
+export interface OverlappingPriceValidityError extends IErrorObject {
+  readonly code: 'OverlappingPriceValidity'
+  [key: string]: any
+  /**
+   *	`"Two prices have overlapping validity periods."`
+   *
+   *
+   */
+  readonly message: string
+  /**
+   *	Unique identifier of the conflicting Embedded Price.
+   *
+   *
+   */
+  readonly conflictingPrice: string
+  /**
+   *	Currency code of the Price.
+   *
+   *
+   */
+  readonly currency: string
+  /**
+   *	Country code of the Price.
+   *
+   *
+   */
+  readonly country?: string
+  /**
+   *	[CustomerGroup](ctp:api:type:CustomerGroup) for which the Price is valid.
+   *
+   *
+   */
+  readonly customerGroup?: CustomerGroupResourceIdentifier
+  /**
+   *	[Channel](ctp:api:type:Channel) for which the Price is valid.
+   *
+   *
+   */
+  readonly channel?: ChannelResourceIdentifier
+  /**
+   *	Date and time (UTC) from which the Embedded Price is valid.
+   *
+   *
+   */
+  readonly validFrom?: string
+  /**
+   *	Date and time (UTC) until which the Embedded Price is valid.
+   *
+   *
+   */
+  readonly validUntil?: string
+  /**
+   *	Date and time (UTC) from which the conflicting Embedded Price is valid.
+   *
+   *
+   */
+  readonly conflictingValidFrom?: string
+  /**
+   *	Date and time (UTC) until which the conflicting Embedded Price is valid.
+   *
+   *
+   */
+  readonly conflictingValidUntil?: string
 }
 /**
  *	Returned when a given Price validity period conflicts with an existing one.
@@ -1778,7 +2021,7 @@ export interface OverlappingStandalonePriceValidityError extends IErrorObject {
  *	Returned when a previous conflicting operation is still pending and needs to finish before the request can succeed.
  *
  *	The client application should retry the request with exponential backoff up to a point where further delay is unacceptable.
- *	If the error persists, report it to the [Composable Commerce support team](https://support.commercetools.com).
+ *	If the error persists, report it to the [commercetools support team](https://support.commercetools.com).
  *
  */
 export interface PendingOperationError extends IErrorObject {
@@ -1818,7 +2061,7 @@ export interface PriceChangedError extends IErrorObject {
    */
   readonly lineItems: string[]
   /**
-   *	`true` if the [ShippingRate](ctp:api:type:ShippingRate) has changed.
+   *	Whether the [ShippingRate](ctp:api:type:ShippingRate) has changed.
    *
    *
    */
@@ -1849,7 +2092,7 @@ export interface ProductAssignmentMissingError extends IErrorObject {
   readonly product: ProductReference
 }
 /**
- *	Returned when a Product is already assigned to a [Product Selection](/../api/projects/product-selections), but the Product Selection has either a different [Product Variant Selection](ctp:api:type:ProductVariantSelection) or a different [Product Variant Exclusion](ctp:api:type:ProductVariantExclusion).
+ *	Returned when a Product is already assigned to a [Product Selection](/api/projects/product-selections), but the Product Selection has either a different [Product Variant Selection](ctp:api:type:ProductVariantSelection) or a different [Product Variant Exclusion](ctp:api:type:ProductVariantExclusion).
  *
  *	The error is returned as a failed response either to the [Add Product](ctp:api:type:ProductSelectionAddProductAction) or to the [Exclude Product](ctp:api:type:ProductSelectionExcludeProductAction) update action.
  *
@@ -1870,7 +2113,7 @@ export interface ProductPresentWithDifferentVariantSelectionError extends IError
    */
   readonly product: ProductReference
   /**
-   *	Existing Product Variant Selection or Exclusion for the [Product](/../api/projects/products) in the [Product Selection](/../api/projects/product-selections).
+   *	Existing Product Variant Selection or Exclusion for the [Product](/api/projects/products) in the [Product Selection](/api/projects/product-selections).
    *
    *
    */
@@ -1909,7 +2152,7 @@ export interface QueryComplexityLimitExceededError extends IErrorObject {
 /**
  *	Returned when the query times out.
  *
- *	If a query constantly times out, please check if it follows the [performance best practices](/../api/predicates/query#performance-considerations).
+ *	If a query constantly times out, please check if it follows the [performance best practices](/api/predicates/query#performance-considerations).
  *
  */
 export interface QueryTimedOutError extends IErrorObject {
@@ -2115,7 +2358,7 @@ export interface SearchNotReadyError extends IErrorObject {
   readonly message: string
 }
 /**
- *	Returned when a [Discount predicate](/../api/predicates/predicate-operators) or [API Extension predicate](/../api/predicates/query#use-predicates-in-conditional-api-extensions) is not semantically correct.
+ *	Returned when a [Discount predicate](/api/predicates/predicate-operators) or [API Extension predicate](/api/predicates/query#use-predicates-in-conditional-api-extensions) is not semantically correct.
  *
  */
 export interface SemanticErrorError extends IErrorObject {
@@ -2151,7 +2394,7 @@ export interface ShippingMethodDoesNotMatchCartError extends IErrorObject {
   readonly message: string
 }
 /**
- *	Returned when a Cart Discount cannot be created or assigned to a Store as the [limit](/../api/limits#cart-discounts) for active Cart Discounts in a Store has been reached for one or more Stores in the request.
+ *	Returned when a Cart Discount cannot be created or assigned to a Store as the [limit](/api/limits#cart-discounts) for active Cart Discounts in a Store has been reached for one or more Stores in the request.
  *
  *	The error is returned as a failed response to:
  *
@@ -2176,7 +2419,7 @@ export interface StoreCartDiscountsLimitReachedError extends IErrorObject {
   readonly stores: StoreKeyReference[]
 }
 /**
- *	Returned when a [Discount predicate](/../api/predicates/predicate-operators), [API Extension predicate](/../api/predicates/query#use-predicates-in-conditional-api-extensions), or [search query](/../api/projects/product-projection-search) does not have the correct syntax.
+ *	Returned when a [Discount predicate](/api/predicates/predicate-operators), [API Extension predicate](/api/predicates/query#use-predicates-in-conditional-api-extensions), or [search query](/api/projects/product-projection-search) does not have the correct syntax.
  *
  */
 export interface SyntaxErrorError extends IErrorObject {
@@ -2188,6 +2431,31 @@ export interface SyntaxErrorError extends IErrorObject {
    *
    */
   readonly message: string
+}
+/**
+ *	Returned when one of the following conditions occurs:
+ *
+ *	- A Customer reference (for example, `associates[*].customer` or `inheritedAssociates[*].customer`) is expanded on the [My Business Unit](/api/projects/me-business-units) endpoint.
+ *	- A [Cart Discount](ctp:api:type:CartDiscount) cannot be modified due to missing permissions for its assigned [Stores](ctp:api:type:Store).
+ *
+ */
+export interface UnauthorizedError extends IErrorObject {
+  readonly code: 'Unauthorized'
+  [key: string]: any
+  /**
+   *	`"Customer reference expansion not permitted on my business unit"` or `"Not allowed to edit this CartDiscount."`
+   *
+   *
+   */
+  readonly message: string
+  /**
+   *	Keys of [Stores](ctp:api:type:Store) for which the required permission to modify is missing.
+   *
+   *	This field is returned only for [Cart Discounts](ctp:api:type:CartDiscount).
+   *
+   *
+   */
+  readonly storesWithoutPermission?: string[]
 }
 /**
  *	Returned when a modification is already in progress for the combination of SKU and price scope fields (but potentially different validity period) for a Standalone Price.
@@ -2275,6 +2543,8 @@ export type GraphQLErrorObject =
   | GraphQLAttributeDefinitionTypeConflictError
   | GraphQLAttributeNameDoesNotExistError
   | GraphQLBadGatewayError
+  | GraphQLBulkOperationMaxItemsExceededError
+  | GraphQLCircularDependencyError
   | GraphQLConcurrentModificationError
   | GraphQLContentTooLargeError
   | GraphQLCountryNotConfiguredInStoreError
@@ -2297,6 +2567,9 @@ export type GraphQLErrorObject =
   | GraphQLExpiredCustomerEmailTokenError
   | GraphQLExpiredCustomerPasswordTokenError
   | GraphQLExtensionBadResponseError
+  | GraphQLExtensionChainTooDeepError
+  | GraphQLExtensionChainTooWideError
+  | GraphQLExtensionDependencyExistsError
   | GraphQLExtensionNoResponseError
   | GraphQLExtensionPredicateEvaluationFailedError
   | GraphQLExtensionUpdateActionsFailedError
@@ -2315,12 +2588,15 @@ export type GraphQLErrorObject =
   | GraphQLInvalidSubjectError
   | GraphQLInvalidTokenError
   | GraphQLLanguageUsedInStoresError
+  | GraphQLLineItemQuantityAboveLimitError
+  | GraphQLLineItemQuantityBelowLimitError
   | GraphQLLockedFieldError
   | GraphQLMatchingPriceNotFoundError
   | GraphQLMaxCartDiscountsReachedError
   | GraphQLMaxDiscountGroupsReachedError
   | GraphQLMaxResourceLimitExceededError
   | GraphQLMaxStoreReferencesReachedError
+  | GraphQLMissingDependencyError
   | GraphQLMissingRoleOnChannelError
   | GraphQLMissingTaxRateForCountryError
   | GraphQLMoneyOverflowError
@@ -2328,6 +2604,7 @@ export type GraphQLErrorObject =
   | GraphQLObjectNotFoundError
   | GraphQLOutOfStockError
   | GraphQLOverCapacityError
+  | GraphQLOverlappingPriceValidityError
   | GraphQLOverlappingStandalonePriceValidityError
   | GraphQLPendingOperationError
   | GraphQLPriceChangedError
@@ -2351,6 +2628,7 @@ export type GraphQLErrorObject =
   | GraphQLShippingMethodDoesNotMatchCartError
   | GraphQLStoreCartDiscountsLimitReachedError
   | GraphQLSyntaxErrorError
+  | GraphQLUnauthorizedError
   | GraphQLValidityLockConflictError
 export interface IGraphQLErrorObject {
   [key: string]: any
@@ -2372,7 +2650,7 @@ export interface GraphQLAnonymousIdAlreadyInUseError extends IGraphQLErrorObject
   [key: string]: any
 }
 /**
- *	Returned when an [Associate](/projects/business-units#associate) is missing a [Permission](/projects/associate-roles#ctp:api:type:Permission) on a [B2B resource](/associates-overview#b2b-resources).
+ *	Returned when an [Associate](ctp:api:type:Associate) is missing a [Permission](ctp:api:type:Permission) on a [B2B resource](/associates-overview#b2b-resources).
  *
  */
 export interface GraphQLAssociateMissingPermissionError extends IGraphQLErrorObject {
@@ -2486,6 +2764,36 @@ export interface GraphQLBadGatewayError extends IGraphQLErrorObject {
   [key: string]: any
 }
 /**
+ *	Returned when a bulk request contains more items than the allowed maximum.
+ *
+ *	Reduce the number of items in the request to at most `limit` and retry.
+ *
+ */
+export interface GraphQLBulkOperationMaxItemsExceededError extends IGraphQLErrorObject {
+  readonly code: 'BulkOperationMaxItemsExceeded'
+  [key: string]: any
+  /**
+   *	Maximum number of items allowed in a single bulk request.
+   *
+   *
+   */
+  readonly limit: number
+  /**
+   *	Number of items provided in the request.
+   *
+   *
+   */
+  readonly provided: number
+}
+/**
+ *	Returned when a circular reference is detected among Extension dependencies.
+ *
+ */
+export interface GraphQLCircularDependencyError extends IGraphQLErrorObject {
+  readonly code: 'CircularDependency'
+  [key: string]: any
+}
+/**
  *	Returned when the request conflicts with the current state of the involved resources. Typically, the request attempts to modify a resource that is out of date (that is modified by another client since it was last retrieved).
  *	The client application should resolve the conflict (with or without involving the end user) before retrying the request.
  *
@@ -2594,7 +2902,7 @@ export interface GraphQLDiscountCodeNonApplicableError extends IGraphQLErrorObje
   readonly validityCheckTime?: string
 }
 /**
- *	Returned when the `Unique` [AttributeConstraint](ctp:api:type:AttributeConstraintEnum) criteria are not met during an [Update Product](/../api/projects/products#update-product) request.
+ *	Returned when the `Unique` [AttributeConstraint](ctp:api:type:AttributeConstraintEnum) criteria are not met during an [Update Product](/api/projects/products#update-product) request.
  *
  */
 export interface GraphQLDuplicateAttributeValueError extends IGraphQLErrorObject {
@@ -2608,7 +2916,7 @@ export interface GraphQLDuplicateAttributeValueError extends IGraphQLErrorObject
   readonly attribute: Attribute
 }
 /**
- *	Returned when the `CombinationUnique` [AttributeConstraint](ctp:api:type:AttributeConstraintEnum) criteria are not met during an [Update Product](/../api/projects/products#update-product) request.
+ *	Returned when the `CombinationUnique` [AttributeConstraint](ctp:api:type:AttributeConstraintEnum) criteria are not met during an [Update Product](/api/projects/products#update-product) request.
  *
  */
 export interface GraphQLDuplicateAttributeValuesError extends IGraphQLErrorObject {
@@ -2698,7 +3006,7 @@ export interface GraphQLDuplicatePriceKeyError extends IGraphQLErrorObject {
   readonly conflictingPrice: Price
 }
 /**
- *	Returned when a Price scope conflicts with an existing one during an [Update Product](/../api/projects/products#update-product) request.
+ *	Returned when a Price scope conflicts with an existing one during an [Update Product](/api/projects/products#update-product) request.
  *
  *	Every Price of a Product Variant must have a distinct combination of currency, Customer Group, country, and Channel that constitute the scope of a Price.
  *
@@ -2773,7 +3081,7 @@ export interface GraphQLDuplicateStandalonePriceScopeError extends IGraphQLError
   readonly validUntil?: string
 }
 /**
- *	Returned when a [Product Variant](ctp:api:type:ProductVariant) value conflicts with an existing one during an [Update Product](/../api/projects/products#update-product) request.
+ *	Returned when a [Product Variant](ctp:api:type:ProductVariant) value conflicts with an existing one during an [Update Product](/api/projects/products#update-product) request.
  *
  */
 export interface GraphQLDuplicateVariantValuesError extends IGraphQLErrorObject {
@@ -2999,7 +3307,31 @@ export interface GraphQLExtensionBadResponseError extends IGraphQLErrorObject {
   readonly extensionKey?: string
 }
 /**
- *	Returned when the API Extension does not respond within the [time limit](/../api/projects/api-extensions#time-limits), or could not be reached.
+ *	Returned when the Extension dependency chain exceeds 3 layers.
+ *
+ */
+export interface GraphQLExtensionChainTooDeepError extends IGraphQLErrorObject {
+  readonly code: 'ExtensionChainTooDeep'
+  [key: string]: any
+}
+/**
+ *	Returned when an Extension declares more than 5 direct dependencies.
+ *
+ */
+export interface GraphQLExtensionChainTooWideError extends IGraphQLErrorObject {
+  readonly code: 'ExtensionChainTooWide'
+  [key: string]: any
+}
+/**
+ *	Returned when attempting to delete an Extension that is a prerequisite for other Extensions.
+ *
+ */
+export interface GraphQLExtensionDependencyExistsError extends IGraphQLErrorObject {
+  readonly code: 'ExtensionDependencyExists'
+  [key: string]: any
+}
+/**
+ *	Returned when the API Extension does not respond within the [time limit](/api/projects/api-extensions#time-limits), or could not be reached.
  *
  */
 export interface GraphQLExtensionNoResponseError extends IGraphQLErrorObject {
@@ -3060,7 +3392,7 @@ export interface GraphQLExtensionUpdateActionsFailedError extends IGraphQLErrorO
   readonly extensionErrors: ExtensionError[]
 }
 /**
- *	Returned when an [external OAuth Introspection endpoint](/../api/authorization#request-an-access-token-using-an-external-oauth-server) does not return a response within the [time limit](/../api/authorization#time-limits), or the response isn't compliant with [RFC 7662](https://www.rfc-editor.org/rfc/rfc7662.html) (for example, an HTTP status code like `500`).
+ *	Returned when an [external OAuth Introspection endpoint](/api/authorization#request-an-access-token-using-an-external-oauth-server) does not return a response within the [time limit](/api/authorization#time-limits), or the response isn't compliant with [RFC 7662](https://www.rfc-editor.org/rfc/rfc7662.html) (for example, an HTTP status code like `500`).
  *
  */
 export interface GraphQLExternalOAuthFailedError extends IGraphQLErrorObject {
@@ -3078,7 +3410,7 @@ export interface GraphQLFeatureRemovedError extends IGraphQLErrorObject {
 /**
  *	Returned when a server-side problem occurs before or after data persistence. In some cases, the requested action may successfully complete after the error is returned. Therefore, it is recommended to verify the status of the requested resource after receiving a 500 error.
  *
- *	If you encounter this error, report it to the [Composable Commerce support team](https://support.commercetools.com).
+ *	If you encounter this error, report it to the [commercetools support team](https://support.commercetools.com).
  *
  */
 export interface GraphQLGeneralError extends IGraphQLErrorObject {
@@ -3086,7 +3418,7 @@ export interface GraphQLGeneralError extends IGraphQLErrorObject {
   [key: string]: any
 }
 /**
- *	This error occurs when your [API Client](/../api/projects/api-clients) does not have the [OAuth scope](/../api/scopes) required for the endpoint.
+ *	This error occurs when your [API Client](/api/projects/api-clients) does not have the [OAuth scope](/api/scopes) required for the endpoint.
  *	Use an API Client with the required permissions for this endpoint instead.
  *
  */
@@ -3239,6 +3571,58 @@ export interface GraphQLLanguageUsedInStoresError extends IGraphQLErrorObject {
   [key: string]: any
 }
 /**
+ *	Returned when attempting to create or update a [Cart](ctp:api:type:Cart) with a Line Item whose quantity exceeds the `maxCartQuantity` limit defined in the [InventoryEntry](ctp:api:type:InventoryEntry) for that Line Item's SKU.
+ *
+ */
+export interface GraphQLLineItemQuantityAboveLimitError extends IGraphQLErrorObject {
+  readonly code: 'LineItemQuantityAboveLimit'
+  [key: string]: any
+  /**
+   *	The quantity that was requested.
+   *
+   *
+   */
+  readonly quantity: number
+  /**
+   *	The maximum quantity allowed for this Line Item.
+   *
+   *
+   */
+  readonly maxCartQuantity: number
+  /**
+   *	Reference to the Line Item that caused the error.
+   *
+   *
+   */
+  readonly lineItem?: string
+}
+/**
+ *	Returned when attempting to create or update a [Cart](ctp:api:type:Cart) with a Line Item whose quantity is below the `minCartQuantity` limit defined in the [InventoryEntry](ctp:api:type:InventoryEntry) for that Line Item's SKU.
+ *
+ */
+export interface GraphQLLineItemQuantityBelowLimitError extends IGraphQLErrorObject {
+  readonly code: 'LineItemQuantityBelowLimit'
+  [key: string]: any
+  /**
+   *	The quantity that was requested.
+   *
+   *
+   */
+  readonly quantity: number
+  /**
+   *	The minimum quantity required for this Line Item.
+   *
+   *
+   */
+  readonly minCartQuantity: number
+  /**
+   *	Reference to the Line Item that caused the error.
+   *
+   *
+   */
+  readonly lineItem?: string
+}
+/**
  *	Returned when two [Customers](ctp:api:type:Customer) are simultaneously created or updated with the same email address.
  *
  *	To confirm if the operation was successful, repeat the request.
@@ -3312,7 +3696,7 @@ export interface GraphQLMatchingPriceNotFoundError extends IGraphQLErrorObject {
   readonly channel?: ChannelReference
 }
 /**
- *	Returned when a Cart Discount cannot be created or activated as the [limit](/../api/limits#cart-discounts) for active Cart Discounts has been reached.
+ *	Returned when a Cart Discount cannot be created or activated as the [limit](/api/limits#cart-discounts) for active Cart Discounts has been reached.
  *
  *	The error is returned as a failed response to:
  *
@@ -3325,7 +3709,7 @@ export interface GraphQLMaxCartDiscountsReachedError extends IGraphQLErrorObject
   [key: string]: any
 }
 /**
- *	Returned when a Discount Group cannot be created or activated as the [limit](/../api/limits#discount-groups) for active Discount Groups has been reached.
+ *	Returned when a Discount Group cannot be created or activated as the [limit](/api/limits#discount-groups) for active Discount Groups has been reached.
  *
  *	The error is returned as a failed response to:
  *
@@ -3338,7 +3722,7 @@ export interface GraphQLMaxDiscountGroupsReachedError extends IGraphQLErrorObjec
   [key: string]: any
 }
 /**
- *	Returned when a resource type cannot be created as it has reached its [limits](/../api/limits).
+ *	Returned when a resource type cannot be created as it has reached its [limits](/api/limits).
  *
  *	The limits must be adjusted for this resource before sending the request again.
  *
@@ -3354,7 +3738,7 @@ export interface GraphQLMaxResourceLimitExceededError extends IGraphQLErrorObjec
   readonly exceededResource: ReferenceTypeId
 }
 /**
- *	Returned when a Store cannot be added to a Cart Discount as the [limit](/../api/limits#cart-discounts-stores) for Stores configured for a Cart Discount has been reached.
+ *	Returned when a Store cannot be added to a Cart Discount as the [limit](/api/limits#cart-discounts-stores) for Stores configured for a Cart Discount has been reached.
  *
  *	The error is returned as a failed response to:
  *
@@ -3364,6 +3748,14 @@ export interface GraphQLMaxResourceLimitExceededError extends IGraphQLErrorObjec
  */
 export interface GraphQLMaxStoreReferencesReachedError extends IGraphQLErrorObject {
   readonly code: 'MaxStoreReferencesReached'
+  [key: string]: any
+}
+/**
+ *	Returned when a referenced Extension does not exist or is not applicable to the same trigger.
+ *
+ */
+export interface GraphQLMissingDependencyError extends IGraphQLErrorObject {
+  readonly code: 'MissingDependency'
   [key: string]: any
 }
 /**
@@ -3453,7 +3845,7 @@ export interface GraphQLNoMatchingProductDiscountFoundError extends IGraphQLErro
   [key: string]: any
 }
 /**
- *	Returned if the requested resource was not found or the Product Search index is [inactive](/../api/projects/product-search#activate-the-product-search-api).
+ *	Returned if the requested resource was not found or the Product Search index is [inactive](/api/projects/product-search#activate-the-product-search-api).
  *
  */
 export interface GraphQLObjectNotFoundError extends IGraphQLErrorObject {
@@ -3495,6 +3887,71 @@ export interface GraphQLOutOfStockError extends IGraphQLErrorObject {
 export interface GraphQLOverCapacityError extends IGraphQLErrorObject {
   readonly code: 'OverCapacity'
   [key: string]: any
+}
+/**
+ *	Returned when a given Price validity period conflicts with an existing one.
+ *	Every Price of a Product Variant with the same combination of currency, country, Customer Group, and Channel must have non-overlapping validity periods (`validFrom` and `validUntil`).
+ *
+ *	The error is returned as a failed response to the [Create Product](ctp:api:endpoint:/{projectKey}/products:POST) or [Update Product](/api/projects/products#update-product) request.
+ *
+ */
+export interface GraphQLOverlappingPriceValidityError extends IGraphQLErrorObject {
+  readonly code: 'OverlappingPriceValidity'
+  [key: string]: any
+  /**
+   *	Unique identifier of the conflicting Embedded Price.
+   *
+   *
+   */
+  readonly conflictingPrice: string
+  /**
+   *	Currency code of the Price.
+   *
+   *
+   */
+  readonly currency: string
+  /**
+   *	Country code of the Price.
+   *
+   *
+   */
+  readonly country?: string
+  /**
+   *	[CustomerGroup](ctp:api:type:CustomerGroup) for which the Price is valid.
+   *
+   *
+   */
+  readonly customerGroup?: CustomerGroupResourceIdentifier
+  /**
+   *	[Channel](ctp:api:type:Channel) for which the Price is valid.
+   *
+   *
+   */
+  readonly channel?: ChannelResourceIdentifier
+  /**
+   *	Date and time (UTC) from which the Embedded Price is valid.
+   *
+   *
+   */
+  readonly validFrom?: string
+  /**
+   *	Date and time (UTC) until which the Embedded Price is valid.
+   *
+   *
+   */
+  readonly validUntil?: string
+  /**
+   *	Date and time (UTC) from which the conflicting Embedded Price is valid.
+   *
+   *
+   */
+  readonly conflictingValidFrom?: string
+  /**
+   *	Date and time (UTC) until which the conflicting Embedded Price is valid.
+   *
+   *
+   */
+  readonly conflictingValidUntil?: string
 }
 /**
  *	Returned when a given Price validity period conflicts with an existing one.
@@ -3571,7 +4028,7 @@ export interface GraphQLOverlappingStandalonePriceValidityError extends IGraphQL
  *	Returned when a previous conflicting operation is still pending and needs to finish before the request can succeed.
  *
  *	The client application should retry the request with exponential backoff up to a point where further delay is unacceptable.
- *	If the error persists, report it to the [Composable Commerce support team](https://support.commercetools.com).
+ *	If the error persists, report it to the [commercetools support team](https://support.commercetools.com).
  *
  */
 export interface GraphQLPendingOperationError extends IGraphQLErrorObject {
@@ -3600,7 +4057,7 @@ export interface GraphQLPriceChangedError extends IGraphQLErrorObject {
    */
   readonly lineItems: string[]
   /**
-   *	`true` if the [ShippingRate](ctp:api:type:ShippingRate) has changed.
+   *	Whether the [ShippingRate](ctp:api:type:ShippingRate) has changed.
    *
    *
    */
@@ -3622,7 +4079,7 @@ export interface GraphQLProductAssignmentMissingError extends IGraphQLErrorObjec
   readonly product: ProductReference
 }
 /**
- *	Returned when a Product is already assigned to a [Product Selection](/../api/projects/product-selections), but the Product Selection has either a different [Product Variant Selection](ctp:api:type:ProductVariantSelection) or a different [Product Variant Exclusion](ctp:api:type:ProductVariantExclusion).
+ *	Returned when a Product is already assigned to a [Product Selection](/api/projects/product-selections), but the Product Selection has either a different [Product Variant Selection](ctp:api:type:ProductVariantSelection) or a different [Product Variant Exclusion](ctp:api:type:ProductVariantExclusion).
  *
  *	The error is returned as a failed response either to the [Add Product](ctp:api:type:ProductSelectionAddProductAction) or to the [Exclude Product](ctp:api:type:ProductSelectionExcludeProductAction) update action.
  *
@@ -3637,7 +4094,7 @@ export interface GraphQLProductPresentWithDifferentVariantSelectionError extends
    */
   readonly product: ProductReference
   /**
-   *	Existing Product Variant Selection or Exclusion for the [Product](/../api/projects/products) in the [Product Selection](/../api/projects/product-selections).
+   *	Existing Product Variant Selection or Exclusion for the [Product](/api/projects/products) in the [Product Selection](/api/projects/product-selections).
    *
    *
    */
@@ -3666,7 +4123,7 @@ export interface GraphQLQueryComplexityLimitExceededError extends IGraphQLErrorO
 /**
  *	Returned when the query times out.
  *
- *	If a query constantly times out, please check if it follows the [performance best practices](/../api/predicates/query#performance-considerations).
+ *	If a query constantly times out, please check if it follows the [performance best practices](/api/predicates/query#performance-considerations).
  *
  */
 export interface GraphQLQueryTimedOutError extends IGraphQLErrorObject {
@@ -3800,7 +4257,7 @@ export interface GraphQLSearchNotReadyError extends IGraphQLErrorObject {
   [key: string]: any
 }
 /**
- *	Returned when a [Discount predicate](/../api/predicates/predicate-operators) or [API Extension predicate](/../api/predicates/query#use-predicates-in-conditional-api-extensions) is not semantically correct.
+ *	Returned when a [Discount predicate](/api/predicates/predicate-operators) or [API Extension predicate](/api/predicates/query#use-predicates-in-conditional-api-extensions) is not semantically correct.
  *
  */
 export interface GraphQLSemanticErrorError extends IGraphQLErrorObject {
@@ -3824,7 +4281,7 @@ export interface GraphQLShippingMethodDoesNotMatchCartError extends IGraphQLErro
   [key: string]: any
 }
 /**
- *	Returned when a Cart Discount cannot be created or assigned to a Store as the [limit](/../api/limits#cart-discounts) for active Cart Discounts in a Store has been reached for one or more Stores in the request.
+ *	Returned when a Cart Discount cannot be created or assigned to a Store as the [limit](/api/limits#cart-discounts) for active Cart Discounts in a Store has been reached for one or more Stores in the request.
  *
  *	The error is returned as a failed response to:
  *
@@ -3843,12 +4300,31 @@ export interface GraphQLStoreCartDiscountsLimitReachedError extends IGraphQLErro
   readonly stores: StoreKeyReference[]
 }
 /**
- *	Returned when a [Discount predicate](/../api/predicates/predicate-operators), [API Extension predicate](/../api/predicates/query#use-predicates-in-conditional-api-extensions), or [search query](/../api/projects/product-projection-search) does not have the correct syntax.
+ *	Returned when a [Discount predicate](/api/predicates/predicate-operators), [API Extension predicate](/api/predicates/query#use-predicates-in-conditional-api-extensions), or [search query](/api/projects/product-projection-search) does not have the correct syntax.
  *
  */
 export interface GraphQLSyntaxErrorError extends IGraphQLErrorObject {
   readonly code: 'SyntaxError'
   [key: string]: any
+}
+/**
+ *	Returned when one of the following conditions occurs:
+ *
+ *	- A Customer reference (for example, `associates[*].customer` or `inheritedAssociates[*].customer`) is expanded on the [My Business Unit](/api/projects/me-business-units) endpoint.
+ *	- A [Cart Discount](ctp:api:type:CartDiscount) cannot be modified due to missing permissions for its assigned [Stores](ctp:api:type:Store).
+ *
+ */
+export interface GraphQLUnauthorizedError extends IGraphQLErrorObject {
+  readonly code: 'Unauthorized'
+  [key: string]: any
+  /**
+   *	Keys of [Stores](ctp:api:type:Store) for which the required permission to modify is missing.
+   *
+   *	This field is returned only for [Cart Discounts](ctp:api:type:CartDiscount).
+   *
+   *
+   */
+  readonly storesWithoutPermission?: string[]
 }
 /**
  *	Returned when a modification is already in progress for the combination of SKU and price scope fields (but potentially different validity period) for a Standalone Price.

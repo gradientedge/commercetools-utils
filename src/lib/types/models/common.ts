@@ -34,7 +34,7 @@ import {
 import { CustomerGroup, CustomerGroupReference, CustomerGroupResourceIdentifier } from './customer-group.js'
 import { DiscountCode, DiscountCodeReference, DiscountCodeResourceIdentifier } from './discount-code.js'
 import { DiscountGroup, DiscountGroupReference, DiscountGroupResourceIdentifier } from './discount-group.js'
-import { Extension } from './extension.js'
+import { Extension, ExtensionReference, ExtensionResourceIdentifier } from './extension.js'
 import { InventoryEntry, InventoryEntryReference, InventoryEntryResourceIdentifier } from './inventory.js'
 import { Message } from './message.js'
 import { OrderReference, _Order } from './order.js'
@@ -50,6 +50,7 @@ import { Quote, QuoteReference, QuoteResourceIdentifier } from './quote.js'
 import { QuoteRequest, QuoteRequestReference, QuoteRequestResourceIdentifier } from './quote-request.js'
 import { RecurrencePolicy, RecurrencePolicyReference, RecurrencePolicyResourceIdentifier } from './recurrence-policy.js'
 import { RecurringOrder, RecurringOrderReference, RecurringOrderResourceIdentifier } from './recurring-order.js'
+import { Reservation, ReservationReference } from './reservation.js'
 import { Review, ReviewReference, ReviewResourceIdentifier } from './review.js'
 import { ShippingMethod, ShippingMethodReference, ShippingMethodResourceIdentifier } from './shipping-method.js'
 import { ShoppingList, ShoppingListReference, ShoppingListResourceIdentifier } from './shopping-list.js'
@@ -60,6 +61,7 @@ import { Store, StoreKeyReference, StoreReference, StoreResourceIdentifier } fro
 import { Subscription } from './subscription.js'
 import { TaxCategory, TaxCategoryReference, TaxCategoryResourceIdentifier } from './tax-category.js'
 import { CustomFields, CustomFieldsDraft, Type, TypeReference, TypeResourceIdentifier } from './type.js'
+import { Variant, VariantReference, VariantResourceIdentifier } from './variant.js'
 import { Zone, ZoneReference, ZoneResourceIdentifier } from './zone.js'
 
 /**
@@ -69,13 +71,13 @@ import { Zone, ZoneReference, ZoneResourceIdentifier } from './zone.js'
  */
 export interface PagedQueryResponse {
   /**
-   *	Number of [results requested](/../api/general-concepts#limit).
+   *	Number of [results requested](/api/general-concepts#limit).
    *
    *
    */
   readonly limit: number
   /**
-   *	Number of [elements skipped](/../api/general-concepts#offset).
+   *	Number of [elements skipped](/api/general-concepts#offset).
    *
    *
    */
@@ -88,10 +90,10 @@ export interface PagedQueryResponse {
   readonly count: number
   /**
    *	Total number of results matching the query.
-   *	This number is an estimation that is not [strongly consistent](/../api/general-concepts#strong-consistency).
+   *	This number is an estimation that is not [strongly consistent](/api/general-concepts#strong-consistency).
    *	This field is returned by default.
    *	For improved performance, calculating this field can be deactivated by using the query parameter `withTotal=false`.
-   *	When the results are filtered with a [Query Predicate](/../api/predicates/query), `total` is subject to a [limit](/../api/limits#queries).
+   *	When the results are filtered with a [Query Predicate](/api/predicates/query), `total` is subject to a [limit](/api/limits#queries).
    *
    *
    */
@@ -301,7 +303,7 @@ export interface BaseAddress {
    */
   readonly id?: string
   /**
-   *	User-defined identifier of the Address that must be unique when multiple addresses are referenced in [BusinessUnits](ctp:api:type:BusinessUnit), [Customers](ctp:api:type:Customer), and `itemShippingAddresses` (LineItem-specific addresses) of a [Cart](ctp:api:type:Cart), [Order](ctp:api:type:Order), [QuoteRequest](ctp:api:type:QuoteRequest), or [Quote](ctp:api:type:Quote).
+   *	User-defined identifier of the Address. Must be unique among the addresses in a [BusinessUnit](ctp:api:type:BusinessUnit), [Customer](ctp:api:type:Customer), or in the `itemShippingAddresses` (LineItem-specific addresses) of a [Cart](ctp:api:type:Cart), [Order](ctp:api:type:Order), [QuoteRequest](ctp:api:type:QuoteRequest), or [Quote](ctp:api:type:Quote).
    *
    *
    */
@@ -521,6 +523,7 @@ export type _BaseResource =
   | QuoteRequest
   | RecurrencePolicy
   | RecurringOrder
+  | Reservation
   | Review
   | ShippingMethod
   | ShoppingList
@@ -531,9 +534,10 @@ export type _BaseResource =
   | Subscription
   | TaxCategory
   | Type
+  | Variant
   | Zone
 /**
- *	These objects represent information about which [API Client](/../api/projects/api-clients) created or modified a resource. For more information, see [Client Logging](/../api/general-concepts#client-logging).
+ *	These objects represent information about which [API Client](/api/projects/api-clients) created or modified a resource. For more information, see [Client Logging](/api/general-concepts#client-logging).
  *
  */
 export interface ClientLogging {
@@ -544,7 +548,7 @@ export interface ClientLogging {
    */
   readonly clientId?: string
   /**
-   *	[External user ID](/../api/general-concepts#external-user-ids) provided by `X-External-User-ID` HTTP Header.
+   *	[External user ID](/api/general-concepts#external-user-ids) provided by `X-External-User-ID` HTTP Header.
    *
    *
    */
@@ -562,7 +566,7 @@ export interface ClientLogging {
    */
   readonly anonymousId?: string
   /**
-   *	Indicates the [Customer](ctp:api:type:Customer) who created or modified the resource in the context of a [Business Unit](ctp:api:type:BusinessUnit). Only available for [B2B](/../offering/composable-commerce#composable-commerce-for-b2b)-enabled Projects when an Associate acts on behalf of a company using the [associate endpoints](/associates-overview#on-the-associate-endpoints).
+   *	Indicates the [Customer](ctp:api:type:Customer) who created or modified the resource in the context of a [Business Unit](ctp:api:type:BusinessUnit). Only available for [B2B](/offering/commerce-b2b)-enabled Projects when an Associate acts on behalf of a company using the [associate endpoints](/associates-overview#on-the-associate-endpoints).
    *
    *
    */
@@ -580,7 +584,7 @@ export interface CreatedBy extends ClientLogging {
    */
   readonly clientId?: string
   /**
-   *	[External user ID](/../api/general-concepts#external-user-ids) provided by the `X-External-User-ID` HTTP Header or `external_user_id:{externalUserId}` [scope](/../api/scopes#external-oauth).
+   *	[External user ID](/api/general-concepts#external-user-ids) provided by the `X-External-User-ID` HTTP Header or `external_user_id:{externalUserId}` [scope](/api/scopes#external-oauth).
    *
    *
    */
@@ -604,7 +608,7 @@ export interface CreatedBy extends ClientLogging {
    */
   readonly attributedTo?: Attribution
   /**
-   *	Indicates the [Customer](ctp:api:type:Customer) who created the resource in the context of a [Business Unit](ctp:api:type:BusinessUnit). Only available for [B2B](/../offering/composable-commerce#composable-commerce-for-b2b)-enabled Project when an Associate acts on behalf of a company using the [associate endpoints](/associates-overview#on-the-associate-endpoints).
+   *	Indicates the [Customer](ctp:api:type:Customer) who created the resource in the context of a [Business Unit](ctp:api:type:BusinessUnit). Only available for [B2B](/offering/commerce-b2b)-enabled Project when an Associate acts on behalf of a company using the [associate endpoints](/associates-overview#on-the-associate-endpoints).
    *
    *
    */
@@ -613,6 +617,12 @@ export interface CreatedBy extends ClientLogging {
 export interface DiscountedPrice {
   /**
    *	Money value of the discounted price.
+   *
+   *	- When a [relative Product Discount](ctp:api:type:ProductDiscountValueRelative) applies and the fractional part of the resulting discounted price is 0.5, the discounted price is [rounded half down](https://en.wikipedia.org/wiki/Rounding#Rounding_half_down).
+   *
+   *	  For example, a price of €1.01 (`centAmount: 101`) with a 50% discount (`permyriad: 5000`) calculates to €0.505. Since the fractional half-cent is exactly 0.5, it rounds down to €0.50 (`centAmount: 50`).
+   *
+   *	- When an [absolute Product Discount](ctp:api:type:ProductDiscountValueAbsolute) exceeds the price of the Product Variant, the resulting discounted price is set to `0`.
    *
    *
    */
@@ -721,7 +731,7 @@ export interface LastModifiedBy extends ClientLogging {
    */
   readonly clientId?: string
   /**
-   *	[External user ID](/../api/general-concepts#external-user-ids) provided by the `X-External-User-ID` HTTP Header or `external_user_id:{externalUserId}` [scope](/../api/scopes#external-oauth).
+   *	[External user ID](/api/general-concepts#external-user-ids) provided by the `X-External-User-ID` HTTP Header or `external_user_id:{externalUserId}` [scope](/api/scopes#external-oauth).
    *
    *
    */
@@ -745,7 +755,7 @@ export interface LastModifiedBy extends ClientLogging {
    */
   readonly attributedTo?: Attribution
   /**
-   *	Indicates the [Customer](ctp:api:type:Customer) who modified the resource in the context of a [Business Unit](ctp:api:type:BusinessUnit). Only available for [B2B](/../offering/composable-commerce#composable-commerce-for-b2b)-enabled Projects when an Associate acts on behalf of a company using the [associate endpoints](/associates-overview#on-the-associate-endpoints).
+   *	Indicates the [Customer](ctp:api:type:Customer) who modified the resource in the context of a [Business Unit](ctp:api:type:BusinessUnit). Only available for [B2B](/offering/commerce-b2b)-enabled Projects when an Associate acts on behalf of a company using the [associate endpoints](/associates-overview#on-the-associate-endpoints).
    *
    *
    */
@@ -768,13 +778,13 @@ export interface Money {
    *	* Cents for EUR and USD, pence for GBP, or centime for CHF (5 CHF is specified as `500`).
    *	* The value in the major unit for currencies without minor units, like JPY (5 JPY is specified as `5`).
    *
-   *	`centAmount` is represented as 64-bit integers. If this limit is exceeded, a [MoneyOverflow](/errors#moneyoverflow) error will be returned.
+   *	`centAmount` is represented as 64-bit integers. If this limit is exceeded, a [MoneyOverflow](ctp:api:type:MoneyOverflowError) error will be returned.
    *
    *
    */
   readonly centAmount: number
   /**
-   *	Currency code compliant to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
+   *	A currency code compliant with [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217) or a [non-standard currency](ctp:api:type:NonStandardCurrency).
    *
    *
    */
@@ -790,6 +800,22 @@ export enum MoneyTypeValues {
 }
 
 export type MoneyType = 'centPrecision' | 'highPrecision' | (string & {})
+/**
+ *	Currencies whose fraction digits are not compliant with [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
+ *
+ *	These currencies are treated separately (from their ISO equivalents); for example, a Product Discount for `HUF0` will not apply to a `HUF` price.
+ *
+ */
+export enum NonStandardCurrencyValues {
+  Czk0 = 'CZK0',
+  Huf0 = 'HUF0',
+  Ils0 = 'ILS0',
+  Kzt0 = 'KZT0',
+  Try0 = 'TRY0',
+  Twd0 = 'TWD0',
+}
+
+export type NonStandardCurrency = 'CZK0' | 'HUF0' | 'ILS0' | 'KZT0' | 'TRY0' | 'TWD0' | (string & {})
 /**
  *	The representation for prices embedded in [LineItems](ctp:api:type:LineItem) and in [ProductVariants](ctp:api:type:ProductVariant) when the [ProductPriceMode](ctp:api:type:ProductPriceModeEnum) is `Embedded`.
  *	For the `Standalone` ProductPriceMode refer to [StandalonePrice](ctp:api:type:StandalonePrice).
@@ -844,11 +870,7 @@ export interface Price {
    */
   readonly validUntil?: string
   /**
-   *	Set if a matching [ProductDiscount](ctp:api:type:ProductDiscount) exists.
-   *	If set, the API uses the DiscountedPrice value for the [Line Item price selection](/../api/pricing-and-discounts-overview#line-item-price-selection).
-   *	When a [relative discount](ctp:api:type:ProductDiscountValueRelative) has been applied and the fraction part of the DiscountedPrice `value` is 0.5, the `value` is rounded in favor of the customer with [half-down rounding](https://en.wikipedia.org/wiki/Rounding#Rounding_half_down).
-   *
-   *	If an [absolute discount](ctp:api:type:ProductDiscountValueAbsolute) value exceeds the price of the Product Variant, the discounted price is a negative value.
+   *	Set if a [ProductDiscount](ctp:api:type:ProductDiscount) applies. When present, the API uses the DiscountedPrice value for [Line Item price selection](/api/pricing-and-discounts-overview#line-item-price-selection).
    *
    *
    */
@@ -960,7 +982,7 @@ export interface PriceDraft {
  *	A Price tier is selected instead of the default Price when a certain quantity of the [ProductVariant](ctp:api:type:ProductVariant) is [added to a Cart](/projects/carts#add-lineitem) and ordered.
  *	_For example: the Price can be lower if more than 10 items are ordered._
  *	If no Price tier is found for the Order quantity, the base Price is used.
- *	A Price tier is applied for the entire quantity of a Product Variant put as [LineItem](/projects/carts#lineitem) in a Cart as soon as the minimum quantity for the Price tier is reached.
+ *	A Price tier is applied for the entire quantity of a Product Variant put as [LineItem](ctp:api:type:LineItem) in a Cart as soon as the minimum quantity for the Price tier is reached.
  *	The Price tier is applied per Line Item of the Product Variant. If, for example, the same Product Variant appears in the same Cart as several Line Items, (what can be achieved by different values of a Custom Field on the Line Items) for each Line Item the minimum quantity must be reached to get the Price tier.
  *
  */
@@ -1093,6 +1115,7 @@ export type Reference =
   | DirectDiscountReference
   | DiscountCodeReference
   | DiscountGroupReference
+  | ExtensionReference
   | InventoryEntryReference
   | OrderEditReference
   | OrderReference
@@ -1107,6 +1130,7 @@ export type Reference =
   | QuoteRequestReference
   | RecurrencePolicyReference
   | RecurringOrderReference
+  | ReservationReference
   | ReviewReference
   | ShippingMethodReference
   | ShoppingListReference
@@ -1116,6 +1140,7 @@ export type Reference =
   | StoreReference
   | TaxCategoryReference
   | TypeReference
+  | VariantReference
   | ZoneReference
 export interface IReference {
   /**
@@ -1169,6 +1194,7 @@ export enum ReferenceTypeIdValues {
   QuoteRequest = 'quote-request',
   RecurrencePolicy = 'recurrence-policy',
   RecurringOrder = 'recurring-order',
+  Reservation = 'reservation',
   Review = 'review',
   ShippingMethod = 'shipping-method',
   ShoppingList = 'shopping-list',
@@ -1179,6 +1205,7 @@ export enum ReferenceTypeIdValues {
   Subscription = 'subscription',
   TaxCategory = 'tax-category',
   Type = 'type',
+  Variant = 'variant',
   Zone = 'zone',
 }
 
@@ -1216,6 +1243,7 @@ export type ReferenceTypeId =
   | 'quote-request'
   | 'recurrence-policy'
   | 'recurring-order'
+  | 'reservation'
   | 'review'
   | 'shipping-method'
   | 'shopping-list'
@@ -1226,6 +1254,7 @@ export type ReferenceTypeId =
   | 'subscription'
   | 'tax-category'
   | 'type'
+  | 'variant'
   | 'zone'
   | (string & {})
 /**
@@ -1246,6 +1275,7 @@ export type ResourceIdentifier =
   | CustomerResourceIdentifier
   | DiscountCodeResourceIdentifier
   | DiscountGroupResourceIdentifier
+  | ExtensionResourceIdentifier
   | InventoryEntryResourceIdentifier
   | OrderEditResourceIdentifier
   | PaymentResourceIdentifier
@@ -1267,6 +1297,7 @@ export type ResourceIdentifier =
   | StoreResourceIdentifier
   | TaxCategoryResourceIdentifier
   | TypeResourceIdentifier
+  | VariantResourceIdentifier
   | ZoneResourceIdentifier
 export interface IResourceIdentifier {
   /**
@@ -1290,7 +1321,7 @@ export interface IResourceIdentifier {
 }
 /**
  *	Scoped Price is contained in a [ProductVariant](ctp:api:type:ProductVariant) which is returned in response to a
- *	[Product Projection Search](ctp:api:type:ProductProjectionSearchFilterScopedPrice) request when [Scoped Price Search](/../api/pricing-and-discounts-overview#scoped-price-search) is used.
+ *	[Product Projection Search](ctp:api:type:ProductProjectionSearchFilterScopedPrice) request when [Scoped Price Search](/api/pricing-and-discounts-overview#scoped-price-search) is used.
  *
  */
 export interface ScopedPrice {
@@ -1345,7 +1376,7 @@ export interface ScopedPrice {
   /**
    *	Is set when a matching [ProductDiscount](ctp:api:type:ProductDiscount) exists. If set, the [Cart](ctp:api:type:Cart) uses the discounted value for the [Cart Price calculation](ctp:api:type:CartAddLineItemAction).
    *
-   *	When a [relative Product Discount](ctp:api:type:ProductDiscountValueRelative) is applied and the fractional part of the discounted Price is 0.5, the discounted Price is [rounded half down](https://en.wikipedia.org/wiki/Rounding#Rounding_half_down) in favor of the Customer.
+   *	When a [relative Product Discount](ctp:api:type:ProductDiscountValueRelative) is applied and the fractional part of the discounted Price is 0.5, the discounted Price is [rounded half down](https://en.wikipedia.org/wiki/Rounding#Rounding_half_down).
    *
    *
    */
@@ -1369,13 +1400,13 @@ export interface ITypedMoney {
    *	* Cents for EUR and USD, pence for GBP, or centime for CHF (5 CHF is specified as `500`).
    *	* The value in the major unit for currencies without minor units, like JPY (5 JPY is specified as `5`).
    *
-   *	`centAmount` is represented as 64-bit integers. If this limit is exceeded, a [MoneyOverflow](/errors#moneyoverflow) error will be returned.
+   *	`centAmount` is represented as 64-bit integers. If this limit is exceeded, a [MoneyOverflow](ctp:api:type:MoneyOverflowError) error will be returned.
    *
    *
    */
   readonly centAmount: number
   /**
-   *	Currency code compliant to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
+   *	A currency code compliant with [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217) or a [non-standard currency](ctp:api:type:NonStandardCurrency).
    *
    *
    */
@@ -1407,13 +1438,13 @@ export interface CentPrecisionMoney extends ITypedMoney {
    *	* Cents for EUR and USD, pence for GBP, or centime for CHF (5 CHF is specified as `500`).
    *	* The value in the major unit for currencies without minor units, like JPY (5 JPY is specified as `5`).
    *
-   *	`centAmount` is represented as 64-bit integers. If this limit is exceeded, a [MoneyOverflow](/errors#moneyoverflow) error will be returned.
+   *	`centAmount` is represented as 64-bit integers. If this limit is exceeded, a [MoneyOverflow](ctp:api:type:MoneyOverflowError) error will be returned.
    *
    *
    */
   readonly centAmount: number
   /**
-   *	Currency code compliant to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
+   *	A currency code compliant with [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217) or a [non-standard currency](ctp:api:type:NonStandardCurrency).
    *
    *
    */
@@ -1436,13 +1467,13 @@ export interface HighPrecisionMoney extends ITypedMoney {
    *	* Cents for EUR and USD, pence for GBP, or centime for CHF (5 CHF is specified as `500`).
    *	* The value in the major unit for currencies without minor units, like JPY (5 JPY is specified as `5`).
    *
-   *	`centAmount` is represented as 64-bit integers. If this limit is exceeded, a [MoneyOverflow](/errors#moneyoverflow) error will be returned.
+   *	`centAmount` is represented as 64-bit integers. If this limit is exceeded, a [MoneyOverflow](ctp:api:type:MoneyOverflowError) error will be returned.
    *
    *
    */
   readonly centAmount: number
   /**
-   *	Currency code compliant to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
+   *	A currency code compliant with [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217) or a [non-standard currency](ctp:api:type:NonStandardCurrency).
    *
    *
    */
@@ -1476,7 +1507,7 @@ export interface ITypedMoneyDraft {
    */
   readonly centAmount?: number
   /**
-   *	Currency code compliant to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
+   *	A currency code compliant with [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217) or a [non-standard currency](ctp:api:type:NonStandardCurrency).
    *
    *
    */
@@ -1507,7 +1538,7 @@ export interface CentPrecisionMoneyDraft extends ITypedMoneyDraft {
    */
   readonly centAmount?: number
   /**
-   *	Currency code compliant to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
+   *	A currency code compliant with [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217) or a [non-standard currency](ctp:api:type:NonStandardCurrency).
    *
    *
    */
@@ -1529,7 +1560,7 @@ export interface HighPrecisionMoneyDraft extends ITypedMoneyDraft {
    *
    *	A Price of 1.015 USD can be rounded either to 1.01 USD or 1.02 USD. If it lies outside of this range, an error message stating that centAmount must be rounded correctly will be returned.
    *
-   *	`centAmount` is represented as 64-bit integers. If this limit is exceeded, a [MoneyOverflow](/errors#moneyoverflow) error will be returned.
+   *	`centAmount` is represented as 64-bit integers. If this limit is exceeded, a [MoneyOverflow](ctp:api:type:MoneyOverflowError) error will be returned.
    *
    *	If `centAmount` is not provided, the API calculates the value automatically using the default rounding mode half even.
    *
@@ -1537,7 +1568,7 @@ export interface HighPrecisionMoneyDraft extends ITypedMoneyDraft {
    */
   readonly centAmount?: number
   /**
-   *	Currency code compliant to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
+   *	A currency code compliant with [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217) or a [non-standard currency](ctp:api:type:NonStandardCurrency).
    *
    *
    */
@@ -1551,7 +1582,7 @@ export interface HighPrecisionMoneyDraft extends ITypedMoneyDraft {
   /**
    *	Amount in 1 / (10 ^ `fractionDigits`) of a currency.
    *
-   *	`preciseAmount` is represented as 64-bit integers. If this limit is exceeded, a [MoneyOverflow](/errors#moneyoverflow) error will be returned.
+   *	`preciseAmount` is represented as 64-bit integers. If this limit is exceeded, a [MoneyOverflow](ctp:api:type:MoneyOverflowError) error will be returned.
    *
    *
    */

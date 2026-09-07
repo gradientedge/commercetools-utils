@@ -85,7 +85,7 @@ export interface CartDiscount extends BaseResource {
    */
   readonly value: CartDiscountValue
   /**
-   *	Valid [Cart Predicate](/../api/projects/predicates#cart-predicates).
+   *	Valid [Cart Predicate](/api/projects/predicates#cart-predicates).
    *
    *
    */
@@ -93,7 +93,7 @@ export interface CartDiscount extends BaseResource {
   /**
    *	Segment of the Cart that is discounted.
    *
-   *	Empty, if the `value` is `giftLineItem`.
+   *	Absent if the `value` is `giftLineItem`.
    *
    *
    */
@@ -199,7 +199,7 @@ export interface CartDiscountDraft {
    */
   readonly value: CartDiscountValueDraft
   /**
-   *	Valid [Cart Predicate](/../api/projects/predicates#cart-predicates).
+   *	Valid [Cart Predicate](/api/projects/predicates#cart-predicates).
    *
    *
    */
@@ -226,16 +226,16 @@ export interface CartDiscountDraft {
    *	- If defined, the Cart Discount applies on [Carts](ctp:api:type:Cart) having a [Store](ctp:api:type:Store) matching any Store defined for this field.
    *	- If not defined, the Cart Discount applies on all Carts, irrespective of a Store.
    *
-   *	If the referenced Stores exceed the [limit](/../api/limits#cart-discounts-stores), a [MaxStoreReferencesReached](ctp:api:type:MaxStoreReferencesReachedError) error is returned.
+   *	If the referenced Stores exceed the [limit](/api/limits#cart-discounts-stores), a [MaxStoreReferencesReached](ctp:api:type:MaxStoreReferencesReachedError) error is returned.
    *
-   *	If the referenced Stores exceed the [limit](/../api/limits#cart-discounts) for Cart Discounts that do not require a Discount Code, a [StoreCartDiscountsLimitReached](ctp:api:type:StoreCartDiscountsLimitReachedError) error is returned.
+   *	If the referenced Stores exceed the [limit](/api/limits#cart-discounts) for Cart Discounts that do not require a Discount Code, a [StoreCartDiscountsLimitReached](ctp:api:type:StoreCartDiscountsLimitReachedError) error is returned.
    *
    *
    */
   readonly stores?: StoreResourceIdentifier[]
   /**
    *	Only active Discounts can be applied to the Cart.
-   *	If the [limit](/../api/limits#cart-discounts) for active Cart Discounts is reached, a [MaxCartDiscountsReached](ctp:api:type:MaxCartDiscountsReachedError) error is returned.
+   *	If the [limit](/api/limits#cart-discounts) for active Cart Discounts is reached, a [MaxCartDiscountsReached](ctp:api:type:MaxCartDiscountsReachedError) error is returned.
    *
    *
    */
@@ -273,6 +273,8 @@ export interface CartDiscountDraft {
   /**
    *	Reference to a DiscountGroup that the CartDiscount must belong to.
    *
+   *	A CartDiscount can only be added to a DiscountGroup if its `target.type` is `lineItems`, `customLineItems`, `multiBuyLineItems`, `multiBuyCustomLineItems`, or `pattern`; otherwise, an [InvalidInput](ctp:api:type:InvalidInputError) error is returned.
+   *
    *
    */
   readonly discountGroup?: DiscountGroupResourceIdentifier
@@ -286,18 +288,18 @@ export interface CartDiscountDraft {
   readonly recurringOrderScope?: RecurringOrderScopeDraft
 }
 /**
- *	[PagedQueryResult](/../api/general-concepts#pagedqueryresult) with `results` containing an array of [CartDiscount](ctp:api:type:CartDiscount).
+ *	[PagedQueryResult](/api/general-concepts#pagedqueryresult) with `results` containing an array of [CartDiscount](ctp:api:type:CartDiscount).
  *
  */
 export interface CartDiscountPagedQueryResponse {
   /**
-   *	Number of [results requested](/../api/general-concepts#limit).
+   *	Number of [results requested](/api/general-concepts#limit).
    *
    *
    */
   readonly limit: number
   /**
-   *	Number of [elements skipped](/../api/general-concepts#offset).
+   *	Number of [elements skipped](/api/general-concepts#offset).
    *
    *
    */
@@ -310,10 +312,10 @@ export interface CartDiscountPagedQueryResponse {
   readonly count: number
   /**
    *	Total number of results matching the query.
-   *	This number is an estimation that is not [strongly consistent](/../api/general-concepts#strong-consistency).
+   *	This number is an estimation that is not [strongly consistent](/api/general-concepts#strong-consistency).
    *	This field is returned by default.
    *	For improved performance, calculating this field can be deactivated by using the query parameter `withTotal=false`.
-   *	When the results are filtered with a [Query Predicate](/../api/predicates/query), `total` is subject to a [limit](/../api/limits#queries).
+   *	When the results are filtered with a [Query Predicate](/api/predicates/query), `total` is subject to a [limit](/api/limits#queries).
    *
    *
    */
@@ -338,14 +340,14 @@ export interface CartDiscountReference extends IReference {
    */
   readonly id: string
   /**
-   *	Contains the representation of the expanded CartDiscount. Only present in responses to requests with [Reference Expansion](/../api/general-concepts#reference-expansion) for CartDiscounts.
+   *	Contains the representation of the expanded CartDiscount. Only present in responses to requests with [Reference Expansion](/api/general-concepts#reference-expansion) for CartDiscounts.
    *
    *
    */
   readonly obj?: CartDiscount
 }
 /**
- *	[ResourceIdentifier](ctp:api:type:ResourceIdentifier) to a [CartDiscount](ctp:api:type:CartDiscount). Either `id` or `key` is required. If both are set, an [InvalidJsonInput](/../api/errors#invalidjsoninput) error is returned.
+ *	[ResourceIdentifier](ctp:api:type:ResourceIdentifier) to a [CartDiscount](ctp:api:type:CartDiscount). Either `id` or `key` is required. If both are set, an [InvalidJsonInput](ctp:api:type:InvalidJsonInputError) error is returned.
  *
  */
 export interface CartDiscountResourceIdentifier extends IResourceIdentifier {
@@ -384,7 +386,7 @@ export interface ICartDiscountTarget {
 export interface CartDiscountCustomLineItemsTarget extends ICartDiscountTarget {
   readonly type: 'customLineItems'
   /**
-   *	Valid [CustomLineItem target predicate](/../api/projects/predicates#customlineitem-field-identifiers).
+   *	Valid [CustomLineItem target predicate](/api/projects/predicates#customlineitem-field-identifiers).
    *
    *
    */
@@ -397,7 +399,7 @@ export interface CartDiscountCustomLineItemsTarget extends ICartDiscountTarget {
 export interface CartDiscountLineItemsTarget extends ICartDiscountTarget {
   readonly type: 'lineItems'
   /**
-   *	Valid [LineItem target predicate](/../api/projects/predicates#lineitem-field-identifiers).
+   *	Valid [LineItem target predicate](/api/projects/predicates#lineitem-field-identifiers).
    *
    *
    */
@@ -505,10 +507,7 @@ export interface ICartDiscountUpdateAction {
   readonly action: string
 }
 export type CartDiscountValue =
-  | CartDiscountValueAbsolute
-  | CartDiscountValueFixed
-  | CartDiscountValueGiftLineItem
-  | CartDiscountValueRelative
+  CartDiscountValueAbsolute | CartDiscountValueFixed | CartDiscountValueGiftLineItem | CartDiscountValueRelative
 export interface ICartDiscountValue {
   /**
    *
@@ -724,10 +723,7 @@ export enum DiscountApplicationModeValues {
 }
 
 export type DiscountApplicationMode =
-  | 'EvenDistribution'
-  | 'IndividualApplication'
-  | 'ProportionateDistribution'
-  | (string & {})
+  'EvenDistribution' | 'IndividualApplication' | 'ProportionateDistribution' | (string & {})
 /**
  *	This Discount target is similar to `MultiBuyLineItems`, but is applied on Custom Line Items instead of Line Items.
  *
@@ -735,7 +731,7 @@ export type DiscountApplicationMode =
 export interface MultiBuyCustomLineItemsTarget extends ICartDiscountTarget {
   readonly type: 'multiBuyCustomLineItems'
   /**
-   *	Valid [CustomLineItems target predicate](/../api/projects/predicates#customlineitem-field-identifiers). The Discount will be applied to Custom Line Items that are matched by the predicate.
+   *	Valid [CustomLineItems target predicate](/api/projects/predicates#customlineitem-field-identifiers). The Discount will be applied to Custom Line Items that are matched by the predicate.
    *
    *
    */
@@ -770,19 +766,19 @@ export interface MultiBuyCustomLineItemsTarget extends ICartDiscountTarget {
 export interface MultiBuyLineItemsTarget extends ICartDiscountTarget {
   readonly type: 'multiBuyLineItems'
   /**
-   *	Valid [LineItem target predicate](/../api/projects/predicates#lineitem-field-identifiers). The Discount will be applied to Line Items that are matched by the predicate.
+   *	Valid [LineItem target predicate](/api/projects/predicates#lineitem-field-identifiers). The Discount will be applied to Line Items that are matched by the predicate.
    *
    *
    */
   readonly predicate: string
   /**
-   *	Number of Line Items to be present in order to trigger an application of this Discount.
+   *	Quantity of Line Items required to trigger an application of this Discount.
    *
    *
    */
   readonly triggerQuantity: number
   /**
-   *	Number of Line Items that are discounted per application of this Discount.
+   *	Quantity of Line Items discounted per application of this Discount.
    *	It must be less than or equal to the `triggerQuantity`.
    *
    *
@@ -816,7 +812,7 @@ export interface IPatternComponent {
 export interface CountOnCustomLineItemUnits extends IPatternComponent {
   readonly type: 'CountOnCustomLineItemUnits'
   /**
-   *	Valid [CustomLineItem predicate](/../api/projects/predicates#customlineitem-field-identifiers) that determines the units participating in the Discount.
+   *	Valid [CustomLineItem predicate](/api/projects/predicates#customlineitem-field-identifiers) that determines the units participating in the Discount.
    *
    *
    */
@@ -853,7 +849,7 @@ export interface CountOnCustomLineItemUnits extends IPatternComponent {
 export interface CountOnLineItemUnits extends IPatternComponent {
   readonly type: 'CountOnLineItemUnits'
   /**
-   *	Valid [LineItem predicate](/../api/projects/predicates#lineitem-field-identifiers) that determines the units participating in the Discount.
+   *	Valid [LineItem predicate](/api/projects/predicates#lineitem-field-identifiers) that determines the units participating in the Discount.
    *
    *
    */
@@ -920,8 +916,8 @@ export interface CartDiscountAddStoreAction extends ICartDiscountUpdateAction {
    *
    *	A failed update can return the following errors:
    *
-   *	- If the referenced Stores exceed the [limit](/../api/limits#cart-discounts-stores), a [MaxStoreReferencesReached](ctp:api:type:MaxStoreReferencesReachedError) error is returned.
-   *	- If the referenced Stores exceed the [limit](/../api/limits#cart-discounts) for Cart Discounts that do not require a Discount Code, a [StoreCartDiscountsLimitReached](ctp:api:type:StoreCartDiscountsLimitReachedError) error is returned.
+   *	- If the referenced Stores exceed the [limit](/api/limits#cart-discounts-stores), a [MaxStoreReferencesReached](ctp:api:type:MaxStoreReferencesReachedError) error is returned.
+   *	- If the referenced Stores exceed the [limit](/api/limits#cart-discounts) for Cart Discounts that do not require a Discount Code, a [StoreCartDiscountsLimitReached](ctp:api:type:StoreCartDiscountsLimitReachedError) error is returned.
    *
    *
    */
@@ -1033,7 +1029,7 @@ export interface CartDiscountRemoveStoreAction extends ICartDiscountUpdateAction
 export interface CartDiscountSetCustomFieldAction extends ICartDiscountUpdateAction {
   readonly action: 'setCustomField'
   /**
-   *	Name of the [Custom Field](/../api/projects/custom-fields).
+   *	Name of the [Custom Field](/api/projects/custom-fields).
    *
    *
    */
@@ -1050,14 +1046,16 @@ export interface CartDiscountSetCustomFieldAction extends ICartDiscountUpdateAct
 export interface CartDiscountSetCustomTypeAction extends ICartDiscountUpdateAction {
   readonly action: 'setCustomType'
   /**
-   *	Defines the [Type](ctp:api:type:Type) that extends the CartDiscount with [Custom Fields](/../api/projects/custom-fields).
+   *	Defines the [Type](ctp:api:type:Type) that extends the CartDiscount with [Custom Fields](ctp:api:type:CustomFields).
    *	If absent, any existing Type and Custom Fields are removed from the CartDiscount.
    *
    *
    */
   readonly type?: TypeResourceIdentifier
   /**
-   *	Sets the [Custom Fields](/../api/projects/custom-fields) fields for the CartDiscount.
+   *	Object containing the [Custom Fields](ctp:api:type:CustomFields) fields for the CartDiscount.
+   *
+   *	Required if at least one Custom Field is defined as required in the `fieldDefinitions` of the referenced [Type](ctp:api:type:Type).
    *
    *
    */
@@ -1075,8 +1073,10 @@ export interface CartDiscountSetDescriptionAction extends ICartDiscountUpdateAct
 export interface CartDiscountSetDiscountGroupAction extends ICartDiscountUpdateAction {
   readonly action: 'setDiscountGroup'
   /**
-   *	Reference to a DiscountGroup that the Cart Discount must belong to.
+   *	Reference to a DiscountGroup that the CartDiscount must belong to.
    *	If empty, any existing value will be removed.
+   *
+   *	A CartDiscount can only be added to a DiscountGroup if its `target.type` is `lineItems`, `customLineItems`, `multiBuyLineItems`, `multiBuyCustomLineItems`, or `pattern`; otherwise, an [InvalidInput](ctp:api:type:InvalidInputError) error is returned.
    *
    *
    */
@@ -1127,8 +1127,8 @@ export interface CartDiscountSetStoresAction extends ICartDiscountUpdateAction {
    *
    *	A failed update can return the following errors:
    *
-   *	- If the referenced Stores exceed the [limit](/../api/limits#cart-discounts-stores), a [MaxStoreReferencesReached](ctp:api:type:MaxStoreReferencesReachedError) error is returned.
-   *	- If the referenced Stores exceed the [limit](/../api/limits#cart-discounts) for Cart Discounts that do not require a Discount Code, a [StoreCartDiscountsLimitReached](ctp:api:type:StoreCartDiscountsLimitReachedError) error is returned.
+   *	- If the referenced Stores exceed the [limit](/api/limits#cart-discounts-stores), a [MaxStoreReferencesReached](ctp:api:type:MaxStoreReferencesReachedError) error is returned.
+   *	- If the referenced Stores exceed the [limit](/api/limits#cart-discounts) for Cart Discounts that do not require a Discount Code, a [StoreCartDiscountsLimitReached](ctp:api:type:StoreCartDiscountsLimitReachedError) error is returned.
    *
    *
    */
